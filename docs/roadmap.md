@@ -5,9 +5,9 @@ Every phase ends with an **owner approval gate**. Approval of one phase does not
 | Phase | Name | Status |
 |---|---|---|
 | 0 | Discovery and briefing | ✅ Done (2026-11-01) |
-| 1 | Specification audit and documentation foundation | 🟡 In progress, awaiting review |
-| 2 | Architecture, provider research and legal groundwork | ⏳ |
-| 3 | UX research, information architecture and design system | ⏳ |
+| 1 | Specification audit and documentation foundation | ✅ Done (2026-11-01) |
+| 2 | Architecture, provider research and legal groundwork | ✅ Done (2026-11-01) |
+| 3 | UX research, information architecture and design system | 🟡 In progress ([plan](design/phase-3-plan.md)) |
 | 4 | Foundation (repo tooling, CI, auth, i18n, security baseline, admin shell) | ⏳ |
 | 5 | Alpha vertical slice | ⏳ |
 | 6 | Alpha hardening and operational readiness | ⏳ |

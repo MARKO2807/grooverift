@@ -35,6 +35,10 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-023 | 2026-11-01 | After a block, **existing DM history stays read-only for both participants**. No new messages can be sent. Either participant can delete the conversation on their own side only. Messages remain reportable after the block (resolves VQ-05). | CONFIRMED | Owner |
 | D-024 | 2026-11-01 | Default Music DNA visibility is **all signed-in members**, set through an **active choice** in onboarding. The recommended option is highlighted with its reason (discovery, compatibility), and the member confirms it. Never visible to signed-out visitors. Per-section settings remain adjustable (resolves VQ-06). | CONFIRMED | Owner |
 | D-025 | 2026-11-01 | **Profiles default to public** for adult members, set through an **active choice** in onboarding with "Public" highlighted as recommended and its benefits explained. The owner's goal is that most accounts are public. The private option is always available, equally easy to select and to switch to later, with no dark patterns (DSA Art. 25, GDPR Art. 25(2); see counsel question C.9). Handling of minors is deferred to OQ-10; the owner decides when it comes up and expects not to admit minors. | CONFIRMED | Owner |
+| D-026 | 2026-11-01 | Phase 3 (UX research, information architecture and design system) approved as planned in [`docs/design/phase-3-plan.md`](../design/phase-3-plan.md). Approval covers design work and documents only: no application code, dependencies, deployment or spending. | CONFIRMED | Owner |
+| D-027 | 2026-11-01 | Phase 3 prototypes are static HTML/CSS in `design/prototypes/`, with no build step and no dependencies. | CONFIRMED | Owner |
+| D-028 | 2026-11-01 | Sora and Inter are downloaded from official sources with their SIL OFL license files into `design/fonts/` and self-hosted (confirms R-05). | CONFIRMED | Owner |
+| D-029 | 2026-11-01 | Raster logo derivatives are produced with built-in PowerShell/.NET only. No SVG trace in Phase 3; the vector symbol is left to a professional designer (X-04). | CONFIRMED | Owner |
 
 ---
 
@@ -102,7 +106,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | R-02 | Passkeys (WebAuthn) for admins and moderators in addition to TOTP | S-10 |
 | R-03 | PostgreSQL full-text/trigram search first; no separate search engine until measured need | T-03 |
 | R-04 | Rule-based, explainable compatibility; no percentages, no ML in beta | S-13 |
-| R-05 | Self-hosted, subsetted Sora and Inter fonts (no Google Fonts CDN) | B-05, L-06 |
+| R-05 | ~~Self-hosted, subsetted Sora and Inter fonts (no Google Fonts CDN)~~ Confirmed → D-028 | B-05, L-06 |
 | R-06 | Cookieless or server-side aggregate analytics | L-06 |
 | R-07 | Moderation actions always produce a DSA-style statement of reasons | L-02 |
 | R-08 | Email-bound, single-use, expiring invites | S-08 |
