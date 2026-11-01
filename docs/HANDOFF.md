@@ -1,14 +1,14 @@
 # Session handoff
 
-_Session 9, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
+_Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9.
+3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
-- **Phase 3, step 3.5: refinement of direction C.** Two owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
+- **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
 - **Review entry points:**
   - `pulse/viewer.html`: phone frame, jump to any screen, device sizes, live catalog, catalog failure, "Smanji pokrete", private profile.
   - `pulse/choices.html`: Spirala gallery of eight fictional members, a genre playground, and the current, orbit and calm comparison.
@@ -28,19 +28,28 @@ _Session 9, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
   - D-049: motifs stay alive; the "Smanji pokrete" setting is the WCAG 2.2.2 pause mechanism. This extends the motif placements to the dock field.
   - D-050: the brand name in UI text is set like the wordmark.
   - D-051: 18+ only for the alpha and the beta.
+  - D-052: the Music DNA colours carry meaning. The per-genre colour is `c` in `data.js`. There are no tag lists under Music DNA; a tap shows the genre, and `dna.js` `tip()` handles it.
+  - D-053:
+    - `D.mainGenres` holds the 20 main genres, with a "+ Još žanrova" chip for the rest.
+    - Artist results show the country only, and tiles without a photo show one initial.
+    - The name step asks "Kako se zoveš?", and "Prikaži" has an eye icon.
+    - Profile visibility is one card. The chosen column is `.vis-opt::before`; `::after` makes the whole column clickable.
 - **New open items:**
-  - OQ-23: icon library, decided in 3.6.
+  - OQ-23: icon library. Phosphor is RECOMMENDED; `pulse/picons.js` embeds six icons as path data, with the MIT notice in `ICONS-LICENSE.md`.
   - OQ-24: the owner's music news idea, after the alpha scope.
+  - OQ-25: **password rules**. The owner wants a dedicated step next session. Start from NIST SP 800-63B-4 and Better Auth.
+  - OQ-26: **wordmark accent**, four sketches in `pulse/wordmark.html`; A is RECOMMENDED.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 9/9.
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 10/10.
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
-1. **Fold in the owner's feedback on round 2.** These were rebuilt after "looks bad" feedback, so ask about them first:
-   - the new current
-   - the orbit
-   - the Spirala
-   - the visibility columns
+1. **Start with the owner's agenda.**
+   - **Password rules** (OQ-25, effort High): the owner said "posebno definirati nakon ovog prompta". Build clickable options first, per the decisions-as-choice memory.
+   - **Wordmark accent** (OQ-26): `pulse/wordmark.html`, four options, A RECOMMENDED.
+   - **Reaction set** (OQ-13): explain the options and ask.
+   - Round 3 feedback: the genre colours (D-052), the one-card visibility step, the Phosphor icons.
+   - The owner liked: the Spirala, with genre-matched pulse speed and soft classical colours; the current under the Daily Drop name; the dock orbit; the invite current.
 2. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6:
    - states: empty, loading for answers, network error with kept text, offline, blocked, missing-question day, long text and names
    - 200 % zoom

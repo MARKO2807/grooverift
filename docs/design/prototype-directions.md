@@ -206,12 +206,37 @@ The owner asked for:
 - **Brand name in text** (D-050): the invite, "Kako grooverift radi" and the notification preview.
 - **Genre chips** show their Music DNA colour dot when picked; profile tags show it too.
 
+### Round 3: owner feedback on round 2 (2026-11-02)
+
+The owner said the Spirala and the current were "super", and that the Spirala reads best with many genres.
+
+**Changes:**
+- **Colours with a meaning** (D-052):
+  - rap is blue, jazz green, blues steel blue, techno cyan and classical ivory
+  - similar lightness, so a helix stays calm
+  - strands use the same hue in two lightnesses
+- **No tags under Music DNA.** A tap on a section shows the genre and its artists; screen readers get the list as text.
+- **20 main genres** with a "+ Još žanrova" chip (D-053).
+- **Artists:**
+  - results show the country only
+  - one initial on tiles without a photo
+  - live mode still shows real Commons photos with credit
+- **Profile visibility** is one card; the chosen column lights up from top to bottom and the whole column is a tap target.
+- **Copy and controls:** "Kako se zoveš?", and an eye icon for show password.
+- **How it works:** icons from **Phosphor** (light weight, MIT), embedded as path data in `picons.js` (OQ-23).
+- **Current:** softer glow where the charges collide.
+- **Wordmark:** four sketches with an electric accent in `pulse/wordmark.html` (OQ-26).
+
+**Explained to the owner, no change:**
+- The reaction chips "Isto / Novo mi je / Dobar izbor" are placeholders for OQ-13.
+- What Home and Hub hold (IA HOME-01, HUB-01, D-031).
+
 ### Verification (session 9)
 
-- `node design/prototypes/tools/pulse-smoke.mjs`: **all 9 runs pass**, with no JS exceptions or console errors.
+- `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.
   - The whole flow runs at 360×640 and 320×568, with OS reduced motion, and with the in-app setting.
-  - Also checked: catalog failure, the helix, the Daily Drop heading, and both review pages.
-  - The flow checks that the two visibility steps fit 360×640 and that the filters fit one row. It also checks the 2–10 genre rule, typo search, the orbit, the motion switch and the wordmark in text.
+  - Also checked: catalog failure, the helix, the Daily Drop heading, and the three review pages (viewer, choices, wordmark).
+  - The flow checks that the two visibility steps fit 360×640 and that the filters fit one row. It also checks the 2–10 genre rule, the 20 main genres and the more chip, typo search with country-only results, the eye icon, library icons, no tags under Music DNA, the orbit, the motion switch and the wordmark in text.
 - The original `smoke.mjs` still passes for `directions/` (3/3).
 - Visual checks with headless Chrome at real speed (CDP frames over time) and with `tools/pulse-shots.mjs`.
 - Live catalog checked once from headless Chrome (MusicBrainz, Wikidata SPARQL and the Commons API all allow CORS).

@@ -13,6 +13,7 @@
   'use strict';
   const D = window.GR_DATA;
   const ic = window.GR_ICON;
+  const pic = window.GR_PICON;
   const CUR = window.GR_CURRENT;
   const DNA = window.GR_DNA;
   const CAT = window.GR_CATALOG;
@@ -48,7 +49,7 @@
   const VIS_LABEL = { public: 'Javni', private: 'Privatni' };
   const DNA_LABEL = { all: 'Svi članovi', followers: 'Samo pratitelji', me: 'Samo ja' };
   const READ_LANGS = ['Hrvatski', 'English', 'Deutsch', 'Italiano', 'Slovenščina'];
-  const OFF_ARTISTS = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta.replace(' · ', ', '), g: a.g }));
+  const OFF_ARTISTS = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta, g: a.g }));
   const fx = name => OFF_ARTISTS.find(a => a.name === name);
 
   const cloneAnswer = a => ({ ...a, reacts: { ...a.reacts }, refs: [...a.refs], myReacts: [] });
@@ -135,22 +136,27 @@
     if (g < D.genreMin) return `${gs}${as}. Još ${D.genreMin - g} za početak.`;
     return `${gs}${as}.`;
   }
-  const genreLine = () => st.genres.length ? `<p class="dna-genres">${st.genres.map(esc).join(', ')}</p>` : '';
+  /* No visible tag list under Music DNA (owner, session 9). Screen readers get the list; sighted members tap the helix. */
+  const dnaText = () => st.genres.length ? `<p class="sr-only">Žanrovi: ${st.genres.map(esc).join(', ')}.${st.artists.length ? ` Izvođači: ${st.artists.map(a => esc(a.name)).join(', ')}.` : ''}</p>` : '';
   function genreChip(name) {
     const on = st.genres.includes(name);
     const full = !on && st.genres.length >= D.genreMax;
     return `<button type="button" class="chip chip-genre" data-a="genre" data-g="${esc(name)}" data-k="g-${esc(name)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''} style="--dot:${DNA.colorOf(name)}"><span class="gdot" aria-hidden="true"></span>${esc(name)}</button>`;
   }
+  /* Main 20 genres (D-053), then any picked genre from search, then the "+ Još žanrova" chip. */
+  function genreChips() {
+    const extra = st.genres.filter(g => !D.mainGenres.includes(g));
+    return D.mainGenres.concat(extra).map(genreChip).join('')
+      + (st.moreOpen ? '' : `<button type="button" class="chip chip-more" data-a="more-genres" data-k="more-genres">${ic('plus', 'sm')}Još žanrova</button>`);
+  }
   function moreGenres() {
+    if (!st.moreOpen) return '';
     const q = CAT.fold(st.genreQ.trim());
-    const main = new Set(D.genres.map(g => g.n));
-    const extra = st.genres.filter(g => !main.has(g));
-    const hits = D.moreGenres.map(x => x[0]).filter(n => !extra.includes(n) && (!q || CAT.fold(n).includes(q))).slice(0, q ? 12 : 10);
-    return `${extra.length ? `<div class="chips">${extra.map(genreChip).join('')}</div>` : ''}
-      ${st.moreOpen ? `<div class="more-genres"><label class="label-sm" for="f-genre">Traži žanr</label>
+    const pool = D.genres.map(g => g.n).filter(n => !D.mainGenres.includes(n)).concat(D.moreGenres.map(x => x[0]));
+    const hits = pool.filter(n => !st.genres.includes(n) && (!q || CAT.fold(n).includes(q))).slice(0, q ? 12 : 10);
+    return `<div class="more-genres"><label class="label-sm" for="f-genre">Traži žanr</label>
         <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-genre" data-k="f-genre" type="search" autocomplete="off" value="${esc(st.genreQ)}"></div>
-        <div class="chips" id="genre-results">${hits.length ? hits.map(genreChip).join('') : '<p class="hint">Nema tog žanra na popisu. U aplikaciji bi ga mogao predložiti.</p>'}</div></div>`
-        : `<button type="button" class="link more-link" data-a="more-genres" data-k="more-genres">Još žanrova</button>`}`;
+        <div class="chips" id="genre-results">${hits.length ? hits.map(genreChip).join('') : '<p class="hint">Nema tog žanra na popisu. U aplikaciji bi ga mogao predložiti.</p>'}</div></div>`;
   }
   function artistTile(a, cls) {
     if (a.img) return `<span class="art${cls ? ' ' + cls : ''}"><img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
@@ -387,11 +393,11 @@
     const yes = `${ic('check', 'sm v-ic')}Da`, no = `${ic('x', 'sm v-ic')}Ne`;
     const rows = [
       ['Profil i Music DNA', 'Svi članovi', 'Samo pratitelji'],
-      ['Povijest Daily Drop odgovora', 'Svi članovi', 'Samo pratitelji'],
+      ['Povijest odgovora', 'Svi članovi', 'Samo pratitelji'],
       ['Odgovori i komentari', 'Svi članovi', 'Svi članovi'],
       ['Popis pratitelja', 'Samo pratitelji', 'Samo pratitelji'],
       ['Otkrivanje i kompatibilnost', yes, no],
-      ['Neprijavljeni posjetitelji', 'Ime, avatar i bio', 'Ništa']
+      ['Neprijavljeni', 'Ime, avatar, bio', 'Ništa']
     ];
     const err = st.err.vis;
     return `<h1>Tko vidi tvoj profil?</h1>
@@ -399,9 +405,9 @@
       <div class="vis">
         <fieldset class="vis-opts"${err ? ' aria-describedby="err-vis"' : ''}>
           <legend class="sr-only">Vidljivost profila</legend>
-          ${[['public', 'globe', 'Javno'], ['private', 'lock', 'Privatno']].map(([v, i, t]) => `<label class="vis-opt">
+          ${[['public', 'globe', 'Javno', 'pub'], ['private', 'lock', 'Privatno', 'priv']].map(([v, i, t, c]) => `<label class="vis-opt vis-opt-${c}">
             <input type="radio" name="vis" value="${v}" data-k="vis-${v}" aria-describedby="vis-sum-${v}"${st.vis === v ? ' checked' : ''}>
-            <span class="vis-badge" aria-hidden="true">${ic(i, 'vis-ic')}</span><span class="vis-t">${t}</span><span class="choice-mark" aria-hidden="true">${ic('check')}</span></label>`).join('')}
+            <span class="vis-badge" aria-hidden="true">${ic(i, 'vis-ic')}</span><span class="vis-name"><span class="vis-t">${t}</span><span class="vis-mark" aria-hidden="true">${ic('check')}</span></span></label>`).join('')}
         </fieldset>
         <table class="vis-table">
           <caption class="sr-only">Što vide drugi, usporedba</caption>
@@ -428,15 +434,15 @@
           <p>U 01:00 po našem vremenu stiže jedno pitanje o glazbi, isto za sve. Odgovori ili samo čitaj, stara pitanja ostaju otvorena.</p>
         </li>
         <li class="how-card" style="--d:1">
-          <div class="how-vis how-vis-poll" aria-hidden="true"><i style="--v:.82"></i><i style="--v:.55"></i><i style="--v:.3"></i></div>
+          <div class="how-vis" aria-hidden="true">${pic('chart-bar-horizontal', 'how-ic')}</div>
           <div><h2 class="how-t" lang="en">Weekly Poll</h2><p>Jednom tjedno anketa za cijelu zajednicu. Rezultate vidiš kad glasaš.</p></div>
         </li>
         <li class="how-card" style="--d:2">
-          <div class="how-vis how-vis-fact" aria-hidden="true"><span>?</span></div>
+          <div class="how-vis" aria-hidden="true">${pic('lightbulb-filament', 'how-ic')}</div>
           <div><h2 class="how-t" lang="en">Did You Know?</h2><p>Dvaput tjedno provjerena glazbena priča, uz izvore.</p></div>
         </li>
         <li class="how-card" style="--d:3">
-          <div class="how-vis how-vis-dna" aria-hidden="true"><span class="hv-a" style="--ring:${DNA.ring(['Jazz', 'Soul', 'Folk'])}"></span><span class="hv-b" style="--ring:${DNA.ring(st.genres.length ? st.genres : ['Rock', 'Techno'])}"></span></div>
+          <div class="how-vis" aria-hidden="true">${pic('users-three', 'how-ic')}</div>
           <div><h2 class="how-t">Ljudi po ukusu</h2><p>Music DNA pokazuje s kim dijeliš ukus i s kim možeš otkriti nešto novo. Uvijek riječima, bez postotaka.</p></div>
         </li>
       </ol>`;
@@ -479,7 +485,7 @@
         ${field({ id: 'email', label: 'E-pošta', help: 'Pozivnica je vezana uz ovu adresu.', type: 'email', value: D.email, attrs: 'readonly autocomplete="email"' })}
         ${field({ id: 'pw', label: 'Lozinka', help: 'Najmanje 15 znakova. Najlakše je nekoliko riječi zaredom.', type: st.showPw ? 'text' : 'password', value: st.pw,
           attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"',
-          after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${st.showPw ? 'Sakrij' : 'Prikaži'}</button>` })}
+          after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
         <p class="or"><span>ili</span></p>
         <button class="btn btn-secondary btn-block" data-a="google" data-k="google">Nastavi s Google računom</button>
         <p class="fine">Nastavkom prihvaćaš <button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="terms">Uvjete korištenja</button>. Kako koristimo podatke piše u <button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="privacy">Pravilima privatnosti</button>.</p>`,
@@ -487,7 +493,7 @@
     }),
     username: () => ({
       kind: 'onb',
-      body: `<h1>Kako da te zovemo?</h1>
+      body: `<h1>Kako se zoveš?</h1>
         ${field({ id: 'dname', label: 'Ime za prikaz', help: 'Tako te drugi vide. Pravo ime ili nadimak, kako ti odgovara.', value: st.displayName, attrs: 'autocomplete="nickname" maxlength="40"' })}
         ${field({ id: 'uname', label: 'Korisničko ime', help: '3 do 20 znakova: mala slova, brojke, točka i donja crta.', value: st.username, prefix: '@', attrs: 'autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"' })}
         <div id="uname-status" class="status" aria-live="polite">${userStatusHtml()}</div>`,
@@ -516,7 +522,7 @@
         <div class="group" role="group" aria-labelledby="g-label"${st.err.genres ? ' aria-describedby="err-genres"' : ''}>
           <h2 class="group-title" id="g-label">Žanrovi <span class="opt">2 do 10</span></h2>
           ${st.err.genres ? fieldErr('genres', st.err.genres) : ''}
-          <div class="chips chips-genres">${D.genres.map(g => genreChip(g.n)).join('')}</div>
+          <div class="chips chips-genres" id="genre-chips">${genreChips()}</div>
           <div id="more-genres">${moreGenres()}</div>
           <p class="sr-only" id="genre-max" aria-live="polite"></p>
         </div>
@@ -570,7 +576,7 @@
         <h1 class="h-hero">Spremno.</h1>
         <p class="lead">Današnje pitanje te čeka.</p>
         <figure class="dna-card">${dnaCanvas('done', 200)}
-          <figcaption><span class="dna-cap">Tvoj Music DNA</span>${genreLine()}</figcaption></figure>
+          <figcaption><span class="dna-cap">Tvoj Music DNA</span><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>
         <dl class="facts-grid">
           <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni'}</dd></div>
           <div>${ic('pulse', 'ft-ic')}<dt>Music DNA</dt><dd>${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}${st.artists.length ? `, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}` : ''}</dd></div>
@@ -649,8 +655,8 @@
       body: `<div class="prof-head">${avatar(st.username, st.displayName || 'T', 'lg')}
           <div><h1 class="prof-name">${esc(st.displayName || 'Ti')}</h1><p class="meta">@${esc(st.username || 'ti')}</p></div></div>
         <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>
-          ${st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', 184)}</figure>
-            <ul class="tags">${st.genres.map(g => `<li style="--dot:${DNA.colorOf(g)}"><span class="gdot" aria-hidden="true"></span>${esc(g)}</li>`).join('')}${st.artists.map(a => `<li class="tag-artist">${artistTile(a, 'xs')}${esc(a.name)}</li>`).join('')}</ul>` : '<p class="empty">Još nema odabira.</p>'}
+          ${st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', 184)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>
+            ${st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : ''}` : '<p class="empty">Još nema odabira.</p>'}
         </section>
         <dl class="facts-grid">
           <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni (nije odabrano)'}</dd></div>
@@ -883,8 +889,12 @@
     else st.genres.push(g);
     if (msg) msg.textContent = '';
     if (st.err.genres && st.genres.length >= D.genreMin) { delete st.err.genres; const e = root.querySelector('#err-genres'); if (e) e.remove(); const gr = root.querySelector('[aria-describedby="err-genres"]'); if (gr) gr.removeAttribute('aria-describedby'); }
-    const extra = !D.genres.some(x => x.n === g);
-    if (extra) { const m = root.querySelector('#more-genres'); if (m) { m.innerHTML = moreGenres(); } focusSel(i >= 0 ? '#f-genre' : `[data-k="g-${CSS.escape(g)}"]`); }
+    const fromSearch = !!b.closest('#genre-results');
+    if (!D.mainGenres.includes(g)) {
+      const c = root.querySelector('#genre-chips'); if (c) c.innerHTML = genreChips();
+      const m = root.querySelector('#more-genres'); if (m) m.innerHTML = moreGenres();
+      focusSel(fromSearch ? '#f-genre' : (i >= 0 ? '#f-genre, [data-k="more-genres"]' : `[data-k="g-${CSS.escape(g)}"]`));
+    }
     updateDnaStep();
   }
 
@@ -903,7 +913,7 @@
       case 'pickuser': st.username = b.dataset.u; st.userState = 'ok'; delete st.err.uname; render(); return focusSel('#f-uname');
       case 'readlang': { const l = b.dataset.l; st.readLangs.has(l) ? st.readLangs.delete(l) : st.readLangs.add(l); return b.setAttribute('aria-pressed', st.readLangs.has(l)); }
       case 'genre': return toggleGenre(b);
-      case 'more-genres': { st.moreOpen = true; const m = root.querySelector('#more-genres'); if (m) m.innerHTML = moreGenres(); return focusSel('#f-genre'); }
+      case 'more-genres': { st.moreOpen = true; const c = root.querySelector('#genre-chips'); if (c) c.innerHTML = genreChips(); const m = root.querySelector('#more-genres'); if (m) m.innerHTML = moreGenres(); return focusSel('#f-genre'); }
       case 'artist-add': {
         const item = st.artistRes.items.find(x => x.id === b.dataset.id);
         if (!item || st.artists.some(x => x.id === item.id)) return;

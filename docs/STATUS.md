@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-01 (session 9)_
+_Last updated: 2026-11-02 (session 9)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -12,7 +12,7 @@ _Last updated: 2026-11-01 (session 9)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: two owner review rounds done in session 9 (D-046 to D-051), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds done in session 9 (D-046 to D-053), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-01 (session 9)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-051. Key ones:
+- Decisions D-001 to D-053. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -40,6 +40,8 @@ _Last updated: 2026-11-01 (session 9)_
     - motifs stay alive, with a **"Smanji pokrete"** setting (D-049)
     - the brand name in text is set like the wordmark (D-050)
     - **18+ only** (D-051)
+    - Music DNA colours carry meaning (rap blue, jazz green and so on), and there are no tag lists under it (D-052)
+    - 20 main genres plus a "+ Još žanrova" chip; artists show the country only; "Kako se zoveš?"; profile visibility is one card (D-053)
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -50,7 +52,11 @@ _Last updated: 2026-11-01 (session 9)_
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Owner review of round 2** in `design/prototypes/pulse/viewer.html` and `choices.html`: the new current, the dock orbit, the Spirala and the visibility step. Fold in any feedback first.
+1. **Next session starts with:**
+   - **password rules** (OQ-25, the owner asked for a dedicated step; effort: High)
+   - the **wordmark accent** choice (OQ-26, `pulse/wordmark.html`)
+   - the **reaction set** (OQ-13; "Isto / Novo mi je / Dobar izbor" are placeholders)
+   - the owner's review of round 3: colours, one-card visibility, icons
 2. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text.
    - 200 % zoom and the desktop adaptation.
@@ -58,7 +64,7 @@ _Last updated: 2026-11-01 (session 9)_
 3. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first, then the owner decides.
 4. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
-   - OQ-23: icon library, chosen in 3.6.
+   - OQ-23: icon library, chosen in 3.6 (Phosphor RECOMMENDED; six icons already in the prototype).
    - OQ-24: music news idea, after the alpha scope.
 
 ## Owner actions outside Claude
@@ -82,10 +88,10 @@ _Last updated: 2026-11-01 (session 9)_
 No application code. No dependencies installed.
 - `design/prototypes/ia/`, `journeys/` and `tokens/` hold static decision sketches (HTML/CSS/vanilla JS, fictional data).
 - `design/prototypes/directions/` holds the step 3.5 round-1 prototypes: three directions on a shared engine, plus a comparison page (unchanged record).
-- `design/prototypes/pulse/` holds the refined direction C. It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
+- `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (OQ-26 sketches) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 9/9.
+  - `pulse-smoke.mjs` checks `pulse/` and passes 10/10.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
 - `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css`, and `contrast-check.mjs` checks 87 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.

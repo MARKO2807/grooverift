@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · wordmark s munjicom: prijedlozi</title>
+<!-- Owner decision sketch (session 9): an electric accent under the interim wordmark (D-011).
+     Text approximation in Sora; the final vector wordmark comes from a designer before launch (X-04).
+     The symbol itself is not touched. Static apart from option D, which reuses current.js. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 80rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  p { color: var(--gr-color-text-secondary); margin: 0 0 12px; max-width: 72ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 24px; }
+  .card { border-radius: 20px; border: 1px solid var(--gr-color-border-subtle); background: var(--gr-color-bg-surface); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .card h2 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .card p { font: var(--gr-type-body-sm); margin: 0; }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px; border-radius: 12px; background: var(--gr-color-bg-canvas); border: 1px solid var(--gr-color-border-subtle); }
+  .bar .tag { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 6px; padding: 0 8px; }
+  .hero { display: grid; place-items: center; height: 150px; border-radius: 12px; background: var(--gr-color-bg-canvas); border: 1px solid var(--gr-color-border-subtle); }
+  .wm { font-family: var(--gr-font-family-heading); font-weight: 700; letter-spacing: -0.02em; position: relative; display: inline-block; line-height: 1; white-space: nowrap; }
+  .wm .r { color: var(--gr-color-text-accent); position: relative; display: inline-block; }
+  .s { font-size: 1.25rem; } .l { font-size: 3.25rem; }
+  .under { position: absolute; left: 0; width: 100%; overflow: visible; }
+  .s .under { bottom: -6px; height: 6px; } .l .under { bottom: -15px; height: 15px; }
+  .glyph { display: inline-block; vertical-align: top; overflow: visible; }
+  .s .glyph { width: 9px; height: 14px; margin-left: 2px; } .l .glyph { width: 22px; height: 36px; margin-left: 4px; }
+  canvas.current { display: block; }
+  .s canvas.current { width: 104px; margin: 2px auto 0; } .l canvas.current { width: 280px; margin: 6px auto 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Wordmark s munjicom: četiri prijedloga</h1>
+  <p>Svaki je prikazan u gornjoj traci (stvarna veličina u aplikaciji) i veliko. Ovo je privremeni wordmark u fontu Sora (D-011). Konačni vektorski logo radi dizajner prije lansiranja, a sam simbol se ne dira. Odabrani prijedlog postaje upute za dizajnera.</p>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient>
+    <linearGradient id="gv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFCB69"/><stop offset="1" stop-color="#FF586B"/></linearGradient>
+  </defs></svg>
+  <div class="grid" id="grid"></div>
+</div>
+<script src="data.js"></script>
+<script src="current.js"></script>
+<script>
+(function () {
+  const bolt = '<svg class="under" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,6 34,6 42,1 50,9 58,2 66,8 72,5 100,5" fill="none" stroke="url(#g)" stroke-width="2" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>';
+  const pulse = '<svg class="under" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,7 200,7 214,2 224,12 234,1 244,11 254,7 320,7" fill="none" stroke="url(#g)" stroke-width="2" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>';
+  const glyph = '<svg class="glyph" viewBox="0 0 14 22" aria-hidden="true"><polygon points="9,0 1,12 6.5,12 4,22 13,8 7.5,8 10.5,0" fill="url(#gv)"/></svg>';
+  const V = [
+    ['A', 'Munja ispod „rift”', 'Kratka nazubljena munja samo ispod „rift”. Naglašava rift i ne opterećuje traku.', true,
+      s => `<span class="wm ${s}">groove<span class="r">rift${bolt}</span></span>`],
+    ['B', 'Puls ispod cijele riječi', 'Mirna linija ispod cijele riječi i odobreni rift-puls ispod „rift”. Najbliže motivu iz aplikacije.', false,
+      s => `<span class="wm ${s}">groove<span class="r">rift</span>${pulse}</span>`],
+    ['C', 'Munjica kao znak', 'Mala oštra munja odmah iza riječi, u Coral→Amber prijelazu. Najprepoznatljivije u malom, ali je najbliže klišeju.', false,
+      s => `<span class="wm ${s}">groove<span class="r">rift</span>${glyph}</span>`],
+    ['D', 'Živa struja ispod', 'Ista živa struja kao u aplikaciji, ispod wordmarka. Samo za velike trenutke (pozivnica, početni ekran), nikad u traci koja je stalno vidljiva.', false,
+      (s, k) => `<span class="${s}" style="display:inline-flex;flex-direction:column;align-items:center"><span class="wm ${s}">groove<span class="r">rift</span></span><canvas class="current" data-cur="wm-${k}-${s}" data-size="sm" aria-hidden="true"></canvas></span>`]
+  ];
+  document.getElementById('grid').innerHTML = V.map(([k, t, d, rec, html]) => `<section class="card" aria-labelledby="h${k}">
+    <h2 id="h${k}">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
+    <div class="bar">${html('s', k)}<span class="tag">Alfa</span></div>
+    <div class="hero">${html('l', k)}</div>
+    <p>${d}</p></section>`).join('');
+  window.GR_CURRENT.scan(document);
+})();
+</script>
+</body>
+</html>

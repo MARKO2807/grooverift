@@ -2,7 +2,8 @@
    A living double helix of two strands, Coral-leaning and Amber-leaning: two musical worlds wound together.
    How the picks shape it (all deterministic, seeded by the member's genres and artists):
    - Each genre is one section of the helix, joined to the next by a glowing knot, so the genres read
-     as a connected chain. Sections are coloured by genre family (warm colours derived from Ember).
+     as a connected chain. Each genre has a colour with a meaning (data.js, D-052), so colour, speed and
+     size all come from the music. Tapping a section shows the genre's name for a moment.
    - Section length is the genre's weight: earlier picks weigh more, and every chosen artist adds weight
      to their genre. An artist is a bright bead riding the strand inside their genre's section.
    - Traits (data.js) set each section's height (energy), twist and spin speed (tempo), electric edge
@@ -18,8 +19,7 @@
   'use strict';
   const C = window.GR_CURRENT, D = window.GR_DATA, M = window.GR_MOTION;
   const { bolt, rng, hash, mix, rgba, noise, CORAL, AMBER, HOT } = C;
-  /* Family colours, Ember-derived and warm only: heavy, rock, pop, urban, electronic, groove, roots/classical. */
-  const FAMILY = [[232, 51, 90], [255, 88, 107], [255, 112, 150], [255, 133, 77], [255, 172, 70], [255, 203, 105], [255, 228, 160]];
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const BY = Object.fromEntries(D.genres.map(g => [g.n, g]));
   const MORE = Object.fromEntries(D.moreGenres.map(([n, p]) => [n, p]));
   const ARTIST_G = {}; D.artists.forEach(a => { if (!ARTIST_G[a.name]) ARTIST_G[a.name] = a.g; });
@@ -29,15 +29,15 @@
     const p = MORE[name];
     return p && BY[p] ? Object.assign({}, BY[p], { n: name, parent: p }) : null;
   }
-  function colorOf(name) { const g = traits(name); return g ? FAMILY[g.f] : AMBER; }
+  function colorOf(name) { const g = traits(name); return g && g.c ? hex(g.c) : AMBER; }
   const css = c => `rgb(${c[0]},${c[1]},${c[2]})`;
 
-  /* Avatar ring: one arc per genre in its family colour, with small gaps. */
+  /* Avatar ring: one arc per genre in its colour, with small gaps. */
   function ring(genres) {
     const gs = (genres || []).map(traits).filter(Boolean);
     if (!gs.length) return 'var(--gr-color-border-strong)';
     const seg = 360 / gs.length, gap = gs.length > 1 ? 7 : 0;
-    return `conic-gradient(from -90deg, ${gs.map((g, i) => { const a = i * seg; return `${css(FAMILY[g.f])} ${a}deg ${a + seg - gap}deg, transparent ${a + seg - gap}deg ${a + seg}deg`; }).join(', ')})`;
+    return `conic-gradient(from -90deg, ${gs.map((g, i) => { const a = i * seg; return `${css(colorOf(g.n))} ${a}deg ${a + seg - gap}deg, transparent ${a + seg - gap}deg ${a + seg}deg`; }).join(', ')})`;
   }
 
   function model(genres, artists) {
@@ -50,7 +50,7 @@
     const tot = wts.reduce((s, x) => s + x, 0) || 1;
     let acc = 0;
     const segs = gs.map((g, i) => {
-      const s = { g, u0: acc / tot, u1: (acc + wts[i]) / tot, col: FAMILY[g.f], amp: 0.9 + R() * 0.2, ph: R() * Math.PI * 2,
+      const s = { g, u0: acc / tot, u1: (acc + wts[i]) / tot, col: colorOf(g.n), amp: 0.9 + R() * 0.2, ph: R() * Math.PI * 2,
         lambda: 64 - 36 * g.t + (R() * 8 - 4), spin: (0.5 + 1.7 * g.t) * (R() < 0.5 ? 1 : -1) * (0.85 + R() * 0.3), bpm: 84 + 70 * g.t };
       acc += wts[i]; return s;
     });
@@ -60,7 +60,7 @@
       const s = segs[si];
       return s ? { si, u: s.u0 + (0.22 + R() * 0.56) * (s.u1 - s.u0), strand: R() < 0.5 ? 0 : 1, col: s.col } : null;
     }).filter(Boolean);
-    return { gs, segs, beads, seed, n1: noise(seed), n2: noise(seed ^ 0x2f) };
+    return { gs, segs, beads, arts, seed, n1: noise(seed), n2: noise(seed ^ 0x2f) };
   }
 
   function segAt(m, u, hint) {
@@ -125,7 +125,7 @@
           const z = k === 0 ? q.z : -q.z;
           if ((z > 0) !== front) continue;
           const d = (z + 1) / 2, s = q.s;
-          const col = k === 0 ? mix(s.col, CORAL, 0.2) : mix(s.col, AMBER, 0.35);
+          const col = k === 0 ? s.col : mix(s.col, HOT, 0.42);
           ctx.beginPath(); ctx.moveTo(p.x, k === 0 ? p.y1 : p.y2); ctx.lineTo(q.x, k === 0 ? q.y1 : q.y2);
           ctx.strokeStyle = rgba(col, (0.28 + 0.72 * d) * (0.35 + 0.65 * q.env)); ctx.lineWidth = 0.9 + 2 * d; ctx.stroke();
           if (front && d > 0.5) { ctx.strokeStyle = rgba(col, (0.1 + 0.16 * I) * q.env); ctx.lineWidth = 6 + 4 * I; ctx.stroke(); }
@@ -206,11 +206,31 @@
     if (!played.has(key) && src.genres.length) { played.add(key); st.charge = performance.now(); }
     paint(st, performance.now());
     if (window.ResizeObserver) { st.ro = new ResizeObserver(() => { if (setup(st)) paint(st, performance.now()); }); st.ro.observe(c); }
-    c.addEventListener('pointerdown', () => { st.charge = performance.now(); kick(); });
+    c.addEventListener('pointerdown', e => { st.charge = performance.now(); kick(); tip(st, e); });
     if (window.IntersectionObserver) {
       st.io = new IntersectionObserver(es => { st.visible = es.some(e => e.isIntersecting); if (st.visible) kick(); }, { threshold: 0.05 });
       st.io.observe(c);
     } else { st.visible = true; kick(); }
+  }
+
+  /* A short label with the genre (and its artists) of the tapped section; decorative, the text list is in app.js. */
+  function tip(st, e) {
+    const m = st.model; if (!m.segs.length) return;
+    const r = st.c.getBoundingClientRect(), x = e.clientX - r.left, pad = 14;
+    const u = Math.max(0, Math.min(1, (x - pad) / Math.max(1, r.width - pad * 2)));
+    const s = m.segs[segAt(m, u, 0)];
+    const arts = m.arts.filter(a => a.g.includes(s.g.n) || (s.g.parent && a.g.includes(s.g.parent))).map(a => a.name);
+    const host = st.c.parentElement; if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    let el = host.querySelector(':scope > .dna-tip');
+    if (!el) { el = document.createElement('span'); el.className = 'dna-tip'; el.setAttribute('aria-hidden', 'true'); host.appendChild(el); }
+    el.innerHTML = '';
+    const dot = document.createElement('i'); dot.style.background = css(s.col); el.appendChild(dot);
+    const b = document.createElement('b'); b.textContent = s.g.n; el.appendChild(b);
+    if (arts.length) { const sm = document.createElement('small'); sm.textContent = arts.join(', '); el.appendChild(sm); }
+    const cx = st.c.offsetLeft + pad + ((s.u0 + s.u1) / 2) * (r.width - pad * 2);
+    el.style.left = Math.max(70, Math.min(host.clientWidth - 70, cx)) + 'px';
+    el.style.top = (st.c.offsetTop + 4) + 'px';
+    el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 1800);
   }
 
   /* Call after the picks change: pictures that follow the app's picks crossfade into the new helix. */

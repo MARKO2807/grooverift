@@ -111,15 +111,15 @@
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.globalCompositeOperation = 'lighter';
     // centre glow where the two sides meet
-    { const r = h * 0.48, sx = 1.6 + 1.2 * Math.min(1, st.surge);
+    { const r = h * 0.42, sx = 1.3 + 0.5 * Math.min(1, st.surge);
       ctx.save(); ctx.translate(w / 2, cy); ctx.scale(sx, 1);
       const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-      g.addColorStop(0, rgba(mix(CORAL, AMBER, 0.5), 0.14 + 0.38 * Math.min(1.2, st.surge))); g.addColorStop(1, rgba(AMBER, 0));
+      g.addColorStop(0, rgba(mix(CORAL, AMBER, 0.5), 0.07 + 0.15 * Math.min(1.2, st.surge))); g.addColorStop(1, rgba(AMBER, 0));
       ctx.fillStyle = g; ctx.fillRect(-r, -r, 2 * r, 2 * r); ctx.restore(); }
     // bloom, body and white-hot centre
     path(); ctx.strokeStyle = grad;
-    ctx.globalAlpha = 0.05 + 0.05 * I; ctx.lineWidth = 13; ctx.stroke();
-    ctx.globalAlpha = 0.1 + 0.12 * I; ctx.lineWidth = 6; ctx.stroke();
+    ctx.globalAlpha = 0.035 + 0.03 * I; ctx.lineWidth = 11; ctx.stroke();
+    ctx.globalAlpha = 0.09 + 0.08 * I; ctx.lineWidth = 5; ctx.stroke();
     ctx.globalAlpha = 0.35; ctx.lineWidth = 2.8; ctx.stroke();
     ctx.globalAlpha = 1; ctx.lineWidth = st.size === 'sm' ? 1.3 : 1.5; ctx.stroke();
     ctx.strokeStyle = hot; ctx.lineWidth = 0.8; ctx.stroke();
@@ -135,8 +135,8 @@
         ctx.beginPath(); ctx.moveTo(xs[a], ys[a]); for (let i = a + 1; i <= b; i++) ctx.lineTo(xs[i], ys[i]);
         ctx.strokeStyle = g; ctx.lineWidth = 2.2; ctx.stroke();
       }
-      const r = h * 0.2, rg = ctx.createRadialGradient(xs[ih], ys[ih], 0, xs[ih], ys[ih], r);
-      rg.addColorStop(0, rgba(HOT, 0.9)); rg.addColorStop(0.35, rgba(col, 0.45)); rg.addColorStop(1, rgba(col, 0));
+      const r = h * 0.15, rg = ctx.createRadialGradient(xs[ih], ys[ih], 0, xs[ih], ys[ih], r);
+      rg.addColorStop(0, rgba(HOT, 0.85)); rg.addColorStop(0.35, rgba(col, 0.3)); rg.addColorStop(1, rgba(col, 0));
       ctx.fillStyle = rg; ctx.fillRect(xs[ih] - r, ys[ih] - r, 2 * r, 2 * r);
     }
     // the two halves running in on arrival
@@ -151,7 +151,7 @@
       const life = 1 - (now - a.born) / 200, R = rng(a.seed ^ Math.floor(now / 40));
       const x0 = w / 2, y0 = ys[Math.round((n - 1) / 2)];
       ctx.beginPath(); bolt(ctx, x0, y0, x0 + a.dx * w, y0 + a.dy * h, h * 0.06, R, 4);
-      ctx.strokeStyle = rgba(mix(CORAL, AMBER, 0.5 + a.dx * 3), 0.85 * life); ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = rgba(mix(CORAL, AMBER, 0.5 + a.dx * 3), 0.7 * life); ctx.lineWidth = 0.9; ctx.stroke();
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }

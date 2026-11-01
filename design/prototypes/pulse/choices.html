@@ -39,6 +39,12 @@
   .opt { display: flex; flex-direction: column; gap: 8px; }
   .opt iframe { border: 0; border-radius: 20px; background: #0B0D12; box-shadow: 0 0 0 1px #2A2F3B; }
   .opt small { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); max-width: 360px; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px 20px; max-width: 70rem; }
+  .lg { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; }
+  .lg .sw { grid-row: span 2; display: flex; gap: 3px; }
+  .lg .sw i { width: 14px; height: 28px; border-radius: 4px; }
+  .lg b { font: var(--gr-type-label); }
+  .lg small { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
   ul.plain { color: var(--gr-color-text-secondary); max-width: 72ch; padding-left: 1.2em; }
   ul.plain li { margin: 4px 0; }
 </style>
@@ -48,17 +54,21 @@
   <h1>Music DNA (Spirala) i struja</h1>
   <p>Drugi krug dorade, sesija 9. Sve je uživo. Cijeli prototip je u <a href="viewer.html">pregledniku</a>.</p>
 
-  <h2>1. Spirala za različite ukuse</h2>
-  <p>Izmišljeni članovi. Svaki žanr je jedan dio spirale u boji svoje obitelji, a dijelove spajaju svjetleći čvorovi. Izvođači su svijetle točke koje putuju po nitima. Žanr dobiva više mjesta ako je odabran prvi ili ako mu pripadaju odabrani izvođači. Brzina, uvijanje i ponašanje dolaze iz žanra: metal pucketa, techno pulsira u ritmu, rap bljeska u staccatu, jazz se njiše, a kantautorska glazba diše. Zadnja dva člana imaju iste žanrove, ali druge izvođače, pa dobiju drukčiju spiralu. Klik na spiralu je nabije.</p>
+  <h2>1. Boje i njihovo značenje</h2>
+  <p>Svaki žanr ima boju sa smislom, slične svjetline i umjerene zasićenosti, pa spirala nikad ne bude prešarena. Član koji voli jedan svijet ostaje u svojim bojama, a širok ukus dobije više boja.</p>
+  <div class="legend" id="legend"></div>
+
+  <h2>2. Spirala za različite ukuse</h2>
+  <p>Izmišljeni članovi. Svaki žanr je jedan dio spirale u boji svoje obitelji, a dijelove spajaju svjetleći čvorovi. Izvođači su svijetle točke koje putuju po nitima. Žanr dobiva više mjesta ako je odabran prvi ili ako mu pripadaju odabrani izvođači. Brzina, uvijanje i ponašanje dolaze iz žanra: metal pucketa, techno pulsira u ritmu, rap bljeska u staccatu, jazz se njiše, a kantautorska glazba diše. Zadnja dva člana imaju iste žanrove, ali druge izvođače, pa dobiju drukčiju spiralu. Dodir na dio spirale pokaže ime žanra; ispod slike u aplikaciji više nema oznaka.</p>
   <div class="gallery" id="gallery"></div>
 
-  <h2>2. Probaj sam</h2>
+  <h2>3. Probaj sam</h2>
   <p>Klikni 2 do 10 žanrova ili gotov primjer. Spirala se prelije u novi oblik.</p>
   <div class="chips" id="presets"></div>
   <div class="chips" id="genres"></div>
-  <section class="panel big" aria-label="Tvoja spirala"><div id="mine"></div><ul class="gs" id="mine-gs"></ul></section>
+  <section class="panel big" aria-label="Tvoja spirala"><div id="mine" style="position:relative"></div></section>
 
-  <h2>3. Struja i iskra</h2>
+  <h2>4. Struja i iskra</h2>
   <p>Struja ostaje živa i nakon dolaska: naboji teku s oba kraja, sudare se u sredini i ona tad zapulsira. Iskra polako kruži oko polja „Napiši svoj odgovor…”. Postavka „Smanji pokrete” (ekran Profil) i postavka uređaja sve to zaustavljaju. To je ujedno način pauziranja koji traži WCAG 2.2.2.</p>
   <div class="row">
     <div class="opt"><iframe title="Pozivnica sa strujom" src="index.html" width="360" height="330"></iframe><small>Pozivnica: dolazak pa trajno živo</small></div>
@@ -68,7 +78,8 @@
 
   <h2>Napomene</h2>
   <ul class="plain">
-    <li>Boje spirale su tople nijanse izvedene iz Ember palete (od tamnije crvene do blijedo zlatne), samo za Music DNA. Primarne boje brenda se ne mijenjaju.</li>
+    <li>Boje žanrova koriste se samo za Music DNA i prstenove oko avatara (D-052). Boje brenda i sučelja ostaju Ember.</li>
+    <li><a href="wordmark.html">Wordmark s munjicom: četiri prijedloga →</a></li>
     <li>Animacija se crta samo dok je na ekranu i dok je kartica otvorena, pa baterija na mobitelu ne trpi.</li>
     <li>Sve je pisano ručno, bez vanjske biblioteke (D-027).</li>
   </ul>
@@ -76,6 +87,7 @@
 
 <script src="data.js"></script>
 <script src="icons.js"></script>
+<script src="picons.js"></script>
 <script src="current.js"></script>
 <script src="dna.js"></script>
 <script>
@@ -93,11 +105,21 @@
     ['Ana', 'svega pomalo', ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk'], ['Metallica', 'Nina Simone', 'Arsen Dedić']],
     ['Filip', 'isti žanrovi kao Ana, drugi izvođači', ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk'], ['Iron Maiden', 'John Coltrane', 'Amelie Lens', 'Leonard Cohen', 'James Brown']]
   ];
-  const dots = gs => gs.map(g => `<li style="--dot:${DNA.colorOf(g)}"><i></i>${esc(g)}</li>`).join('');
+  const LEGEND = [
+    ['Žestoko', 'grimizna i crvena: vrućina i agresija', ['Metal', 'Nu metal', 'Punk', 'Grunge']],
+    ['Rock', 'Coral, boja brenda: energija gitare', ['Rock', 'Alternativa', 'Indie']],
+    ['Pop i disco', 'ružičasta i orhideja: sjaj i ples', ['Pop', 'Disco']],
+    ['Rap i R&B', 'noćna plava i indigo: grad noću', ['Rap', 'Trap', 'R&B']],
+    ['Elektronika', 'cijan i akva: svjetla kluba', ['Elektronika', 'Techno', 'House', 'Drum & bass']],
+    ['Soul i funk', 'jantar i narančasta: toplina i groove', ['Soul', 'Funk']],
+    ['Jazz, blues, reggae', 'zelena za jazz, čelično plava za melankoliju bluesa, limeta za reggae', ['Jazz', 'Blues', 'Reggae']],
+    ['Akustično i klasika', 'zemljane boje drva, slonovača za klasiku', ['Folk', 'Kantautorska', 'Klasična']]
+  ];
+  $('legend').innerHTML = LEGEND.map(([t, d, gs]) => `<div class="lg"><span class="sw">${gs.map(g => `<i style="background:${DNA.colorOf(g)}" title="${esc(g)}"></i>`).join('')}</span><b>${t}</b><small>${gs.map(esc).join(', ')}: ${d}</small></div>`).join('');
   $('gallery').innerHTML = PEOPLE.map(([n, d, gs, as], i) => `<section class="panel" aria-labelledby="p${i}">
     <div class="who"><h3 id="p${i}">${n}</h3><small>${esc(d)}</small></div>
     <canvas class="dna" data-dna="g${i}" data-genres="${esc(gs.join('|'))}" data-artists="${esc(as.join('|'))}" data-h="150" aria-hidden="true"></canvas>
-    <ul class="gs">${dots(gs)}</ul><p class="as">Izvođači: ${as.map(esc).join(', ')}</p></section>`).join('');
+    <p class="as">${gs.map(esc).join(', ')}. Izvođači: ${as.map(esc).join(', ')}.</p></section>`).join('');
   DNA.scan($('gallery'));
 
   let picks = PEOPLE[6][2].slice(), arts = PEOPLE[6][3].slice();
@@ -107,7 +129,6 @@
   }
   function mine() {
     $('mine').innerHTML = `<canvas class="dna" data-dna="mine" data-genres="${esc(picks.join('|'))}" data-artists="${esc(arts.join('|'))}" data-h="220" aria-hidden="true"></canvas>`;
-    $('mine-gs').innerHTML = dots(picks);
     DNA.reset(); DNA.scan($('mine'));
   }
   $('presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; picks = PEOPLE[+b.dataset.p][2].slice(); arts = PEOPLE[+b.dataset.p][3].slice(); chips(); mine(); });

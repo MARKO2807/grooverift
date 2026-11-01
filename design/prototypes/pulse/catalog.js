@@ -27,7 +27,7 @@
     return prev[n];
   }
 
-  const OFFLINE = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta.replace(' · ', ', '), g: a.g, key: fold(a.name) }));
+  const OFFLINE = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta, g: a.g, key: fold(a.name) }));
 
   function offline(q) {
     const f = fold(q.trim());
@@ -47,25 +47,25 @@
     }).filter(x => x.s >= 0).sort((x, y) => y.s - x.s || x.a.name.localeCompare(y.a.name)).slice(0, 6).map(x => x.a);
   }
 
-  /* Generated tile for artists without a free photo. */
+  /* Generated tile for artists without a free photo: one initial (owner, session 9). */
   function tile(name) {
     const h = hash(name);
     const words = name.replace(/^the\s+/i, '').split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w));
-    const ini = ((words[0] || '?')[0] + (words[1] ? words[1][0] : '')).toUpperCase();
+    const ini = (words[0] || '?')[0].toUpperCase();
     const w = (h % 1000) / 1000, ang = (h >> 10) % 360;
     const c = [255 + (255 - 255) * w, Math.round(88 + (203 - 88) * w), Math.round(107 + (105 - 107) * w)];
     return { ini, bg: `linear-gradient(${ang}deg, rgb(${c[0]},${c[1]},${c[2]}) 0%, #2A2F3B 72%, #12151C 100%)` };
   }
 
-  const TYPE = { Group: 'Grupa', Person: 'Solo', Orchestra: 'Orkestar', Choir: 'Zbor', Character: 'Lik', Other: 'Ostalo' };
   let regions;
   try { regions = new Intl.DisplayNames(['hr'], { type: 'region' }); } catch (e) { regions = null; }
-  function metaOf(a) {
-    const parts = [TYPE[a.type] || 'Izvođač'];
+  /* Country only (D-053). The MusicBrainz description is added only when two results share a name. */
+  function metaOf(a, dup) {
+    const parts = [];
     const cc = a.country || (a.area && a.area['iso-3166-1-codes'] && a.area['iso-3166-1-codes'][0]);
     if (cc && cc !== 'XW' && cc !== 'XE') { try { parts.push(regions ? regions.of(cc) : cc); } catch (e) { parts.push(cc); } }
-    else if (a.area && a.area.name) parts.push(a.area.name);
-    if (a.disambiguation) parts.push(a.disambiguation);
+    else if (a.area && a.area.name && a.area.type === 'Country') parts.push(a.area.name);
+    if (dup && a.disambiguation) parts.push(a.disambiguation);
     return parts.join(', ');
   }
   const lucene = s => s.replace(/([+\-!(){}[\]^"~*?:\\/]|&&|\|\|)/g, '\\$1');
@@ -79,8 +79,9 @@
     const r = await fetch(`https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(lucene(q))}&fmt=json&limit=10`, { signal, headers: { Accept: 'application/json' } });
     if (!r.ok) throw new Error('MusicBrainz ' + r.status);
     const j = await r.json();
-    return (j.artists || []).filter(a => a.score >= 55 && !SPECIAL.has(a.id)).slice(0, 6)
-      .map(a => ({ id: a.id, name: a.name, meta: metaOf(a), g: [], key: fold(a.name) }));
+    const list = (j.artists || []).filter(a => a.score >= 55 && !SPECIAL.has(a.id)).slice(0, 6);
+    const count = {}; list.forEach(a => { const k = fold(a.name); count[k] = (count[k] || 0) + 1; });
+    return list.map(a => ({ id: a.id, name: a.name, meta: metaOf(a, count[fold(a.name)] > 1), g: [], key: fold(a.name) }));
   }
   const strip = h => { const d = document.createElement('div'); d.innerHTML = h || ''; return (d.textContent || '').trim().replace(/\s+/g, ' '); };
   async function photos(list, signal) {

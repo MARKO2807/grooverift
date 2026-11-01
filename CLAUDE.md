@@ -25,7 +25,8 @@ This file is loaded into every Claude Code session. Keep it short. Detailed rule
 
 ## Model and effort policy
 - Default for routine work: **Medium** effort. Recommend **High** for architecture, data modeling, auth/authz, privacy/deletion, DMs and moderation evidence, uploads, search access control, migrations, scheduling, threat modeling and security reviews.
-- After recommending an effort change, **check whether the owner actually switched** (via `/effort` output in the session). If not, say so casually in Croatian, for example: *„Ej, preporučio sam ti high effort, a vidim da je još medium. Želiš li svejedno nastaviti?”* If the setting is not visible, ask. Do not nag after the owner declines.
+- Model: Claude may also recommend a model switch, for example Fable for complex or high-stakes work and Opus as the default. The owner prefers to stay on **Opus and Fable**, so do not push Haiku.
+- After recommending an effort (or model) change, **check whether the owner actually switched** (via `/effort` output in the session). If not, say so casually in Croatian, for example: *„Ej, preporučio sam ti high effort, a vidim da je još medium. Želiš li svejedno nastaviti?”* If the setting is not visible, ask. Do not nag after the owner declines.
 
 ## Approved stack (ADR-0002)
 TypeScript, Next.js (App Router), PostgreSQL, Better Auth, pg-boss, Render (Frankfurt), R2 (EU jurisdiction), MusicBrainz CC0 catalog. Details: `docs/architecture/architecture-options.md`. Libraries are confirmed in Phase 4.

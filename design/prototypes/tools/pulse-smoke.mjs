@@ -56,8 +56,10 @@ const FLOW = `(async () => {${HELPERS}
   expect(document.activeElement && document.activeElement.name === 'age', 'focus moved to age group');
   await click('input[name="age"][value="adult"]'); expect(!$('#err-age'), 'age error cleared');
   await click('[data-a="next"]'); expect(scr() === 'account', 'account');
+  expect($('[data-a="showpw"] svg.pi'), 'eye icon next to show password');
   await type('#f-pw', 'kratko'); await click('[data-a="next"]'); expect($('#err-pw'), 'pw error');
   await type('#f-pw', 'ovo je dovoljno duga lozinka'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
+  expect($('main h1').textContent === 'Kako se zoveš?', 'name question');
   await click('[data-a="next"]'); expect($('#err-dname') && $('#err-uname'), 'username errors');
   await type('#f-dname', 'Ana'); await type('#f-uname', 'ana'); await sleep(600);
   expect($('[data-a="pickuser"]'), 'username suggestions');
@@ -68,10 +70,10 @@ const FLOW = `(async () => {${HELPERS}
   expect($$('.vis-table tbody tr').length === 6, 'six comparison rows');
   await click('[data-a="next"]'); expect($('#err-vis'), 'vis error');
   await click('input[name="vis"][value="private"]');
-  expect(getComputedStyle($('.c-priv')).backgroundColor !== getComputedStyle($('.c-pub')).backgroundColor, 'chosen column highlighted');
+  expect(getComputedStyle($('.vis-opt-priv'), '::before').boxShadow !== 'none' && getComputedStyle($('.vis-opt-pub'), '::before').boxShadow === 'none', 'chosen column highlighted');
   await click('[data-a="next"]'); expect(scr() === 'dna', 'dna');
   expect(!$('[data-a="skip"]'), 'no skip: genres are required');
-  expect($$('.chips-genres .chip').length === 24, '24 main genres');
+  expect($$('#genre-chips .chip-genre').length === 20 && $('#genre-chips .chip-more'), '20 main genres and the more chip');
   await click('[data-a="next"]'); expect($('#err-genres'), 'min 2 error');
   await click('[data-g="Jazz"]'); expect($('#err-genres'), 'one genre is not enough');
   await click('[data-g="Soul"]'); expect(!$('#err-genres'), 'error cleared at 2');
@@ -81,10 +83,11 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-g="Punk"]'); expect($('[data-g="Punk"]').getAttribute('aria-pressed') === 'false', 'max 10 holds');
   for (const g of ['Rock', 'Pop', 'Rap', 'Metal', 'Folk', 'Klasična']) await click('[data-g="' + g + '"]');
   await click('[data-a="more-genres"]'); await type('#f-genre', 'klap'); await click('#genre-results [data-g="Klapa"]');
-  expect($('#more-genres [data-g="Klapa"][aria-pressed="true"]'), 'extra genre picked');
+  expect($('#genre-chips [data-g="Klapa"][aria-pressed="true"]'), 'extra genre joins the picked chips');
   expect(!$('.traits'), 'no trait tags');
   expect(getComputedStyle($('[data-g="Jazz"] .gdot')).display !== 'none' && getComputedStyle($('[data-g="Pop"] .gdot')).display === 'none', 'genre colour dot on picked chips only');
   await type('#f-artist', 'metalica'); expect($('#artist-results [data-a="artist-add"] .r-title').textContent === 'Metallica', 'typo finds Metallica');
+  expect($('#artist-results [data-a="artist-add"] .r-meta').textContent === 'SAD', 'country only');
   await type('#f-artist', 'nirv'); expect($$('#artist-results [data-a="artist-add"]').length === 2, 'two Nirvanas');
   await click('#artist-results [data-a="artist-add"]'); expect(document.activeElement.id === 'f-artist', 'focus back to search');
   expect($$('#picked .portraits li').length === 1, 'portrait added');
@@ -93,13 +96,14 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="back"]'); expect(scr() === 'dna' && $('[data-g="Jazz"]').getAttribute('aria-pressed') === 'true', 'back keeps picks');
   await click('[data-a="next"]');
   await click('input[name="dnaVis"][value="followers"]'); await click('[data-a="next"]'); expect(scr() === 'how', 'how');
-  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm'), 'four how cards, no badge, wordmark');
+  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm') && $$('.how-vis svg.pi').length === 3, 'four how cards, library icons, wordmark');
   await click('[data-a="next"]'); expect(scr() === 'reminder', 'reminder');
   expect($('.notif') && $('.foot-row.equal'), 'notification preview and equal buttons');
   await click('[data-a="remind-on"]'); expect($('.perm'), 'perm dialog'); await click('[data-a="perm-block"]'); expect($('.notice'), 'denied notice');
   await click('[data-a="next"]'); expect(scr() === 'done', 'done');
   expect(document.body.textContent.includes('Privatni') && document.body.textContent.includes('Samo pratitelji'), 'done summary');
   expect($$('.facts-grid > div').length === 4 && $('.dna-card canvas.dna'), 'done tiles and DNA');
+  expect(!$('.dna-genres') && !$('.traits') && $('.dna-card .sr-only'), 'no visible tags under DNA, text for screen readers');
   await click('[data-a="finish"]'); expect(scr() === 'home', 'home');
   expect($('.dd-name') && $('.dd-date time') && !$('.dd-top').textContent.includes('·'), 'name and date apart, no middle dot');
   expect($('.dd-actions [data-a="open-compose"]').textContent.trim() === 'Odgovori', 'button says Odgovori');
@@ -158,6 +162,7 @@ const runs = [
   { name: 'dna helix', url: `${base}?at=dnavis`, test: VARIANTS },
   { name: 'daily drop heading', url: `${base}?flow=drop`, test: `(async () => {${HELPERS} expect($('.dd-name').textContent === 'Daily Drop' && $('.dd-date time').textContent === 'Nedjelja, 1. studenoga', 'name and date'); expect(!$('.dd-top').textContent.includes('·'), 'no middle dot'); return 'ok'; })()` },
   { name: 'choices page', url: base.replace('index.html', 'choices.html'), test: `(async () => {${HELPERS} await sleep(400); expect($$('#gallery canvas.dna').length === 8 && $$('#gallery canvas.dna').every(c => c.width > 0), 'gallery drawn'); return 'ok'; })()` },
+  { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('.card').length === 4, 'four options'); return 'ok'; })()` },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }
 ];
 
