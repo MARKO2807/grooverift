@@ -19,6 +19,8 @@ Status: **CONFIRMED** brand identity (Master Prompt §15). Layouts, the componen
 
 Neutral surfaces and text colors, elevation levels, state colors and any light theme are design-system work. They must not introduce a competing brand palette.
 
+Step 3.4 defined these as design tokens without adding brand colors: see [`docs/design/tokens.md`](../design/tokens.md) (D-038 to D-041).
+
 ## 2. Measured contrast (WCAG 2.x relative luminance)
 
 Computed 2026-11-01 with a deterministic script (sRGB relative luminance formula).

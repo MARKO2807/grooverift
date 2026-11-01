@@ -1,6 +1,6 @@
 # Session handoff
 
-_Session 6, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
+_Session 7, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
@@ -8,35 +8,33 @@ _Session 6, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
 3. Check that the effort setting matches the recommendation (D-008).
 
 ## Where we are
-- **Phase 3 is approved (D-026).** Steps 3.0 to **3.3 are done**. The plan with steps 3.0 to 3.9 and the owner decision points (⛳) is in `docs/design/phase-3-plan.md`.
-- **Step 3.3 output:** `docs/design/journeys/`:
-  - `README.md`: index, cross-journey rules JR1–JR7, resolved owner decisions, open items JO1–JO6
-  - J1 onboarding, J2 Music DNA editing, J3 Daily Drop, J4 profile states and following, J5 report/mute/block, J6 admin editorial
-  - Each journey has Mermaid flows, visibility checks against matrix v0.3, edge cases, accessibility notes and open items.
-  - Mermaid passed a home-made bracket and keyword lint (`14 blocks, 0 problems`). After the push, the owner confirmed that the flows render on GitHub.
-- **Decisions this session** (all as recommended):
-  - D-034: onboarding visibility steps are required. Music DNA visibility is asked in onboarding only if DNA was added; otherwise it is asked the first time DNA is added ("only me" until then).
-  - D-035: one top-level Daily Drop answer per member per question, editable.
-  - D-036: archived questions stay open; answers show a neutral date; no "late" label. This resolved a conflict between OQ-12 and `ux-foundations.md` §3.2.
-  - D-037: question suggesters (B2) get a private notification only if their suggestion is published.
-  - OQ-12 is resolved. Follow-up edits: IA v0.3 (ONB-04, ONB-06, HUB-03, HUB-09, Q7), `ux-foundations.md` §3.4, and domain model (DailyDropAnswer, QuestionSuggestion).
-- **Decision sketches:** `design/prototypes/journeys/`:
-  - `index.html` and `jq1`–`jq4`, which use `../ia/ia.css` plus `journeys.css`
-  - `drop-sim.js` is a reusable Daily Drop page simulator and may help in 3.5
-  - Scripts were exercised with Node against a stub DOM. The page was opened in the owner's browser. Claude did not screenshot it.
-- The owner again cancelled `/effort` and asked to proceed on the current setting. Do not nag about it.
+- **Phase 3 is approved (D-026).** Steps 3.0 to **3.4 are done**. The plan with steps 3.0 to 3.9 and the owner decision points (⛳) is in `docs/design/phase-3-plan.md`.
+- **Step 3.4 output:**
+  - `docs/design/tokens.md`: roles, rules, type ramp, space, focus, motion, breakpoints, contrast results.
+  - `design/tokens/`:
+    - `tokens.json` (source of truth, DTCG draft syntax)
+    - generated `tokens.css` (134 `--gr-*` variables plus a reduced-motion block)
+    - `build.mjs`, `contrast-check.mjs`, `lib.mjs`, `contrast-pairs.json`
+    - recorded `contrast-report.md`: 85/85 pairs pass. The tightest pair is `border.strong` on `bg.high` at 3.48. All 18 option combinations also pass. A negative test with white on-accent text failed as expected.
+  - `design/fonts/`: Sora and Inter variable WOFF2 (latin and latin-ext, including Inter italic) from the Google Fonts distribution, with `OFL.txt` from the `google/fonts` repo, SHA-256 in the README and `fonts.css`. D-028 is now implemented.
+  - `design/prototypes/tokens/`: clickable decision sketch. `?compare=tq1..tq4` opens a given comparison. `options.json` and the generated `options.css` are kept only for this sketch.
+- **Decisions this session** (all as recommended): D-038 Coral primary action with Void text (R-09 confirmed); D-039 cool neutrals; D-040 errors and warnings reuse Coral and Amber, destructive buttons are outlined; D-041 medium shape.
+- **Visual verification:** Claude screenshotted the sketch with headless Chrome (`chrome.exe --headless=new --screenshot`, works locally, no extension needed). The page was also opened in the owner's browser.
+- The owner did not raise effort this session either. Do not nag about it.
 
 ## Next concrete tasks
-1. **Step 3.4 ⛳: design tokens v0.1** (effort: High):
-   - `design/tokens/`: DTCG-style JSON plus generated CSS custom properties
-   - `docs/design/tokens.md`
-   - a zero-dependency Node contrast-check script, with its output recorded
-   - Inputs: `docs/brand/README.md` §2 (measured contrast, R-09 dark text on Coral/Amber) and `ux-foundations.md` §4.1–4.2 (focus token, 44 px targets, reduced motion).
-   - D-028 font download (Sora and Inter from official sources with OFL licences into `design/fonts/`) fits here or in 3.5.
-   - For the owner's choice, build clickable token specimens of each option first (owner preference).
-2. Raise **JO1** ("Remove follower" for private profiles, a scope addition) with the owner when convenient.
+1. **Step 3.5 ⛳: prototypes** (effort: High):
+   - 2–3 genuinely different directions for onboarding (J1) and Daily Drop (J3) at 360 px width, in `design/prototypes/`.
+   - Use only `design/fonts/fonts.css` and `design/tokens/tokens.css` (semantic tokens, no raw hex).
+   - No artwork; placeholder data labeled.
+   - `design/prototypes/journeys/drop-sim.js` may be reusable.
+   - Build clickable versions of every direction first (owner preference), then ask.
+   - After the pick: key states (empty, error, long text, 320 px reflow) and a desktop adaptation.
+   - Decide at 3.5 whether to do an informal usability check with 3–5 people (no personal data).
+2. Raise **JO1** ("Remove follower" for private profiles, a scope addition) when convenient.
 
 ## Open owner questions
+- **From 3.4:** light theme is DEFERRED (RECOMMENDED; dark-first per 15.2). Not explicitly confirmed by the owner.
 - **From 3.3:**
   - JO1: Remove follower (OPEN).
   - JO2: HR and EN both required before scheduling (= OQ-16, RECOMMENDED).
@@ -56,7 +54,7 @@ _Session 6, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
 - PDFs: `pdftoppm` is not installed. A zero-dependency Node `zlib` text extraction worked for the EDPB PDF.
 - Shell:
   - Single quotes inside `node -e '...'` break on apostrophes.
-  - A long Bash heredoc containing non-ASCII text failed to parse this session.
+  - Long Bash heredocs containing non-ASCII text can fail.
   - Write longer Node scripts to the session scratchpad with the Write tool instead.
-- Tools: git, Node 22.12, npm, Docker. Not installed: Python (only the Windows Store stub), ImageMagick, Inkscape, potrace, pnpm, `gh`, Mermaid CLI.
+- Tools: git, Node 22.12, npm, Docker, Chrome (headless screenshots work). Not installed: Python (only the Windows Store stub), ImageMagick, Inkscape, potrace, pnpm, `gh`, Mermaid CLI.
 - **TMview/EUIPO block automated browsing.** Never try to bypass it.

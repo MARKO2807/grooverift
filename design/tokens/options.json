@@ -1,0 +1,51 @@
+{
+  "$description": "Step 3.4 owner decision options (TQ1-TQ4). DECIDED 2026-11-01: tq1=a, tq2=cool, tq3=brand, tq4=medium, which equal the base tokens.json (D-038 to D-041). Kept only to regenerate the decision sketch in design/prototypes/tokens/ and to rerun contrast-check --all-options. Do not use these alternatives in product work.",
+  "tq1": {
+    "title": "Primary action color",
+    "options": {
+      "a": { "label": "Coral fill", "overrides": {} },
+      "b": { "label": "Amber fill", "overrides": {
+        "color.action.primary": "{color.ember.amber}",
+        "color.action.primary-hover": "{color.ember.amber-hover}",
+        "color.action.primary-pressed": "{color.ember.amber-pressed}"
+      } },
+      "c": { "label": "Coral to Amber gradient", "overrides": {}, "note": "The primary button uses gradient.brand; hover and pressed use a brightness filter. Checked through the on-accent/gradient pair." }
+    }
+  },
+  "tq2": {
+    "title": "Neutral surfaces",
+    "options": {
+      "cool": { "label": "Cool (toward Void Black)", "overrides": {} },
+      "neutral": { "label": "Pure grey", "overrides": {
+        "color.neutral.900": "#141414", "color.neutral.850": "#1C1C1C", "color.neutral.800": "#262626",
+        "color.neutral.700": "#2E2E2E", "color.neutral.600": "#545454", "color.neutral.500": "#7A7A7A",
+        "color.neutral.300": "#ADADAD", "color.neutral.100": "#F2F2F2",
+        "color.tint.coral-16": "#3A1F22", "color.tint.coral-12": "#301C1E", "color.tint.amber-10": "#2C261D", "color.tint.green-12": "#1D2B24"
+      } },
+      "warm": { "label": "Warm (toward Ember)", "overrides": {
+        "color.neutral.900": "#16130F", "color.neutral.850": "#1F1B16", "color.neutral.800": "#2A251F",
+        "color.neutral.700": "#332D26", "color.neutral.600": "#5A544D", "color.neutral.500": "#827A70",
+        "color.neutral.300": "#B7AEA3", "color.neutral.100": "#F6F2EC",
+        "color.tint.coral-16": "#3B1E1E", "color.tint.coral-12": "#321B1A", "color.tint.amber-10": "#2D2518", "color.tint.green-12": "#1F2A20"
+      } }
+    }
+  },
+  "tq3": {
+    "title": "Error and warning colors",
+    "options": {
+      "brand": { "label": "Reuse Coral and Amber", "overrides": {} },
+      "separate": { "label": "Separate signal colors", "overrides": {
+        "color.state.danger": "#FF7A59", "color.state.danger-bg": "#2E2123",
+        "color.state.warning": "#F5A524", "color.state.warning-bg": "#29231D"
+      } }
+    }
+  },
+  "tq4": {
+    "title": "Shape (corner radius)",
+    "options": {
+      "soft": { "label": "Soft", "overrides": { "radius.control": "12px", "radius.card": "16px", "radius.chip": "9999px", "radius.sheet": "24px" } },
+      "medium": { "label": "Medium", "overrides": {} },
+      "sharp": { "label": "Sharp", "overrides": { "radius.control": "4px", "radius.card": "6px", "radius.chip": "4px", "radius.sheet": "8px" } }
+    }
+  }
+}

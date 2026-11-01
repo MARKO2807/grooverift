@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GrooveRift · Korak 3.4 · Design tokeni: odluke TQ1–TQ4</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="options.css">
+<link rel="stylesheet" href="specimen.css">
+</head>
+<body>
+<main class="page">
+  <p class="banner"><b>Skica za odluku, ne gotov dizajn.</b> Svi podaci su izmišljeni (korisnici, pitanje, odgovori). Ekrani služe samo da se vide tokeni (boje, slova, oblici); raspored ekrana dolazi u koraku 3.5. Wordmark je tekstualna aproksimacija (D-011).</p>
+  <h1>Design tokeni v0.1: četiri odluke</h1>
+  <p class="lead">Gore biraš kombinaciju. Ispod se prikazuje jedno pitanje usporedno: sve njegove opcije jedna do druge, a ostala tri pitanja prema tvom izboru gore. Svaka kombinacija (18 boja × 3 oblika) prolazi WCAG AA provjeru skriptom (<code>design/tokens/contrast-report.md</code>). Ispod svakog telefona su izmjereni omjeri kontrasta.</p>
+
+  <form class="controls" id="controls" aria-label="Izbor opcija">
+    <fieldset><legend>TQ1 · Glavna akcija (gumb)</legend><div class="seg">
+      <label><input type="radio" name="tq1" value="a" checked> Coral <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="tq1" value="b"> Amber</label>
+      <label><input type="radio" name="tq1" value="c"> Gradijent</label>
+    </div></fieldset>
+    <fieldset><legend>TQ2 · Neutralne površine</legend><div class="seg">
+      <label><input type="radio" name="tq2" value="cool" checked> Hladne <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="tq2" value="neutral"> Sive</label>
+      <label><input type="radio" name="tq2" value="warm"> Tople</label>
+    </div></fieldset>
+    <fieldset><legend>TQ3 · Greške i upozorenja</legend><div class="seg">
+      <label><input type="radio" name="tq3" value="brand" checked> Coral/Amber <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="tq3" value="separate"> Zasebne boje</label>
+    </div></fieldset>
+    <fieldset><legend>TQ4 · Oblik (zaobljenost)</legend><div class="seg">
+      <label><input type="radio" name="tq4" value="soft"> Meko</label>
+      <label><input type="radio" name="tq4" value="medium" checked> Srednje <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="tq4" value="sharp"> Oštro</label>
+    </div></fieldset>
+  </form>
+
+  <div class="compare-bar">
+    <h2 style="margin:0">Usporedi:</h2>
+    <div class="seg" role="radiogroup" aria-label="Pitanje za usporedbu">
+      <label><input type="radio" name="compare" value="tq1" checked> TQ1 Glavna akcija</label>
+      <label><input type="radio" name="compare" value="tq2"> TQ2 Površine</label>
+      <label><input type="radio" name="compare" value="tq3"> TQ3 Greške</label>
+      <label><input type="radio" name="compare" value="tq4"> TQ4 Oblik</label>
+    </div>
+  </div>
+
+  <div class="row-phones" id="phones" aria-live="polite"></div>
+
+  <h2 style="margin-top:3rem">Ostali tokeni (preporuka, bez posebne odluke)</h2>
+  <p class="lead">Ovo slijedi iz pristupačnosti i branda pa nije pitanje ukusa. Ako ti nešto smeta, reci.</p>
+  <div class="specimens">
+    <section class="panel" aria-labelledby="h-type">
+      <h2 id="h-type">Tipografija</h2>
+      <p class="meta" style="font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary)">Sora za naslove, Inter za sve ostalo. Veličine u rem pa rastu s postavkom preglednika. Tijelo 16 px, minimum 13 px.</p>
+      <div class="ramp">
+        <div><code>display 36</code><span style="font: var(--gr-type-display); letter-spacing: var(--gr-type-display-letter-spacing)">Ritam spaja</span></div>
+        <div><code>title-1 30</code><span style="font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing)">Tvoj Music DNA</span></div>
+        <div><code>title-2 24</code><span style="font: var(--gr-type-title-2); letter-spacing: var(--gr-type-title-2-letter-spacing)">Današnje pitanje</span></div>
+        <div><code>title-3 20</code><span style="font: var(--gr-type-title-3)">Uzajamni</span></div>
+        <div><code>body 16</code><span style="font: var(--gr-type-body)">Čuj, đir po žanrovima: šansona, ćaća, džez.</span></div>
+        <div><code>body-sm 14</code><span style="font: var(--gr-type-body-sm)">Odgovorilo je 24 člana</span></div>
+        <div><code>label 14</code><span style="font: var(--gr-type-label)">Odgovori</span></div>
+        <div><code>caption 13</code><span style="font: var(--gr-type-caption); color: var(--gr-color-text-secondary)">prije 2 h · uređeno</span></div>
+        <div><code>eyebrow 13</code><span style="font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-highlight-text)">Daily Drop</span></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-space">
+      <h2 id="h-space">Razmaci i dodirne mete</h2>
+      <div class="spaces">
+        <div><code>space-1 · 4</code><i class="bar" style="width:4px"></i></div>
+        <div><code>space-2 · 8</code><i class="bar" style="width:8px"></i></div>
+        <div><code>space-3 · 12</code><i class="bar" style="width:12px"></i></div>
+        <div><code>space-4 · 16</code><i class="bar" style="width:16px"></i></div>
+        <div><code>space-6 · 24</code><i class="bar" style="width:24px"></i></div>
+        <div><code>space-8 · 32</code><i class="bar" style="width:32px"></i></div>
+        <div><code>space-12 · 48</code><i class="bar" style="width:48px"></i></div>
+        <div><code>space-16 · 64</code><i class="bar" style="width:64px"></i></div>
+      </div>
+      <p class="why">Mreža od 4 px. Mete: <b>44 × 44 px</b> za sve glavne kontrole, <b>24 px</b> je donja granica (WCAG 2.5.8) samo za guste kontrole poput reakcija.</p>
+      <div class="targets">
+        <div class="target-box" style="width:44px;height:44px">44</div>
+        <div class="target-box" style="width:24px;height:24px">24</div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-focus">
+      <h2 id="h-focus">Fokus (tipkovnica)</h2>
+      <p class="why">Dvostruki prsten: unutra Void Black, vani Amber. Tako se vidi i na Coral i na Amber gumbu, ne samo na tamnoj pozadini. Pritisni Tab na ovoj stranici pa vidi.</p>
+      <div class="actions">
+        <button class="btn btn-primary show-focus" type="button">Coral gumb</button>
+        <button class="btn show-focus" type="button" style="background: var(--gr-color-ember-amber); color: var(--gr-color-text-on-accent)">Amber gumb</button>
+        <button class="btn btn-secondary show-focus" type="button">Sekundarni</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-motion">
+      <h2 id="h-motion">Pokret</h2>
+      <p class="why">Tri trajanja. Ako uređaj traži smanjeno kretanje (<i>prefers-reduced-motion</i>), sva trajanja postaju 0 ms; klizanje se u komponentama zamjenjuje prijelazom prozirnosti.</p>
+      <div class="motion" id="motion">
+        <div><code>fast 120 ms</code><i class="dot" style="--dur: var(--gr-motion-duration-fast)"></i></div>
+        <div><code>base 200 ms</code><i class="dot" style="--dur: var(--gr-motion-duration-base)"></i></div>
+        <div><code>slow 320 ms</code><i class="dot" style="--dur: var(--gr-motion-duration-slow)"></i></div>
+      </div>
+      <button class="btn btn-secondary" type="button" id="play">Pokreni</button>
+      <p class="readout" id="rm"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="h-sw" style="grid-column: 1 / -1">
+      <h2 id="h-sw">Paleta uloga (trenutni izbor gore)</h2>
+      <div class="swatches" id="swatches"></div>
+    </section>
+  </div>
+</main>
+
+<template id="phone-tpl">
+  <div class="phone">
+    <div class="p-top">
+      <span class="wordmark" aria-label="GrooveRift">groove<span>rift</span></span>
+      <span class="approx" title="Tekstualna aproksimacija wordmarka (D-011)">aproks.</span>
+      <button class="iconbtn" type="button" aria-label="Poruke"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></button>
+    </div>
+    <div class="p-content">
+      <article class="card drop">
+        <p class="eyebrow">Daily Drop · 1. studenoga</p>
+        <h3>Koja te pjesma uvijek vrati u neko ljeto?</h3>
+        <p class="meta">24 odgovora</p>
+        <div class="actions">
+          <button class="btn btn-primary" type="button">Odgovori</button>
+          <button class="btn btn-secondary" type="button">Pogledaj odgovore</button>
+        </div>
+      </article>
+
+      <div class="alert warn" role="note">
+        <svg class="i md" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.01"/></svg>
+        <span>Tvoj profil je privatan, ali odgovor na Daily Drop vide svi članovi.</span>
+      </div>
+
+      <article class="card">
+        <div class="answer">
+          <div class="avatar" aria-hidden="true">AV</div>
+          <div>
+            <div class="who">ana_vinyl <small>prije 2 h</small></div>
+            <p>„Island in the Sun”, svaki put. Miris mora i kasni autobus.</p>
+            <a class="ext" href="#" onclick="return false">Poslušaj vani <svg class="i sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">Tvoj Music DNA</p>
+        <div class="chips">
+          <button class="chip" type="button" aria-pressed="true"><svg class="i sm ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Hip-hop</button>
+          <button class="chip" type="button" aria-pressed="false"><svg class="i sm ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Jazz</button>
+          <button class="chip" type="button" aria-pressed="true"><svg class="i sm ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Techno</button>
+          <button class="chip" type="button" aria-pressed="false"><svg class="i sm ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Folk</button>
+          <button class="chip" type="button" aria-pressed="false"><svg class="i sm ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Metal</button>
+        </div>
+      </article>
+
+      <article class="card field">
+        <label>Korisničko ime</label>
+        <p class="help">3–20 znakova: slova, brojke, točka i podvlaka.</p>
+        <input class="input" value="ana_vinyl" aria-invalid="true" aria-label="Korisničko ime">
+        <p class="err"><svg class="i sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16v.01"/></svg>To je ime zauzeto. Probaj „ana_vinyl2”.</p>
+      </article>
+
+      <div class="alert ok" role="status">
+        <svg class="i md" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>
+        <span>Odgovor objavljen.</span>
+      </div>
+
+      <div class="dialog" role="group" aria-label="Primjer dijaloga">
+        <h3>Blokirati ivan.b?</h3>
+        <p>Nećete vidjeti jedno drugo. Postojeće poruke ostaju samo za čitanje.</p>
+        <div class="actions">
+          <button class="btn btn-secondary" type="button">Odustani</button>
+          <button class="btn btn-danger" type="button"><svg class="i sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg>Blokiraj</button>
+        </div>
+      </div>
+
+      <div class="alert danger" role="alert">
+        <svg class="i md" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16v.01"/></svg>
+        <span>Nismo uspjeli spremiti. Provjeri vezu i pokušaj ponovno.</span>
+      </div>
+    </div>
+    <nav class="p-tabs" aria-label="Glavna navigacija (primjer)">
+      <button class="p-tab" type="button" aria-current="page"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v9H4z"/></svg>Početna</button>
+      <button class="p-tab" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/></svg>Hub</button>
+      <button class="p-tab" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Otkrij</button>
+      <button class="p-tab" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/></svg>Aktivnost</button>
+      <button class="p-tab" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
+    </nav>
+  </div>
+</template>
+
+<script src="specimen.js"></script>
+</body>
+</html>

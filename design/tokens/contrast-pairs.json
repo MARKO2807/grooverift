@@ -1,0 +1,59 @@
+{
+  "$description": "Every foreground/background token pair the UI may use, with its WCAG 2.2 minimum. Each fg is checked against each bg in its group. A pair not listed here must not be used. text = SC 1.4.3 (4.5:1); non-text = SC 1.4.11 (3:1).",
+  "surfaces": ["color.bg.canvas", "color.bg.surface", "color.bg.raised", "color.bg.high"],
+  "groups": [
+    {
+      "name": "Body and meta text on surfaces",
+      "kind": "text", "min": 4.5,
+      "fg": ["color.text.primary", "color.text.secondary", "color.text.link", "color.text.accent", "color.highlight.text", "color.state.danger", "color.state.warning", "color.state.success"],
+      "bg": "$surfaces"
+    },
+    {
+      "name": "Text on tinted backgrounds",
+      "kind": "text", "min": 4.5,
+      "fg": ["color.text.primary", "color.text.secondary"],
+      "bg": ["color.selected.bg", "color.highlight.bg", "color.state.danger-bg", "color.state.warning-bg", "color.state.success-bg"]
+    },
+    {
+      "name": "State text on its own tint (inline alerts)",
+      "kind": "text", "min": 4.5,
+      "pairs": [
+        ["color.state.danger", "color.state.danger-bg"],
+        ["color.state.warning", "color.state.warning-bg"],
+        ["color.state.success", "color.state.success-bg"],
+        ["color.highlight.text", "color.highlight.bg"],
+        ["color.text.link", "color.highlight.bg"]
+      ]
+    },
+    {
+      "name": "Text on brand fills (R-09)",
+      "kind": "text", "min": 4.5,
+      "fg": ["color.text.on-accent"],
+      "bg": ["color.action.primary", "color.action.primary-hover", "color.action.primary-pressed", "color.ember.coral", "color.ember.amber", "color.state.danger", "gradient.brand"]
+    },
+    {
+      "name": "Component boundaries (inputs, outline buttons, unselected chips)",
+      "kind": "non-text", "min": 3,
+      "fg": ["color.border.strong"],
+      "bg": "$surfaces"
+    },
+    {
+      "name": "Selected indicators and filled controls against surfaces",
+      "kind": "non-text", "min": 3,
+      "fg": ["color.selected.border", "color.highlight.border", "color.action.primary", "color.text.accent"],
+      "bg": "$surfaces"
+    },
+    {
+      "name": "Focus ring against surfaces and tints",
+      "kind": "non-text", "min": 3,
+      "fg": ["color.focus.ring"],
+      "bg": ["color.bg.canvas", "color.bg.surface", "color.bg.raised", "color.bg.high", "color.selected.bg", "color.highlight.bg", "color.state.danger-bg"]
+    },
+    {
+      "name": "Focus gap against brand fills (ring stays visible on Coral/Amber)",
+      "kind": "non-text", "min": 3,
+      "fg": ["color.focus.gap"],
+      "bg": ["color.ember.coral", "color.ember.amber", "color.action.primary", "gradient.brand"]
+    }
+  ]
+}

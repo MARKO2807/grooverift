@@ -47,6 +47,10 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-035 | 2026-11-01 | **One top-level Daily Drop answer per member per question**, editable and deletable, with an edited indicator. Replies are unlimited (resolves OQ-12 part 1, JQ2). See [J3](../design/journeys/j3-daily-drop.md). | CONFIRMED | Owner |
 | D-036 | 2026-11-01 | **Archived Daily Drop questions stay open for new answers.** Every answer shows its date in a neutral way; there is **no "late" label** (resolves OQ-12 part 2, JQ3; replaces "labeled late" in OQ-12 and IA HUB-03, consistent with ux-foundations §3.2). | CONFIRMED | Owner |
 | D-037 | 2026-11-01 | **Daily Drop question suggestions (B2): the submitter gets a private notification only if their suggestion is published** (possibly edited). No status list and no rejection messages. The submission copy says so honestly. No public credit for submitters unless the owner approves it later (resolves IA Q7, JQ4). | CONFIRMED | Owner |
+| D-038 | 2026-11-01 | **Primary actions use a solid Coral fill with Void Black text** (TQ1). Amber is reserved for Daily Drop and discovery highlights, links and the focus ring. The Coral→Amber gradient is not used on buttons; it stays for brand moments. Confirms R-09. See [tokens](../design/tokens.md). | CONFIRMED | Owner |
+| D-039 | 2026-11-01 | **Neutral surfaces are cool-tinted toward Void Black** (TQ2): `neutral.900` #12151C, `850` #191D26, `800` #222733; text #F1F3F7 / #A9AFBC. | CONFIRMED | Owner |
+| D-040 | 2026-11-01 | **Error and warning states reuse Coral and Amber** (TQ3); no separate signal hues. States are never color-only: icon + text + border (WCAG 1.4.1). Destructive buttons are outlined with an icon, not filled, so they never look like the primary action. Success uses a single green (#5ED39A) with an icon. | CONFIRMED | Owner |
+| D-041 | 2026-11-01 | **Medium shape** (TQ4): controls 10 px, cards 12 px, sheets 20 px, chips as pills. | CONFIRMED | Owner |
 
 ---
 
@@ -118,7 +122,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | R-06 | Cookieless or server-side aggregate analytics | L-06 |
 | R-07 | Moderation actions always produce a DSA-style statement of reasons | L-02 |
 | R-08 | Email-bound, single-use, expiring invites | S-08 |
-| R-09 | Text on Coral or Amber fills uses Void Black, never white | B-03 |
+| R-09 | ~~Text on Coral or Amber fills uses Void Black, never white~~ Confirmed → D-038 (token `color.text.on-accent`) | B-03 |
 | R-10 | Native Claude Code orchestration; reconsider a GSD Core pilot after Phase 4 | P-01 |
 
 ---
