@@ -29,7 +29,7 @@
 ## 2. Profile and preferences
 | Entity | Notes |
 |---|---|
-| **Profile** | account (1:1), username (case-insensitive unique), display_name, bio, avatar (media), visibility (`public`, `private`), discoverable (bool), verified_artist (via Verification) |
+| **Profile** | account (1:1), username (case-insensitive unique), display_name, bio, avatar (media), visibility (`public`, `private`; default `public` via an active onboarding choice, D-025), discoverable (bool), verified_artist (via Verification) |
 | **UsernameReservation** | old username, account, released_at. Prevents impersonation after a change (S-07). |
 | **PrivacySettings** | per-section visibility for Music DNA, Daily Drop history and lists of followers/following; mention policy; DM and intro-request policy; interaction limits |
 | **NotificationPreferences** | per notification type × channel (in-app, push, email) |

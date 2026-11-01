@@ -25,6 +25,7 @@
 6. US-owned processors with EU regions (Render, Cloudflare, possibly Sentry): is an SCC/DPF reliance plus a transfer assessment enough?
 7. Do we need cookie consent if we use only strictly necessary cookies and cookieless server-side analytics?
 8. Breach notification procedure and the records of processing (Art. 30) template.
+9. **Privacy by default (Art. 25(2)) and dark patterns (DSA Art. 25):** profiles default to public and Music DNA to "all signed-in members" (D-024, D-025). Both are set through an active onboarding choice with the public option highlighted as recommended and its benefits explained, and the private option equally available. Is this compliant? Does a highlighted recommendation need any specific wording or presentation? Private-account members' Daily Drop answers are visible to all members after a notice (D-021): is the notice sufficient?
 
 ## D. Lawyer: age
 1. Is 18+ self-declaration plus a human invite gate defensible for alpha and beta? What changes at public launch (Commission Art. 28 guidelines, July 2025)?

@@ -28,6 +28,13 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-016 | 2026-11-01 | Web framework: **Next.js (App Router)**. Personalized responses are never publicly cached (resolves OQ-20). | CONFIRMED | Owner |
 | D-017 | 2026-11-01 | Artwork policy: the UI must look complete without artwork. No album covers or artist photos from unlicensed sources until legal clearance. Free-licence Wikimedia Commons photos (credited), artist-uploaded photos and placeholders are allowed (resolves OQ-21). | CONFIRMED | Owner |
 | D-018 | 2026-11-01 | Register with MetaBrainz (Stealth Start-Up, $0) before alpha API use. The owner does the registration. Budget the Bronze tier ($100/mo) for public launch or monetization (resolves OQ-22). | CONFIRMED | Owner |
+| D-019 | 2026-11-01 | **Blocks hide content both ways while signed in.** When A blocks B, B (signed in) cannot see A's profile, posts or answers, and A is removed from B's feed, search, Discover and compatibility suggestions. B sees a neutral "profile not available" state. The block flow tells A that public content is still reachable through public share links when signed out, and that a private profile is the stronger option. Shared threads keep placeholders for other members (resolves VQ-01). | CONFIRMED | Owner |
+| D-020 | 2026-11-01 | A private-account member's reply or comment in a public thread is visible to **everyone who can see the thread**. A clear notice is shown before posting. The rest of the private profile stays private (resolves VQ-02). | CONFIRMED | Owner |
+| D-021 | 2026-11-01 | **Daily Drop answers are visible to all signed-in members**, including answers by private-account members. A notice is shown before answering ("your answer will be visible to all members, even though your profile is private"). Such answers count in "Most Discussed" and in answer counts like any member-visible answer. The aggregated Daily Drop history **on the profile** still follows the profile's privacy settings. Blocks (D-019) still apply. Anonymous visitors: see D-022 (resolves VQ-03). | CONFIRMED | Owner |
+| D-022 | 2026-11-01 | Signed-out visitors opening a Daily Drop share link see **the question and an invitation to join only**. Answers are members-only during the beta. Open Graph previews contain the question only. Revisit before public launch (resolves VQ-04). | CONFIRMED | Owner |
+| D-023 | 2026-11-01 | After a block, **existing DM history stays read-only for both participants**. No new messages can be sent. Either participant can delete the conversation on their own side only. Messages remain reportable after the block (resolves VQ-05). | CONFIRMED | Owner |
+| D-024 | 2026-11-01 | Default Music DNA visibility is **all signed-in members**, set through an **active choice** in onboarding. The recommended option is highlighted with its reason (discovery, compatibility), and the member confirms it. Never visible to signed-out visitors. Per-section settings remain adjustable (resolves VQ-06). | CONFIRMED | Owner |
+| D-025 | 2026-11-01 | **Profiles default to public** for adult members, set through an **active choice** in onboarding with "Public" highlighted as recommended and its benefits explained. The owner's goal is that most accounts are public. The private option is always available, equally easy to select and to switch to later, with no dark patterns (DSA Art. 25, GDPR Art. 25(2); see counsel question C.9). Handling of minors is deferred to OQ-10; the owner decides when it comes up and expects not to admit minors. | CONFIRMED | Owner |
 
 ---
 
@@ -61,7 +68,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | ID | Question | Recommendation | Ref |
 |---|---|---|---|
 | ~~OQ-19 – OQ-22~~ | ~~Architecture, framework, artwork, MetaBrainz~~ | Resolved → D-015 – D-018 | |
-| VQ-01 – VQ-06 | Visibility questions | See [`../architecture/visibility-matrix.md`](../architecture/visibility-matrix.md) §5 | S-02 |
+| ~~VQ-01 – VQ-06~~ | ~~Visibility questions~~ | Resolved → D-019 – D-024 (plus D-025, profile default) | S-02 |
 
 ### Needed before the alpha (do not block planning or development)
 | ID | Question | Recommendation | Ref |
@@ -71,7 +78,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | OQ-07 | Alpha feature scope | See audit A-02 | A-02 |
 | OQ-08 | Is Daily Drop push part of the alpha? | Yes if Phase 4 timing allows; otherwise early beta | A-02, T-04 |
 | OQ-09 | Alpha data carries over into the beta? | Yes, no reset | A-05 |
-| OQ-10 | Age policy implementation | 18+ attestation, no DOB stored; counsel confirms | L-04 |
+| OQ-10 | Age policy implementation. If minors are ever admitted, their profiles default to private (see D-025). Owner expects 18+ only; ask the owner when this comes up. | 18+ attestation, no DOB stored; counsel confirms | L-04 |
 
 ### Needed before the related feature is built
 | ID | Question | Recommendation | Ref |

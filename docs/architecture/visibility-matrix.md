@@ -1,6 +1,6 @@
-# Visibility and authorization matrix: draft v0.1
+# Visibility and authorization matrix: draft v0.2
 
-- **Status:** DRAFT for owner review (Phase 2).
+- **Status:** DRAFT v0.2. Owner answered VQ-01 to VQ-06 on 2026-11-01 (D-019 to D-025). Further changes need owner review.
 - Addresses audit finding S-02, the **#1 engineering risk**.
 - This matrix will become the specification for a single server-side policy module and an automated authorization test suite (R-01). Every API, search query, notification, email, share preview, cache and export must go through the same policy.
 
@@ -26,7 +26,7 @@ Legend: ✅ allowed · ❌ denied · 🔒 only if the profile is public or the v
 ### Profile and identity
 | Object | SELF | MUTUAL | FOLLOWER | MEMBER | BLOCKED | ANON | MOD/ADMIN |
 |---|---|---|---|---|---|---|---|
-| Username, display name, avatar | ✅ | ✅ | ✅ | ✅ | ❌ (VQ-01) | ✅ public profiles only, minimal | ✅ |
+| Username, display name, avatar | ✅ | ✅ | ✅ | ✅ | ❌ neutral "not available" state (D-019) | ✅ public profiles only, minimal | ✅ |
 | Bio | ✅ | ✅ | ✅ | ✅ | ❌ | public profiles only | ✅ |
 | Music DNA (each section) | ✅ | ⚙️ | ⚙️ | ⚙️ + 🔒 | ❌ | ❌ | 📄 |
 | Followers and following lists | ✅ | ⚙️ | ⚙️ | ⚙️ + 🔒 | ❌ | ❌ | 📄 |
@@ -34,19 +34,21 @@ Legend: ✅ allowed · ❌ denied · 🔒 only if the profile is public or the v
 | Posts on profile | ✅ | ✅ | ✅ | 🔒 | ❌ | public posts via share link only | 📄 |
 | Email, sessions, MFA, settings | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | Admin: email and status only, audited |
 
-`⚙️` options per section: everyone · followers · mutuals only · only me. **Proposed defaults:**
-- Music DNA: everyone (core to discovery)
-- Lists and Daily Drop history: followers
-- A private profile caps everything at followers.
+`⚙️` options per section: everyone (signed-in members) · followers · mutuals only · only me. **Defaults:**
+- Profile: **public** for adults, set by an active onboarding choice with "Public" highlighted as recommended (D-025). Private is always available.
+- Music DNA: everyone, set by an active onboarding choice (D-024). Never visible to `ANON`.
+- Lists and Daily Drop history (the aggregated list on the profile): followers (proposed, not yet confirmed).
+- A private profile caps everything **on the profile** at followers. Exceptions: replies in public threads (D-020) and Daily Drop answers on the question page (D-021).
 
 ### Content
 | Object | SELF | MUTUAL / FOLLOWER | MEMBER | BLOCKED | ANON | MOD/ADMIN |
 |---|---|---|---|---|---|---|
 | Post (public author) | ✅ | ✅ | ✅ | ❌ | share-link preview | ✅ (public) |
 | Post (private author) | ✅ | ✅ | ❌ | ❌ | ❌ | 📄 |
-| Comment or reply | ✅ | follows the thread | follows the thread | ❌ hidden (placeholder) | ❌ | ✅ / 📄 |
-| Daily Drop answer (public author) | ✅ | ✅ | ✅ | ❌ | ❌ (VQ-04) | ✅ |
-| Daily Drop answer (private author) | ✅ | ✅ | ❌ (VQ-03) | ❌ | ❌ | 📄 |
+| Comment or reply | ✅ | follows the thread | follows the thread, **also for private authors** with a pre-post notice (D-020) | ❌ hidden (placeholder) | ❌ | ✅ / 📄 |
+| Daily Drop question | ✅ | ✅ | ✅ | ✅ | ✅ question + join invitation only (D-022) | ✅ |
+| Daily Drop answer (public author) | ✅ | ✅ | ✅ | ❌ | ❌ (D-022) | ✅ |
+| Daily Drop answer (private author) | ✅ | ✅ | ✅ with a pre-answer notice (D-021) | ❌ | ❌ (D-022) | ✅ |
 | Reactions (who reacted) | ✅ own | ✅ | ✅ | filtered | ❌ | ✅ |
 | Member poll votes (individual) | ✅ own | ❌ | ❌ | ❌ | ❌ | 📄 |
 | Poll aggregates | after voting or close | same | same | ❌ | ❌ | ✅ |
@@ -56,7 +58,7 @@ Legend: ✅ allowed · ❌ denied · 🔒 only if the profile is public or the v
 ### Messaging, recommendations, playlists
 | Object | Participant / owner | Contributor | Other member | BLOCKED | MOD/ADMIN |
 |---|---|---|---|---|---|
-| DM conversation and messages | ✅ | n/a | ❌ | ❌ (no new messages; existing history kept for the non-blocking party, VQ-05) | 📄 **reported messages + bounded context only**, logged |
+| DM conversation and messages | ✅ | n/a | ❌ | ❌ no new messages; existing history stays **read-only for both**, each can delete their own side, still reportable (D-023) | 📄 **reported messages + bounded context only**, logged |
 | Intro request | sender and recipient | n/a | ❌ | cannot be sent | 📄 |
 | Recommendation | sender and recipient | n/a | ❌ | cannot be sent | 📄 |
 | Playlist (public) | ✅ manage | ✅ add/remove own tracks | ✅ view | ❌ | ✅ |
@@ -99,12 +101,15 @@ The same policy decision must apply to every channel:
 - [ ] Logs and error tracking (no message bodies or private content)
 - [ ] Data exports (only the requester's own data plus what is lawful)
 
-## 5. Open visibility questions for the owner
-| ID | Question | Recommendation |
+## 5. Visibility questions (resolved 2026-11-01)
+| ID | Question | Owner decision |
 |---|---|---|
-| VQ-01 | When A blocks B, can B (signed in) still see A's public profile and posts? §8 requires filtering only for the blocker. | **No**: hide both ways while signed in, and tell the blocker this is not absolute, since B can sign out and view public share links. |
-| VQ-02 | A private-account member replies in a public thread. Who sees the reply? | Everyone who can see the thread, with a clear notice to the private member before posting. This keeps threads coherent (the X-style alternative breaks threads). |
-| VQ-03 | Daily Drop answers from private accounts: are they visible only to followers, and do they count in "Most Discussed"? | Followers only. Counts and ranking use publicly visible content only. |
-| VQ-04 | Should signed-out visitors see Daily Drop questions and public answers via share links? | Question only, plus an invitation to join. Answers are members-only during beta. |
-| VQ-05 | After a block, does existing DM history remain visible? | Yes, read-only for both, with no new messages. Either party can delete it on their own side. |
-| VQ-06 | Default Music DNA visibility for new members | Everyone (signed-in members), adjustable in onboarding |
+| VQ-01 | When A blocks B, can B (signed in) still see A's public profile and posts? | **No**, hidden both ways while signed in; the blocker is told it is not absolute (D-019). As recommended. |
+| VQ-02 | A private-account member replies in a public thread. Who sees the reply? | Everyone who can see the thread, with a pre-post notice (D-020). As recommended. |
+| VQ-03 | Daily Drop answers from private accounts: who sees them, and do they count in "Most Discussed"? | **All signed-in members**, with a pre-answer notice; they count like any member-visible answer (D-021). **Differs from the recommendation** (followers only), to support the owner's goal of more visible participation. |
+| VQ-04 | Should signed-out visitors see Daily Drop questions and public answers via share links? | Question and join invitation only; answers members-only during beta (D-022). As recommended. |
+| VQ-05 | After a block, does existing DM history remain visible? | Yes, read-only for both; each can delete their own side (D-023). As recommended. |
+| VQ-06 | Default Music DNA visibility for new members | All signed-in members, via an active onboarding choice (D-024). As recommended. |
+| (new) | Default profile visibility | Public for adults, via an active onboarding choice; private always available (D-025). |
+
+**Counts and ranking rule (from D-021):** answer counts and "Most Discussed" use only content visible to all signed-in members. Followers-only content (e.g. posts by private authors) never contributes to public counts.
