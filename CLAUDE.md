@@ -20,11 +20,15 @@ This file is loaded into every Claude Code session. Keep it short. Detailed rule
 - **Start:** read `docs/STATUS.md` and `docs/HANDOFF.md`, check `git status` and `git log -5`, then give a short check-up in Croatian: Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje.
 - **During:** work in small, reviewable steps and coherent commits. Report the actual commands run and their results. Mark mock or placeholder data explicitly.
 - **End of a milestone or session:** update `STATUS.md` and `HANDOFF.md` (and `DECISIONS.md` if decisions were made), then commit. Keep secrets and personal data out of all docs.
-- Proactively suggest `/compact` or a fresh session at clean task boundaries (qualitative judgment; do not invent token percentages).
+- **Always explicitly tell the owner when it is time for a fresh session** (phase or milestone boundaries, heavy context), after STATUS and HANDOFF are committed. Suggest `/compact` when continuity matters more. Use qualitative judgment; do not invent token percentages.
+- `git push` is done by the owner (`! git push`) unless they grant permission otherwise.
 
 ## Model and effort policy
 - Default for routine work: **Medium** effort. Recommend **High** for architecture, data modeling, auth/authz, privacy/deletion, DMs and moderation evidence, uploads, search access control, migrations, scheduling, threat modeling and security reviews.
 - After recommending an effort change, **check whether the owner actually switched** (via `/effort` output in the session). If not, say so casually in Croatian, for example: *„Ej, preporučio sam ti high effort, a vidim da je još medium. Želiš li svejedno nastaviti?”* If the setting is not visible, ask. Do not nag after the owner declines.
+
+## Approved stack (ADR-0002)
+TypeScript, Next.js (App Router), PostgreSQL, Better Auth, pg-boss, Render (Frankfurt), R2 (EU jurisdiction), MusicBrainz CC0 catalog. Details: `docs/architecture/architecture-options.md`. Libraries are confirmed in Phase 4.
 
 ## Engineering guardrails
 - Security, privacy (GDPR, DSA), accessibility (WCAG 2.2 AA), performance and maintainability are baseline requirements.

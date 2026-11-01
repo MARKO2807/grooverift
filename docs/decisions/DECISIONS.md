@@ -24,6 +24,10 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-012 | 2026-11-01 | The mutual social relationship is named **"Mutuals"** (HR: **„Uzajamni”**). The compatibility mode keeps its confirmed name "Music Connections". In code, use `mutual`, never `connection`, for the relationship (resolves OQ-01). | CONFIRMED | Owner |
 | D-013 | 2026-11-01 | A Mutual = mutual follow (A follows B and B follows A); there is no separate connection request. Private accounts still require follow approval. Intro requests (§8) remain the path for non-mutuals (resolves OQ-02). | CONFIRMED | Owner |
 | D-014 | 2026-11-01 | Phase 2 (architecture, provider research, legal groundwork) approved. Approval covers research and documents only. Stack and provider choices still need separate owner approval via ADRs. | CONFIRMED | Owner |
+| D-015 | 2026-11-01 | Architecture **Option B**: a single TypeScript app + worker on a managed EU PaaS (Render, Frankfurt), managed Postgres with PITR, Better Auth, R2 EU, plus the shared baseline in architecture-options §1 ([ADR-0002](adr/0002-application-architecture-and-hosting.md) Accepted; resolves OQ-19). Accounts and purchases still need separate approval in Phase 4. | CONFIRMED | Owner |
+| D-016 | 2026-11-01 | Web framework: **Next.js (App Router)**. Personalized responses are never publicly cached (resolves OQ-20). | CONFIRMED | Owner |
+| D-017 | 2026-11-01 | Artwork policy: the UI must look complete without artwork. No album covers or artist photos from unlicensed sources until legal clearance. Free-licence Wikimedia Commons photos (credited), artist-uploaded photos and placeholders are allowed (resolves OQ-21). | CONFIRMED | Owner |
+| D-018 | 2026-11-01 | Register with MetaBrainz (Stealth Start-Up, $0) before alpha API use. The owner does the registration. Budget the Bronze tier ($100/mo) for public launch or monetization (resolves OQ-22). | CONFIRMED | Owner |
 
 ---
 
@@ -56,10 +60,8 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 ### Needed to close Phase 2
 | ID | Question | Recommendation | Ref |
 |---|---|---|---|
-| OQ-19 | Architecture option (A Supabase / B TypeScript app + Render / C Hetzner self-managed) | **B** ([ADR-0002](adr/0002-application-architecture-and-hosting.md)) | architecture-options.md |
-| OQ-20 | Web framework within B | **Next.js** (alternative: SvelteKit) | architecture-options.md §3 |
-| OQ-21 | Artwork policy until legal clearance | Artwork-optional design; no album covers or artist photos from unlicensed sources; free-licence Commons photos and placeholders only | C-01, catalog research |
-| OQ-22 | Register with MetaBrainz (Stealth Start-Up $0) before using the API in the alpha? | Yes; budget Bronze ($100/mo) for public launch or monetization | catalog research |
+| ~~OQ-19 – OQ-22~~ | ~~Architecture, framework, artwork, MetaBrainz~~ | Resolved → D-015 – D-018 | |
+| VQ-01 – VQ-06 | Visibility questions | See [`../architecture/visibility-matrix.md`](../architecture/visibility-matrix.md) §5 | S-02 |
 
 ### Needed before the alpha (do not block planning or development)
 | ID | Question | Recommendation | Ref |

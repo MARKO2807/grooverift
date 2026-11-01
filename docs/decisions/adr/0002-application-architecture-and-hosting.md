@@ -1,6 +1,6 @@
 # ADR-0002: Application architecture and hosting baseline
 
-- **Status:** **Proposed**, awaiting owner approval
+- **Status:** **Accepted** by the owner on 2026-11-01 (D-015, D-016)
 - **Date:** 2026-11-01
 - **Deciders:** Owner (final), Claude (proposal)
 
