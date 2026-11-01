@@ -19,6 +19,8 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-007 | 2026-11-01 | The Claude in Chrome extension may be used (research, GitHub web tasks). No credentials are entered by Claude. Purchases and account creation still need explicit approval. | CONFIRMED | Owner |
 | D-008 | 2026-11-01 | Effort policy: Medium for routine work, High for high-stakes work. Claude verifies whether a recommended switch happened and nudges casually if not. | CONFIRMED | Owner |
 | D-009 | 2026-11-01 | Phase 1 (specification audit and documentation foundation) approved. | CONFIRMED | Owner |
+| D-010 | 2026-11-01 | Alpha infrastructure budget ceiling: about 30–60 €/month (resolves OQ-03). Development before the alpha targets about 0 €. | CONFIRMED | Owner |
+| D-011 | 2026-11-01 | Wordmark: Claude produces a clearly labeled interim vector wordmark (Sora-based, per "Rift emphasis") for owner review; a professional designer produces the final vector wordmark and symbol before public launch (resolves OQ-04; see X-04). | CONFIRMED | Owner |
 
 ---
 
@@ -45,8 +47,8 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 |---|---|---|---|
 | OQ-01 | Rename the social relationship "connections" to avoid a collision with the "Music Connections" compatibility mode? | Rename the relationship (e.g. "Mutuals" / „Uzajamni”, or "Friends"); keep the confirmed mode names | S-01 |
 | OQ-02 | Is a connection = mutual follow, or a separate request/accept? | Mutual follow | S-03 |
-| OQ-03 | Monthly infrastructure budget ceiling for the alpha | About 30–60 €/month (estimate to be verified) | T-07, T-08 |
-| OQ-04 | Wordmark: Claude-made labeled interim vs. designer vs. symbol-only | Labeled interim now, designer before public launch | B-01 |
+| ~~OQ-03~~ | ~~Monthly infrastructure budget ceiling for the alpha~~ | Resolved → D-010 | T-07, T-08 |
+| ~~OQ-04~~ | ~~Wordmark approach~~ | Resolved → D-011 | B-01 |
 
 ### Needed before the alpha (do not block planning or development)
 | ID | Question | Recommendation | Ref |

@@ -17,7 +17,8 @@ _Last updated: 2026-11-01 (end of session 1)_
 - Owner review of the audit and the open questions.
 
 ## Next (requires approval)
-- Answer OQ-01–OQ-04 (`docs/decisions/DECISIONS.md` §3).
+- Answer OQ-01 and OQ-02 (`docs/decisions/DECISIONS.md` §3). OQ-03 and OQ-04 are resolved (D-010, D-011).
+- Owner pushes `main` to GitHub (Claude's push was blocked by the auto-mode permission classifier).
 - Approve **Phase 2**: architecture, provider research and legal groundwork. Recommended effort: High.
 
 ## Blockers
