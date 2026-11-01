@@ -1,6 +1,6 @@
-# Visibility and authorization matrix: draft v0.2
+# Visibility and authorization matrix: draft v0.3
 
-- **Status:** DRAFT v0.2. Owner answered VQ-01 to VQ-06 on 2026-11-01 (D-019 to D-025). Further changes need owner review.
+- **Status:** DRAFT v0.3. Owner answered VQ-01 to VQ-06 on 2026-11-01 (D-019 to D-025) and confirmed the profile-section defaults in step 3.2 (D-032, D-033). Further changes need owner review.
 - Addresses audit finding S-02, the **#1 engineering risk**.
 - This matrix will become the specification for a single server-side policy module and an automated authorization test suite (R-01). Every API, search query, notification, email, share preview, cache and export must go through the same policy.
 
@@ -37,7 +37,8 @@ Legend: ✅ allowed · ❌ denied · 🔒 only if the profile is public or the v
 `⚙️` options per section: everyone (signed-in members) · followers · mutuals only · only me. **Defaults:**
 - Profile: chosen by the member in onboarding through a neutral active choice: nothing pre-selected, equal weight, no "recommended" label (D-025 as amended by D-030). The owner's goal is that most accounts are public. Private is always available.
 - Music DNA: everyone, set by an active onboarding choice (D-024). Never visible to `ANON`.
-- Lists and Daily Drop history (the aggregated list on the profile): followers (proposed, not yet confirmed).
+- Daily Drop history (the aggregated list on the profile): **same as profile** (D-032). Public profile → everyone (signed-in members); private profile → followers. Individual answers on the question page follow D-021.
+- Followers and following lists, **including their counts**: **followers** (D-033). Counts are shown only to viewers who may see the list.
 - A private profile caps everything **on the profile** at followers. Exceptions: replies in public threads (D-020) and Daily Drop answers on the question page (D-021).
 
 ### Content

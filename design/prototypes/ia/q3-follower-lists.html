@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Q3 · Popisi pratitelja · GrooveRift IA skica</title>
+<link rel="stylesheet" href="ia.css">
+</head>
+<body>
+<!-- Phase 3, step 3.2: Q3 in docs/design/information-architecture.md §7. Fictional placeholder data. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="q1-navigation.html">Q1 · Navigacija</a><a href="q2-drop-history.html">Q2 · Povijest Daily Drop odgovora</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Svi ljudi su izmišljeni. Boje i fontovi su privremeni. Povijest Daily Drop odgovora ovdje stoji na preporuci za Q2 („kao profil”).</div>
+  <h1>Q3 · Tko vidi popise pratitelja i praćenih?</h1>
+  <p class="lead">Popis pratitelja ne otkriva samo Anu nego i <b>druge ljude</b>. Na Aninom popisu je i Noa, koja ima privatni račun. Promijeni opciju i gledatelja. Brojevi („4 pratitelja”) pojavljuju se samo ako je vidljiv i popis.</p>
+
+  <div class="controls">
+    <fieldset><legend>Opcija za Q3 (default)</legend><div class="seg">
+      <label><input type="radio" name="lists" value="followers" checked> Pratitelji <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="lists" value="members"> Svi članovi</label>
+      <label><input type="radio" name="lists" value="mutuals"> Uzajamni</label>
+      <label><input type="radio" name="lists" value="me"> Samo ja</label>
+    </div></fieldset>
+    <fieldset><legend>Anin profil</legend><div class="seg">
+      <label><input type="radio" name="pub" value="1" checked> Javan</label>
+      <label><input type="radio" name="pub" value="0"> Privatan</label>
+    </div></fieldset>
+    <fieldset><legend>Tko gleda</legend><div class="seg" id="viewer"></div></fieldset>
+  </div>
+
+  <div class="sim" style="grid-template-columns:360px 1fr">
+    <div><h2 style="font-size:16px">Anin profil</h2><div id="profile"></div></div>
+    <div>
+      <h2 style="font-size:16px">Svi gledatelji odjednom</h2>
+      <div id="matrix"></div>
+      <div class="card" style="margin-top:16px" id="explain"></div>
+      <div class="privacy-note" style="margin-top:16px"><b>Zašto je ovo osjetljivo:</b> popisi pokazuju s kim se netko druži. To je poznat put za uhođenje i uznemiravanje („vidim da ona prati njega”). Noa je izabrala privatni račun, ali se i dalje pojavljuje na tuđim popisima, jer su ime i avatar vidljivi članovima prema matrici vidljivosti. Zato je strožiji default razuman.</div>
+      <div style="margin-top:16px" id="onb"></div>
+    </div>
+  </div>
+</main>
+<script src="profile-sim.js"></script>
+<script>
+const s = { dd: 'profile', lists: 'followers', pub: true, viewer: 'member', requested: false };
+document.getElementById('viewer').innerHTML = VIEWERS.map(v => `<label><input type="radio" name="viewer" value="${v.id}" ${v.id === s.viewer ? 'checked' : ''}> ${v.label}</label>`).join('');
+const EXPLAIN = {
+  followers: '<b>Pratitelji:</b> stranci u prolazu (Petra) ne vide popis ni brojeve. Kod javnog profila svatko može zapratiti jednim klikom i onda vidjeti popis, ali Ana vidi tko je to napravio. Ovo je razumna sredina.',
+  members: '<b>Svi članovi:</b> najviše otkrivanja („pogledaj koga prati pa nađi slične ljude”), ali i najlakše tuđe praćenje veza. Kod privatnog profila popis i dalje vide samo pratitelji (privatni profil sve ograničava na pratitelje).',
+  mutuals: '<b>Uzajamni:</b> popis vide samo ljudi koje Ana prati natrag. Jača zaštita, ali popisi će većini biti nevidljivi.',
+  me: '<b>Samo ja:</b> nitko osim Ane ne vidi popise ni brojeve. Najprivatnije, ali nestaje „pogledaj koga prati” kao način otkrivanja ljudi.'
+};
+function render() {
+  document.getElementById('profile').innerHTML = renderProfile(s);
+  document.getElementById('matrix').innerHTML = renderMatrix(s);
+  document.getElementById('explain').innerHTML = `<p style="margin:0">${EXPLAIN[s.lists]}</p><p class="meta">Svaki član može u postavkama odabrati drugu razinu. Ovo je samo početna vrijednost.</p>`;
+  document.getElementById('onb').innerHTML = renderOnboarding(s);
+}
+document.querySelector('.controls').addEventListener('change', e => {
+  const { name, value } = e.target;
+  if (name === 'lists') s.lists = value;
+  if (name === 'pub') { s.pub = value === '1'; s.requested = false; }
+  if (name === 'viewer') { s.viewer = value; s.requested = false; }
+  render();
+});
+document.getElementById('profile').addEventListener('click', e => {
+  if (!e.target.closest('[data-follow]')) return;
+  if (s.pub) { s.viewer = 'follower'; document.querySelector('input[name=viewer][value=follower]').checked = true; }
+  else s.requested = true;
+  render();
+});
+render();
+</script>
+</body>
+</html>

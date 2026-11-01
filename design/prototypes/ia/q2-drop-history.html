@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Q2 · Povijest Daily Drop odgovora · GrooveRift IA skica</title>
+<link rel="stylesheet" href="ia.css">
+</head>
+<body>
+<!-- Phase 3, step 3.2: Q2 in docs/design/information-architecture.md §7. Fictional placeholder data. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="q1-navigation.html">Q1 · Navigacija</a><a href="q3-follower-lists.html">Q3 · Popisi pratitelja</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Ana, Tin, Luka, Petra i Iva su izmišljeni. Boje i fontovi su privremeni. Popisi pratitelja ovdje stoje na preporuci za Q3 („pratitelji”), a Music DNA na D-024 („svi članovi”).</div>
+  <h1>Q2 · Tko vidi povijest Daily Drop odgovora na profilu?</h1>
+  <p class="lead">Ana je odgovorila na tri Daily Drop pitanja. <b>Lijevo</b> je njen profil, <b>u sredini</b> stranica jednog pitanja. Promijeni opciju, Anin profil ili tko gleda i odmah vidiš razliku. Klikni „Zaprati” kao Petra: kod javnog profila postaješ pratitelj u jednom kliku.</p>
+
+  <div class="controls">
+    <fieldset><legend>Opcija za Q2 (default)</legend><div class="seg" id="dd">
+      <label><input type="radio" name="dd" value="profile" checked> Kao profil <span class="rec">preporuka</span></label>
+      <label><input type="radio" name="dd" value="followers"> Pratitelji</label>
+      <label><input type="radio" name="dd" value="mutuals"> Uzajamni</label>
+    </div></fieldset>
+    <fieldset><legend>Anin profil (njen izbor u onboardingu)</legend><div class="seg" id="pub">
+      <label><input type="radio" name="pub" value="1" checked> Javan</label>
+      <label><input type="radio" name="pub" value="0"> Privatan</label>
+    </div></fieldset>
+    <fieldset><legend>Tko gleda</legend><div class="seg" id="viewer"></div></fieldset>
+  </div>
+
+  <div class="sim">
+    <div><h2 style="font-size:16px">Anin profil</h2><div id="profile"></div></div>
+    <div><h2 style="font-size:16px">Stranica pitanja</h2><div id="drop"></div></div>
+    <div>
+      <h2 style="font-size:16px">Svi gledatelji odjednom</h2>
+      <div id="matrix"></div>
+      <div class="card" style="margin-top:16px" id="explain"></div>
+      <div style="margin-top:16px" id="onb"></div>
+    </div>
+  </div>
+</main>
+<script src="profile-sim.js"></script>
+<script>
+const s = { dd: 'profile', lists: 'followers', pub: true, viewer: 'member', requested: false };
+document.getElementById('viewer').innerHTML = VIEWERS.map(v => `<label><input type="radio" name="viewer" value="${v.id}" ${v.id === s.viewer ? 'checked' : ''}> ${v.label}</label>`).join('');
+const EXPLAIN = {
+  profile: '<b>Kao profil:</b> povijest prati Anin izbor. Ako je Ana odabrala „Javno”, svaki član koji klikne njeno ime ispod odgovora vidi njen glazbeni ukus kroz sve odgovore, što je dobro za otkrivanje ljudi. Ako je „Privatno”, povijest vide samo pratitelji. Uvjet: tekst opcije „Javno” u onboardingu to izričito kaže (vidi dolje).',
+  followers: '<b>Pratitelji:</b> čak i uz javni profil, Petra (ne prati Anu) ne vidi povijest. Ali jednim klikom na „Zaprati” postaje pratitelj i odmah je vidi, pa je zaštita kod javnih profila tanka. Ana barem vidi tko ju je zapratio.',
+  mutuals: '<b>Uzajamni:</b> povijest vide samo oni koje Ana prati natrag. Najjača zaštita, ali većina posjetitelja ne vidi ništa, pa profil malo govori o njenom ukusu.'
+};
+function render() {
+  document.getElementById('profile').innerHTML = renderProfile(s);
+  document.getElementById('drop').innerHTML = renderDropPage(s);
+  document.getElementById('matrix').innerHTML = renderMatrix(s);
+  document.getElementById('explain').innerHTML = `<p style="margin:0">${EXPLAIN[s.dd]}</p><p class="meta">Pojedinačni odgovori na stranici pitanja su vidljivi svim članovima neovisno o ovoj opciji (D-021). Zbirni popis na profilu olakšava „profiliranje” osobe, i zato o njemu odlučujemo zasebno.</p>`;
+  document.getElementById('onb').innerHTML = renderOnboarding(s);
+}
+document.querySelector('.controls').addEventListener('change', e => {
+  const { name, value } = e.target;
+  if (name === 'dd') s.dd = value;
+  if (name === 'pub') { s.pub = value === '1'; s.requested = false; }
+  if (name === 'viewer') { s.viewer = value; s.requested = false; }
+  render();
+});
+document.getElementById('profile').addEventListener('click', e => {
+  if (!e.target.closest('[data-follow]')) return;
+  if (s.pub) { s.viewer = 'follower'; document.querySelector('input[name=viewer][value=follower]').checked = true; }
+  else s.requested = true;
+  render();
+});
+render();
+</script>
+</body>
+</html>

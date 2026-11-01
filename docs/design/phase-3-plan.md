@@ -40,7 +40,7 @@ The information architecture (IA) covers the **full beta**, so the alpha does no
 | 3.9 | Review and close | Independent accessibility/UX review (subagent), all contrast checks rerun, STATUS/HANDOFF/DECISIONS updated | Owner approves IA, prototypes and tokens (roadmap Phase 3 acceptance) | High |
 
 ## Open items to raise during this phase
-- Default visibility of follower lists and of the profile's Daily Drop history (proposed: followers). Needed in 3.2/3.3.
+- ~~Default visibility of follower lists and of the profile's Daily Drop history.~~ Resolved in 3.2: Daily Drop history same as profile (D-032), lists followers (D-033).
 - Optional informal usability check of the prototypes with 3–5 people the owner knows, with no personal data recorded. Decide at 3.5.
 
 ## Not in this phase

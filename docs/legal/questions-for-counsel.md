@@ -15,6 +15,7 @@
 2. Confirm micro/small enterprise status and therefore the Art. 19 exemption.
 3. Minimum content for the Art. 11/12 contact points, the Art. 14 terms, the Art. 16 notice-and-action flow and the Art. 17 statement of reasons.
 4. Art. 18 (suspected serious crime): the process and which Croatian authority to notify.
+5. Art. 16 notice-and-action must be available to "any individual or entity". The information architecture (step 3.2, screen PUB-11) proposes a public notice form at `/legal/notice` that works without an account, covering illegal content and copyright. Is that sufficient, and what fields and confirmations are required?
 
 ## C. Lawyer: data protection (GDPR)
 1. Is a DPIA required for Music DNA profiling and compatibility matching (AZOP list items 1 and 10)? Will you review our DPIA draft?
