@@ -39,7 +39,7 @@
 5. MetaBrainz commercial tier: obligations and timing.
 6. DSM Art. 17 / ZAPSP: are we an online content-sharing service provider? Do short user videos with background music need ZAMP licensing or another approach?
 7. Content licence wording in the ToS (members keep ownership; limited licence to GrooveRift).
-8. **Trademark "GrooveRift":** clearance search and filing strategy (EUIPO vs. national; Nice classes 9, 38, 41, 42, 45). Domain ownership ≠ trademark.
+8. **Trademark "GrooveRift":** clearance search and filing strategy (EUIPO vs. national; Nice classes 9, 38, 41, 42, 45). Domain ownership ≠ trademark. See `docs/legal/trademark-preliminary-search.md`: no identical mark found so far, but "RIFT" is crowded in classes 9/41 (e.g. gamigo EUIPO 010026284, LOST RIFT WIPO 1889700, Meta "RIFT" registrations). Ask for a likelihood-of-confusion assessment.
 
 ## F. Lawyer: documents to draft or review before the alpha
 Terms of Service · Privacy Policy · Community Guidelines (including the human-created content rule) · Copyright and takedown policy · Alpha tester notice (incomplete software, data carry-over) · provider identification (ZET čl. 6) · DPIA · records of processing.
