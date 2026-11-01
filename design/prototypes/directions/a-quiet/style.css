@@ -1,0 +1,48 @@
+/* Direction A, "Quiet" (HR: Tiho). Typography carries the design.
+   No cards: Void canvas, hairline dividers, large Sora titles, generous space.
+   Brand colour appears only in the primary button, the Amber Daily Drop eyebrow and the active tab. */
+.screen { gap: var(--gr-space-5); padding-top: var(--gr-space-6); }
+h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+.h-hero { font: var(--gr-type-display); letter-spacing: var(--gr-type-display-letter-spacing); }
+
+/* progress: text plus a 2 px bar */
+.progress { padding: var(--gr-space-3) var(--gr-space-4) 0; display: flex; flex-direction: column; gap: var(--gr-space-2); }
+.progress-text { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.track { height: 2px; background: var(--gr-color-border-subtle); border-radius: 1px; overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--gr-color-action-primary); transition: width var(--gr-motion-duration-slow) var(--gr-motion-easing-standard); }
+
+/* invite and done: plain typographic hero */
+.hero { display: flex; flex-direction: column; gap: var(--gr-space-3); padding-top: var(--gr-space-10); }
+.hero .eyebrow { color: var(--gr-color-highlight-text); }
+
+/* choices: rows separated by hairlines, a real radio circle */
+.choices { gap: 0; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.choices-legend { margin-bottom: var(--gr-space-3); }
+.choice { padding: var(--gr-space-4) var(--gr-space-1); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: 0; }
+.choice-mark { width: 22px; height: 22px; flex: none; margin-top: 1px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-thick) solid var(--gr-color-border-strong); display: grid; place-items: center; }
+.choice-mark svg { display: none; }
+.choice:has(input:checked) .choice-mark { border-color: var(--gr-color-selected-border); }
+.choice:has(input:checked) .choice-mark::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--gr-color-selected-border); }
+.choice:has(input:checked) .choice-title { color: var(--gr-color-text-primary); }
+.choice .choice-ic { display: none; }
+.choice:has(input:focus-visible) { box-shadow: none; }
+.choice:has(input:focus-visible) .choice-mark { box-shadow: 0 0 0 var(--gr-focus-gap) var(--gr-color-focus-gap), 0 0 0 calc(var(--gr-focus-gap) + var(--gr-focus-width)) var(--gr-color-focus-ring); }
+
+/* Daily Drop: the question is the page */
+.teaser { display: flex; flex-direction: column; gap: var(--gr-space-3); padding: var(--gr-space-2) 0 var(--gr-space-6); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.teaser-q { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+.q-head { display: flex; flex-direction: column; gap: var(--gr-space-3); padding-top: var(--gr-space-2); }
+.q-title { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+.compose-q { font: var(--gr-type-title-3); }
+.list-head { border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); padding-top: var(--gr-space-5); }
+.ans-list > li { padding: var(--gr-space-5) 0; border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.ans-list > li:first-child { padding-top: var(--gr-space-2); }
+.ans-text p { font: var(--gr-type-body); }
+.mine-wrap { padding: var(--gr-space-4) 0 var(--gr-space-4) var(--gr-space-4); border-left: var(--gr-border-width-thick) solid var(--gr-color-highlight-border); }
+.react { border-color: transparent; padding: 0 var(--gr-space-2); }
+.react:hover { border-color: var(--gr-color-border-strong); }
+.ref { background: none; border-color: transparent; padding-left: 0; padding-right: 0; }
+.ref .ref-title { color: var(--gr-color-text-link); text-decoration: underline; text-underline-offset: 2px; }
+.ref-draft .ref .ref-title { color: var(--gr-color-text-primary); text-decoration: none; }
+.empty { border: 0; padding: 0; }
+.section { padding-top: var(--gr-space-2); }

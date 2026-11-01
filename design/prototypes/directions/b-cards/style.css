@@ -1,0 +1,51 @@
+/* Direction B, "Cards" (HR: Kartice). Structured, scannable app layout.
+   Content sits on surface cards; the Daily Drop question is an Amber highlight card;
+   the answer composer is open inline under the question; onboarding shows named sections. */
+.screen { padding: var(--gr-space-4) var(--gr-space-3) var(--gr-space-8); gap: var(--gr-space-3); }
+.kind-onb, .kind-bare { padding-left: var(--gr-space-4); padding-right: var(--gr-space-4); gap: var(--gr-space-4); }
+.h-hero { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+
+/* progress: four named sections plus step text */
+.progress { padding: var(--gr-space-3) var(--gr-space-4) 0; display: flex; flex-direction: column; gap: var(--gr-space-2); }
+.sections { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gr-space-1); }
+.sections li { display: flex; flex-direction: column; gap: var(--gr-space-1); min-width: 0; }
+.sec-bar { height: 4px; border-radius: 2px; background: var(--gr-color-border-subtle); }
+.sections li.done .sec-bar, .sections li.now .sec-bar { background: var(--gr-color-action-primary); }
+.sec-label { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); overflow-wrap: anywhere; }
+.sections li.now .sec-label { color: var(--gr-color-text-primary); font-weight: var(--gr-font-weight-semibold); }
+.progress-text { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+
+.hero { display: flex; flex-direction: column; gap: var(--gr-space-3); padding: var(--gr-space-5); margin-top: var(--gr-space-4); background: var(--gr-color-highlight-bg); border: var(--gr-border-width-hairline) solid var(--gr-color-highlight-border); border-radius: var(--gr-radius-card); }
+.hero .eyebrow { color: var(--gr-color-highlight-text); }
+.hero-done { background: var(--gr-color-bg-surface); border-color: var(--gr-color-border-subtle); }
+
+/* choices: cards with icon, check badge when selected */
+.choice { padding: var(--gr-space-4); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: var(--gr-radius-card); padding-right: calc(var(--gr-space-4) + 28px); }
+.choice-mark { position: absolute; top: var(--gr-space-3); right: var(--gr-space-3); width: 24px; height: 24px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); display: grid; place-items: center; color: var(--gr-color-text-on-accent); }
+.choice-mark svg { width: 16px; height: 16px; stroke-width: 2.4; visibility: hidden; }
+.choice:has(input:checked) { background: var(--gr-color-selected-bg); border: var(--gr-border-width-thick) solid var(--gr-color-selected-border); padding: calc(var(--gr-space-4) - 1px); padding-right: calc(var(--gr-space-4) + 27px); }
+.choice:has(input:checked) .choice-mark { background: var(--gr-color-action-primary); border-color: var(--gr-color-action-primary); }
+.choice:has(input:checked) .choice-mark svg { visibility: visible; }
+.choice-body { flex: 1; }
+
+/* Daily Drop */
+.teaser, .q-head { display: flex; flex-direction: column; gap: var(--gr-space-2); padding: var(--gr-space-4); background: var(--gr-color-highlight-bg); border: var(--gr-border-width-hairline) solid var(--gr-color-highlight-border); border-radius: var(--gr-radius-card); }
+.teaser .meta, .q-head .meta { color: var(--gr-color-text-secondary); }
+.teaser-q, .q-title { font: var(--gr-type-title-2); letter-spacing: var(--gr-type-title-2-letter-spacing); }
+.teaser-actions { margin-top: var(--gr-space-2); }
+.composer-card, .ans-list > li, .mine-wrap, .section .past, .com-list, .composer-comment, .kind-app > .ans { background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: var(--gr-radius-card); padding: var(--gr-space-4); }
+.composer-card .textarea { min-height: 4.5rem; }
+.composer-card .composer-actions { justify-content: flex-end; }
+.mine-wrap { border-color: var(--gr-color-highlight-border); }
+.compose-q { font: var(--gr-type-title-3); }
+.list-head { margin-top: var(--gr-space-3); }
+.ans-list { gap: var(--gr-space-3); }
+.avatar { width: 40px; height: 40px; }
+.ans-text p { font: var(--gr-type-body-sm); }
+.section .past { padding: 0 var(--gr-space-4); }
+.section .past li:last-child .past-item { border-bottom: 0; }
+.sort-segmented { background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: var(--gr-radius-control); padding: 3px; gap: 2px; }
+.sort-segmented label { flex: 1; }
+.sort-segmented span { flex: 1; display: grid; place-items: center; text-align: center; min-height: 38px; padding: 0 var(--gr-space-1); border-radius: 8px; font: var(--gr-type-label); color: var(--gr-color-text-secondary); }
+.sort-segmented input:checked + span { background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); box-shadow: inset 0 -2px 0 var(--gr-color-text-accent); }
+.empty { background: var(--gr-color-bg-surface); }

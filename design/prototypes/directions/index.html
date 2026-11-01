@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Korak 3.5 · Tri smjera za onboarding i Daily Drop · GrooveRift</title>
+<!-- Phase 3, step 3.5: owner comparison of three prototype directions. Static, no dependencies. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="compare.css">
+</head>
+<body>
+<main class="page">
+  <p class="banner"><b>Skica za odluku u koraku 3.5.</b> Sve osobe, odgovori, e-adrese i pitanja su izmišljeni. Imena izvođača i albuma glume katalog (bez slika). Wordmark je tekstualna aproksimacija (D-011), reakcije su privremene (OQ-13), a tekstovi radni (konačni u koraku 3.8). Ništa se ne sprema i ništa ne ide na internet.</p>
+  <h1>Tri smjera za onboarding i Daily Drop</h1>
+  <p class="lead">Sva tri imaju iste korake (J1, J3), ista pravila vidljivosti i iste tokene. Razlikuju se u tome kako je ekran složen, gdje se piše odgovor i koliko je branda na ekranu. <b>Klikaj u sva tri telefona.</b> Gore biraš što se prikazuje: isti korak se otvara u sva tri odjednom.</p>
+
+  <form class="controls" id="controls" aria-label="Što prikazati u telefonima">
+    <fieldset><legend>Tok</legend><div class="seg">
+      <label><input type="radio" name="flow" value="onb" checked> Onboarding</label>
+      <label><input type="radio" name="flow" value="drop"> Daily Drop</label>
+    </div></fieldset>
+    <div id="onb-at"><label class="lbl" for="at-onb">Onboarding: kreni od</label>
+      <select class="select" id="at-onb" name="atOnb">
+        <option value="">Pozivnica (početak)</option>
+        <option value="age">18+</option>
+        <option value="account">Račun</option>
+        <option value="username">Ime i korisničko ime</option>
+        <option value="language">Jezik</option>
+        <option value="visibility">Tko vidi profil</option>
+        <option value="dna">Music DNA</option>
+        <option value="dnavis">Tko vidi Music DNA</option>
+        <option value="how">Kako GrooveRift radi</option>
+        <option value="reminder">Podsjetnik</option>
+        <option value="done">Gotovo</option>
+      </select></div>
+    <div id="drop-at" hidden><label class="lbl" for="at-drop">Daily Drop: kreni od</label>
+      <select class="select" id="at-drop" name="atDrop">
+        <option value="">Početna</option>
+        <option value="drop">Pitanje i odgovori</option>
+        <option value="compose">Pisanje odgovora</option>
+        <option value="answer">Komentari na odgovor</option>
+      </select></div>
+    <fieldset><legend>Moj profil (simulacija)</legend><div class="seg">
+      <label><input type="radio" name="priv" value="0" checked> Javni</label>
+      <label><input type="radio" name="priv" value="1"> Privatni</label>
+    </div><p class="hint">Privatni profil pokazuje obavijest prije objave (D-020, D-021).</p></fieldset>
+    <fieldset><legend>Širina ekrana</legend><div class="seg">
+      <label><input type="radio" name="w" value="360" checked> 360 px</label>
+      <label><input type="radio" name="w" value="320"> 320 px</label>
+    </div><p class="hint"><button type="button" class="btn" id="restart">Pokreni ispočetka</button></p></fieldset>
+  </form>
+
+  <div class="phones" id="phones">
+    <section class="col" aria-labelledby="h-a">
+      <h2 id="h-a">A · Tiho</h2>
+      <p class="sub">Tipografija nosi sve. Bez kartica, tanke linije, velik naslov. Odgovor se piše na zasebnom ekranu.</p>
+      <div class="frame"><iframe title="Smjer A, Tiho" data-dir="a-quiet"></iframe></div>
+      <a class="open" data-open="a-quiet" href="a-quiet/index.html" target="_blank" rel="noopener">Otvori zasebno (npr. na mobitelu)</a>
+    </section>
+    <section class="col" aria-labelledby="h-b">
+      <h2 id="h-b">B · Kartice</h2>
+      <p class="sub">Pregledne kartice, pitanje u Amber kartici, polje za odgovor odmah ispod pitanja. Onboarding pokazuje imenovane dijelove.</p>
+      <div class="frame"><iframe title="Smjer B, Kartice" data-dir="b-cards"></iframe></div>
+      <a class="open" data-open="b-cards" href="b-cards/index.html" target="_blank" rel="noopener">Otvori zasebno (npr. na mobitelu)</a>
+    </section>
+    <section class="col" aria-labelledby="h-c">
+      <h2 id="h-c">C · Puls <span class="rec">preporuka</span></h2>
+      <p class="sub">Brand samo u velikim trenucima: rift linija, Music DNA puls, velik naslov pitanja. Odgovor se piše iz trake na dnu.</p>
+      <div class="frame"><iframe title="Smjer C, Puls" data-dir="c-pulse"></iframe></div>
+      <a class="open" data-open="c-pulse" href="c-pulse/index.html" target="_blank" rel="noopener">Otvori zasebno (npr. na mobitelu)</a>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="h-try">
+    <h2 id="h-try">Što probati</h2>
+    <div class="cards">
+      <div class="card"><h3>Onboarding</h3><ul>
+        <li>Na „Tko vidi profil” klikni <b>Nastavi</b> bez odabira: poruka se pojavi uz pitanje.</li>
+        <li>Na koraku „Ime” upiši <b>ana</b> (zauzeto, dobiješ prijedloge) pa <b>ana.slusa</b>.</li>
+        <li>Lozinka treba 15 znakova. Ili klikni „Nastavi s Google računom”.</li>
+        <li>Na Music DNA odaberi par žanrova i potraži <b>Nirvana</b> (dva benda istog imena) ili <b>Arsen</b>. U smjeru C gledaj puls kako raste.</li>
+        <li>Na podsjetniku probaj <b>Uključi</b> pa <b>Blokiraj</b> u lažnom prozoru preglednika.</li>
+      </ul></div>
+      <div class="card"><h3>Daily Drop</h3><ul>
+        <li>Odgovori na pitanje, pa ga <b>uredi</b> i <b>obriši</b>. Uključi „Privatni” gore i pogledaj obavijest prije objave.</li>
+        <li>Dodaj referencu: potraži <b>Miles</b> ili <b>Coltrane</b>.</li>
+        <li>Promijeni poredak (Za tebe, Najnovije, Najviše rasprave), reagiraj, otvori <b>Komentari</b>.</li>
+        <li>Mijin dugi odgovor ima „Pročitaj više”.</li>
+        <li>Pričekaj 20 sekundi na stranici pitanja: pojavi se gumb „2 nova odgovora”, ništa ne skače samo od sebe.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-diff">
+    <h2 id="h-diff">Po čemu se razlikuju</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col"><span class="sr-only">Element</span></th><th scope="col">A · Tiho</th><th scope="col">B · Kartice</th><th scope="col">C · Puls</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Dojam</th><td>Glazbeni časopis: miran, ozbiljan, puno zraka.</td><td>Klasična aplikacija: sve u okvirima, lako se skenira.</td><td>Najviše „GrooveRift”: energija u trenucima koji su bitni, mirno drugdje.</td></tr>
+        <tr><th scope="row">Napredak u onboardingu</th><td>„Korak 5 od 9” i tanka linija.</td><td>Četiri imenovana dijela: Ti, Privatnost, Music DNA, Daily Drop.</td><td>Devet kratkih crtica u Coral→Amber prijelazu.</td></tr>
+        <tr><th scope="row">Izbor vidljivosti</th><td>Retci s klasičnim krugom za odabir.</td><td>Kartice s ikonom i kvačicom.</td><td>Velike pločice s ikonom i kvačicom.</td></tr>
+        <tr><th scope="row">Music DNA</th><td>Žanrovi i pretraga, broj odabira.</td><td>Isto.</td><td>Isto, plus „puls”: jedan stupić po odabiru (ukras, ne podatak).</td></tr>
+        <tr><th scope="row">Pitanje dana</th><td>Velik naslov na crnoj pozadini.</td><td>Amber kartica.</td><td>Najveći naslov i rift linija ispod.</td></tr>
+        <tr><th scope="row">Gdje pišeš odgovor</th><td>Gumb „Odgovori” otvara zaseban ekran.</td><td>Polje je otvoreno odmah ispod pitanja.</td><td>Traka „Napiši svoj odgovor…” na dnu, otvara se ploča odozdo.</td></tr>
+        <tr><th scope="row">Poredak odgovora</th><td>Padajući izbornik.</td><td>Segmentirani prekidač.</td><td>Tri „pilule”.</td></tr>
+        <tr><th scope="row">Odgovori drugih</th><td>Lista s linijama, tekst 16 px.</td><td>Svaki odgovor u kartici, tekst 14 px.</td><td>Lista s linijama, tekst 18 px, mali avatar.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-why">
+    <h2 id="h-why">Prednosti, mane i primjeri</h2>
+    <div class="cards">
+      <div class="card"><h3>A · Tiho</h3>
+        <ul><li><b>Za:</b> najčitljiviji. Odgovori se čitaju kao tekst, ništa ne odvlači pažnju. Najjeftiniji za izradu i održavanje.</li>
+        <li><b>Za:</b> zaseban ekran za pisanje daje puno mjesta za duži odgovor.</li>
+        <li><b>Protiv:</b> najmanje glazbene energije. Može djelovati kao blog ili novine, a ne kao mjesto „gdje se sudaraju glazbeni svjetovi”.</li>
+        <li><b>Protiv:</b> pisanje odgovora je jedan ekran dalje, pa se pitanje ne vidi dok pišeš (ponovljeno je gore kao naslov).</li></ul>
+        <p><b>Primjer:</b> Ivana otvori aplikaciju u tramvaju, pročita pitanje i pet odgovora bez ijednog okvira. Ugodno joj je, ali ništa ne „pršti”.</p></div>
+      <div class="card"><h3>B · Kartice</h3>
+        <ul><li><b>Za:</b> najpoznatiji obrazac. Svatko odmah zna što je što. Imenovani dijelovi u onboardingu jasno kažu koliko je još ostalo.</li>
+        <li><b>Za:</b> odgovor je jedan dodir daleko, polje je već otvoreno.</li>
+        <li><b>Protiv:</b> polje za odgovor gura tuđe odgovore ispod ruba ekrana. Na 360 px ne vidiš nijedan odgovor dok ne skrolaš. To je u blagom sukobu s P2 („čitanje je sudjelovanje”).</li>
+        <li><b>Protiv:</b> kartica u kartici djeluje generički i najviše nalikuje tisućama drugih aplikacija.</li></ul>
+        <p><b>Primjer:</b> Marko otvori pitanje i prvo vidi veliko prazno polje. Osjeća da se od njega očekuje odgovor, iako je htio samo čitati.</p></div>
+      <div class="card pick"><h3>C · Puls <span class="rec">preporuka</span></h3>
+        <ul><li><b>Za:</b> najjači identitet točno tamo gdje Master Prompt to dopušta (15.7: onboarding, Music DNA, Daily Drop). Ostatak je miran i čitljiv kao A.</li>
+        <li><b>Za:</b> traka na dnu je pod palcem (P8), ne gura odgovore i ostaje dostupna dok skrolaš. Ploča odozdo zadržava pitanje vidljivim.</li>
+        <li><b>Za:</b> Music DNA puls daje osjećaj da nešto „gradiš” bez lažnih postotaka.</li>
+        <li><b>Protiv:</b> motivi se lako preliju. Pravilo: rift linija samo na pozivnici, kraju onboardinga i uz pitanje dana. Puls samo uz Music DNA.</li>
+        <li><b>Protiv:</b> stalna traka na dnu može djelovati kao blagi poziv na odgovor. Tekst je zato neutralan, bez brojača i podsjetnika.</li></ul>
+        <p><b>Primjer:</b> Luka u onboardingu bira pet žanrova i gleda kako puls raste. Kasnije, na pitanju dana, čita odgovore palcem, a kad mu nešto padne na pamet, dotakne traku na dnu.</p></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-same">
+    <h2 id="h-same">Isto u sva tri (već odlučeno)</h2>
+    <div class="cards">
+      <div class="card"><ul>
+        <li>Izbor vidljivosti: ništa unaprijed odabrano, opcije jednake težine, bez „preporučeno” (D-030). Bez izbora nema dalje (D-034).</li>
+        <li>Pitanje o vidljivosti Music DNA dolazi samo ako je nešto odabrano (D-034).</li>
+        <li>Jedan odgovor po pitanju, može se urediti (D-035). Privatni profil vidi obavijest prije objave (D-021, D-020 za komentare).</li>
+        <li>Odgovori se mogu čitati bez odgovaranja. Novi odgovori ne ubacuju se sami (WCAG 2.2.2).</li>
+        <li>Bez slika izvođača i albuma (D-017), bez reprodukcije.</li>
+      </ul></div>
+      <div class="card"><ul>
+        <li>Tokeni iz koraka 3.4, Coral glavna akcija s tamnim tekstom (D-038), fokus Amber prsten.</li>
+        <li>Podsjetnik: oba gumba jednake težine („Ne sada” i „Uključi”), dopuštenje preglednika tek nakon dodira.</li>
+        <li>Svaki korak ima naslov na koji skače fokus. Greške su tekst, ikona i obrub, ne samo boja.</li>
+        <li>Donja traka alfe: Početna · Hub · Aktivnost · Profil (D-031).</li>
+      </ul></div>
+      <div class="card"><h3>Još nije u skici (dolazi nakon odabira)</h3><ul>
+        <li>Desktop verzija, stanja učitavanja, offline, greška mreže, blokirano, prazan dan.</li>
+        <li>Prijava, blokiranje i utišavanje (J5), arhiva (HUB-04), ostatak profila (J4).</li>
+        <li>Prebacivanje na engleski (gumb HR je na svakom koraku, ali tekst je samo hrvatski).</li>
+      </ul></div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  const form = document.getElementById('controls');
+  const frames = [...document.querySelectorAll('iframe[data-dir]')];
+  const opens = [...document.querySelectorAll('a[data-open]')];
+  function query() {
+    const f = new FormData(form);
+    const p = new URLSearchParams();
+    if (f.get('flow') === 'drop') {
+      p.set('flow', 'drop');
+      const at = f.get('atDrop');
+      if (at === 'compose') { p.set('at', 'drop'); p.set('open', 'compose'); }
+      else if (at) p.set('at', at);
+    } else if (f.get('atOnb')) p.set('at', f.get('atOnb'));
+    if (f.get('priv') === '1') p.set('private', '1');
+    return p.toString();
+  }
+  function load() {
+    const f = new FormData(form);
+    const drop = f.get('flow') === 'drop';
+    document.getElementById('onb-at').hidden = drop;
+    document.getElementById('drop-at').hidden = !drop;
+    const w = +f.get('w');
+    const q = query();
+    frames.forEach(fr => {
+      fr.width = w; fr.height = 760;
+      fr.src = `${fr.dataset.dir}/index.html${q ? '?' + q : ''}&t=${Date.now()}`.replace('.html&', '.html?');
+    });
+    opens.forEach(a => { a.href = `${a.dataset.open}/index.html${q ? '?' + q : ''}`; });
+  }
+  form.addEventListener('change', load);
+  document.getElementById('restart').addEventListener('click', load);
+  const preset = new URLSearchParams(location.search);
+  if (preset.get('flow') === 'drop') form.flow.value = 'drop';
+  load();
+})();
+</script>
+</body>
+</html>

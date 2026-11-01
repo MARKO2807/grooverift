@@ -1,0 +1,64 @@
+/* Direction C, "Pulse" (HR: Puls). Brand energy at the two signature moments only.
+   Onboarding and the Daily Drop question get display type, the rift line and the Music DNA pulse strip
+   (identity art; one bar per pick, heights are decorative and carry no data).
+   Answers stay calm and readable. The composer lives in a dock above the tab bar and opens as a sheet. */
+.screen { gap: var(--gr-space-5); padding-top: var(--gr-space-5); }
+h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+.h-hero { font: var(--gr-type-display); letter-spacing: var(--gr-type-display-letter-spacing); }
+.rift { width: 100%; max-width: 20rem; }
+
+/* progress: nine short bars sampled along the Coral to Amber gradient */
+.progress { padding: var(--gr-space-3) var(--gr-space-4) 0; display: flex; align-items: center; gap: var(--gr-space-3); }
+.progress-text { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); white-space: nowrap; }
+.pulse-progress { flex: 1; display: flex; gap: 4px; align-items: center; height: 12px; }
+.pulse-progress i { flex: 1; height: 4px; border-radius: 2px; background: var(--gr-color-border-subtle); }
+.pulse-progress i.done, .pulse-progress i.now { background-image: var(--gr-gradient-brand); background-size: calc(var(--n) * 100%) 100%; background-position: calc(var(--i) / (var(--n) - 1) * 100%) 0; }
+.pulse-progress i.now { height: 10px; }
+
+/* invite and done */
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--gr-space-4); padding-top: var(--gr-space-12); }
+.hero .lead { max-width: 22rem; }
+.hero .facts { width: 100%; text-align: left; margin-top: var(--gr-space-2); }
+.hero-done { padding-top: var(--gr-space-8); }
+.hero .eyebrow { color: var(--gr-color-highlight-text); }
+.tagline { font-family: var(--gr-font-family-heading); font-size: var(--gr-font-size-lg); }
+
+/* choices: large equal tiles */
+.choices { gap: var(--gr-space-3); }
+.choice { padding: var(--gr-space-5) var(--gr-space-4); border-radius: var(--gr-radius-card); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); background: var(--gr-color-bg-canvas); flex-direction: column; gap: var(--gr-space-2); }
+.choice-title { font: var(--gr-type-title-3); }
+.choice .choice-ic { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); color: var(--gr-color-text-primary); }
+.choice-mark { position: absolute; top: var(--gr-space-4); right: var(--gr-space-4); width: 26px; height: 26px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-thick) solid var(--gr-color-border-strong); display: grid; place-items: center; color: var(--gr-color-text-on-accent); }
+.choice-mark svg { width: 16px; height: 16px; stroke-width: 2.6; visibility: hidden; }
+.choice:has(input:checked) { border: var(--gr-border-width-thick) solid var(--gr-color-selected-border); background: var(--gr-color-selected-bg); padding: calc(var(--gr-space-5) - 1px) calc(var(--gr-space-4) - 1px); }
+.choice:has(input:checked) .choice-mark { background: var(--gr-color-action-primary); border-color: var(--gr-color-action-primary); }
+.choice:has(input:checked) .choice-mark svg { visibility: visible; }
+
+/* Daily Drop: the question gets a stage, answers stay calm */
+.teaser { display: flex; flex-direction: column; gap: var(--gr-space-3); padding: var(--gr-space-4) 0 var(--gr-space-6); }
+.teaser-q { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-spacing); }
+.teaser-actions .btn { flex: 0 1 auto; }
+.q-head { display: flex; flex-direction: column; gap: var(--gr-space-3); padding: var(--gr-space-4) 0 var(--gr-space-2); }
+.q-title { font: var(--gr-type-display); font-size: var(--gr-font-size-3xl); letter-spacing: var(--gr-type-display-letter-spacing); }
+.list-head { gap: var(--gr-space-3); }
+.sort-pills { flex-wrap: wrap; gap: var(--gr-space-2); }
+.sort-pills span { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--gr-space-3); border-radius: var(--gr-radius-chip); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); font: var(--gr-type-label); color: var(--gr-color-text-secondary); }
+.sort-pills input:checked + span { background: var(--gr-color-selected-bg); border: var(--gr-border-width-thick) solid var(--gr-color-selected-border); color: var(--gr-color-text-primary); padding: 0 calc(var(--gr-space-3) - 1px); }
+.sort-pills input:checked + span::before { content: "✓"; margin-right: var(--gr-space-1); }
+@media (pointer: coarse) { .sort-pills span { min-height: var(--gr-size-target-min); } }
+.ans-list > li { padding: var(--gr-space-5) 0; border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.ans-list > li:first-child { padding-top: var(--gr-space-1); }
+.avatar { width: 28px; height: 28px; font: var(--gr-type-caption); }
+.ans-text p { font: var(--gr-type-body); font-size: var(--gr-font-size-lg); line-height: var(--gr-font-line-height-normal); }
+.mine-wrap { padding: var(--gr-space-4); border-radius: var(--gr-radius-card); background: var(--gr-color-highlight-bg); border: var(--gr-border-width-hairline) solid var(--gr-color-highlight-border); }
+.mine-wrap .react, .mine-wrap .ref { background: none; }
+.compose-q { font: var(--gr-type-title-3); }
+
+/* dock above the tab bar */
+.dock { display: flex; align-items: center; justify-content: space-between; gap: var(--gr-space-3); padding: var(--gr-space-2) var(--gr-space-3); border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: var(--gr-color-bg-surface); }
+.dock-field { flex: 1; display: flex; align-items: center; gap: var(--gr-space-2); min-height: var(--gr-size-target-min); padding: 0 var(--gr-space-4); border-radius: var(--gr-radius-full); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); background: var(--gr-color-bg-raised); color: var(--gr-color-text-secondary); font: var(--gr-type-body); text-align: left; min-width: 0; }
+.dock-field span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dock-field.has-draft { color: var(--gr-color-text-primary); }
+.dock-done { display: flex; align-items: center; gap: var(--gr-space-2); font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.dock-done svg { color: var(--gr-color-state-success); }
+#toast { bottom: 140px; }
