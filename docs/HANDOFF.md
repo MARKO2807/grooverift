@@ -13,7 +13,7 @@ _Session 6, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
   - `README.md`: index, cross-journey rules JR1–JR7, resolved owner decisions, open items JO1–JO6
   - J1 onboarding, J2 Music DNA editing, J3 Daily Drop, J4 profile states and following, J5 report/mute/block, J6 admin editorial
   - Each journey has Mermaid flows, visibility checks against matrix v0.3, edge cases, accessibility notes and open items.
-  - Mermaid was checked only with a home-made bracket and keyword lint (`14 blocks, 0 problems`), not rendered. **Check how they render on GitHub after the push.** If one fails to render, fix its syntax.
+  - Mermaid passed a home-made bracket and keyword lint (`14 blocks, 0 problems`). After the push, the owner confirmed that the flows render on GitHub.
 - **Decisions this session** (all as recommended):
   - D-034: onboarding visibility steps are required. Music DNA visibility is asked in onboarding only if DNA was added; otherwise it is asked the first time DNA is added ("only me" until then).
   - D-035: one top-level Daily Drop answer per member per question, editable.
