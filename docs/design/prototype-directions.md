@@ -1,6 +1,6 @@
 # Prototype directions (step 3.5)
 
-_Phase 3, step 3.5 ⛳, first round. Status: **OPEN**. The three directions are built and waiting for the owner's pick. After the pick, the chosen direction is refined (§6)._
+_Phase 3, step 3.5 ⛳. First round done: the owner picked **direction C "Pulse" (D-042)** with the **dock composer (D-043)**. Refinement of C is next (§6)._
 
 ## 1. What was built
 
@@ -59,7 +59,7 @@ Constraints held: D-027 (static, no dependencies), D-017 (no artwork), tokens an
 | Sort control | Native select | Segmented control | Pills with check mark |
 | Answer list | Hairline list, 16 px text | Card per answer, 14 px text | Hairline list, 18 px text, small avatar |
 
-**Claude's recommendation: C.** Reasons:
+**Owner decision (2026-11-01): C, as Claude recommended (D-042, D-043).** Reasons:
 - It is the most distinctive of the three, and it keeps motifs inside the places §15.7 allows: invite, Done, Music DNA and the Daily Drop question. The visibility step stays plain.
 - The dock keeps the answer list visible (P2) and within thumb reach (P8).
 
@@ -73,10 +73,7 @@ These items should be settled in the chosen direction or in step 3.8.
 2. **Copy: Public option text vs. a separate Music DNA choice.** IA §7 requires the Public option to say that Music DNA is visible to all members, but ONB-06 then lets the member narrow it. The prototype adds "Music DNA možeš suziti u sljedećim koracima". Final wording in 3.8.
 3. **Reminder buttons have equal weight** ("Not now" and "Turn on", both secondary). This applies the P3 spirit to an opt-in permission. RECOMMENDED.
 4. **Password rule shown as "at least 15 characters".** Placeholder, following NIST SP 800-63B-4 for single-factor passwords. To confirm with the Phase 4 library choice.
-5. **Contrast pairs to add if B or C is chosen:**
-   - B: `border.strong` and `action.primary` on `highlight.bg`
-   - C: `gradient.brand` as an indicator on `bg.canvas`
-   - All are expected to pass. Run `contrast-check.mjs` after adding them.
+5. **Contrast pair for C, done.** `gradient.brand` as an indicator on `bg.canvas` (6.35) and `bg.surface` (5.97) was added to `contrast-pairs.json`. The check now runs 87/87 pass.
 
 ## 5. Verification (2026-11-01)
 
@@ -85,7 +82,7 @@ These items should be settled in the chosen direction or in step 3.8.
   - Home (public and private)
   - question, composer (private), comments
 - **Comparison page** screenshot at 1280 px.
-- **Automated smoke test** (Chrome DevTools Protocol, Node 22, no dependencies; script kept outside the repo). It walks the whole onboarding and Daily Drop path in each direction and checks:
+- **Automated smoke test** (Chrome DevTools Protocol, Node 22, no dependencies): `node design/prototypes/tools/smoke.mjs`. Screenshots: `design/prototypes/tools/shots.mjs`. The smoke test walks the whole onboarding and Daily Drop path in each direction and checks:
   - errors and focus
   - nothing pre-selected
   - username suggestions, two "Nirvana" results, Back keeps the picks
@@ -97,11 +94,28 @@ These items should be settled in the chosen direction or in step 3.8.
   **Result: all three pass, with no JS exceptions or console errors.**
 - **Not done:** a real screen reader pass, real devices, Windows high-contrast mode. These are planned for the refined direction and step 3.9.
 
-## 6. After the pick
+## 6. Owner decisions and next steps
 
-Refine the chosen direction:
-- key states: empty, loading, error, offline, blocked, long text, the missing-question day, 320 px reflow
-- a desktop adaptation (rail per D-031, breakpoints from 3.4)
-- the informal usability check, if the owner approves it
+| ID | Decision |
+|---|---|
+| D-042 | Direction C "Pulse". Motifs stay at the invite, Done, the Daily Drop question and Music DNA. |
+| D-043 | Dock composer with a bottom sheet. |
+| D-044 | No external usability check; the owner reviews personally. |
+| D-045 | Light theme as a member setting, dark default. Designed in step 3.4b. |
 
-Record the outcome here and in `DECISIONS.md`.
+**Refinement of C (next):**
+- Promote C into `design/prototypes/drop-onboarding/` or keep it in `directions/c-pulse/`, and decide whether A and B stay as a record.
+- Key states:
+  - empty: no answers yet, no follows
+  - loading skeletons
+  - network error with Retry and kept text (E9, JR4)
+  - offline (E10)
+  - blocked placeholders (D-019)
+  - the missing-question day (J3 E2)
+  - long text and long Croatian names
+  - catalog search failure (J1 E10)
+  - under-18 page
+- 320 px reflow and 200 % text zoom.
+- Desktop adaptation: rail (D-031) at 600 px and 1024 px, a reading column of 40 rem, and the sheet as a centered dialog on wide screens.
+- Recheck that motifs are limited to the D-042 placements.
+- Screen reader pass (Narrator is built into Windows; NVDA would need installing, which needs owner approval) and a Windows high-contrast check.

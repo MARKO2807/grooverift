@@ -6,7 +6,7 @@ Method: WCAG 2.x relative luminance (sRGB). Gradients are sampled at 11 points p
 
 ## base (tokens.json)
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 | Group | Foreground | Background | Ratio | Min | Result |
 |---|---|---|---|---|---|
@@ -84,6 +84,8 @@ Method: WCAG 2.x relative luminance (sRGB). Gradients are sampled at 11 points p
 | Selected indicators and filled controls against surfaces | `color.text.accent` #FF586B | `color.bg.surface` #12151C | 5.97 | 3 | pass |
 | Selected indicators and filled controls against surfaces | `color.text.accent` #FF586B | `color.bg.raised` #191D26 | 5.51 | 3 | pass |
 | Selected indicators and filled controls against surfaces | `color.text.accent` #FF586B | `color.bg.high` #222733 | 4.88 | 3 | pass |
+| Brand gradient as identity indicator (onboarding progress, Music DNA pulse; step 3.5 direction C) | `gradient.brand` gradient | `color.bg.canvas` #0B0D12 | 6.35 | 3 | pass |
+| Brand gradient as identity indicator (onboarding progress, Music DNA pulse; step 3.5 direction C) | `gradient.brand` gradient | `color.bg.surface` #12151C | 5.97 | 3 | pass |
 | Focus ring against surfaces and tints | `color.focus.ring` #FFCB69 | `color.bg.canvas` #0B0D12 | 12.96 | 3 | pass |
 | Focus ring against surfaces and tints | `color.focus.ring` #FFCB69 | `color.bg.surface` #12151C | 12.18 | 3 | pass |
 | Focus ring against surfaces and tints | `color.focus.ring` #FFCB69 | `color.bg.raised` #191D26 | 11.24 | 3 | pass |
@@ -98,7 +100,7 @@ Method: WCAG 2.x relative luminance (sRGB). Gradients are sampled at 11 points p
 
 ## TQ1=a TQ2=cool TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -108,7 +110,7 @@ Tightest pairs:
 
 ## TQ1=a TQ2=cool TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -118,7 +120,7 @@ Tightest pairs:
 
 ## TQ1=a TQ2=neutral TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -128,7 +130,7 @@ Tightest pairs:
 
 ## TQ1=a TQ2=neutral TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -138,7 +140,7 @@ Tightest pairs:
 
 ## TQ1=a TQ2=warm TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -148,7 +150,7 @@ Tightest pairs:
 
 ## TQ1=a TQ2=warm TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -158,7 +160,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=cool TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -168,7 +170,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=cool TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -178,7 +180,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=neutral TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -188,7 +190,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=neutral TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -198,7 +200,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=warm TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -208,7 +210,7 @@ Tightest pairs:
 
 ## TQ1=b TQ2=warm TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -218,7 +220,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=cool TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -228,7 +230,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=cool TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -238,7 +240,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=neutral TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -248,7 +250,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=neutral TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -258,7 +260,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=warm TQ3=brand
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 
@@ -268,7 +270,7 @@ Tightest pairs:
 
 ## TQ1=c TQ2=warm TQ3=separate
 
-85 pairs, **0 failing**.
+87 pairs, **0 failing**.
 
 Tightest pairs:
 

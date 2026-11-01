@@ -121,17 +121,17 @@ The Void gap keeps the ring visible on Coral and Amber fills, and the Amber ring
 - **Z-index:** base 0, sticky 100, nav 200, overlay 300, toast 400.
 
 ## 8. Contrast verification
-`contrast-check.mjs` expands `contrast-pairs.json` into **85 pairs**: text pairs need ≥ 4.5:1 (1.4.3), and component, indicator and focus pairs need ≥ 3:1 (1.4.11). Gradients are sampled at 11 points in sRGB, and the worst sample counts.
+`contrast-check.mjs` expands `contrast-pairs.json` into **87 pairs**: text pairs need ≥ 4.5:1 (1.4.3), and component, indicator and focus pairs need ≥ 3:1 (1.4.11). Gradients are sampled at 11 points in sRGB, and the worst sample counts.
 
 Recorded run (2026-11-01), full table in [`contrast-report.md`](../../design/tokens/contrast-report.md):
-- Base tokens: **85/85 pass**. The tightest pair is `border.strong` on `bg.high`: 3.48 (min 3).
+- Base tokens: **87/87 pass**. The tightest pair is `border.strong` on `bg.high`: 3.48 (min 3). Step 3.5 added two pairs: `gradient.brand` as an identity indicator on `bg.canvas` (6.35) and `bg.surface` (5.97), used by the onboarding progress and the Music DNA pulse in direction C (D-042).
 - All 18 TQ1 × TQ2 × TQ3 combinations also pass (kept for the record).
 - Negative test: setting `text.on-accent` to white makes 7 pairs fail (white on Coral 3.06, on Amber 1.50), matching the brand README §2 measurements. The script exits 1.
 
 The check is rerun in step 3.9 and, from Phase 4, in CI.
 
 ## 9. Not in v0.1
-- **Light theme: DEFERRED (RECOMMENDED).** The Master Prompt asks for dark-first (15.2). The token structure (semantic roles over primitives) allows a light set later without renaming.
+- **Light theme: CONFIRMED as a member setting, dark default (D-045).** Designed in step 3.4b. The token structure (semantic roles over primitives) allows the light set without renaming. Coral and Amber need light-background text variants, because Coral on white is 3.06 and Amber on white is 1.50.
 - Component tokens (button padding, avatar sizes and so on): step 3.6.
 - Data-visualization colors: not needed in the alpha. Music DNA proportions must reflect what the member actually selected (brand README §4).
 - Cyrillic, Greek and Vietnamese font subsets ([fonts README](../../design/fonts/README.md)).

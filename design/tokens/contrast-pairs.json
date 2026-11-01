@@ -44,6 +44,12 @@
       "bg": "$surfaces"
     },
     {
+      "name": "Brand gradient as identity indicator (onboarding progress, Music DNA pulse; step 3.5 direction C)",
+      "kind": "non-text", "min": 3,
+      "fg": ["gradient.brand"],
+      "bg": ["color.bg.canvas", "color.bg.surface"]
+    },
+    {
       "name": "Focus ring against surfaces and tints",
       "kind": "non-text", "min": 3,
       "fg": ["color.focus.ring"],
