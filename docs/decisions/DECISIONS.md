@@ -21,6 +21,9 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-009 | 2026-11-01 | Phase 1 (specification audit and documentation foundation) approved. | CONFIRMED | Owner |
 | D-010 | 2026-11-01 | Alpha infrastructure budget ceiling: about 30–60 €/month (resolves OQ-03). Development before the alpha targets about 0 €. | CONFIRMED | Owner |
 | D-011 | 2026-11-01 | Wordmark: Claude produces a clearly labeled interim vector wordmark (Sora-based, per "Rift emphasis") for owner review; a professional designer produces the final vector wordmark and symbol before public launch (resolves OQ-04; see X-04). | CONFIRMED | Owner |
+| D-012 | 2026-11-01 | The mutual social relationship is named **"Mutuals"** (HR: **„Uzajamni”**). The compatibility mode keeps its confirmed name "Music Connections". In code, use `mutual`, never `connection`, for the relationship (resolves OQ-01). | CONFIRMED | Owner |
+| D-013 | 2026-11-01 | A Mutual = mutual follow (A follows B and B follows A); there is no separate connection request. Private accounts still require follow approval. Intro requests (§8) remain the path for non-mutuals (resolves OQ-02). | CONFIRMED | Owner |
+| D-014 | 2026-11-01 | Phase 2 (architecture, provider research, legal groundwork) approved. Approval covers research and documents only. Stack and provider choices still need separate owner approval via ADRs. | CONFIRMED | Owner |
 
 ---
 
@@ -45,8 +48,8 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 ### Needed before Phase 2 is finalized
 | ID | Question | Recommendation | Ref |
 |---|---|---|---|
-| OQ-01 | Rename the social relationship "connections" to avoid a collision with the "Music Connections" compatibility mode? | Rename the relationship (e.g. "Mutuals" / „Uzajamni”, or "Friends"); keep the confirmed mode names | S-01 |
-| OQ-02 | Is a connection = mutual follow, or a separate request/accept? | Mutual follow | S-03 |
+| ~~OQ-01~~ | ~~Relationship naming~~ | Resolved → D-012 | S-01 |
+| ~~OQ-02~~ | ~~Connection semantics~~ | Resolved → D-013 | S-03 |
 | ~~OQ-03~~ | ~~Monthly infrastructure budget ceiling for the alpha~~ | Resolved → D-010 | T-07, T-08 |
 | ~~OQ-04~~ | ~~Wordmark approach~~ | Resolved → D-011 | B-01 |
 
