@@ -1,6 +1,6 @@
 # Information architecture
 
-_Phase 3, step 3.2. Version 0.2, 2026-11-01. Status: navigation model and profile defaults **CONFIRMED** by the owner (D-031 to D-033). Remaining open items are listed in §7._
+_Phase 3, step 3.2. Version 0.3, 2026-11-01. Status: navigation model and profile defaults **CONFIRMED** by the owner (D-031 to D-033); step 3.3 settled ONB-04, ONB-06, HUB-03 and HUB-09 details (D-034 to D-037). Remaining open items are listed in §7._
 
 Interactive decision sketches used for these choices: `design/prototypes/ia/` (open `index.html`; fictional data, provisional colors).
 
@@ -66,9 +66,9 @@ Order and edge cases are designed in step 3.3. This is the inventory only.
 | ONB-01 | 18+ attestation | No date of birth stored (OQ-10 recommendation). |
 | ONB-02 | Username and display name | Availability check, impersonation rules. |
 | ONB-03 | Language | Interface language; preferred discovery languages (optional). The language switcher is also available on every onboarding screen. |
-| ONB-04 | Profile visibility | **Neutral active choice** (D-025, D-030). Cannot be skipped (open recommendation for 3.3). |
+| ONB-04 | Profile visibility | **Neutral active choice** (D-025, D-030). Cannot be skipped (D-034). |
 | ONB-05 | Music DNA picks | Genres, then artist typeahead; about 5–10; visible Skip. |
-| ONB-06 | Music DNA visibility | Neutral active choice (D-024, D-030). |
+| ONB-06 | Music DNA visibility | Neutral active choice (D-024, D-030). Shown only if ONB-05 added something; otherwise asked when Music DNA is first added (D-034). |
 | ONB-07 | How GrooveRift works | Daily Drop and compatibility in two or three sentences each. Optional extra guidance. |
 | ONB-08 | Daily Drop reminder | Opt-in, local time, time zone. The browser push permission prompt appears **only after an explicit tap** (§14 clear permission prompts). |
 | ONB-09 | Done | Lands on Home with today's Drop at the top. |
@@ -92,13 +92,13 @@ Order and edge cases are designed in step 3.3. This is the inventory only.
 |---|---|---|---|---|
 | HUB-01 | Hub home | `/hub` | α (Daily Drop only), B2 (full) | Today's Drop, this week's Weekly Poll, latest Did You Know?, archive links, "Suggest a question". |
 | HUB-02 | Daily Drop: question and answers | `/drop/<date>` | α | Readable without answering (P2). Sort: For You, Recent, Most Discussed. Answer composer with the **private-member notice** (D-021). "New answers" button instead of auto-insert (WCAG 2.2.2). |
-| HUB-03 | Answer with replies | `/drop/<date>/a/<id>` | α | Replies, reactions, edit/delete own, "edited" indicator. Late answers labeled (OQ-12). |
+| HUB-03 | Answer with replies | `/drop/<date>/a/<id>` | α | Replies, reactions, edit/delete own, "edited" indicator. One top-level answer per member (D-035). Answers to archived questions show their date; no "late" label (D-036). |
 | HUB-04 | Daily Drop archive | `/hub/drops` | α | Browse by month; jump to date. Only published dates exist. |
 | HUB-05 | Weekly Poll | `/poll/<week>` | B2 | Vote, results after voting or close, discussion. |
 | HUB-06 | Weekly Poll archive | `/hub/polls` | B2 | |
 | HUB-07 | Did You Know? post | `/dyk/<id>` | B2 | Public sources, certainty qualifier for disputed claims, discussion. Internal fact-check notes never appear here. |
 | HUB-08 | Did You Know? archive | `/hub/did-you-know` | B2 | |
-| HUB-09 | Suggest a Daily Drop question | `/hub/suggest` (sheet) | B2 | Rate-limited. Copy states that editors review and may edit; no voting. Whether the submitter sees a status: OPEN (3.3). |
+| HUB-09 | Suggest a Daily Drop question | `/hub/suggest` (sheet) | B2 | Rate-limited. Copy states that editors review and may edit; no voting. Private notification to the submitter only if the suggestion is published (D-037). |
 
 ### 2.5 Discover, search and catalog (DISC, CAT)
 | ID | Screen | Route | Wave | Notes |
@@ -459,6 +459,6 @@ Admin screens follow the same L, E and O patterns. Staff areas are **never** off
 | Q4 | Alpha people search by name/username (DISC-05, α) so testers can find each other | Yes / no (Daily Drop answers only) | RECOMMENDED: yes. Decide with OQ-07 alpha scope. |
 | Q5 | Signed-out view of public playlists | Minimal public view / members only | RECOMMENDED: members only during the beta (consistent with D-022) |
 | Q6 | Counsel: DSA Art. 16 notice form for non-members (PUB-11) | | Added as B.5 in `questions-for-counsel.md` |
-| Q7 | Status updates for question suggestions (HUB-09) | | OPEN: decide in 3.3 |
+| Q7 | Status updates for question suggestions (HUB-09) | None · notify if published · status list | **CONFIRMED: notify if published** (D-037) |
 
 **Consequence for onboarding copy (3.3, 3.8).** Because of D-030, D-032 and D-033, the factual text of the "Public" option must say that all members can see the profile, Music DNA and Daily Drop answer history, and that follower lists are visible to followers. The "Private" option must say that Daily Drop answers remain visible to all members on the question page (D-021). Example wording is in `design/prototypes/ia/q2-drop-history.html`; final copy comes in step 3.8.

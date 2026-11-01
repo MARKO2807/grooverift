@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>JQ2 · Koliko odgovora po pitanju · GrooveRift skica</title>
+<link rel="stylesheet" href="../ia/ia.css">
+<link rel="stylesheet" href="journeys.css">
+</head>
+<body>
+<!-- Phase 3, step 3.3: JQ2 (OQ-12 part 1) in docs/design/journeys/README.md. Fictional placeholder data. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="jq1-visibility-step.html">JQ1</a><a href="jq3-archive.html">JQ3</a><a href="jq4-suggestions.html">JQ4</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Tin, Petra i Luka su izmišljeni. Boje i fontovi su privremeni. Ništa se ne sprema.</div>
+  <h1>JQ2 · Koliko glavnih odgovora član može dati na jedno Daily Drop pitanje?</h1>
+  <p class="lead">Napiši odgovor i objavi ga u oba mobitela, pa probaj objaviti <b>još jedan</b>. Lijevo se obrazac za pisanje zamijeni tvojim odgovorom s „Uredi”, a desno ostaje otvoren. <b>Odgovori na tuđe odgovore</b> (replies) su u obje opcije neograničeni. Ovdje se radi samo o glavnim odgovorima na pitanje.</p>
+
+  <div class="phones">
+    <section class="opt"><h2>A · Jedan odgovor, može se uređivati <span class="rec">preporuka</span></h2><p class="sub">Drugi put umjesto obrasca vidiš svoj odgovor s „Uredi” i „Obriši”.</p><div class="phone short" id="pa"></div></section>
+    <section class="opt"><h2>B · Više odgovora</h2><p class="sub">Obrazac uvijek ostaje. Svaki novi odgovor je zasebna stavka.</p><div class="phone short" id="pb"></div></section>
+  </div>
+
+  <div class="explain">
+    <div class="card"><h3>A · Jedan odgovor</h3><ul>
+      <li><b>Svaki glas jednom.</b> Ako 40 ljudi odgovori, lista ima 40 odgovora od 40 ljudi. Nitko ne može „preplaviti” pitanje s pet odgovora, što pomaže tihim i novim članovima (Master Prompt §5: ne zakopavati nove i tihe članove).</li>
+      <li><b>Pošten „Najviše rasprave”.</b> Rangiranje broji rasprave oko odgovora, a ne tko je napisao najviše odgovora.</li>
+      <li><b>Uredna povijest na profilu:</b> jedno pitanje je jedan red.</li>
+      <li><b>Kad se sjetiš još nečega,</b> urediš odgovor (pojavi se oznaka „uređeno”) ili odgovoriš ispod tuđeg odgovora.</li>
+      <li><b>Protiv:</b> netko tko želi dodati drugu misao nekoliko sati kasnije mora urediti stari odgovor, a oni koji su ga već pročitali to možda neće primijetiti.</li></ul></div>
+    <div class="card"><h3>B · Više odgovora</h3><ul>
+      <li><b>Za:</b> slobodnije, više kao chat. Ana može napisati „Dreams”, pa navečer „Zapravo, i Blonde”.</li>
+      <li><b>Protiv:</b> najglasniji članovi dominiraju listom. Primjer: Luka objavi osam kratkih odgovora i zauzme pola ekrana.</li>
+      <li><b>Protiv:</b> spam je lakši, pa trebaju stroža ograničenja broja objava, što onda smeta normalnim članovima.</li>
+      <li><b>Protiv:</b> povijest na profilu i brojevi odgovora gube smisao (je li 40 odgovora od 40 ljudi ili od 10?).</li></ul></div>
+    <div class="card"><h3>Što to mijenja tehnički</h3><p>Model domene već pretpostavlja A: „jedan glavni odgovor po članu po pitanju” (OQ-12, S-04). B bi uklonio to pravilo i zahtijevao drugačije brojanje i rangiranje. Ova odluka zajedno s JQ3 zatvara OQ-12.</p></div>
+  </div>
+</main>
+<script src="drop-sim.js"></script>
+<script>
+dropSim(document.getElementById('pa'), { count: 'one', old: false, today: '14. stu' });
+dropSim(document.getElementById('pb'), { count: 'many', old: false, today: '14. stu' });
+</script>
+</body>
+</html>

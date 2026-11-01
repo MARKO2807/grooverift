@@ -150,7 +150,7 @@ Block confirmation copy (to write in 3.8): state the consequences factually, say
 
 **Outcome:** the owner adopted a **neutral active choice** (D-030). Remaining counsel question: C.9.
 
-**RECOMMENDED (to confirm in 3.3):** the visibility step in onboarding cannot be skipped. Any account that has not made the choice is treated as private until it does, which follows GDPR Art. 25(2).
+**CONFIRMED (D-034):** the visibility step in onboarding cannot be skipped. Any account that has not made the choice is treated as private until it does, which follows GDPR Art. 25(2).
 
 ### 3.5 Mobile navigation (step 3.2)
 - **Material 3 / Android:** a navigation bar holds "three to five" top-level destinations; large screens use a navigation rail ([Android developers](https://developer.android.com/design/ui/mobile/guides/layout-and-content/layout-and-nav-patterns)).

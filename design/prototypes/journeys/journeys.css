@@ -1,0 +1,45 @@
+/* GrooveRift journey decision sketches (Phase 3, step 3.3).
+   Extends ../ia/ia.css. NOT the design system: provisional colors and system fonts until tokens (3.4). */
+.phones { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; margin-top: 8px; }
+.opt { width: 360px; }
+.opt > h2 { font-size: 17px; margin-bottom: 2px; }
+.opt > .sub { color: var(--muted); font-size: 13px; margin: 0 0 10px; min-height: 2.6em; }
+.phone.short { height: 680px; }
+.step { font-size: 12px; color: var(--muted); }
+.bar { height: 4px; background: var(--surface-2); border-radius: 4px; margin: 6px 0 14px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--coral); }
+.choice { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 10px; cursor: pointer; }
+.choice input { margin-top: 3px; accent-color: var(--coral); width: 18px; height: 18px; flex: none; }
+.choice:has(input:checked) { border-color: var(--coral); }
+.choice h4 { margin: 0 0 4px; font-size: 15px; }
+.choice p { margin: 0; font-size: 13px; color: var(--muted); }
+.err { color: #FF8A97; font-size: 13px; margin-top: 10px; display: flex; gap: 6px; }
+.err::before { content: "!"; font-weight: 700; border: 1.5px solid currentColor; border-radius: 50%; width: 16px; height: 16px; display: inline-grid; place-items: center; font-size: 11px; flex: none; }
+.linkbtn { border: 0; background: none; color: var(--amber); text-decoration: underline; padding: 8px 0; font-size: 14px; }
+.foot-actions { margin-top: auto; padding: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.foot-actions .btn { width: 100%; min-height: 46px; }
+.result { border: 1px solid var(--line); border-left: 3px solid var(--ok); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.result.warn { border-left-color: var(--amber); }
+.answer { border-bottom: 1px solid var(--line); padding: 10px 2px; }
+.answer:last-child { border-bottom: 0; }
+.answer .top { display: flex; align-items: center; gap: 8px; }
+.answer .top .avatar { width: 28px; height: 28px; font-size: 11px; }
+.answer .who { font-weight: 600; font-size: 14px; }
+.answer .when { color: var(--muted); font-size: 12px; margin-left: auto; }
+.answer p { margin: 6px 0 0; font-size: 14px; }
+.answer.mine { background: #1A1610; border-radius: 10px; padding: 10px; border: 1px solid #5C4A17; }
+.late { font-size: 11px; color: var(--void); background: var(--amber); border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+.composer { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--surface); }
+.composer textarea { width: 100%; min-height: 64px; resize: vertical; background: var(--void); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font: inherit; }
+.composer .aud-line { font-size: 12px; color: var(--muted); margin: 6px 0; }
+.closed { border: 1px dashed var(--line); border-radius: 12px; padding: 12px; color: var(--muted); font-size: 13px; }
+.notif { display: flex; gap: 10px; padding: 12px 4px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.notif .ic { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; color: var(--amber); flex: none; font-weight: 700; }
+.notif.new { background: #1A1610; }
+.status { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; color: var(--muted); white-space: nowrap; }
+.status.used { border-color: var(--ok); color: var(--ok); }
+.sim-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.explain { max-width: 1140px; margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.explain .card h3 { font-size: 16px; }
+.explain .card p, .explain .card li { font-size: 14px; color: var(--muted); }
+.explain .card b { color: var(--text); }

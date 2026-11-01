@@ -86,8 +86,8 @@
 | Entity | Notes |
 |---|---|
 | **DailyDropQuestion** | publish_date (UTC date, **unique**: the idempotency key), status (`draft`, `in_review`, `approved`, `scheduled`, `published`, `failed`), is_reserve, translations, published_at |
-| **DailyDropAnswer** | question, author, body, catalog refs, edited_at, deleted_at. Unique (question, author) for top-level answers (S-04). Late answers are flagged. |
-| **QuestionSuggestion** | submitter, text, status, reviewer notes |
+| **DailyDropAnswer** | question, author, body, catalog refs, edited_at, deleted_at. Unique (question, author) for top-level answers (D-035). Answers to archived questions are allowed and show their date; there is no late flag (D-036). |
+| **QuestionSuggestion** | submitter, text, status, reviewer notes, resulting question (optional; used only to send the private notification on publish, D-037) |
 | **WeeklyPoll** | week (ISO week, unique), publish_at, options, translations, status. Votes are private, aggregates are public. |
 | **WeeklyPollVote** | poll, voter, option |
 | **DidYouKnowPost** | publish_at, translations, public sources, **internal fact-check notes (editor-only)**, certainty qualifier, status |

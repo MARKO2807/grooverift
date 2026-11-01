@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>JQ1 · Može li se preskočiti izbor vidljivosti · GrooveRift skica</title>
+<link rel="stylesheet" href="../ia/ia.css">
+<link rel="stylesheet" href="journeys.css">
+</head>
+<body>
+<!-- Phase 3, step 3.3: JQ1 in docs/design/journeys/README.md. Fictional placeholder data. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="jq2-answer-count.html">JQ2</a><a href="jq3-archive.html">JQ3</a><a href="jq4-suggestions.html">JQ4</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Tekstovi su radni (konačni u 3.8), boje i fontovi privremeni. Ništa se ne sprema.</div>
+  <h1>JQ1 · Može li se preskočiti izbor vidljivosti u onboardingu?</h1>
+  <p class="lead">Ista tri koraka onboardinga, dvije verzije. <b>Probaj u obje:</b> klikni „Nastavi” bez odabira, pa probaj „Preskoči” (postoji samo desno). Na koraku Music DNA probaj i s odabirom žanrova i bez njega: ako ništa ne dodaš, pitanje o vidljivosti Music DNA se ne prikazuje odmah, nego tek kad prvi put dodaš nešto.</p>
+
+  <div class="phones">
+    <section class="opt" aria-labelledby="h-a">
+      <h2 id="h-a">A · Obavezan izbor <span class="rec">preporuka</span></h2>
+      <p class="sub">Nema „Preskoči”. „Nastavi” bez izbora pokazuje poruku uz pitanje.</p>
+      <div class="phone short" id="phone-a"></div>
+    </section>
+    <section class="opt" aria-labelledby="h-b">
+      <h2 id="h-b">B · Može se preskočiti</h2>
+      <p class="sub">„Preskoči za sad” postoji. Preskakanje znači: privatan profil, ne pojavljuje se u otkrivanju.</p>
+      <div class="phone short" id="phone-b"></div>
+    </section>
+    <div style="flex:1;min-width:300px;max-width:420px">
+      <h2 style="font-size:17px">Što se dogodilo</h2>
+      <div id="log" class="card" style="font-size:14px"><p class="meta" style="margin:0">Ovdje se vidi stanje računa nakon što prođeš korake.</p></div>
+    </div>
+  </div>
+
+  <div class="explain">
+    <div class="card"><h3>Zašto uopće pitamo</h3><p>Po <b>GDPR čl. 25(2)</b> osobni podaci po defaultu ne smiju biti dostupni neograničenom broju ljudi „bez intervencije” osobe. Zato je javan profil moguć samo ako ga član <b>sam odabere</b> (D-025, D-030). Ako ništa ne odabere, račun mora biti privatan. Obje opcije to poštuju. Razlikuju se samo u tome smije li član proći dalje bez odluke.</p></div>
+    <div class="card"><h3>A · Obavezan izbor</h3><ul><li><b>Za:</b> svaki član barem jednom pročita što znači javno, a što privatno. To je najpošteniji put do tvog cilja da većina računa bude javna: ljudi biraju javno jer razumiju što dobiju, a ne zato što su kliknuli dalje.</li><li><b>Za:</b> nema „slučajno privatnih” računa koje nitko ne može pronaći.</li><li><b>Protiv:</b> jedan korak više bez izlaza. Master Prompt kaže da onboarding treba biti preskočiv „gdje je razumno”, a ovo je jedno od rijetkih mjesta gdje preskakanje nije razumno.</li></ul></div>
+    <div class="card"><h3>B · Može se preskočiti</h3><ul><li><b>Za:</b> najbrži onboarding. Tko se žuri, odmah stigne do Daily Dropa.</li><li><b>Protiv:</b> tko preskoči, postaje privatan „po inerciji”. Primjer: Ana preskoči, odgovori na Daily Drop i ljudi joj kliknu ime, ali vide samo „Ovaj račun je privatan”. Ana ne zna zašto je nitko ne prati. Vjerojatno završi s manje javnih računa nego A.</li><li><b>Protiv:</b> poslije joj treba podsjetnik da odabere, a to lako sklizne u „nagovaranje” (D-030 ga ograničava).</li></ul></div>
+    <div class="card"><h3>Isto u obje opcije (preporuka)</h3><ul><li>Ništa nije unaprijed označeno, opcije su jednake težine, nema oznake „preporučeno” (D-030).</li><li>Dok izbor nije napravljen, račun je privatan i ne pojavljuje se u otkrivanju.</li><li>Ako član na koraku Music DNA ništa ne doda, pitanje o vidljivosti Music DNA dolazi kasnije, kad prvi put nešto doda (J2). Do tada vrijedi „samo ja”.</li><li>Sve se može promijeniti u postavkama privatnosti, jednako lako u oba smjera.</li></ul></div>
+  </div>
+</main>
+<script>
+const PUBLIC_TXT = 'Svi članovi vide tvoj profil, Music DNA i povijest Daily Drop odgovora. Popise pratitelja vide tvoji pratitelji. Javni profil se može pojaviti u Otkrivanju i prijedlozima kompatibilnosti. Neprijavljeni posjetitelji vide samo ime, @korisničko ime, avatar i bio.';
+const PRIVATE_TXT = 'Profil, Music DNA i povijest odgovora vide samo pratitelji koje odobriš. Tvoji Daily Drop odgovori i dalje su vidljivi svim članovima na stranici pitanja, a odgovori u javnim raspravama svima koji vide raspravu.';
+const GENRES = ['Indie rock', 'Jazz', 'Techno', 'Hip-hop', 'Folk', 'Metal', 'Soul', 'Ambient'];
+const logs = { a: [], b: [] };
+
+function phone(el, mode) {
+  const st = { step: 6, vis: null, picks: new Set(), dnaVis: null, err: false, skipped: false };
+  const total = 9;
+  function frame(title, body, actions) {
+    el.innerHTML = `<div class="topbar"><span class="title">${title}</span><span class="alpha-tag">Alpha</span></div>
+      <div class="content">${body}</div><div class="foot-actions">${actions}</div>`;
+  }
+  function progress(n) { return `<div class="step">Korak ${n} od ${total}</div><div class="bar"><i style="width:${n / total * 100}%"></i></div>`; }
+  function render() {
+    if (st.step === 6) {
+      frame('Tko vidi tvoj profil?', progress(6) +
+        `<fieldset style="border:0;padding:0;margin:0"><legend class="meta">Odaberi jedno. Možeš promijeniti bilo kad u postavkama privatnosti.</legend>
+        <label class="choice"><input type="radio" name="v-${mode}" value="public" ${st.vis === 'public' ? 'checked' : ''}><span><h4>Javno</h4><p>${PUBLIC_TXT}</p></span></label>
+        <label class="choice"><input type="radio" name="v-${mode}" value="private" ${st.vis === 'private' ? 'checked' : ''}><span><h4>Privatno</h4><p>${PRIVATE_TXT}</p></span></label></fieldset>
+        ${st.err ? '<p class="err" role="alert">Odaberi tko vidi tvoj profil.</p>' : ''}`,
+        `<button class="btn primary" data-a="next">Nastavi</button>` + (mode === 'b' ? `<button class="linkbtn" data-a="skip">Preskoči za sad</button>` : ''));
+    } else if (st.step === 7) {
+      frame('Tvoj Music DNA', progress(7) +
+        `<p style="margin:0 0 8px">Odaberi nekoliko žanrova (oko 5–10 ukupno). Utječu na Music DNA, Otkrivanje i kompatibilnost, i možeš ih mijenjati kad god želiš.</p>
+        <div class="chips">${GENRES.map(g => `<button class="chip" aria-pressed="${st.picks.has(g)}" data-g="${g}" style="${st.picks.has(g) ? 'border-color:var(--coral);background:#2A1418' : ''}">${st.picks.has(g) ? '✓ ' : ''}${g}</button>`).join('')}</div>
+        <p class="meta">Izvođače bi ovdje tražio preko tražilice (izostavljeno u skici).</p>`,
+        `<button class="btn primary" data-a="next">Nastavi</button><button class="linkbtn" data-a="skip">Preskoči</button>`);
+    } else if (st.step === 8) {
+      frame('Tko vidi tvoj Music DNA?', progress(8) +
+        `<fieldset style="border:0;padding:0;margin:0"><legend class="meta">Odaberi jedno.</legend>
+        ${[['all', 'Svi članovi', 'Pomaže otkrivanju i objašnjenjima kompatibilnosti.'], ['followers', 'Pratitelji', 'Vide ga samo ljudi koji te prate.'], ['me', 'Samo ja', 'Ne koristi se za objašnjenja drugima.']].map(([v, h, p]) =>
+          `<label class="choice"><input type="radio" name="d-${mode}" value="${v}" ${st.dnaVis === v ? 'checked' : ''}><span><h4>${h}</h4><p>${p}</p></span></label>`).join('')}</fieldset>
+        ${st.err ? '<p class="err" role="alert">Odaberi tko vidi tvoj Music DNA.</p>' : ''}`,
+        `<button class="btn primary" data-a="next">Nastavi</button>` + (mode === 'b' ? `<button class="linkbtn" data-a="skip">Preskoči za sad</button>` : ''));
+    } else {
+      const visTxt = st.vis === 'public' ? 'javan' : st.vis === 'private' ? 'privatan' : 'privatan (nije odabrano)';
+      const dnaTxt = st.picks.size === 0 ? 'prazan; pitanje o vidljivosti doći će kad prvi put dodaš nešto' :
+        ({ all: 'svi članovi', followers: 'pratitelji', me: 'samo ja' })[st.dnaVis] || 'samo ja (nije odabrano)';
+      frame('Skoro gotovo', progress(9) +
+        `<div class="result ${st.vis ? '' : 'warn'}"><b>Profil:</b> ${visTxt}<br><b>Music DNA:</b> ${dnaTxt}</div>
+         <p class="meta">Sljedeći korak bi bio „Kako GrooveRift radi”, pa podsjetnik, pa početna s današnjim Daily Dropom.</p>`,
+        `<button class="btn" data-a="reset">Kreni ispočetka</button>`);
+      logs[mode] = [`<b>${mode.toUpperCase()}:</b> profil ${visTxt}; Music DNA ${dnaTxt}.`];
+      document.getElementById('log').innerHTML = (logs.a.concat(logs.b).map(l => `<p style="margin:0 0 8px">${l}</p>`).join('')) || '';
+    }
+    const h = el.querySelector('.title'); if (h) h.setAttribute('tabindex', '-1');
+  }
+  el.addEventListener('change', e => {
+    if (e.target.name === `v-${mode}`) { st.vis = e.target.value; st.err = false; }
+    if (e.target.name === `d-${mode}`) { st.dnaVis = e.target.value; st.err = false; }
+  });
+  el.addEventListener('click', e => {
+    const g = e.target.closest('[data-g]');
+    if (g) { st.picks.has(g.dataset.g) ? st.picks.delete(g.dataset.g) : st.picks.add(g.dataset.g); render(); return; }
+    const a = e.target.closest('[data-a]'); if (!a) return;
+    const act = a.dataset.a;
+    if (act === 'reset') { Object.assign(st, { step: 6, vis: null, picks: new Set(), dnaVis: null, err: false }); render(); return; }
+    if (st.step === 6) {
+      if (act === 'next' && !st.vis) { st.err = true; render(); return; }
+      if (act === 'skip') st.vis = null;
+      st.step = 7;
+    } else if (st.step === 7) {
+      if (act === 'skip') st.picks.clear();
+      st.step = st.picks.size ? 8 : 9;
+    } else if (st.step === 8) {
+      if (act === 'next' && !st.dnaVis) { st.err = true; render(); return; }
+      if (act === 'skip') st.dnaVis = null;
+      st.step = 9;
+    }
+    st.err = false; render();
+    el.querySelector('.title').focus();
+  });
+  render();
+}
+phone(document.getElementById('phone-a'), 'a');
+phone(document.getElementById('phone-b'), 'b');
+</script>
+</body>
+</html>

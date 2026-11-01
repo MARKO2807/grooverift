@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>JQ4 · Povratna informacija za prijedloge pitanja · GrooveRift skica</title>
+<link rel="stylesheet" href="../ia/ia.css">
+<link rel="stylesheet" href="journeys.css">
+</head>
+<body>
+<!-- Phase 3, step 3.3: JQ4 (IA Q7) in docs/design/journeys/README.md. Fictional placeholder data. Feature wave B2. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="jq1-visibility-step.html">JQ1</a><a href="jq2-answer-count.html">JQ2</a><a href="jq3-archive.html">JQ3</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Prijedlozi pitanja dolaze u beta valu B2, ne u alfi. Ništa se ne sprema.</div>
+  <h1>JQ4 · Što član sazna nakon što predloži Daily Drop pitanje?</h1>
+  <p class="lead">Ana predloži dva pitanja. Urednici prvo malo urede i objave, a drugo ne iskoriste. Klikći gumbe redom i gledaj što Ana vidi u svakoj opciji.</p>
+  <div class="sim-btns">
+    <button class="btn primary" data-ev="send">1 · Ana pošalje prijedlog „Album koji si krivo procijenio na prvo slušanje?”</button>
+    <button class="btn" data-ev="used">2 · Urednici ga malo urede i objave kao Daily Drop</button>
+    <button class="btn" data-ev="send2">3 · Ana pošalje drugi prijedlog</button>
+    <button class="btn" data-ev="unused">4 · Urednici drugi prijedlog arhiviraju</button>
+    <button class="btn" data-ev="reset">Kreni ispočetka</button>
+  </div>
+  <p class="meta" id="evlog" role="status">Još ništa nije poslano.</p>
+
+  <div class="phones">
+    <section class="opt"><h2>A · Samo „Hvala”</h2><p class="sub">Nakon slanja nema daljnje komunikacije.</p><div class="phone short" id="pa"></div></section>
+    <section class="opt"><h2>B · Obavijest samo ako se objavi <span class="rec">preporuka</span></h2><p class="sub">Privatna obavijest u Aktivnosti na dan objave. Odbijanja se ne javljaju.</p><div class="phone short" id="pb"></div></section>
+    <section class="opt"><h2>C · Popis sa statusima</h2><p class="sub">Profil → Moji prijedlozi: primljeno, iskorišteno, nije iskorišteno.</p><div class="phone short" id="pc"></div></section>
+  </div>
+
+  <div class="explain">
+    <div class="card"><h3>A · Samo „Hvala”</h3><ul>
+      <li><b>Za:</b> najjednostavnije, nula dodatnog posla za urednike.</li>
+      <li><b>Protiv:</b> Ana nikad ne sazna je li njeno pitanje postalo Daily Drop. Ako ga i prepozna, nije sigurna je li to „njeno” ili slučajnost. Prijedlozi djeluju kao da odlaze u prazno, pa ljudi s vremenom prestanu predlagati.</li></ul></div>
+    <div class="card"><h3>B · Obavijest ako se objavi</h3><ul>
+      <li><b>Za:</b> lijep, privatan trenutak („tvoje pitanje je danas Daily Drop”) bez javnog rangiranja i bez glasanja (§5).</li>
+      <li><b>Za:</b> nema poruka o odbijanju. Urednici ne moraju zatvarati svaki prijedlog, a Ana ne dobiva „nije prihvaćeno”.</li>
+      <li><b>Za:</b> malo posla: kad urednik napravi nacrt iz prijedloga (ADM-08), veza se pamti i obavijest ode automatski na dan objave.</li>
+      <li><b>Protiv:</b> o neiskorištenim prijedlozima Ana ne sazna ništa. Copy kod slanja to mora pošteno reći.</li>
+      <li><b>Napomena:</b> obavijest je samo za Anu. Javno navođenje autora pitanja nije dio opsega i trebalo bi tvoje odobrenje.</li></ul></div>
+    <div class="card"><h3>C · Popis sa statusima</h3><ul>
+      <li><b>Za:</b> najviše transparentnosti. Ana uvijek zna gdje joj je prijedlog.</li>
+      <li><b>Protiv:</b> urednici moraju označiti <b>svaki</b> prijedlog, što je stalan posao za mali tim.</li>
+      <li><b>Protiv:</b> „Nije iskorišteno” na desetke prijedloga djeluje kao niz odbijenica. Ili statusi tjednima stoje na „Primljeno”, što izgleda kao da nitko ne čita.</li>
+      <li><b>Protiv:</b> još jedan ekran (Profil → Moji prijedlozi) koji treba dizajnirati i održavati.</li></ul></div>
+  </div>
+</main>
+<script>
+const st = { sent: 0, used: false, unused: false };
+const THANKS = {
+  a: 'Hvala! Urednici čitaju svaki prijedlog i mogu ga urediti prije objave. Nećemo ti se posebno javljati.',
+  b: 'Hvala! Urednici čitaju svaki prijedlog i mogu ga urediti. Ako tvoje pitanje postane Daily Drop, javit ćemo ti privatnom obavijesti. O ostalima ti se nećemo javljati.',
+  c: 'Hvala! Urednici čitaju svaki prijedlog i mogu ga urediti. Status pratiš u Profil → Moji prijedlozi.'
+};
+const view = { a: 'activity', b: 'activity', c: 'activity' };
+function screen(opt) {
+  const v = view[opt];
+  let body = '';
+  if (v === 'activity') {
+    const items = [];
+    if (opt === 'b' && st.used) items.push(`<div class="notif new"><span class="ic">★</span><div><b>Tvoje pitanje je danas Daily Drop.</b><br><span class="meta">Urednici su ga malo uredili. Otvori pitanje →</span></div></div>`);
+    items.push(`<div class="notif"><span class="ic">↩</span><div>Petra je odgovorila na tvoj odgovor.<br><span class="meta">Izmišljena obavijest, za kontekst</span></div></div>`);
+    body = `<p class="eyebrow">Aktivnost</p><div>${items.join('')}</div>`;
+    if (st.sent) body = `<div class="result">${THANKS[opt]}</div>` + body;
+  } else {
+    const rows = [];
+    if (st.sent >= 1) rows.push(['Album koji si krivo procijenio na prvo slušanje?', st.used ? 'Iskorišteno' : 'Primljeno']);
+    if (st.sent >= 2) rows.push(['Koji koncert bi ponovno doživio?', st.unused ? 'Nije iskorišteno' : 'Primljeno']);
+    body = `<p class="eyebrow">Moji prijedlozi</p>` + (rows.length ? `<div class="list">${rows.map(([t, s]) =>
+      `<div class="person"><div class="who">${t}</div><span class="status ${s === 'Iskorišteno' ? 'used' : ''}">${s}</span></div>`).join('')}</div>` : '<div class="empty">Još nema prijedloga.</div>');
+  }
+  const tabs = opt === 'c'
+    ? `<div class="segments"><button aria-pressed="${v === 'activity'}" data-v="activity">Aktivnost</button><button aria-pressed="${v === 'mine'}" data-v="mine">Moji prijedlozi</button></div>`
+    : '';
+  return `<div class="topbar"><span class="title">${opt === 'c' && v === 'mine' ? 'Profil' : 'Aktivnost'}</span><span class="alpha-tag">Beta</span></div>${tabs}<div class="content">${body}</div>`;
+}
+function renderAll() { for (const o of ['a', 'b', 'c']) document.getElementById('p' + o).innerHTML = screen(o); }
+document.querySelector('.sim-btns').addEventListener('click', e => {
+  const ev = e.target.closest('[data-ev]')?.dataset.ev; if (!ev) return;
+  const log = document.getElementById('evlog');
+  if (ev === 'reset') { Object.assign(st, { sent: 0, used: false, unused: false }); log.textContent = 'Još ništa nije poslano.'; }
+  if (ev === 'send') { st.sent = Math.max(st.sent, 1); log.textContent = 'Ana je poslala prvi prijedlog.'; }
+  if (ev === 'used') { if (!st.sent) { log.textContent = 'Prvo pošalji prijedlog (korak 1).'; } else { st.used = true; log.textContent = 'Urednici su objavili Anino pitanje (uređeno).'; } }
+  if (ev === 'send2') { if (!st.sent) { log.textContent = 'Prvo korak 1.'; } else { st.sent = 2; log.textContent = 'Ana je poslala drugi prijedlog.'; } }
+  if (ev === 'unused') { if (st.sent < 2) { log.textContent = 'Prvo pošalji drugi prijedlog (korak 3).'; } else { st.unused = true; log.textContent = 'Urednici su arhivirali drugi prijedlog.'; } }
+  renderAll();
+});
+document.getElementById('pc').addEventListener('click', e => { const v = e.target.closest('[data-v]')?.dataset.v; if (v) { view.c = v; renderAll(); } });
+renderAll();
+</script>
+</body>
+</html>

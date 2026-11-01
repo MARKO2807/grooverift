@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>JQ3 · Odgovori na starija pitanja · GrooveRift skica</title>
+<link rel="stylesheet" href="../ia/ia.css">
+<link rel="stylesheet" href="journeys.css">
+</head>
+<body>
+<!-- Phase 3, step 3.3: JQ3 (OQ-12 part 2) in docs/design/journeys/README.md. Fictional placeholder data. -->
+<main class="page">
+  <nav class="navlinks" aria-label="Primjeri"><a href="index.html">← Svi primjeri</a><a href="jq1-visibility-step.html">JQ1</a><a href="jq2-answer-count.html">JQ2</a><a href="jq4-suggestions.html">JQ4</a></nav>
+  <div class="banner"><b>Skica za odluku, ne dizajn.</b> Danas je u skici 26. studenoga, a pitanje je iz arhive (14. studenoga). Tin, Petra i Luka su izmišljeni. Ništa se ne sprema.</div>
+  <h1>JQ3 · Što kad netko odgovori na pitanje iz arhive?</h1>
+  <p class="lead">Ana je kroz arhivu našla pitanje od prije 12 dana i želi odgovoriti. Napiši odgovor u sva tri mobitela i usporedi kako izgleda (sve tri pretpostavljaju „jedan odgovor” iz JQ2).</p>
+
+  <div class="phones">
+    <section class="opt"><h2>A · Otvoreno, datum neutralno <span class="rec">preporuka</span></h2><p class="sub">Odgovor izgleda kao svaki drugi, samo s datumom kad je napisan.</p><div class="phone short" id="pa"></div></section>
+    <section class="opt"><h2>B · Otvoreno, oznaka „Kasni odgovor”</h2><p class="sub">Kao OQ-12 i IA HUB-03 danas kažu: zakašnjeli odgovori su označeni.</p><div class="phone short" id="pb"></div></section>
+    <section class="opt"><h2>C · Zatvoreno za nove odgovore</h2><p class="sub">Nakon dana objave mogu se samo čitati odgovori, reagirati i odgovarati na njih.</p><div class="phone short" id="pc"></div></section>
+  </div>
+
+  <div class="explain">
+    <div class="card"><h3>Zašto ovo pitamo</h3><p>U dokumentima postoji <b>proturječje</b>. OQ-12 preporučuje da su zakašnjeli odgovori „označeni”. Istraživanje u koraku 3.1 (<code>ux-foundations.md</code> §3.2) kaže da oznake kašnjenja izbjegavamo, jer kod BeReala rade kao pritisak i sramoćenje („stigao si kasno”). Master Prompt traži „trajnu, potpuno interaktivnu arhivu”.</p></div>
+    <div class="card"><h3>A · Datum, bez oznake</h3><ul>
+      <li><b>Za:</b> nema pritiska. Ana odgovara kad želi, a datum je činjenica koju svi odgovori ionako imaju.</li>
+      <li><b>Za:</b> arhiva živi. Netko tko se pridruži u ožujku može odgovarati na pitanja iz siječnja, a Ana dobije odgovor od nekoga kome se pitanje svidjelo.</li>
+      <li><b>Za:</b> poredak „Najnovije” prirodno prikaže novi odgovor na vrhu.</li>
+      <li><b>Protiv:</b> čitatelj mora sam pogledati datum da vidi da je odgovor napisan kasnije (npr. ako se pitanje odnosi na „album ovog tjedna”).</li></ul></div>
+    <div class="card"><h3>B · Oznaka „Kasni odgovor”</h3><ul>
+      <li><b>Za:</b> odmah je jasno da je odgovor napisan nakon dana objave.</li>
+      <li><b>Protiv:</b> „kasni” zvuči kao prigovor. Član koji nije bio tu na dan objave dobije etiketu, što je upravo obrazac koji smo odbacili u 3.1, a podsjeća i na „streak” logiku.</li>
+      <li><b>Protiv:</b> treba odrediti kad odgovor postaje „kasan” (nakon 24 h? nakon ponoći u čijoj vremenskoj zoni?).</li></ul></div>
+    <div class="card"><h3>C · Zatvoreno</h3><ul>
+      <li><b>Za:</b> svaki dan ima svoj „trenutak”. Manje posla za moderaciju starih rasprava.</li>
+      <li><b>Protiv:</b> teško se slaže s „potpuno interaktivnom arhivom” (§5). Novi članovi nikad ne mogu odgovoriti na stara pitanja, a povijest na profilu ima samo pitanja s dana kad je član bio aktivan.</li>
+      <li><b>Protiv:</b> pojačava pritisak „odgovori danas ili nikad”, što se kosi s pravilom bez nagovaranja (P2).</li></ul></div>
+  </div>
+</main>
+<script src="drop-sim.js"></script>
+<script>
+dropSim(document.getElementById('pa'), { count: 'one', old: true, late: 'date', today: '26. stu' });
+dropSim(document.getElementById('pb'), { count: 'one', old: true, late: 'label', today: '26. stu' });
+dropSim(document.getElementById('pc'), { count: 'one', old: true, late: 'closed', today: '26. stu' });
+</script>
+</body>
+</html>

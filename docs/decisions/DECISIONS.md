@@ -43,6 +43,10 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-031 | 2026-11-01 | **Navigation model A** (resolves IA Q1): mobile bottom bar Home · Hub · Discover · Activity · Profile; Messages as a top-bar icon on Home; Create is contextual; the desktop rail uses the same order plus Messages. Alpha shows Home · Hub · Activity · Profile; Discover is added in B4 and the Messages icon in B3, without moving existing tabs. Labels are provisional until the copy guide (3.8). See [`information-architecture.md`](../design/information-architecture.md) §4. | CONFIRMED | Owner |
 | D-032 | 2026-11-01 | Default visibility of the **Daily Drop answer history on the profile** is **same as profile**: public profile → all signed-in members; private profile → followers. Individual answers on the question page remain visible to all members (D-021). The onboarding "Public" option text must state this (D-030). Members can change it in privacy settings (resolves IA Q2). | CONFIRMED | Owner |
 | D-033 | 2026-11-01 | Default visibility of **followers and following lists, including their counts**, is **followers**. Reason: the lists expose other members' relationships (including private members), and requiring a follow makes viewing visible to the profile owner. Members can change it in privacy settings; a private profile caps it at followers (resolves IA Q3). | CONFIRMED | Owner |
+| D-034 | 2026-11-01 | **Onboarding visibility steps are required** (resolves JQ1). The profile visibility step has no Skip; Continue without a choice shows an inline error. Until a choice is made the account is treated as private and not discoverable (GDPR Art. 25(2)). The Music DNA visibility step is shown only if the member added Music DNA in onboarding; otherwise the choice is asked the first time Music DNA is added, and the section is "only me" until then. Presentation stays neutral per D-030. See [J1](../design/journeys/j1-onboarding.md). | CONFIRMED | Owner |
+| D-035 | 2026-11-01 | **One top-level Daily Drop answer per member per question**, editable and deletable, with an edited indicator. Replies are unlimited (resolves OQ-12 part 1, JQ2). See [J3](../design/journeys/j3-daily-drop.md). | CONFIRMED | Owner |
+| D-036 | 2026-11-01 | **Archived Daily Drop questions stay open for new answers.** Every answer shows its date in a neutral way; there is **no "late" label** (resolves OQ-12 part 2, JQ3; replaces "labeled late" in OQ-12 and IA HUB-03, consistent with ux-foundations §3.2). | CONFIRMED | Owner |
+| D-037 | 2026-11-01 | **Daily Drop question suggestions (B2): the submitter gets a private notification only if their suggestion is published** (possibly edited). No status list and no rejection messages. The submission copy says so honestly. No public credit for submitters unless the owner approves it later (resolves IA Q7, JQ4). | CONFIRMED | Owner |
 
 ---
 
@@ -92,7 +96,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | ID | Question | Recommendation | Ref |
 |---|---|---|---|
 | OQ-11 | Daily Drop push rule east of UTC | Notify about the latest published, un-notified question at the chosen local time | D-01 |
-| OQ-12 | One top-level Daily Drop answer per member per question? Answers to archived questions? | Yes / yes (labeled late) | S-04 |
+| ~~OQ-12~~ | ~~One top-level Daily Drop answer per member per question? Answers to archived questions?~~ | Resolved → D-035, D-036 | S-04 |
 | OQ-13 | Reaction set | 3–5 fixed, music-flavored | S-05 |
 | OQ-14 | Poll votes private (aggregates only)? | Yes | S-06 |
 | OQ-15 | Username change limits | Once per 30 days, old handle reserved 30–90 days | S-07 |
