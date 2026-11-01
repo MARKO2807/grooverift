@@ -53,6 +53,14 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | ~~OQ-03~~ | ~~Monthly infrastructure budget ceiling for the alpha~~ | Resolved → D-010 | T-07, T-08 |
 | ~~OQ-04~~ | ~~Wordmark approach~~ | Resolved → D-011 | B-01 |
 
+### Needed to close Phase 2
+| ID | Question | Recommendation | Ref |
+|---|---|---|---|
+| OQ-19 | Architecture option (A Supabase / B TypeScript app + Render / C Hetzner self-managed) | **B** ([ADR-0002](adr/0002-application-architecture-and-hosting.md)) | architecture-options.md |
+| OQ-20 | Web framework within B | **Next.js** (alternative: SvelteKit) | architecture-options.md §3 |
+| OQ-21 | Artwork policy until legal clearance | Artwork-optional design; no album covers or artist photos from unlicensed sources; free-licence Commons photos and placeholders only | C-01, catalog research |
+| OQ-22 | Register with MetaBrainz (Stealth Start-Up $0) before using the API in the alpha? | Yes; budget Bronze ($100/mo) for public launch or monetization | catalog research |
+
 ### Needed before the alpha (do not block planning or development)
 | ID | Question | Recommendation | Ref |
 |---|---|---|---|

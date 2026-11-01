@@ -1,22 +1,23 @@
 # Session handoff
 
-_Session 1, 2026-11-01. Next session: start here after `docs/STATUS.md`._
+_Session 1, 2026-11-01. Read `docs/STATUS.md` first._
 
 ## State
-- Phase 1 deliverables written and committed. The owner has not yet reviewed the audit.
-- Effort was set to **high** by the owner for Phase 1.
-- Tools on the dev machine: git 2.56, Node 22.12, npm 10.9, Docker 28. **Not installed:** Python, pnpm, GitHub CLI (`gh`).
-- Claude in Chrome extension is available and permitted (D-007).
-- Root originals (`GrooveRift_Claude_Master_Prompt.txt`, `GrooveRift Mockup.jpg`, `Logo/`) are git-ignored on purpose; the tracked copies are in `docs/`.
+- Phase 2 is in progress (approved). Effort: **high** (set by the owner).
+- All commits are **local only**. Claude's `git push` was denied by the auto-mode classifier, so the owner pushes with `! git push -u origin main`. Check `git status -sb` and `git ls-remote origin` at the start of the session.
+- Tools: git 2.56, Node 22.12, npm 10.9, Docker 28. Python, pnpm and `gh` are not installed.
+- Root originals are git-ignored on purpose; the tracked copies are in `docs/`.
 
 ## Waiting on owner
-1. Review of `docs/audit/2026-11-01-specification-audit.md`.
-2. Answers to OQ-01–OQ-04.
-3. Approval of Phase 2.
+1. OQ-19 to OQ-22: architecture option B, Next.js, artwork policy, MetaBrainz registration.
+2. VQ-01 to VQ-06 in `docs/architecture/visibility-matrix.md`.
+3. Push to GitHub.
 
-## Next concrete step (once approved)
-Phase 2, step 1: catalog/metadata provider research (C-01) with current terms verified via the web or Chrome, in parallel with the hosting and architecture comparison. Recommend High effort and check that the owner switched (D-008).
+## Next concrete steps
+1. After the owner decides: set ADR-0002 to Accepted (or revise), and record D-0xx entries.
+2. Remaining Phase 2 work: threat model v0.1, legal question list (consolidate the "lawyer" sections in `docs/research/`), preliminary trademark search via Claude in Chrome (D-007), alpha acceptance criteria.
+3. Then propose Phase 3 (UX and design system). Note the new constraint: **cards must look complete without artwork**.
 
 ## Notes
-- Measured contrast: white on Coral 3.06:1, white on Amber 1.50:1. Use dark text on brand fills.
-- Daily Drop east-of-UTC push edge case (D-01) needs an owner rule before notification design.
+- Research docs are subagent output and not re-verified line by line. Re-check prices and terms before any purchase.
+- Consider a fresh session before Phase 3; this session carries a lot of research context.

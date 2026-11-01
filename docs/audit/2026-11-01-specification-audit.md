@@ -264,6 +264,20 @@ Evaluate a GSD Core pilot only after Phase 4, and only if a concrete need appear
 - Human-created content rule with proportionate enforcement (§7).
 - The alpha does not reduce beta scope (§2A, §18).
 
+## 10a. Addendum after Phase 2 research (2026-11-01)
+
+Sources: `docs/research/2026-11-01-*.md`.
+- **L-02 (DSA):** Arts. 11, 12, 14, 16, 17 and 18 apply regardless. Micro and small enterprises are exempt from the online-platform section (Arts. 20–28, except 24(3)) under Art. 19. An invite gate with human selection may mean GrooveRift is not an "online platform" at all (recital 14). Lawyer to confirm.
+- **L-03 (DPIA):** the Croatian AZOP list makes a DPIA **likely required** (profiling plus matching). Plan one before the alpha.
+- **L-04 (age):** **revised.** The Commission's Art. 28 guidelines (July 2025) reportedly treat self-declaration as inappropriate for 18+ platforms. Self-declaration is defensible only while GrooveRift is a micro/small enterprise or not an online platform. Revisit before growth or public launch. EU blueprint: ageverification.dev.
+- **L-05:** Croatian ZET čl. 6 provider-information list confirmed (name, seat, contact, register number, VAT number if applicable).
+- **L-07:** DSM Art. 17 likely does not apply at our scale. A takedown flow is still required.
+- **L-09:** the EAA generally does not cover a free social network; microenterprises are exempt. DMs and paid features are a caveat.
+- **C-01:** Spotify, Apple, Deezer, Last.fm and Discogs are unsuitable. **MusicBrainz CC0** is the backbone. Album-cover display in the EU needs legal clearance (no fair use), so the **design must work without artwork**.
+- **T-04:** iOS Web Push requires the PWA on the Home Screen (iOS 16.4+). EU status in 2026 needs a real-device check.
+- **P-03:** GitHub Free includes $12/month of Actions compute (about 2,000 Linux minutes).
+- **B-05:** Sora and Inter are OFL 1.1 with `latin-ext` coverage.
+
 ## 11. Next actions
 
 1. Owner answers to the open questions in `docs/decisions/DECISIONS.md` §3 (priority order given there).
