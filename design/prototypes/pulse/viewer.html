@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · pregled dorade smjera C</title>
+<!-- Owner review page for the refined prototype (step 3.5). Static, no dependencies. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body-sm); }
+  .wrap { display: grid; grid-template-columns: 22rem 1fr; min-height: 100vh; }
+  aside { padding: 20px; border-right: 1px solid var(--gr-color-border-subtle); background: var(--gr-color-bg-canvas); overflow-y: auto; max-height: 100vh; position: sticky; top: 0; }
+  h1 { font: var(--gr-type-title-3); margin: 0 0 4px; }
+  h2 { font: var(--gr-type-eyebrow); letter-spacing: .06em; text-transform: uppercase; color: var(--gr-color-highlight-text); margin: 20px 0 8px; }
+  p { margin: 0 0 8px; color: var(--gr-color-text-secondary); }
+  a { color: var(--gr-color-text-link); }
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btns button, .seg label span { font: var(--gr-type-label); font-size: .8125rem; min-height: 34px; padding: 0 10px; border-radius: 9999px; border: 1px solid var(--gr-color-border-strong); background: none; color: var(--gr-color-text-primary); cursor: pointer; display: inline-flex; align-items: center; }
+  .btns button[aria-pressed="true"], .seg input:checked + span { background: var(--gr-color-selected-bg); border: 2px solid var(--gr-color-selected-border); padding: 0 9px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; }
+  .seg label { position: relative; }
+  .seg input { position: absolute; opacity: 0; }
+  .seg input:focus-visible + span, .btns button:focus-visible, .chk input:focus-visible { outline: 2px solid var(--gr-color-focus-ring); outline-offset: 2px; }
+  .chk { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; color: var(--gr-color-text-primary); }
+  .chk input { margin-top: 3px; accent-color: var(--gr-color-ember-coral); }
+  .chk small { display: block; color: var(--gr-color-text-secondary); }
+  main { display: flex; flex-direction: column; align-items: center; padding: 24px; gap: 12px; }
+  .phone { border-radius: 36px; padding: 10px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B, 0 30px 80px #000; }
+  iframe { display: block; border: 0; border-radius: 28px; background: #0B0D12; }
+  .bar { display: flex; gap: 12px; align-items: center; color: var(--gr-color-text-secondary); }
+  .bar button { font: var(--gr-type-label); min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--gr-color-border-strong); background: var(--gr-color-bg-raised); color: var(--gr-color-text-primary); cursor: pointer; }
+  code { font-size: .8125rem; color: var(--gr-color-text-primary); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside>
+  <h1>Smjer C, dorada</h1>
+  <p>Skica 3.5. Izmišljeni podaci, ništa se ne sprema. Na mobitelu otvori <a href="index.html" id="solo">samostalnu verziju</a>.</p>
+  <p><a href="choices.html">Opcije za tvoje odluke →</a></p>
+
+  <h2>Ekran</h2>
+  <p>Onboarding</p>
+  <div class="btns" id="onb"></div>
+  <p style="margin-top:10px">Daily Drop</p>
+  <div class="btns" id="drop"></div>
+
+  <h2>Uređaj</h2>
+  <fieldset class="seg" id="dev"><legend class="sr-only">Veličina ekrana</legend></fieldset>
+
+  <h2>Music DNA</h2>
+  <fieldset class="seg" id="dna"><legend class="sr-only">Varijanta Music DNA</legend></fieldset>
+
+  <h2>Daily Drop naslov i datum</h2>
+  <fieldset class="seg" id="date"><legend class="sr-only">Stil datuma</legend></fieldset>
+  <fieldset class="seg" id="name" style="margin-top:8px"><legend class="sr-only">Naziv</legend></fieldset>
+
+  <h2>Ostalo</h2>
+  <label class="chk"><input type="checkbox" id="live" checked><span>Stvarni katalog izvođača<small>Pretraga ide na MusicBrainz, a fotografije na Wikidata i Wikimedia Commons. Šalje se samo upisani tekst.</small></span></label>
+  <label class="chk"><input type="checkbox" id="fail"><span>Simuliraj kvar kataloga<small>Prikazuje stanje greške u pretrazi izvođača.</small></span></label>
+  <label class="chk"><input type="checkbox" id="loop"><span>Struja stalno radi<small>Samo za usporedbu. Zadano je kratki naboj do 5 s (WCAG 2.2.2).</small></span></label>
+  <label class="chk"><input type="checkbox" id="priv"><span>Privatni profil<small>Za Daily Drop ekrane.</small></span></label>
+</aside>
+<main>
+  <div class="bar"><button id="replay" type="button">Ponovi od početka ekrana</button><span id="url"></span></div>
+  <div class="phone"><iframe id="f" title="Prototip GrooveRift" width="360" height="740"></iframe></div>
+</main>
+</div>
+<style>.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+<script>
+(function () {
+  const ONB = [['', 'Pozivnica'], ['age', '18+'], ['account', 'Račun'], ['username', 'Ime'], ['language', 'Jezik'], ['visibility', 'Tko vidi profil'], ['dna', 'Što slušaš'], ['dna&picks=1', 'Što slušaš (popunjeno)'], ['dnavis', 'Tko vidi DNA'], ['how', 'Kako radi'], ['reminder', 'Podsjetnik'], ['done', 'Spremno']];
+  const DROP = [['home', 'Početna'], ['drop', 'Pitanje i odgovori'], ['drop&open=compose', 'Pisanje odgovora'], ['answer', 'Komentari'], ['hub', 'Hub'], ['profile', 'Profil']];
+  const DEV = [['360x640', 'Mali Android 360×640'], ['390x844', 'iPhone 390×844'], ['412x915', 'Pixel 412×915'], ['320x568', 'Najmanji 320×568']];
+  const DNA = [['helix', 'Spirala'], ['map', 'Konstelacija'], ['signal', 'Signal']];
+  const DATE = [['classic', 'A Klasično'], ['today', 'B Danas'], ['calendar', 'C Kalendar'], ['edition', 'D Broj'], ['short', 'E Kratko']];
+  const NAME = [['0', 'Daily Drop'], ['1', 'Drop dana'], ['2', 'The Drop'], ['3', 'Daily Rift']];
+  const s = Object.assign({ scr: 'o:', dev: '360x640', dna: 'helix', date: 'classic', name: '0', live: true, fail: false, loop: false, priv: false },
+    JSON.parse(decodeURIComponent(location.hash.slice(1) || '{}') || '{}'));
+  const $ = id => document.getElementById(id);
+  function btns(el, list, prefix) {
+    el.innerHTML = list.map(([v, l]) => `<button type="button" data-v="${prefix}${v}" aria-pressed="${s.scr === prefix + v}">${l}</button>`).join('');
+    el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; s.scr = b.dataset.v; update(true); });
+  }
+  function seg(el, list, key) {
+    el.insertAdjacentHTML('beforeend', list.map(([v, l]) => `<label><input type="radio" name="${key}" value="${v}"${s[key] === v ? ' checked' : ''}><span>${l}</span></label>`).join(''));
+    el.addEventListener('change', e => { s[key] = e.target.value; update(true); });
+  }
+  btns($('onb'), ONB, 'o:'); btns($('drop'), DROP, 'd:');
+  seg($('dev'), DEV, 'dev'); seg($('dna'), DNA, 'dna'); seg($('date'), DATE, 'date'); seg($('name'), NAME, 'name');
+  for (const k of ['live', 'fail', 'loop', 'priv']) { $(k).checked = s[k]; $(k).addEventListener('change', () => { s[k] = $(k).checked; update(true); }); }
+  $('replay').addEventListener('click', () => update(true));
+  function url() {
+    const [kind, v] = [s.scr.slice(0, 1), s.scr.slice(2)];
+    const q = [];
+    if (kind === 'd') q.push('flow=drop', 'at=' + v); else if (v) q.push('at=' + v);
+    q.push('dna=' + s.dna, 'date=' + s.date);
+    if (s.name !== '0') q.push('name=' + s.name);
+    if (s.live) q.push('live=1'); if (s.fail) q.push('catalog=fail'); if (s.loop) q.push('motion=loop'); if (s.priv) q.push('private=1');
+    return 'index.html?' + q.join('&');
+  }
+  function update(reload) {
+    document.querySelectorAll('.btns button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === s.scr));
+    const [w, h] = s.dev.split('x').map(Number);
+    const f = $('f'); f.width = w; f.height = h;
+    const u = url();
+    if (reload) { f.src = 'about:blank'; setTimeout(() => { f.src = u; }, 30); }
+    $('url').innerHTML = `<code>${u.replace(/&/g, '&amp;')}</code>`;
+    $('solo').href = u;
+    history.replaceState(null, '', '#' + encodeURIComponent(JSON.stringify(s)));
+  }
+  update(true);
+})();
+</script>
+</body>
+</html>
