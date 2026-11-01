@@ -1,6 +1,6 @@
 # Prototype directions (step 3.5)
 
-_Phase 3, step 3.5 ⛳. First round done: the owner picked **direction C "Pulse" (D-042)** with the **dock composer (D-043)**. Refinement of C is next (§6)._
+_Phase 3, step 3.5 ⛳. First round done: the owner picked **direction C "Pulse" (D-042)** with the **dock composer (D-043)**. Refinement of C is in progress: two review rounds done in session 9 (§7). The rest of the refinement list is in §6._
 
 ## 1. What was built
 
@@ -103,19 +103,116 @@ These items should be settled in the chosen direction or in step 3.8.
 | D-044 | No external usability check; the owner reviews personally. |
 | D-045 | Light theme as a member setting, dark default. Designed in step 3.4b. |
 
-**Refinement of C (next):**
-- Promote C into `design/prototypes/drop-onboarding/` or keep it in `directions/c-pulse/`, and decide whether A and B stay as a record.
+**Refinement of C, remaining after session 9** (done items are in §7):
 - Key states:
   - empty: no answers yet, no follows
-  - loading skeletons
+  - loading skeletons for answers (the artist search already has them)
   - network error with Retry and kept text (E9, JR4)
   - offline (E10)
   - blocked placeholders (D-019)
   - the missing-question day (J3 E2)
   - long text and long Croatian names
-  - catalog search failure (J1 E10)
-  - under-18 page
-- 320 px reflow and 200 % text zoom.
+- 200 % text zoom (320 px reflow is done).
 - Desktop adaptation: rail (D-031) at 600 px and 1024 px, a reading column of 40 rem, and the sheet as a centered dialog on wide screens.
-- Recheck that motifs are limited to the D-042 placements.
 - Screen reader pass (Narrator is built into Windows; NVDA would need installing, which needs owner approval) and a Windows high-contrast check.
+- "Smanji pokrete" in the real settings structure (it lives on the Profile screen in the prototype).
+
+## 7. Refinement of C (session 9)
+
+The refined prototype lives in [`design/prototypes/pulse/`](../../design/prototypes/pulse/). `directions/` stays unchanged as the record of round 1. The owner reviews in `pulse/viewer.html`, which has a phone frame, a jump to any screen, device sizes and switches. On a phone, `pulse/index.html` opens directly. `pulse/choices.html` shows a Music DNA gallery, a playground and the motion.
+
+| File | Purpose |
+|---|---|
+| `app.js` | State machine for J1 and J3, direction C only |
+| `current.js` | The "struja" motif and the orbit round the answer field; also `GR_MOTION` ("Smanji pokrete") |
+| `dna.js` | Generative Music DNA "Spirala" (D-048) |
+| `catalog.js` | Artist search: offline list with typo tolerance, or live (`?live=1`) MusicBrainz + Wikidata + Commons |
+| `data.js` | **Placeholder data**: fictional members and answers; real artist names as catalog stand-ins; genre traits are design placeholders |
+| `style.css`, `icons.js` | Styles on `--gr-*` tokens; provisional icons (OQ-23) |
+| `viewer.html`, `choices.html` | Owner review pages (Croatian) |
+
+**URL parameters:** `?at=<step>`, `?flow=drop&at=drop|answer|hub|profile|activity`, `&open=compose`, `&private=1`, `?at=dna&picks=1` (DNA step pre-filled), `?live=1` (real catalog), `?catalog=fail` (catalog outage), `?calm=1` (start with "Smanji pokrete" on).
+
+### Round 1: owner review of C
+
+The owner asked for:
+- **Invite:** a living pulse, ideally an electric current.
+- **Age:** a centred step.
+- **Profile and Music DNA visibility:** fit the phone screen with no scrolling.
+- **Genres:** 2 to 10, chosen from about 20 popular ones.
+- **Music DNA:** a "brutal", unique visual.
+- **Artist search:** good, with photos and many bands.
+- **How it works:** more dynamic.
+- **Reminder:** short, and it must say this is the main feature.
+- **Done:** livelier, with a less monotonous summary.
+- **Daily Drop:**
+  - name and date apart, without middle dots
+  - a centred "Odgovori" with a live current
+  - filters in one row
+  - slightly bigger author line
+  - a better divider between answers
+  - less uniform answers
+  - a subtle current round the answer field
+
+**What was built:**
+- **Current.** A canvas Coral→Amber arc. The two halves run in and collide, charges flow from both ends, and the middle pulses when they meet.
+- **Profile visibility.** Two equal option columns over a six-row comparison. The chosen column lights up, and rows that differ are emphasised. It fits 360×640, which the smoke test checks. The texts required by IA §7 are kept.
+- **Genres and artists:**
+  - 24 genres plus "Još žanrova" search (Croatian genres such as Klapa and Tamburica included); 2–10 genres required (D-046).
+  - Artist search tolerates typos ("metalica" finds Metallica).
+  - Live mode was tested: MusicBrainz returned Metallica and Let 3 with credited Commons photos, and Haustor without a photo, so it got a generated tile.
+  - Picked artists show as portraits.
+  - A catalog outage shows a Retry state, and the picks are kept.
+- **How it works.** Animated cards for:
+  - Daily Drop
+  - Weekly Poll
+  - Did You Know?
+  - Ljudi po ukusu (people by taste)
+
+  The first three are confirmed for the beta in the Master Prompt. Whether they are in the alpha depends on OQ-07.
+- **Reminder.** "Ne propusti Daily Drop" with a notification preview.
+  - The community line is positive and does not shame "Ne sada" (DSA Art. 25, EDPB dark-pattern guidance).
+  - The two buttons keep equal weight.
+- **Done.** Music DNA card and four fact tiles.
+- **Daily Drop:**
+  - a gradient "Daily Drop" name, with the date below
+  - a live current under the name
+  - a centred "Odgovori" button and a quieter "Prvo pročitaj odgovore" link
+  - avatar stack and count
+  - one-row filters (tighter at 320 px)
+  - soft answer cards
+  - 40 px avatars ringed in the member's Music DNA colours
+  - catalog cards with a generated tile
+  - commenter avatars on the comments button
+
+### Round 2: owner decisions and changes
+
+- **Decisions:**
+  - date style A and name kept (D-047)
+  - Music DNA "Spirala", smarter, unique and alive (D-048)
+  - motifs stay alive, with a "Smanji pokrete" setting (D-049)
+  - brand name set like the wordmark in text (D-050)
+  - 18+ only (D-051)
+- **Feedback:** the first current and the dock spark "looked bad". The current was rebuilt with smooth noise, bloom, flowing charges and discharge arcs. The SVG dash became a canvas orbit with a fading tail.
+- **Removed:**
+  - the trait words "Energija / Ritam / Raspon"
+  - the "Svaki dan" badge
+  - the four other date styles and the three name candidates
+  - the "Konstelacija" and "Signal" variants
+- **Profile visibility polished:**
+  - full-height option columns with an icon badge
+  - Da/Ne with icons
+  - shared values in a quieter style
+- **Brand name in text** (D-050): the invite, "Kako grooverift radi" and the notification preview.
+- **Genre chips** show their Music DNA colour dot when picked; profile tags show it too.
+
+### Verification (session 9)
+
+- `node design/prototypes/tools/pulse-smoke.mjs`: **all 9 runs pass**, with no JS exceptions or console errors.
+  - The whole flow runs at 360×640 and 320×568, with OS reduced motion, and with the in-app setting.
+  - Also checked: catalog failure, the helix, the Daily Drop heading, and both review pages.
+  - The flow checks that the two visibility steps fit 360×640 and that the filters fit one row. It also checks the 2–10 genre rule, typo search, the orbit, the motion switch and the wordmark in text.
+- The original `smoke.mjs` still passes for `directions/` (3/3).
+- Visual checks with headless Chrome at real speed (CDP frames over time) and with `tools/pulse-shots.mjs`.
+- Live catalog checked once from headless Chrome (MusicBrainz, Wikidata SPARQL and the Commons API all allow CORS).
+- **Not done yet:** screen reader, Windows high contrast, real phones, 200 % zoom, desktop layout.

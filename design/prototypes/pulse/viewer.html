@@ -40,7 +40,7 @@
 <aside>
   <h1>Smjer C, dorada</h1>
   <p>Skica 3.5. Izmišljeni podaci, ništa se ne sprema. Na mobitelu otvori <a href="index.html" id="solo">samostalnu verziju</a>.</p>
-  <p><a href="choices.html">Opcije za tvoje odluke →</a></p>
+  <p><a href="choices.html">Music DNA galerija i struja →</a></p>
 
   <h2>Ekran</h2>
   <p>Onboarding</p>
@@ -51,17 +51,10 @@
   <h2>Uređaj</h2>
   <fieldset class="seg" id="dev"><legend class="sr-only">Veličina ekrana</legend></fieldset>
 
-  <h2>Music DNA</h2>
-  <fieldset class="seg" id="dna"><legend class="sr-only">Varijanta Music DNA</legend></fieldset>
-
-  <h2>Daily Drop naslov i datum</h2>
-  <fieldset class="seg" id="date"><legend class="sr-only">Stil datuma</legend></fieldset>
-  <fieldset class="seg" id="name" style="margin-top:8px"><legend class="sr-only">Naziv</legend></fieldset>
-
   <h2>Ostalo</h2>
   <label class="chk"><input type="checkbox" id="live" checked><span>Stvarni katalog izvođača<small>Pretraga ide na MusicBrainz, a fotografije na Wikidata i Wikimedia Commons. Šalje se samo upisani tekst.</small></span></label>
   <label class="chk"><input type="checkbox" id="fail"><span>Simuliraj kvar kataloga<small>Prikazuje stanje greške u pretrazi izvođača.</small></span></label>
-  <label class="chk"><input type="checkbox" id="loop"><span>Struja stalno radi<small>Samo za usporedbu. Zadano je kratki naboj do 5 s (WCAG 2.2.2).</small></span></label>
+  <label class="chk"><input type="checkbox" id="calm"><span>Smanji pokrete<small>Ista postavka postoji u aplikaciji na ekranu Profil. Struja, iskra i Music DNA tada miruju.</small></span></label>
   <label class="chk"><input type="checkbox" id="priv"><span>Privatni profil<small>Za Daily Drop ekrane.</small></span></label>
 </aside>
 <main>
@@ -75,10 +68,7 @@
   const ONB = [['', 'Pozivnica'], ['age', '18+'], ['account', 'Račun'], ['username', 'Ime'], ['language', 'Jezik'], ['visibility', 'Tko vidi profil'], ['dna', 'Što slušaš'], ['dna&picks=1', 'Što slušaš (popunjeno)'], ['dnavis', 'Tko vidi DNA'], ['how', 'Kako radi'], ['reminder', 'Podsjetnik'], ['done', 'Spremno']];
   const DROP = [['home', 'Početna'], ['drop', 'Pitanje i odgovori'], ['drop&open=compose', 'Pisanje odgovora'], ['answer', 'Komentari'], ['hub', 'Hub'], ['profile', 'Profil']];
   const DEV = [['360x640', 'Mali Android 360×640'], ['390x844', 'iPhone 390×844'], ['412x915', 'Pixel 412×915'], ['320x568', 'Najmanji 320×568']];
-  const DNA = [['helix', 'Spirala'], ['map', 'Konstelacija'], ['signal', 'Signal']];
-  const DATE = [['classic', 'A Klasično'], ['today', 'B Danas'], ['calendar', 'C Kalendar'], ['edition', 'D Broj'], ['short', 'E Kratko']];
-  const NAME = [['0', 'Daily Drop'], ['1', 'Drop dana'], ['2', 'The Drop'], ['3', 'Daily Rift']];
-  const s = Object.assign({ scr: 'o:', dev: '360x640', dna: 'helix', date: 'classic', name: '0', live: true, fail: false, loop: false, priv: false },
+  const s = Object.assign({ scr: 'o:', dev: '360x640', live: true, fail: false, calm: false, priv: false },
     JSON.parse(decodeURIComponent(location.hash.slice(1) || '{}') || '{}'));
   const $ = id => document.getElementById(id);
   function btns(el, list, prefix) {
@@ -90,17 +80,15 @@
     el.addEventListener('change', e => { s[key] = e.target.value; update(true); });
   }
   btns($('onb'), ONB, 'o:'); btns($('drop'), DROP, 'd:');
-  seg($('dev'), DEV, 'dev'); seg($('dna'), DNA, 'dna'); seg($('date'), DATE, 'date'); seg($('name'), NAME, 'name');
-  for (const k of ['live', 'fail', 'loop', 'priv']) { $(k).checked = s[k]; $(k).addEventListener('change', () => { s[k] = $(k).checked; update(true); }); }
+  seg($('dev'), DEV, 'dev');
+  for (const k of ['live', 'fail', 'calm', 'priv']) { $(k).checked = s[k]; $(k).addEventListener('change', () => { s[k] = $(k).checked; update(true); }); }
   $('replay').addEventListener('click', () => update(true));
   function url() {
     const [kind, v] = [s.scr.slice(0, 1), s.scr.slice(2)];
     const q = [];
     if (kind === 'd') q.push('flow=drop', 'at=' + v); else if (v) q.push('at=' + v);
-    q.push('dna=' + s.dna, 'date=' + s.date);
-    if (s.name !== '0') q.push('name=' + s.name);
-    if (s.live) q.push('live=1'); if (s.fail) q.push('catalog=fail'); if (s.loop) q.push('motion=loop'); if (s.priv) q.push('private=1');
-    return 'index.html?' + q.join('&');
+    if (s.live) q.push('live=1'); if (s.fail) q.push('catalog=fail'); if (s.calm) q.push('calm=1'); if (s.priv) q.push('private=1');
+    return 'index.html' + (q.length ? '?' + q.join('&') : '');
   }
   function update(reload) {
     document.querySelectorAll('.btns button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === s.scr));

@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>GrooveRift · opcije za odluke (dorada 3.5)</title>
-<!-- Owner decision sketches for the refined direction C (step 3.5, session 9). Static, no dependencies, fictional data. -->
+<title>GrooveRift · Music DNA galerija i struja (dorada 3.5)</title>
+<!-- Owner review page, round 2 of the direction C refinement (step 3.5, session 9).
+     Static, no dependencies, fictional members. Artist names stand in for catalog references. -->
 <link rel="stylesheet" href="../../fonts/fonts.css">
 <link rel="stylesheet" href="../../tokens/tokens.css">
 <style>
@@ -15,63 +16,61 @@
   h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
   h2 { font: var(--gr-type-title-2); margin: 48px 0 8px; }
   h3 { font: var(--gr-type-title-3); margin: 0; }
-  p { color: var(--gr-color-text-secondary); margin: 0 0 12px; max-width: 70ch; }
-  b { color: var(--gr-color-text-primary); }
+  p { color: var(--gr-color-text-secondary); margin: 0 0 12px; max-width: 72ch; }
   a { color: var(--gr-color-text-link); }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
+  .panel { border-radius: 20px; border: 1px solid var(--gr-color-border-subtle); background: var(--gr-color-bg-surface); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .panel canvas { display: block; width: 100%; }
+  .panel p { font: var(--gr-type-body-sm); margin: 0; }
+  .who { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .who small { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .gs { display: flex; flex-wrap: wrap; gap: 6px 10px; font: var(--gr-type-caption); color: var(--gr-color-text-primary); margin: 0; padding: 0; list-style: none; }
+  .gs li { display: inline-flex; align-items: center; gap: 5px; }
+  .gs i { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 6px var(--dot); }
+  .as { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; max-width: 70rem; }
+  .chip, .preset { font: var(--gr-type-label); font-size: .8125rem; min-height: 36px; padding: 0 12px; border-radius: 9999px; border: 1px solid var(--gr-color-border-strong); background: none; color: var(--gr-color-text-primary); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .chip[aria-pressed="true"] { background: var(--gr-color-selected-bg); border: 2px solid var(--gr-color-selected-border); padding: 0 11px; }
+  .chip[aria-pressed="true"]::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 6px var(--dot); }
+  .preset { border-style: dashed; color: var(--gr-color-text-secondary); }
+  .chip:focus-visible, .preset:focus-visible { outline: 2px solid var(--gr-color-focus-ring); outline-offset: 2px; }
+  .big { max-width: 46rem; }
   .row { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
   .opt { display: flex; flex-direction: column; gap: 8px; }
   .opt iframe { border: 0; border-radius: 20px; background: #0B0D12; box-shadow: 0 0 0 1px #2A2F3B; }
-  .tag { font: var(--gr-type-label); display: flex; gap: 8px; align-items: baseline; }
-  .tag small { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); max-width: 300px; }
-  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
-  .seg { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0 0 16px; }
-  .seg label { position: relative; }
-  .seg input { position: absolute; opacity: 0; }
-  .seg span, .chip, .preset { font: var(--gr-type-label); font-size: .8125rem; min-height: 36px; padding: 0 12px; border-radius: 9999px; border: 1px solid var(--gr-color-border-strong); background: none; color: var(--gr-color-text-primary); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-  .seg input:checked + span, .chip[aria-pressed="true"] { background: var(--gr-color-selected-bg); border: 2px solid var(--gr-color-selected-border); padding: 0 11px; }
-  .chip[aria-disabled="true"] { opacity: .45; }
-  .seg input:focus-visible + span, .chip:focus-visible, .preset:focus-visible, .replay:focus-visible { outline: 2px solid var(--gr-color-focus-ring); outline-offset: 2px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; max-width: 70rem; }
-  .preset { border-style: dashed; color: var(--gr-color-text-secondary); }
-  .dna-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 16px; }
-  .panel { border-radius: 20px; border: 1px solid var(--gr-color-border-subtle); background: radial-gradient(ellipse at 50% 35%, #FF586B14, transparent 65%), var(--gr-color-bg-surface); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-  .panel canvas { display: block; width: 100%; }
-  .panel p { font: var(--gr-type-body-sm); margin: 0; }
-  .traits { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .traits li { padding: 2px 10px; border-radius: 9999px; background: var(--gr-color-bg-raised); border: 1px solid var(--gr-color-border-subtle); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
-  .traits b { font-weight: 600; }
-  .replay { font: var(--gr-type-label); min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--gr-color-border-strong); background: var(--gr-color-bg-raised); color: var(--gr-color-text-primary); cursor: pointer; }
-  .note { border-left: 2px solid var(--gr-color-highlight-border); padding-left: 12px; }
-  ul.plain { color: var(--gr-color-text-secondary); max-width: 70ch; padding-left: 1.2em; }
+  .opt small { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); max-width: 360px; }
+  ul.plain { color: var(--gr-color-text-secondary); max-width: 72ch; padding-left: 1.2em; }
   ul.plain li { margin: 4px 0; }
 </style>
 </head>
 <body>
 <div class="page">
-  <h1>Opcije za tvoje odluke</h1>
-  <p>Dorada smjera C, sesija 9. Sve je klikabilno i uživo. Odluke biraš u Claude Codeu nakon pregleda. Cijeli prototip je u <a href="viewer.html">pregledniku</a>.</p>
+  <h1>Music DNA (Spirala) i struja</h1>
+  <p>Drugi krug dorade, sesija 9. Sve je uživo. Cijeli prototip je u <a href="viewer.html">pregledniku</a>.</p>
 
-  <h2>1. Daily Drop: naslov i datum</h2>
-  <p>Naziv je gore, datum je ispod, a ispod njih je struja. Pet načina zapisa datuma, bez točaka-separatora. Naziv možeš promijeniti ovdje da ga vidiš na mjestu.</p>
-  <fieldset class="seg" id="name"><legend style="position:absolute;opacity:0">Naziv</legend></fieldset>
-  <div class="row" id="dates"></div>
+  <h2>1. Spirala za različite ukuse</h2>
+  <p>Izmišljeni članovi. Svaki žanr je jedan dio spirale u boji svoje obitelji, a dijelove spajaju svjetleći čvorovi. Izvođači su svijetle točke koje putuju po nitima. Žanr dobiva više mjesta ako je odabran prvi ili ako mu pripadaju odabrani izvođači. Brzina, uvijanje i ponašanje dolaze iz žanra: metal pucketa, techno pulsira u ritmu, rap bljeska u staccatu, jazz se njiše, a kantautorska glazba diše. Zadnja dva člana imaju iste žanrove, ali druge izvođače, pa dobiju drukčiju spiralu. Klik na spiralu je nabije.</p>
+  <div class="gallery" id="gallery"></div>
 
-  <h2>2. Music DNA: tri vizualna smjera</h2>
-  <p>Isti odabir žanrova u sva tri. Klikni žanrove (2 do 10) ili gotov primjer. Oblik se računa iz žanrova: svaki žanr ima energiju, tempo, oštrinu, njihanje i boju. Isti odabir uvijek daje isti oblik, a dva člana s različitim ukusom uvijek dobiju različit. Klik na sliku je ponovno nabije.</p>
+  <h2>2. Probaj sam</h2>
+  <p>Klikni 2 do 10 žanrova ili gotov primjer. Spirala se prelije u novi oblik.</p>
   <div class="chips" id="presets"></div>
   <div class="chips" id="genres"></div>
-  <div class="dna-grid" id="dna"></div>
+  <section class="panel big" aria-label="Tvoja spirala"><div id="mine"></div><ul class="gs" id="mine-gs"></ul></section>
 
-  <h2>3. Struja: koliko dugo se miče</h2>
-  <p>Lijevo je zadano: kratki naboj kad se ekran pojavi, oko 4 s, pa mirna linija, uz ponovni naboj na dodir ili radnju. Desno se miče stalno. Pravilo WCAG 2.2.2 traži da se pokret koji traje dulje od 5 s može zaustaviti, pa bi desna verzija trebala gumb za pauzu ili postavku „Smanji pokrete”.</p>
-  <p><button class="replay" type="button" id="replay">Ponovi obje</button></p>
-  <div class="row" id="motion"></div>
+  <h2>3. Struja i iskra</h2>
+  <p>Struja ostaje živa i nakon dolaska: naboji teku s oba kraja, sudare se u sredini i ona tad zapulsira. Iskra polako kruži oko polja „Napiši svoj odgovor…”. Postavka „Smanji pokrete” (ekran Profil) i postavka uređaja sve to zaustavljaju. To je ujedno način pauziranja koji traži WCAG 2.2.2.</p>
+  <div class="row">
+    <div class="opt"><iframe title="Pozivnica sa strujom" src="index.html" width="360" height="330"></iframe><small>Pozivnica: dolazak pa trajno živo</small></div>
+    <div class="opt"><iframe title="Daily Drop s iskrom oko polja za odgovor" src="index.html?flow=drop&amp;at=drop" width="360" height="640"></iframe><small>Daily Drop: struja ispod naslova i iskra oko polja za odgovor (dolje)</small></div>
+    <div class="opt"><iframe title="Smanjeni pokreti" src="index.html?flow=drop&amp;at=drop&amp;calm=1" width="360" height="640"></iframe><small>Isto, uz uključeno „Smanji pokrete”: sve miruje</small></div>
+  </div>
 
-  <h2>Što još treba znati</h2>
+  <h2>Napomene</h2>
   <ul class="plain">
-    <li>Ako uređaj ima uključeno „smanji pokrete”, struja i DNA se ne miču u nijednoj opciji.</li>
-    <li>Animacije su ručno pisane, na canvasu, bez vanjske biblioteke (D-027).</li>
-    <li>Kad nema pokreta, ništa se ne iscrtava, pa baterija na mobitelu ne trpi.</li>
+    <li>Boje spirale su tople nijanse izvedene iz Ember palete (od tamnije crvene do blijedo zlatne), samo za Music DNA. Primarne boje brenda se ne mijenjaju.</li>
+    <li>Animacija se crta samo dok je na ekranu i dok je kartica otvorena, pa baterija na mobitelu ne trpi.</li>
+    <li>Sve je pisano ručno, bez vanjske biblioteke (D-027).</li>
   </ul>
 </div>
 
@@ -83,69 +82,42 @@
 (function () {
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-  /* 1. dates */
-  const DATES = [
-    ['classic', 'A', 'Klasično', 'Nedjelja, 1. studenoga. Najjasnije, radi i u arhivi.', true],
-    ['today', 'B', 'Danas', '„Danas je nedjelja, 1. studenoga”. Toplije, govori da je pitanje svježe.'],
-    ['calendar', 'C', 'Kalendar', 'Veliki broj dana kao na kalendaru. Najviše karaktera, zauzima malo više mjesta.'],
-    ['edition', 'D', 'Broj izdanja', '„Broj 128” uz datum. Svaki dan je kao novo izdanje koje se skuplja.'],
-    ['short', 'E', 'Kratko', '„Ned 1. 11.” Najkraće i najtiše.']
-  ];
-  const NAMES = [['0', 'Daily Drop'], ['1', 'Drop dana'], ['2', 'The Drop'], ['3', 'Daily Rift']];
-  let name = '0';
-  $('name').insertAdjacentHTML('beforeend', NAMES.map(([v, l]) => `<label><input type="radio" name="nm" value="${v}"${v === name ? ' checked' : ''}><span>${l}</span></label>`).join(''));
-  function dates() {
-    $('dates').innerHTML = DATES.map(([v, k, t, d, rec]) => `<div class="opt"><iframe title="Opcija ${k}: ${t}" src="index.html?flow=drop&date=${v}&name=${name}" width="330" height="470" loading="lazy"></iframe>
-      <div class="tag">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</div><div class="tag"><small>${d}</small></div></div>`).join('');
-  }
-  $('name').addEventListener('change', e => { name = e.target.value; dates(); });
-  dates();
-
-  /* 2. DNA playground */
   const D = window.GR_DATA, DNA = window.GR_DNA;
-  const PRESETS = [
-    ['Metalac', ['Metal', 'Nu metal', 'Punk', 'Grunge']],
-    ['Jazz i soul', ['Jazz', 'Soul', 'Blues', 'R&B']],
-    ['Svega pomalo', ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk']],
-    ['Klub', ['Techno', 'House', 'Drum & bass', 'Elektronika', 'Rap']],
-    ['Najširi ukus', ['Rock', 'Pop', 'Rap', 'Metal', 'Techno', 'Jazz', 'Reggae', 'Folk', 'Klasična', 'Funk']]
+  const PEOPLE = [
+    ['Marin', 'metalac', ['Metal', 'Nu metal', 'Punk', 'Grunge'], ['Metallica', 'Slipknot', 'System of a Down']],
+    ['Ivana', 'jazz i soul', ['Jazz', 'Soul', 'Blues', 'R&B'], ['Nina Simone', 'Miles Davis', 'Amy Winehouse']],
+    ['Leo', 'klub', ['Techno', 'House', 'Drum & bass', 'Elektronika'], ['Charlotte de Witte', 'Carl Cox', 'Pendulum']],
+    ['Dora', 'domaća scena', ['Alternativa', 'Kantautorska', 'Rock', 'Pop'], ['Haustor', 'Arsen Dedić', 'Let 3', 'Gibonni']],
+    ['Nika', 'rap i trap', ['Rap', 'Trap', 'R&B', 'Pop'], ['Kendrick Lamar', 'Grše', 'Frank Ocean']],
+    ['Tea', 'najširi ukus', ['Rock', 'Pop', 'Rap', 'Metal', 'Techno', 'Jazz', 'Reggae', 'Folk', 'Klasična', 'Funk'], ['Queen', 'Bob Marley & The Wailers']],
+    ['Ana', 'svega pomalo', ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk'], ['Metallica', 'Nina Simone', 'Arsen Dedić']],
+    ['Filip', 'isti žanrovi kao Ana, drugi izvođači', ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk'], ['Iron Maiden', 'John Coltrane', 'Amelie Lens', 'Leonard Cohen', 'James Brown']]
   ];
-  let picks = PRESETS[2][1].slice();
-  const INFO = {
-    map: ['Konstelacija', 'Svi žanrovi stoje na jednom krugu, po obiteljima. Tvoji žanrovi zasvijetle, a struja ih spoji u tvoj oblik. Što je ukus širi, oblik je veći. Najlakše se uspoređuje s drugima.'],
-    helix: ['Spirala', 'Dvostruka spirala od Coral i Amber niti, kao DNA. Svaki žanr je jedan dio: tempo određuje uvijanje, energija visinu, a oštri žanrovi dobiju električne prečke. Najviše izgleda kao „DNA”.', true],
-    signal: ['Signal', 'Tvoj potpis kao val. Svaki žanr ima svoj oblik: metal je nazubljen, techno je pravilan puls, jazz se njiše, kantautorska glazba se mirno diže. Najbliže zvuku.']
-  };
-  $('presets').innerHTML = PRESETS.map(([l], i) => `<button type="button" class="preset" data-p="${i}">${l}</button>`).join('');
+  const dots = gs => gs.map(g => `<li style="--dot:${DNA.colorOf(g)}"><i></i>${esc(g)}</li>`).join('');
+  $('gallery').innerHTML = PEOPLE.map(([n, d, gs, as], i) => `<section class="panel" aria-labelledby="p${i}">
+    <div class="who"><h3 id="p${i}">${n}</h3><small>${esc(d)}</small></div>
+    <canvas class="dna" data-dna="g${i}" data-genres="${esc(gs.join('|'))}" data-artists="${esc(as.join('|'))}" data-h="150" aria-hidden="true"></canvas>
+    <ul class="gs">${dots(gs)}</ul><p class="as">Izvođači: ${as.map(esc).join(', ')}</p></section>`).join('');
+  DNA.scan($('gallery'));
+
+  let picks = PEOPLE[6][2].slice(), arts = PEOPLE[6][3].slice();
+  $('presets').innerHTML = PEOPLE.map(([n, d], i) => `<button type="button" class="preset" data-p="${i}">${esc(n)}, ${esc(d)}</button>`).join('');
   function chips() {
-    $('genres').innerHTML = D.genres.map(g => { const on = picks.includes(g.n); const full = !on && picks.length >= 10; return `<button type="button" class="chip" data-g="${esc(g.n)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''}>${esc(g.n)}</button>`; }).join('');
+    $('genres').innerHTML = D.genres.map(g => { const on = picks.includes(g.n); return `<button type="button" class="chip" data-g="${esc(g.n)}" aria-pressed="${on}" style="--dot:${DNA.colorOf(g.n)}"${!on && picks.length >= 10 ? ' aria-disabled="true"' : ''}>${esc(g.n)}</button>`; }).join('');
   }
-  function panels() {
-    const s = DNA.summary(picks);
-    $('dna').innerHTML = ['helix', 'map', 'signal'].map(v => `<section class="panel" aria-labelledby="p-${v}">
-      <h3 id="p-${v}">${INFO[v][0]}${INFO[v][2] ? ' <span class="rec">preporuka</span>' : ''}</h3>
-      <canvas class="dna" data-dna="choice" data-variant="${v}" data-genres="${esc(picks.join('|'))}" data-h="230" aria-hidden="true"></canvas>
-      <ul class="traits">${s ? s.map(x => `<li>${x.k} <b>${x.v}</b></li>`).join('') : ''}</ul>
-      <p>${INFO[v][1]}</p></section>`).join('');
-    DNA.reset(); DNA.scan($('dna'));
+  function mine() {
+    $('mine').innerHTML = `<canvas class="dna" data-dna="mine" data-genres="${esc(picks.join('|'))}" data-artists="${esc(arts.join('|'))}" data-h="220" aria-hidden="true"></canvas>`;
+    $('mine-gs').innerHTML = dots(picks);
+    DNA.reset(); DNA.scan($('mine'));
   }
-  $('presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; picks = PRESETS[+b.dataset.p][1].slice(); chips(); panels(); });
+  $('presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; picks = PEOPLE[+b.dataset.p][2].slice(); arts = PEOPLE[+b.dataset.p][3].slice(); chips(); mine(); });
   $('genres').addEventListener('click', e => {
     const b = e.target.closest('[data-g]'); if (!b) return;
     const g = b.dataset.g, i = picks.indexOf(g);
     if (i >= 0) { if (picks.length <= 2) return; picks.splice(i, 1); } else { if (picks.length >= 10) return; picks.push(g); }
-    chips(); panels();
+    chips(); mine();
   });
-  chips(); panels();
-
-  /* 3. motion */
-  function motion() {
-    $('motion').innerHTML = [['', 'Kratki naboj', 'Zadano, u skladu s WCAG 2.2.2. Dodir na struju je ponovno nabije.', true], ['motion=loop', 'Stalno', 'Samo za usporedbu. Trebao bi gumb za pauzu ili postavka.']]
-      .map(([q, t, d, rec]) => `<div class="opt"><iframe title="${t}" src="index.html?${q}" width="360" height="330"></iframe><div class="tag">${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</div><div class="tag"><small>${d}</small></div></div>`).join('');
-  }
-  $('replay').addEventListener('click', motion);
-  motion();
+  chips(); mine();
 })();
 </script>
 </body>

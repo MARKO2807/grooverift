@@ -5,11 +5,10 @@
      ?flow=drop                 start signed in on Home          &private=1   simulate a private profile
      ?at=<step>                 open an onboarding step with earlier steps filled in
      ?flow=drop&at=drop|answer|hub|profile|activity   &open=compose (with at=drop) opens the composer
-     ?dna=helix|map|signal      Music DNA variant (owner choice pending; helix is the recommended default)
-     ?date=classic|today|calendar|edition|short       Daily Drop date heading (owner choice pending)
-     ?name=0..3                 Daily Drop name candidates (owner choice pending)
+     ?calm=1                    start with "Smanji pokrete" on (the setting is also on the Profile screen)
      ?live=1                    real artist search (catalog.js)   ?catalog=fail  simulate a catalog outage
-     ?motion=loop               keep motifs running (review only; see current.js) */
+   Owner decisions in session 9: date style A and the name "Daily Drop" (D-047), Music DNA "Spirala" (D-048),
+   motifs stay alive with a "Smanji pokrete" setting (D-049). */
 (function () {
   'use strict';
   const D = window.GR_DATA;
@@ -22,10 +21,7 @@
   const P = new URLSearchParams(location.search);
   const START_DROP = P.get('flow') === 'drop';
   const PRIV = P.get('private') === '1';
-  const DATE_V = ['classic', 'today', 'calendar', 'edition', 'short'].includes(P.get('date')) ? P.get('date') : 'classic';
-  const NAMES = ['Daily Drop', 'Drop dana', 'The Drop', 'Daily Rift'];
-  const DD_NAME = NAMES[+P.get('name')] || NAMES[0];
-  const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MOT = window.GR_MOTION;
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function pl(n, one, few, many) {
@@ -75,13 +71,15 @@
     sort: 'foryou', mine: null, draft: '', draftRefs: [], refQ: '', refOpen: false, editing: false,
     expanded: new Set(), pending: null, newTimer: null,
     ctx: null, commentDraft: '',
-    overlay: null, sparkEnd: false
+    overlay: null
   };
-  DNA.setSource(() => ({ genres: st.genres.slice(), artists: st.artists.map(a => a.name) }));
+  DNA.setSource(() => ({ genres: st.genres.slice(), artists: st.artists.map(a => ({ name: a.name, g: a.g || [] })) }));
 
   /* ---------- small builders ---------- */
   const current = (key, size, cls) => `<canvas class="current${cls ? ' ' + cls : ''}" data-cur="${key}" data-size="${size || 'md'}" aria-hidden="true"></canvas>`;
   const dnaCanvas = (key, h, cls) => `<canvas class="dna${cls ? ' ' + cls : ''}" data-dna="${key}" data-h="${h}" aria-hidden="true"></canvas>`;
+  /* The brand name in running text is set like the wordmark: lowercase, Sora, "rift" in Coral (owner, session 9). */
+  const wm = () => '<span class="wm">groove<span class="wm-rift">rift</span></span>';
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
   function avatar(handle, who, size) {
@@ -137,14 +135,11 @@
     if (g < D.genreMin) return `${gs}${as}. Još ${D.genreMin - g} za početak.`;
     return `${gs}${as}.`;
   }
-  function traitChips(genres) {
-    const s = DNA.summary(genres);
-    return s ? `<ul class="traits" aria-label="Tvoj Music DNA ukratko">${s.map(x => `<li><span class="tr-k">${x.k}</span><span class="tr-v">${x.v}</span></li>`).join('')}</ul>` : '';
-  }
+  const genreLine = () => st.genres.length ? `<p class="dna-genres">${st.genres.map(esc).join(', ')}</p>` : '';
   function genreChip(name) {
     const on = st.genres.includes(name);
     const full = !on && st.genres.length >= D.genreMax;
-    return `<button type="button" class="chip" data-a="genre" data-g="${esc(name)}" data-k="g-${esc(name)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''}><span class="ck">${ic('check', 'sm')}</span>${esc(name)}</button>`;
+    return `<button type="button" class="chip chip-genre" data-a="genre" data-g="${esc(name)}" data-k="g-${esc(name)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''} style="--dot:${DNA.colorOf(name)}"><span class="gdot" aria-hidden="true"></span>${esc(name)}</button>`;
   }
   function moreGenres() {
     const q = CAT.fold(st.genreQ.trim());
@@ -197,7 +192,6 @@
   }
   function updateDnaStep() {
     const c = root.querySelector('#dna-count'); if (c) c.textContent = dnaCountText();
-    const t = root.querySelector('#dna-traits'); if (t) t.innerHTML = traitChips(st.genres);
     root.querySelectorAll('.chips [data-a="genre"]').forEach(b => {
       const on = st.genres.includes(b.dataset.g);
       b.setAttribute('aria-pressed', on);
@@ -241,19 +235,10 @@
   const allAnswers = () => (st.mine ? [st.mine] : []).concat(st.answers);
   const findAnswer = id => allAnswers().find(a => a.id === id);
 
-  /* Name on top, date under it, then the live current (owner review, session 9). Five date styles for the owner. */
+  /* Name on top, date under it (style A, D-047), then the live current. */
   function ddHead(where) {
-    const d = dparts(D.drop.date);
-    const name = `<p class="dd-name">${esc(DD_NAME)}</p>`;
-    const cur = current('dd-' + where, 'md', 'dd-current');
-    const t = inner => `<time datetime="${d.iso}">${inner}</time>`;
-    switch (DATE_V) {
-      case 'today': return `<div class="dd-top">${name}<p class="dd-date">${t(`<b>Danas</b> je ${d.wd}, ${d.day}. ${d.mg}`)}</p>${cur}</div>`;
-      case 'calendar': return `<div class="dd-top dd-cal">${name}${t(`<span class="cal-day">${String(d.day).padStart(2, '0')}</span><span class="cal-rest"><span class="cal-month">${d.mn}</span><span class="cal-wd">${d.wd}</span></span>`).replace('<time', '<time class="cal"')}${cur}</div>`;
-      case 'edition': return `<div class="dd-top">${name}<p class="dd-date"><span class="dd-no">Broj ${D.drop.number}</span>${t(`${cap(d.wd)}, ${d.day}. ${d.mg}`)}</p>${cur}</div>`;
-      case 'short': return `<div class="dd-top">${name}<p class="dd-date">${t(`${cap(d.wd3)} ${d.day}. ${d.month}.`)}</p>${cur}</div>`;
-      default: return `<div class="dd-top">${name}<p class="dd-date">${t(`${cap(d.wd)}, ${d.day}. ${d.mg}`)}</p>${cur}</div>`;
-    }
+    return `<div class="dd-top"><p class="dd-name">Daily Drop</p>
+      <p class="dd-date"><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>${current('dd-' + where, 'md', 'dd-current')}</div>`;
   }
   function people(n) {
     const hs = allAnswers().slice(0, 3);
@@ -392,18 +377,20 @@
     const d = st.draft.trim();
     const label = d ? esc(d.slice(0, 48)) + (d.length > 48 ? '…' : '') : 'Napiši svoj odgovor…';
     return `<div class="dock"><button class="dock-field${d ? ' has-draft' : ''}" data-a="compose" data-k="dock-field">
-      <svg class="spark" aria-hidden="true" focusable="false"><defs><linearGradient id="gr-spark-g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs><rect class="spark-dash" pathLength="100"/></svg>
+      <canvas class="orbit" aria-hidden="true"></canvas>
       ${ic('edit', 'sm')}<span>${label}</span></button></div>`;
   }
 
   /* ---------- screens ---------- */
   function visibilityStep() {
+    /* Values that differ between the two options are emphasised; shared ones stay quiet. */
+    const yes = `${ic('check', 'sm v-ic')}Da`, no = `${ic('x', 'sm v-ic')}Ne`;
     const rows = [
       ['Profil i Music DNA', 'Svi članovi', 'Samo pratitelji'],
       ['Povijest Daily Drop odgovora', 'Svi članovi', 'Samo pratitelji'],
-      ['Odgovori na pitanje i komentari', 'Svi članovi', null],
-      ['Popis pratitelja', 'Samo pratitelji', null],
-      ['Otkrivanje i kompatibilnost', 'Da', 'Ne'],
+      ['Odgovori i komentari', 'Svi članovi', 'Svi članovi'],
+      ['Popis pratitelja', 'Samo pratitelji', 'Samo pratitelji'],
+      ['Otkrivanje i kompatibilnost', yes, no],
       ['Neprijavljeni posjetitelji', 'Ime, avatar i bio', 'Ništa']
     ];
     const err = st.err.vis;
@@ -414,12 +401,12 @@
           <legend class="sr-only">Vidljivost profila</legend>
           ${[['public', 'globe', 'Javno'], ['private', 'lock', 'Privatno']].map(([v, i, t]) => `<label class="vis-opt">
             <input type="radio" name="vis" value="${v}" data-k="vis-${v}" aria-describedby="vis-sum-${v}"${st.vis === v ? ' checked' : ''}>
-            ${ic(i, 'vis-ic')}<span class="vis-t">${t}</span><span class="choice-mark" aria-hidden="true">${ic('check')}</span></label>`).join('')}
+            <span class="vis-badge" aria-hidden="true">${ic(i, 'vis-ic')}</span><span class="vis-t">${t}</span><span class="choice-mark" aria-hidden="true">${ic('check')}</span></label>`).join('')}
         </fieldset>
         <table class="vis-table">
           <caption class="sr-only">Što vide drugi, usporedba</caption>
-          <thead class="sr-only"><tr><td></td><th scope="col">Javno</th><th scope="col">Privatno</th></tr></thead>
-          <tbody>${rows.map(([k, a, b]) => `<tr><th scope="row">${k}</th>${b ? `<td class="c-pub">${a}</td><td class="c-priv">${b}</td>` : `<td class="c-both" colspan="2">${a}<span class="both">oba</span></td>`}</tr>`).join('')}</tbody>
+          <thead class="vis-head"><tr><td></td><th scope="col"><span class="sr-only">Javno</span></th><th scope="col"><span class="sr-only">Privatno</span></th></tr></thead>
+          <tbody>${rows.map(([k, a, b]) => `<tr class="${a === b ? 'same' : 'diff'}"><th scope="row">${k}</th><td class="c-pub">${a}</td><td class="c-priv">${b}</td></tr>`).join('')}</tbody>
         </table>
         <p class="sr-only" id="vis-sum-public">Svi članovi vide profil, Music DNA i povijest odgovora. Pojavljuješ se u Otkrivanju. Neprijavljeni vide ime, avatar i bio.</p>
         <p class="sr-only" id="vis-sum-private">Profil, Music DNA i povijest odgovora vide samo pratitelji koje odobriš. Odgovore na pitanje i komentare i dalje vide svi članovi. Ne pojavljuješ se u Otkrivanju.</p>
@@ -429,7 +416,7 @@
   }
 
   function howStep() {
-    return `<h1>Kako GrooveRift radi</h1>
+    return `<h1>Kako ${wm()} radi</h1>
       <ol class="how">
         <li class="how-card how-main" style="--d:0">
           <div class="how-vis how-vis-drop" aria-hidden="true">
@@ -437,7 +424,7 @@
             <span class="hv-q">Koja pjesma je najbolje otvaranje albuma?</span>
             <span class="stack">${['petra.zvuk', 'tinkovac', 'mia_vinyl'].map(h => avatar(h, D.members[h].who, 'xxs')).join('')}</span>
           </div>
-          <h2 class="how-t"><span class="how-badge">Svaki dan</span>Daily Drop</h2>
+          <h2 class="how-t">Daily Drop</h2>
           <p>U 01:00 po našem vremenu stiže jedno pitanje o glazbi, isto za sve. Odgovori ili samo čitaj, stara pitanja ostaju otvorena.</p>
         </li>
         <li class="how-card" style="--d:1">
@@ -461,7 +448,7 @@
       body: `<div class="hero">
         ${current('invite', 'lg', 'hero-current')}
         <p class="eyebrow">Pozivnica</p>
-        <h1 class="h-hero">Imaš pozivnicu za GrooveRift</h1>
+        <h1 class="h-hero">Imaš pozivnicu za ${wm()}</h1>
         <p class="tagline" lang="en">Where musical worlds collide.</p>
         <p class="lead">Ovdje se razgovara o glazbi: svaki dan jedno pitanje za sve, tvoj Music DNA i ljudi sličnog ili sasvim drukčijeg ukusa.</p>
       </div>
@@ -525,7 +512,6 @@
         <div class="dna-live">
           ${dnaCanvas('onb', 176)}
           <p class="dna-count" id="dna-count" aria-live="polite">${dnaCountText()}</p>
-          <div id="dna-traits">${traitChips(st.genres)}</div>
         </div>
         <div class="group" role="group" aria-labelledby="g-label"${st.err.genres ? ' aria-describedby="err-genres"' : ''}>
           <h2 class="group-title" id="g-label">Žanrovi <span class="opt">2 do 10</span></h2>
@@ -561,10 +547,10 @@
       return {
         kind: 'onb', back: true,
         body: `<h1>Ne propusti Daily Drop</h1>
-          <p class="lead">Daily Drop je srce GrooveRifta. Jedna obavijest dnevno, kad izađe novo pitanje. Ništa drugo.</p>
+          <p class="lead">Daily Drop je srce zajednice. Jedna obavijest dnevno, kad izađe novo pitanje. Ništa drugo.</p>
           <div class="notif" role="img" aria-label="Primjer obavijesti: Daily Drop je stigao. Koji album bi dao nekome tko misli da ne voli jazz?">
             <span class="notif-app" aria-hidden="true">${current('notif', 'sm')}</span>
-            <span class="notif-body" aria-hidden="true"><span class="notif-top"><b>GrooveRift</b><span>sada</span></span>
+            <span class="notif-body" aria-hidden="true"><span class="notif-top"><b>${wm()}</b><span>sada</span></span>
             <span class="notif-t">Daily Drop je stigao</span><span class="notif-q">${esc(D.drop.question)}</span></span>
           </div>
           <p class="rift-note">Svaki dan jedno pitanje i cijela Rift zajednica na istom mjestu. Podsjetnik te dovede na vrijeme.</p>
@@ -584,7 +570,7 @@
         <h1 class="h-hero">Spremno.</h1>
         <p class="lead">Današnje pitanje te čeka.</p>
         <figure class="dna-card">${dnaCanvas('done', 200)}
-          <figcaption><span class="dna-cap">Tvoj Music DNA</span>${traitChips(st.genres)}</figcaption></figure>
+          <figcaption><span class="dna-cap">Tvoj Music DNA</span>${genreLine()}</figcaption></figure>
         <dl class="facts-grid">
           <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni'}</dd></div>
           <div>${ic('pulse', 'ft-ic')}<dt>Music DNA</dt><dd>${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}${st.artists.length ? `, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}` : ''}</dd></div>
@@ -663,13 +649,17 @@
       body: `<div class="prof-head">${avatar(st.username, st.displayName || 'T', 'lg')}
           <div><h1 class="prof-name">${esc(st.displayName || 'Ti')}</h1><p class="meta">@${esc(st.username || 'ti')}</p></div></div>
         <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>
-          ${st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', 184)}<figcaption>${traitChips(st.genres)}</figcaption></figure>
-            <ul class="tags">${st.genres.map(g => `<li>${esc(g)}</li>`).join('')}${st.artists.map(a => `<li class="tag-artist">${artistTile(a, 'xs')}${esc(a.name)}</li>`).join('')}</ul>` : '<p class="empty">Još nema odabira.</p>'}
+          ${st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', 184)}</figure>
+            <ul class="tags">${st.genres.map(g => `<li style="--dot:${DNA.colorOf(g)}"><span class="gdot" aria-hidden="true"></span>${esc(g)}</li>`).join('')}${st.artists.map(a => `<li class="tag-artist">${artistTile(a, 'xs')}${esc(a.name)}</li>`).join('')}</ul>` : '<p class="empty">Još nema odabira.</p>'}
         </section>
         <dl class="facts-grid">
           <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni (nije odabrano)'}</dd></div>
           <div>${ic('users', 'ft-ic')}<dt>DNA vide</dt><dd>${DNA_LABEL[st.dnaVis] || 'Samo ja'}</dd></div>
         </dl>
+        <section class="section" aria-labelledby="h-set"><h2 id="h-set" class="section-title">Prikaz</h2>
+          <div class="setting"><div><p class="set-t" id="calm-l">Smanji pokrete</p><p class="help" id="calm-d">Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</p></div>
+          <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></div>
+        </section>
         <section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
           ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : '<p class="empty">Još nema odgovora.</p>'}
         </section>
@@ -743,30 +733,8 @@
     if (f.s != null && typeof el.setSelectionRange === 'function') { try { el.setSelectionRange(f.s, f.e); } catch (e) { /* not a text field */ } }
   }
 
-  /* Motifs after each render: mount canvases, size the dock spark, watch the end of the answer list. */
-  let endObserver;
-  function afterRender() {
-    CUR.scan(root); DNA.scan(root);
-    root.querySelectorAll('svg.spark').forEach(svg => {
-      const b = svg.parentElement, w = b.offsetWidth, h = b.offsetHeight;
-      svg.setAttribute('width', w + 2); svg.setAttribute('height', h + 2);
-      const r = svg.querySelector('rect');
-      r.setAttribute('x', 1); r.setAttribute('y', 1); r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('rx', h / 2);
-    });
-    if (endObserver) endObserver.disconnect();
-    const last = root.querySelector('.ans-list > li:last-child');
-    if (last && !st.mine && !st.sparkEnd && 'IntersectionObserver' in window) {
-      endObserver = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { st.sparkEnd = true; endObserver.disconnect(); spark(); } }, { threshold: 0.5 });
-      endObserver.observe(last);
-    }
-  }
-  /* The dock nudge: a spark runs round the field twice (about 3.8 s, WCAG 2.2.2), on arrival and once after reading to the end. */
-  function spark() {
-    const f = root.querySelector('.dock-field');
-    if (!f || reduced()) return;
-    f.classList.remove('spark-run'); void f.offsetWidth; f.classList.add('spark-run');
-    f.addEventListener('animationend', () => f.classList.remove('spark-run'), { once: true });
-  }
+  /* Motifs after each render: mount the current, the dock orbit and the Music DNA canvases. */
+  function afterRender() { CUR.scan(root); DNA.scan(root); }
 
   function render(opt) {
     opt = opt || {};
@@ -796,9 +764,6 @@
   function focusSel(sel) { const el = root.querySelector(sel); if (el) { if (!el.hasAttribute('tabindex') && !/^(BUTTON|INPUT|TEXTAREA|SELECT|A)$/.test(el.tagName)) el.setAttribute('tabindex', '-1'); el.focus(); } }
   function focusH1() { const h = root.querySelector('.shell h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
 
-  function arrive() {
-    if (st.screen === 'drop') { st.sparkEnd = false; setTimeout(spark, 500); }
-  }
   function go(screen, o) {
     o = o || {};
     if (o.reset) st.hist = [];
@@ -807,7 +772,6 @@
     CUR.reset(); DNA.reset();
     render(); window.scrollTo(0, 0);
     if (o.focus) focusSel(o.focus); else focusH1();
-    arrive();
   }
   function back() {
     const h = st.hist.pop();
@@ -815,7 +779,6 @@
     st.screen = h.screen; st.err = {}; st.overlay = null;
     CUR.reset(); DNA.reset();
     render(); window.scrollTo(0, h.y || 0); focusH1();
-    arrive();
   }
 
   let toastTimer;
@@ -955,6 +918,7 @@
       case 'perm-allow': st.reminder = 'on'; st.overlay = null; return go('done', { reset: true });
       case 'perm-block': st.reminder = 'denied'; st.overlay = null; render(); return focusSel('.notice');
       case 'finish': return go('home', { reset: true });
+      case 'calm': MOT.setCalm(!MOT.calm()); return render({ keep: true });
       case 'tab': return go(b.dataset.t, { reset: true });
       case 'open-drop': return go('drop');
       case 'open-compose': go('drop'); return openOverlay({ type: 'sheet' }, root.querySelector('[data-k="dock-field"]'));
@@ -1066,5 +1030,4 @@
   }
 
   render();
-  arrive();
 })();

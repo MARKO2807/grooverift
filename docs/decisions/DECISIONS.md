@@ -55,6 +55,12 @@ The Master Prompt (`docs/product/master-prompt.txt`) remains the baseline. This 
 | D-043 | 2026-11-01 | **Daily Drop answers are written from a dock** above the tab bar that opens a bottom sheet with the question repeated. The answer list stays visible and within thumb reach (P2, P8). Rejected: separate compose screen; inline composer under the question. | CONFIRMED | Owner |
 | D-044 | 2026-11-01 | **No external usability check in Phase 3.** The owner reviews the refined prototypes personally (resolves the 3.5 open item in the Phase 3 plan). | CONFIRMED | Owner |
 | D-045 | 2026-11-01 | **Light theme as a member setting; dark stays the default** (dark-first, §15.2). The light theme must look as good as the dark one and pass the same WCAG 2.2 AA contrast checks. Coral and Amber need accessible light-background variants for text (Coral on white 3.06, Amber on white 1.50), so the brand primitives stay untouched. Light tokens are designed in step 3.4b (owner decision point) before the component spec. A "match system" option is RECOMMENDED for 3.4b. Alpha inclusion is decided with the alpha scope. Replaces "light theme DEFERRED" in `tokens.md` §9. | CONFIRMED | Owner |
+| D-046 | 2026-11-01 | **Onboarding refinements (step 3.5, owner review).** (1) Music DNA step: 24 widely known genres shown, more through search; **2 to 10 genres are required**, so the step can no longer be skipped and Music DNA visibility is always asked (D-034's condition no longer arises). Artists stay optional, up to 10 (prototype default). (2) Artist search should show photos where lawful: MusicBrainz for the catalog, Wikidata P18 and Wikimedia Commons for free-licence photos **with credit**, a generated tile otherwise (applies D-017). (3) The profile and Music DNA visibility steps must fit one phone screen without scrolling (target 360×640). Profile visibility is shown as two equal option columns over one comparison, which keeps D-030 neutral. (4) The age step is centred. | CONFIRMED | Owner |
+| D-047 | 2026-11-01 | **Daily Drop heading.** The name stays **"Daily Drop"** (alternatives considered: "Drop dana", "The Drop", "Daily Rift"). The name sits on top, the date below it in style A ("Nedjelja, 1. studenoga"), with no middle-dot separators; the live current follows. The primary action reads "Odgovori" and is centred. The sort filters stay in one row, also at 320 px. | CONFIRMED | Owner |
+| D-048 | 2026-11-01 | **Music DNA visual: "Spirala"**, a living double helix. Each genre is one section, coloured by genre family (warm colours derived from Ember, used only for Music DNA), joined to the next by a glowing knot. Section length grows with pick order and with the member's artists; artists appear as beads on the strands. Traits per genre set height, twist, speed and behaviour. It is seeded by the member's genres and artists, so every member gets their own helix. **No trait words** ("Energija", "Ritam", "Raspon") anywhere. Rejected: "Konstelacija" (too busy), "Signal" (closest to the equalizer cliché). The trait table in `data.js` is a design placeholder. | CONFIRMED | Owner |
+| D-049 | 2026-11-01 | **Motifs stay alive after their intro**: the current (invite, Done, Daily Drop heading), the Music DNA helix, and a small charge that circles the answer field in the dock (extends the D-042 placements to the dock). A **"Smanji pokrete" app setting** and the OS reduced-motion setting stop all motif motion. That setting is the WCAG 2.2.2 pause mechanism, so it must be easy to find in settings. Animation runs only while on screen. Replaces the earlier under-5-second burst rule. | CONFIRMED | Owner |
+| D-050 | 2026-11-01 | **The brand name in running UI text is set like the wordmark**: lowercase "grooverift" in Sora bold with "rift" in Coral. Copy avoids declined forms of the name where it can (for example "srce zajednice" rather than "srce GrooveRifta"). | CONFIRMED | Owner |
+| D-051 | 2026-11-01 | **No minors: 18+ for the alpha and the beta**, as in the Master Prompt. Admitting 16–17-year-olds would need counsel, real age assurance, private-by-default profiles for minors, and changes to Discover, compatibility, messaging and moderation (DSA Art. 28 and the Commission guidelines of July 2025; Croatian digital consent age 16). Any change is a new owner decision. | CONFIRMED | Owner |
 
 ---
 
@@ -98,7 +104,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | OQ-07 | Alpha feature scope | See audit A-02 | A-02 |
 | OQ-08 | Is Daily Drop push part of the alpha? | Yes if Phase 4 timing allows; otherwise early beta | A-02, T-04 |
 | OQ-09 | Alpha data carries over into the beta? | Yes, no reset | A-05 |
-| OQ-10 | Age policy implementation. If minors are ever admitted, their profiles default to private (see D-025). Owner expects 18+ only; ask the owner when this comes up. | 18+ attestation, no DOB stored; counsel confirms | L-04 |
+| OQ-10 | Age policy implementation. The owner confirmed 18+ only (D-051); what remains is how the 18+ gate is implemented and defended. | 18+ attestation, no DOB stored; counsel confirms | L-04 |
 
 ### Needed before the related feature is built
 | ID | Question | Recommendation | Ref |
@@ -111,6 +117,8 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | OQ-16 | Editorial content requires both HR and EN before scheduling? | Yes | S-11 |
 | OQ-17 | Video upload limits and sequencing in a later beta wave | Later beta wave; limits defined in Phase 2 | T-01 |
 | OQ-18 | Which external listening services to link | Decide after C-01 research | C-05 |
+| OQ-23 | Icon library for the product (the Master Prompt names none) | Choose in step 3.6 (for example Lucide or Phosphor, both open licences); installing it needs owner approval | 3.5 |
+| OQ-24 | Owner idea (session 9): music news, for example popular concerts in Croatia | Not in the Master Prompt, which forbids adding recurring programs silently. Revisit after the alpha scope (OQ-07); needs a source and rights check | — |
 
 ---
 

@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-01 (session 8)_
+_Last updated: 2026-11-01 (session 9)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -12,7 +12,7 @@ _Last updated: 2026-11-01 (session 8)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction picked: **C "Pulse"** (D-042, D-043). Refinement of C next ([prototype-directions](design/prototype-directions.md); `design/prototypes/directions/`) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: two owner review rounds done in session 9 (D-046 to D-051), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-01 (session 8)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-045. Key ones:
+- Decisions D-001 to D-051. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -33,6 +33,13 @@ _Last updated: 2026-11-01 (session 8)_
   - **Journeys (session 6):** onboarding visibility steps are required, and Music DNA visibility is asked only once DNA exists (D-034); one top-level Daily Drop answer per member, editable (D-035); archived questions stay open, answers show a neutral date, no "late" label (D-036); question suggesters get a private notification only if published (D-037). OQ-12 resolved.
   - **Tokens (session 7):** Coral primary action with Void Black text, confirming R-09 (D-038); cool neutral surfaces (D-039); errors and warnings reuse Coral and Amber, never color-only (D-040); medium shape (D-041). Sora and Inter self-hosted per D-028.
   - **Prototypes (session 8):** direction **C "Pulse"**: brand motifs only at the invite, Done, Music DNA and the Daily Drop question (D-042); answers written from a **dock** that opens a bottom sheet (D-043); no external usability check, the owner reviews personally (D-044); **light theme as a member setting, dark default**, designed in new step 3.4b (D-045).
+  - **Refinement (session 9):**
+    - 2 to 10 genres required in onboarding; artist photos only from free-licence Commons with credit; the visibility steps fit one phone screen (D-046)
+    - the name stays "Daily Drop", with the date below it (D-047)
+    - Music DNA is the living **"Spirala"**, unique per member, with no trait words (D-048)
+    - motifs stay alive, with a **"Smanji pokrete"** setting (D-049)
+    - the brand name in text is set like the wordmark (D-050)
+    - **18+ only** (D-051)
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -43,15 +50,20 @@ _Last updated: 2026-11-01 (session 8)_
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Step 3.5 refinement of direction C** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
-   - Key states, 320 px and zoom reflow, desktop adaptation.
-   - Screen reader and high-contrast checks.
-2. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first, then the owner decides.
-3. Open from 3.3, to raise when convenient: JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
+1. **Owner review of round 2** in `design/prototypes/pulse/viewer.html` and `choices.html`: the new current, the dock orbit, the Spirala and the visibility step. Fold in any feedback first.
+2. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
+   - Key states: empty, loading, network error, offline, blocked, missing-question day, long text.
+   - 200 % zoom and the desktop adaptation.
+   - Screen reader (Narrator) and high-contrast checks.
+3. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first, then the owner decides.
+4. Open, to raise when convenient:
+   - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
+   - OQ-23: icon library, chosen in 3.6.
+   - OQ-24: music news idea, after the alpha scope.
 
 ## Owner actions outside Claude
 - `git push` after each session (Claude's push is blocked).
-- Review the prototypes yourself (D-044): `design/prototypes/directions/index.html`.
+- Review the refined prototype yourself (D-044): `design/prototypes/pulse/viewer.html`. Open `pulse/index.html` on a phone too.
 - MetaBrainz registration (D-018), when convenient before Phase 5.
 - Start looking for an accountant and lawyer (`docs/legal/questions-for-counsel.md`). Needed before the alpha.
 
@@ -59,7 +71,7 @@ _Last updated: 2026-11-01 (session 8)_
 - None for planning or design. Before the alpha: legal entity (OQ-05), moderation staffing (OQ-06), age policy (OQ-10), DPIA, legal documents.
 
 ## Top risks
-1. Scope vs. capacity (A-01). The light theme (D-045) adds design and test work for every component.
+1. Scope vs. capacity (A-01). The light theme (D-045) adds design and test work for every component. Living motifs (D-049) and the generative Music DNA (D-048) need care for performance and battery on real phones.
 2. Artwork rights; the design must work without covers or photos (D-017).
 3. Authorization complexity (S-02). Mitigated in part by the resolved visibility rules.
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.
@@ -69,8 +81,12 @@ _Last updated: 2026-11-01 (session 8)_
 ## Code
 No application code. No dependencies installed.
 - `design/prototypes/ia/`, `journeys/` and `tokens/` hold static decision sketches (HTML/CSS/vanilla JS, fictional data).
-- `design/prototypes/directions/` holds the step 3.5 prototypes: three directions on a shared engine, plus a comparison page.
-- `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome: `smoke.mjs` (end-to-end check, all three directions pass) and `shots.mjs` (screenshots).
+- `design/prototypes/directions/` holds the step 3.5 round-1 prototypes: three directions on a shared engine, plus a comparison page (unchanged record).
+- `design/prototypes/pulse/` holds the refined direction C. It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
+- `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
+  - `smoke.mjs` checks `directions/` and passes 3/3.
+  - `pulse-smoke.mjs` checks `pulse/` and passes 9/9.
+  - `shots.mjs` and `pulse-shots.mjs` take screenshots.
 - `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css`, and `contrast-check.mjs` checks 87 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.
 - Phase 3 adds only static design files under `design/`. Stack approved (ADR-0002); libraries are confirmed in Phase 4.

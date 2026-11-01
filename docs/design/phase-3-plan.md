@@ -44,6 +44,7 @@ The information architecture (IA) covers the **full beta**, so the alpha does no
 - ~~Default visibility of follower lists and of the profile's Daily Drop history.~~ Resolved in 3.2: Daily Drop history same as profile (D-032), lists followers (D-033).
 - ~~Optional informal usability check of the prototypes with 3–5 people the owner knows.~~ Resolved in 3.5: no external check; the owner reviews personally (D-044).
 - Step 3.5 first round: direction C "Pulse" (D-042) with the dock composer (D-043). The light theme becomes step 3.4b (D-045).
+- Step 3.5 refinement, session 9: two owner review rounds in `design/prototypes/pulse/` (D-046 to D-051). States, 200 % zoom, desktop and the screen reader pass remain (`prototype-directions.md` §6).
 
 ## Not in this phase
 Application code, npm project or dependencies, deployment, accounts, spending, changes to the logo silhouette, palette or fonts, and SVG vectorization of the symbol.
