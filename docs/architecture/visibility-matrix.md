@@ -35,7 +35,7 @@ Legend: ✅ allowed · ❌ denied · 🔒 only if the profile is public or the v
 | Email, sessions, MFA, settings | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | Admin: email and status only, audited |
 
 `⚙️` options per section: everyone (signed-in members) · followers · mutuals only · only me. **Defaults:**
-- Profile: **public** for adults, set by an active onboarding choice with "Public" highlighted as recommended (D-025). Private is always available.
+- Profile: chosen by the member in onboarding through a neutral active choice: nothing pre-selected, equal weight, no "recommended" label (D-025 as amended by D-030). The owner's goal is that most accounts are public. Private is always available.
 - Music DNA: everyone, set by an active onboarding choice (D-024). Never visible to `ANON`.
 - Lists and Daily Drop history (the aggregated list on the profile): followers (proposed, not yet confirmed).
 - A private profile caps everything **on the profile** at followers. Exceptions: replies in public threads (D-020) and Daily Drop answers on the question page (D-021).
