@@ -1,15 +1,15 @@
 # Preliminary trademark search: "GrooveRift"
 
-- **Status:** PARTIAL. Started by Claude on 2026-11-01 via Claude in Chrome (D-007). The rest is to be completed manually by the owner (see §4).
+- **Status:** COMPLETE (preliminary). Started by Claude on 2026-11-01 via Claude in Chrome (D-007) and completed by the owner's manual checks plus a Claude web search the same day.
 - **Disclaimer:** This is a **preliminary knock-out search, not a clearance opinion**. It does not replace a professional search and opinion from a trademark attorney. That opinion is required before filing, launch or brand spend. Results reflect database state on the search date only.
-- **Why partial:** the EUIPO web application firewall blocked further TMview access from the browser after a series of queries ("Our website has detected a problem when accessing this page from your computer"). Claude did not attempt to bypass it.
+- **Automated search note:** the EUIPO web application firewall blocked further TMview access from the browser after a series of queries ("Our website has detected a problem when accessing this page from your computer"). Claude did not attempt to bypass it. The remaining checks were done manually by the owner (§3).
 
 ## 1. Scope
 - **Marks:** "GrooveRift" (exact), "Groove Rift", phonetic and visual variants ("Grooverift", "Groove-Rift"), and marks containing "RIFT" in the music, social and online-services context.
 - **Nice classes:** 9 (software, apps), 38 (telecommunications, online forums, messaging), 41 (entertainment, music information, online publications), 42 (SaaS, platform hosting), 45 (online social networking services).
 - **Registers:** EUIPO (EU trade marks), DZIV (Croatia), WIPO (international registrations designating the EU or HR). Searched through TMview, with WIPO Global Brand Database as a cross-check.
 
-## 2. Results so far (TMview, 2026-11-01)
+## 2. Automated results (Claude, TMview, 2026-11-01)
 
 | # | Query | Mode | Offices | Result |
 |---|---|---|---|---|
@@ -29,22 +29,28 @@ Live marks seen in or near relevant classes. Details must be re-checked:
 - **RIFT** (Trion Worlds, Inc.; video game), several national registrations, some expired.
 - A DZIV (HR) "RIFT" mark exists (1 result in the filtered set). It was not opened.
 
-## 3. Preliminary reading (non-legal)
-- **No identical or near-identical "GrooveRift" mark** was found in TMview. The closest hit (GROOVELIFT) is expired.
-- **"RIFT" alone is crowded** in classes 9 and 41 (video games, VR). As a compound, "GrooveRift" is distinct overall. However, an attorney should assess the risk from existing "RIFT" marks, especially gamigo's EU mark and any Meta EU or WIPO registrations. The assessment must cover likelihood of confusion and the dominant element.
-- **Implication for the brand:** neither a blocker nor a clearance. Filing is NOT recommended until an attorney's search (OQ / `questions-for-counsel.md`).
+## 3. Owner manual checks and web search (2026-11-01)
+| Check | Result |
+|---|---|
+| TMview `rift` / `groove` (owner, manual) | Only plain "RIFT" marks; no "GrooveRift" or "Groove Rift" |
+| WIPO Global Brand Database, "contains the word 'groove rift'" (owner) | 4,398 results, all plain "RIFT" marks (word-level OR match). No "GrooveRift" / "Groove Rift" |
+| DZIV (HR) `grooverift`, `rift` (owner) | Nothing relevant found |
+| Web search "GrooveRift", "Groove Rift" music app (Claude) | No product, company or app named GrooveRift. Unrelated hits only (Microsoft Groove Music, "Groove" music player, various "Rift" video games) |
 
-## 4. To complete (owner, manual)
-Run in a normal browser session. Work slowly, because TMview rate-limits.
+The per-mark list of the ~150 pages of "RIFT" results was not recorded. It is not useful at this stage; the attorney will run a proper search.
 
-1. **TMview** (https://www.tmdn.org/tmview/): search `rift`, *Contains*. In the filters, tick offices **EUIPO**, **Hrvatska – DZIV**, **WIPO** and classes **9, 38, 41, 42, 45**. Apply. Note every **registered or filed** mark: name, owner, number, classes, status.
-2. **TMview:** search `groove`, *Contains*, with the same office and class filters. Note any marks in classes 38, 41, 45 used for music or social services.
-3. **EUIPO eSearch plus** (https://euipo.europa.eu/eSearch/): cross-check `*rift*` and `groove*rift*` in the same classes.
-4. **WIPO Global Brand Database** (https://branddb.wipo.int/): search `grooverift` and `groove rift` (all), and `rift` designated EU/HR in classes 9, 41, 45.
-5. **DZIV** (https://www.dziv.hr/ > search): `grooverift`, `rift`.
-6. Optional, as a knock-out signal: domain and social-handle availability (`grooverift.com`, `.eu`, `.hr`, app stores), and a web search for "GrooveRift" products.
+### Domains
+- `grooverift.com`: **owned by the project owner**.
+- `grooverift.hr` and `grooverift.com.hr`: available on 2026-11-01 (not purchased; any purchase needs an owner decision).
 
-Paste the findings to Claude. They will be added here and §3 will be revised.
+### Market note (not a trademark issue)
+- A social music app named **"Groooves"** (iOS App Store) tracks listened albums and favourite artists. It overlaps with the concept, not the name. Record it for Phase 3 UX/competitor research.
+
+## 4. Preliminary reading (non-legal)
+- **No identical or near-identical "GrooveRift" mark** was found in TMview, WIPO Global Brand Database or DZIV. No product uses the name on the web. The closest register hit (GROOVELIFT) is expired.
+- **Both elements are individually crowded:** "RIFT" in classes 9 and 41 (video games, VR: gamigo EU mark, Meta, LOST RIFT), and "GROOVE" in music software (Microsoft Groove Music, historically). As a compound, "GrooveRift" looks distinct overall. Likelihood of confusion and the dominant element must still be assessed by an attorney.
+- **Implication:** no knock-out conflict found, so it is reasonable to keep using "GrooveRift" as the working and brand name. Filing a trademark or major brand spend should wait for the attorney's search and opinion (`questions-for-counsel.md` §E.8).
 
 ## 5. Follow-ups
-- Add to `questions-for-counsel.md` (trademark section): risk assessment of "GrooveRift" against the existing "RIFT" marks in classes 9/41; recommended filing route (EUTM vs. national HR) and classes.
+- Counsel: risk assessment against existing "RIFT" and "GROOVE" marks; recommended filing route (EUTM vs. national HR) and classes (`questions-for-counsel.md` §E.8).
+- Owner (optional): decide whether to register `grooverift.hr` / `grooverift.com.hr` defensively.

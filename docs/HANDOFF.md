@@ -8,15 +8,14 @@ _Session 2, 2026-11-01. Next session: read `docs/STATUS.md`, then this file._
 3. Check the effort setting matches the recommendation (D-008).
 
 ## Where we are
-- Phase 2 is done except for completing the **preliminary trademark search** (partial; see `docs/legal/trademark-preliminary-search.md`).
+- **Phase 2 is complete.** The trademark search is done (preliminary; see `docs/legal/trademark-preliminary-search.md`).
 - Session 2 ran on **medium** effort.
 - Claude in Chrome works once the owner is signed in to claude.ai in Chrome with the same account as Claude Code.
-- **TMview/EUIPO block automated browsing** after a burst of queries (WAF "Problem detected" page). Do not retry rapidly and never try to bypass it. The owner chose to do the rest manually.
+- **TMview/EUIPO block automated browsing** after a burst of queries (WAF "Problem detected" page). Never try to bypass it; ask the owner to search manually.
 
 ## Next concrete tasks
-1. When the owner pastes manual search results: add them to `trademark-preliminary-search.md` §2, revise §3, set the status to COMPLETE (preliminary). Phase 2 is then closed.
-2. Walk the owner through VQ-01 to VQ-06 (`docs/architecture/visibility-matrix.md` §5). The owner wants this **before** Phase 3.
-3. Propose **Phase 3** (UX/IA/design system) for approval. Key constraints:
+1. Walk the owner through VQ-01 to VQ-06 (`docs/architecture/visibility-matrix.md` §5). The owner wants this **before** Phase 3.
+2. Propose **Phase 3** (UX/IA/design system) for approval. Key constraints:
    - D-017: the UI must look complete without artwork
    - contrast rules (dark text on Coral/Amber)
    - the mockup conflict list in `docs/brand/README.md` §4

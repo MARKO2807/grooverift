@@ -3,7 +3,7 @@
 _Last updated: 2026-11-01 (session 2)_
 
 ## Current phase
-**Phase 2: Architecture, provider research and legal groundwork.** Almost complete. The preliminary trademark search is PARTIAL and waiting on the owner's manual checks.
+**Phase 2: Architecture, provider research and legal groundwork.** All deliverables complete. Phase 3 needs owner approval.
 
 ## Done
 - Phase 0 (discovery) and Phase 1 (audit and documentation foundation).
@@ -20,12 +20,11 @@ _Last updated: 2026-11-01 (session 2)_
   - `docs/legal/questions-for-counsel.md`
   - `docs/alpha-acceptance-criteria.md` (draft)
   - audit addendum §10a
-  - `docs/legal/trademark-preliminary-search.md` (**partial**): no identical "GrooveRift" mark in TMview; "RIFT" is crowded in classes 9/41. The EUIPO firewall blocked further automated browsing.
+  - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Owner:** finish the manual trademark checks (`docs/legal/trademark-preliminary-search.md` §4) and paste the results. Claude records them and revises §3.
-2. Owner: answer VQ-01 to VQ-06 (visibility) **before Phase 3 starts** (owner's choice, session 2).
-3. Owner approval of **Phase 3: UX research, information architecture and design system** (recommended effort: High for IA, Medium for asset work).
+1. Owner: answer VQ-01 to VQ-06 (visibility) **before Phase 3 starts** (owner's choice, session 2).
+2. Owner approval of **Phase 3: UX research, information architecture and design system** (recommended effort: High for IA, Medium for asset work).
 
 ## Owner actions outside Claude
 - `git push` after each session (Claude's push is blocked).
