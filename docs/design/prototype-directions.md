@@ -246,6 +246,32 @@ Decision sketch `pulse/password.html`: twelve live copies of the account field, 
 
 **Reactions (D-056, same session):** `reactions.html` showed the set (three stances, one reaction, four), single vs. multiple, text vs. icon, and who sees counts. The owner did not find the three stances clear ("ovo ne razumijem") and chose one like-style reaction, single per member, icon only, counts visible to all, and asked that both the icon and the count look good. Section 6 then offered four looks (calm bolt, bolt with spark, wave, portal): the owner chose **V3, the audio wave**. Section 7 showed where the name appears (notification, Activity, who-reacted, screen reader) after the owner asked for an example: the owner chose **"Sviđa mi se" / "Like"**. Applied in `app.js` (`react()`, `WAVE`, a press class for the beat), `style.css` (`.react-like`, `gr-beat`, `gr-bump`), `data.js` (one reaction; the old per-stance counts are summed) and a shared `gr-ember` gradient in `index.html`.
 
+### Round 5: wordmark bolt and invite current (2026-11-02, session 11)
+
+The owner's D-057 requests, answered with clickable options first.
+
+**Wordmark bolt (D-058).** The owner had said "ne djeluje dovoljno electric, previše je udaljena od rift, malo predebela".
+- Measured in Chrome: the Sora baseline sits 0.84 em from the top at line-height 1, and "rift" has no descender. The A2 bolt therefore hung about 4–9 px below the letters in the top bar.
+- `wordmark.html` gained four hairline bolts that hang from the baseline (`top: 0.86em`), each with a white-hot core, a soft glow and a flicker in place of the breath:
+  - N1: a plain thread
+  - N2: a thread with sparks
+  - N3: a crackle that re-forms the shape (JS)
+  - N4: two interwoven threads
+
+  Today's A2 is shown for comparison, and round 1 moved to an archive section.
+- The owner chose **N2**. It is applied in `app.js` (`bolt()`, `BOLT_PTS`, `BOLT_SPARKS`) and `style.css` (`.wm-bolt`, `wm-flick`, `wm-core`, `wm-spark`). `.wm-rift` gets `line-height: 1` so that the baseline offset holds. In forced colours the bolt is a plain `CanvasText` line without the core or sparks.
+
+**Invite current (D-058).**
+- `invite-current.html` and `invite-current.js` show four taller variants (112 px) in the invite hero at phone width, next to today's current:
+  - I1: impulse collision
+  - I2: arc across a gap
+  - I3: heartbeat
+  - I4: branching discharge
+- The engine reuses the helpers and `GR_MOTION` from `current.js`. A tap triggers a meeting, and "Ponovi dolazak" replays the arrival. Under reduced motion each variant draws one still frame that already shows the joined state.
+- The owner chose **I4**. The invite screen now uses `<canvas class="ic" data-v="branch" data-key="invite">`. `app.js` calls `GR_INVITE.scan()` after each render and `GR_INVITE.reset()` on navigation, like the other motifs, so the arrival plays once per visit. The engine also drops canvases that were removed from the page. The other three variants stay in the file as the decision record.
+
+**Verification:** `pulse-smoke.mjs` passes 17/17 (new runs: wordmark round 2, the invite page, the invite page under reduced motion; the flow now checks the I4 canvas, the three sparks and that the flicker follows the motion setting). `smoke.mjs` passes 3/3. Real-time CDP frames at 390 px confirm the invite discharge and the top-bar bolt, with no JS errors.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

@@ -40,6 +40,7 @@
 <div class="page">
   <h1>Struja na pozivnici: četiri nova prijedloga (D-057)</h1>
   <p>Tražio si više i šiljatije impulse koji jasno pokazuju da se <strong>dvije strane spajaju</strong>. Sva četiri prijedloga su viša (112 px umjesto 64 px), mirna između impulsa, a sva akcija je u trenutku susreta u sredini. Prikazani su u pozivnici, u širini telefona. Zadnja kartica je današnja struja.</p>
+  <p><strong>Odabrano (sesija 11, D-058): I4 „Grananje”.</strong> Primijenjeno je na pozivnici u aplikaciji. Ostale tri ostaju kao zapis odluke.</p>
   <p><strong>Dodirni ili klikni struju</strong> da odmah okineš susret. „Ponovi dolazak” pokreće uvodnu animaciju ispočetka (kao kad se pozivnica otvori).</p>
   <div class="ctl">
     <button class="btn" id="replay" type="button">Ponovi dolazak</button>
@@ -58,20 +59,20 @@
 <script>
 (function () {
   const O = [
-    ['I1', 'Sudar impulsa', 'spikes', true, 'S obje strane dolazi kratki niz visokih šiljaka (Coral slijeva, Amber zdesna). U sredini se zbroje u jedan visok šiljak koji bljesne i zapucketa. Najjasnije pokazuje „dvije strane, jedan udar”.'],
+    ['I1', 'Sudar impulsa', 'spikes', false, 'S obje strane dolazi kratki niz visokih šiljaka (Coral slijeva, Amber zdesna). U sredini se zbroje u jedan visok šiljak koji bljesne i zapucketa. Najjasnije pokazuje „dvije strane, jedan udar”.'],
     ['I2', 'Luk preko pukotine', 'arc', false, 'Linija ima prazninu u sredini, kao „rift”. Naboj se skuplja na oba kraja i onda preko praznine preskoči visoki luk s granama. Nakon bljeska ostaje tanki most koji pucketa, pa se vidi da su strane spojene.'],
     ['I3', 'Otkucaj', 'beat', false, 'Susret daje dvostruki šiljak kao otkucaj srca (tup-tup), a onda otkucaj otputuje spojenom linijom prema oba kraja. Najviše „glazbe” i ritma, najmanje munje.'],
-    ['I4', 'Grananje', 'branch', false, 'Na mjestu susreta gore i dolje bljesne razgranata munja, dvaput zaredom, kao prava munja. Najdramatičnije i najviše „electric”, ali i najjače za oko.']
+    ['I4', 'Grananje', 'branch', true, 'Na mjestu susreta gore i dolje bljesne razgranata munja, dvaput zaredom, kao prava munja. Najdramatičnije i najviše „electric”, ali i najjače za oko.']
   ];
   const head = '<p class="eyebrow">Pozivnica</p><p class="h-hero">Imaš pozivnicu za <span class="wm">groove<b>rift</b></span></p><p class="tag" lang="en">Where musical worlds collide.</p>';
   document.getElementById('grid').innerHTML = O.map(([k, t, v, rec, d]) => `<section class="card" aria-labelledby="h${k}">
-      <h2 id="h${k}">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
+      <h2 id="h${k}">${k}. ${t}${rec ? ' <span class="rec">odabrano</span>' : ''}</h2>
       <div class="phone"><canvas class="ic" data-v="${v}" data-key="inv-${v}" aria-hidden="true"></canvas>${head}</div>
       <p>${d}</p></section>`).join('') +
     `<section class="card ref" aria-labelledby="h0">
-      <h2 id="h0">Danas (za usporedbu)</h2>
+      <h2 id="h0">Prije (za usporedbu)</h2>
       <div class="phone"><canvas class="current" data-cur="invite-ref" data-size="lg" aria-hidden="true" style="max-width:20rem"></canvas>${head}</div>
-      <p>Trenutna struja na pozivnici: 64 px, naboji teku s obje strane i sudaraju se u sredini uz male iskre.</p></section>`;
+      <p>Struja na pozivnici prije D-058: 64 px, naboji teku s obje strane i sudaraju se u sredini uz male iskre.</p></section>`;
   window.GR_CURRENT.scan(document);
   window.GR_INVITE.scan(document);
   document.getElementById('replay').addEventListener('click', () => { window.GR_CURRENT.reset(); window.GR_INVITE.replay(); });

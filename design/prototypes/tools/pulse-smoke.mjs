@@ -48,10 +48,11 @@ const HELPERS = `
   const fits = () => { const m = $('main').getBoundingClientRect(), f = $('.foot').getBoundingClientRect(); return document.documentElement.scrollHeight <= innerHeight + 1 || m.bottom <= f.top + 1; };`;
 
 const FLOW = `(async () => {${HELPERS}
-  expect($('canvas.current[data-cur="invite"]'), 'invite current');
+  expect($('canvas.ic[data-key="invite"][data-v="branch"]'), 'invite current I4 branch (D-058)');
   expect($('main h1 .wm .wm-rift'), 'brand name set like the wordmark');
   expect($('.topbar .wordmark .wm-bolt') && !$('main .wm-bolt'), 'bolt under rift in the top bar only (D-055)');
-  { const gl = getComputedStyle($('.topbar .wm-bolt .glint')).animationName; expect(document.documentElement.dataset.motion === 'reduced' ? gl === 'none' : gl === 'wm-glint', 'bolt glint follows the motion setting'); }
+  expect($$('.topbar .wm-bolt .spark').length === 3, 'bolt has three sparks (D-058)');
+  { const fl = getComputedStyle($('.topbar .wm-bolt .bolt')).animationName; expect(document.documentElement.dataset.motion === 'reduced' ? fl === 'none' : fl === 'wm-flick', 'bolt flicker follows the motion setting'); }
   await click('[data-a="next"]'); expect(scr() === 'age', 'age');
   expect(getComputedStyle($('.center-block h1')).textAlign === 'center', 'age centred');
   await click('[data-a="next"]'); expect($('#err-age'), 'age error shown');
@@ -175,6 +176,9 @@ const runs = [
   { name: 'choices page', url: base.replace('index.html', 'choices.html'), test: `(async () => {${HELPERS} await sleep(400); expect($$('#gallery canvas.dna').length === 8 && $$('#gallery canvas.dna').every(c => c.width > 0), 'gallery drawn'); return 'ok'; })()` },
   { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('#grid .card').length === 4 && $$('#grid-live .card').length === 3, 'four options and three live intensities'); expect(getComputedStyle($('.live-1 .glint')).animationName === 'glint9', 'live bolt animates'); return 'ok'; })()` },
   { name: 'wordmark page calm', url: base.replace('index.html', 'wordmark.html?calm=1'), test: `(async () => {${HELPERS} expect(getComputedStyle($('.live-1 .glint')).animationName === 'none' && getComputedStyle($('.live-1 .glint')).opacity === '0', 'live bolt still with reduced motion'); return 'ok'; })()` },
+  { name: 'wordmark round 2', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('#grid-new .card').length === 5 && $$('#grid-new .n2 .sp').length === 6, 'four new bolts plus today, N2 sparks'); expect(getComputedStyle($('.n2 .all')).animationName === 'nb-flick', 'new bolt flickers'); return 'ok'; })()` },
+  { name: 'invite current page', url: base.replace('index.html', 'invite-current.html'), test: `(async () => {${HELPERS} await sleep(700); const cs = $$('canvas.ic'); expect(cs.length === 4 && cs.every(c => c.height > 0), 'four invite variants drawn'); expect(cs.map(c => c.dataset.v).join() === 'spikes,arc,beat,branch', 'variant order'); return 'ok'; })()`, w: 1100, h: 900 },
+  { name: 'invite current page calm', url: base.replace('index.html', 'invite-current.html?calm=1'), test: `(async () => {${HELPERS} await sleep(200); expect(document.documentElement.dataset.motion === 'reduced' && $$('canvas.ic').length === 4, 'still frames under reduced motion'); return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');

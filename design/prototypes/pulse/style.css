@@ -28,18 +28,24 @@ svg.i.sm { width: var(--gr-size-icon-sm); height: var(--gr-size-icon-sm); }
 .topbar > .wordmark, .topbar > .top-title { margin-left: var(--gr-space-2); }
 .topbar > .iconbtn + .wordmark, .topbar > .iconbtn + .top-title { margin-left: 0; }
 .wordmark { font-family: var(--gr-font-family-heading); font-weight: var(--gr-font-weight-bold); font-size: var(--gr-font-size-xl); letter-spacing: -0.02em; }
-.wm-rift { color: var(--gr-color-text-accent); position: relative; display: inline-block; }
-/* Wordmark accent (D-055): a bolt under "rift" in the top bar only. A glint every 5 s and a quiet breath;
-   both stop with "Smanji pokrete" or the OS setting (D-049). Raw colours: brand motif art, mirrors the primitives. */
-.wm-bolt { position: absolute; left: 0; bottom: -6px; width: 100%; height: 6px; overflow: visible; }
-.wm-bolt .bolt { animation: wm-breathe 4s ease-in-out infinite alternate; }
-.wm-bolt .glint { stroke: #FFF1D6; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 14 100; stroke-dashoffset: 14; opacity: 0; animation: wm-glint 5s linear infinite; }
-@keyframes wm-glint { 0% { stroke-dashoffset: 14; opacity: 0; } 2% { opacity: .9; } 24% { stroke-dashoffset: -100; opacity: .9; } 25%, 100% { stroke-dashoffset: -100; opacity: 0; } }
-@keyframes wm-breathe { from { opacity: .72; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .wm-bolt .bolt, .wm-bolt .glint { animation: none; } .wm-bolt .glint { opacity: 0; } }
-html[data-motion="reduced"] .wm-bolt .bolt, html[data-motion="reduced"] .wm-bolt .glint { animation: none; }
-html[data-motion="reduced"] .wm-bolt .glint { opacity: 0; }
-@media (forced-colors: active) { .wm-bolt .bolt { stroke: CanvasText; } }
+.wm-rift { color: var(--gr-color-text-accent); position: relative; display: inline-block; line-height: 1; }
+/* Wordmark accent (D-055, redone by D-058, option N2): a hairline bolt hanging from the baseline of "rift"
+   (Sora baseline = 0.84em at line-height 1), a white-hot core and a soft glow. Every 4.5 s it flickers and three
+   small sparks jump off its tips. Top bar only; everything stops with "Smanji pokrete" or the OS setting (D-049).
+   Raw colours: brand motif art, mirrors the primitives. */
+.wm-bolt { position: absolute; left: -0.03em; top: 0.86em; width: calc(100% + 0.06em); height: 0.3em; overflow: visible; }
+.wm-bolt polyline { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: miter; stroke-miterlimit: 10; stroke-linecap: round; }
+.wm-bolt .bolt { filter: drop-shadow(0 0 1.2px rgba(255, 120, 100, .85)); opacity: .82; animation: wm-flick 4.5s linear infinite; }
+.wm-bolt .bolt-line { stroke-width: 1.15px; }
+.wm-bolt .bolt-core { stroke: #FFF4E6; stroke-width: .55px; opacity: .5; animation: wm-core 4.5s linear infinite; }
+.wm-bolt .spark { stroke: #FFE2B0; stroke-width: .9px; opacity: 0; animation: wm-spark 4.5s linear infinite; }
+@keyframes wm-flick { 0%, 82% { opacity: .82; } 83% { opacity: 1; } 84% { opacity: .2; } 85.5% { opacity: 1; } 87% { opacity: .4; } 88% { opacity: 1; } 92%, 100% { opacity: .82; } }
+@keyframes wm-core { 0%, 82% { opacity: .5; } 83%, 88% { opacity: 1; } 92%, 100% { opacity: .5; } }
+@keyframes wm-spark { 0%, 82.5% { opacity: 0; } 83% { opacity: 1; } 84% { opacity: 0; } 85.5% { opacity: .9; } 87%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .wm-bolt .bolt, .wm-bolt .bolt-core, .wm-bolt .spark { animation: none; } .wm-bolt .bolt { opacity: 1; } }
+html[data-motion="reduced"] .wm-bolt .bolt, html[data-motion="reduced"] .wm-bolt .bolt-core, html[data-motion="reduced"] .wm-bolt .spark { animation: none; }
+html[data-motion="reduced"] .wm-bolt .bolt { opacity: 1; }
+@media (forced-colors: active) { .wm-bolt .bolt { filter: none; } .wm-bolt .bolt-line { stroke: CanvasText; } .wm-bolt .bolt-core, .wm-bolt .spark { display: none; } }
 .wm { font-family: var(--gr-font-family-heading); font-weight: var(--gr-font-weight-bold); letter-spacing: -0.02em; white-space: nowrap; }
 .top-title { flex: 1; min-width: 0; font: var(--gr-type-title-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: var(--gr-space-1); }
@@ -204,10 +210,10 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .aud { display: flex; gap: var(--gr-space-2); align-items: center; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
 
 /* ---------- motifs ---------- */
-canvas.current, canvas.dna { display: block; width: 100%; touch-action: manipulation; }
+canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-action: manipulation; }
 .hero-current { max-width: 20rem; }
 .dd-current { max-width: 14rem; margin-top: var(--gr-space-1); }
-@media (forced-colors: active) { canvas.current, canvas.dna { forced-color-adjust: none; } }
+@media (forced-colors: active) { canvas.current, canvas.ic, canvas.dna { forced-color-adjust: none; } }
 
 /* onboarding progress: nine short bars along the Coral to Amber gradient */
 .progress { padding: var(--gr-space-3) var(--gr-space-4) 0; display: flex; align-items: center; gap: var(--gr-space-3); }

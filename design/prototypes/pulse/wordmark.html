@@ -92,7 +92,8 @@
 
   <h1>Nova munja ispod „rift”: četiri prijedloga (D-057)</h1>
   <p>Tvoja povratna informacija: „ne djeluje dovoljno electric, previše je udaljena od rift, malo predebela”. Sve četiri nove munje vise <strong>tik ispod slova</strong> (oko 2 px u traci, prije oko 4 do 9 px), <strong>tanke su kao dlaka</strong> (oko 1 px, prije 2 px), imaju <strong>usijanu bijelu jezgru i mekani sjaj</strong> i <strong>trepere</strong> umjesto da polako dišu. Mjesto ostaje isto: samo ispod „rift”, samo na samostalnom wordmarku. Uz „Smanji pokrete” sve stoji.</p>
-  <p>Gledaj prvo traku: tamo je munja stalno vidljiva. Za usporedbu je zadnja kartica današnja munja (A2).</p>
+  <p>Gledaj prvo traku: tamo je munja stalno vidljiva. Za usporedbu je zadnja kartica bivša munja (A2).</p>
+  <p><strong>Odabrano (sesija 11, D-058): N2 „Nit s iskrama”.</strong> Primijenjena je u gornjoj traci aplikacije i to su upute za dizajnera.</p>
   <div class="ctl"><label><input type="checkbox" id="calm"> Smanji pokrete (prikaži mirnu verziju)</label></div>
   <div class="grid" id="grid-new"></div>
 
@@ -150,17 +151,17 @@
   const NEW = [
     ['N1', 'Nit', false, 'n1', () => single(false),
       'Ista ideja kao A, ali tanka kao dlaka, tik ispod slova i nepravilnije nazubljena. Svakih 4,5 s kratko zatreperi (dva brza trzaja), inače mirno svijetli. Samo CSS.'],
-    ['N2', 'Nit s iskrama', false, 'n2', () => single(true),
+    ['N2', 'Nit s iskrama', true, 'n2', () => single(true),
       'N1, a u trenutku treptaja s vrhova munje odskoče tri sitne iskre. Između treptaja iskri nema. Samo CSS.'],
-    ['N3', 'Pucketanje', true, 'n3', () => single(true),
+    ['N3', 'Pucketanje', false, 'n3', () => single(true),
       'Najelektričnije: svakih 4 do 6 s munja na tren „pukne”, nekoliko puta promijeni oblik (oko 0,3 s) i iskri, pa se vrati u svoj oblik. Svaki put malo drukčije, kao prava iskra. Treba malo JavaScripta.'],
     ['N4', 'Dvije niti', false, 'n4', two,
       'Coral nit dolazi slijeva, Amber zdesna i ispod „rift” se isprepletu. Isti motiv kao spajanje na pozivnici. Trepere naizmjence. Samo CSS.'],
-    ['A2', 'Danas (za usporedbu)', false, 'live-2 ref', () => boltLive,
-      'Trenutna munja u aplikaciji: 2 px, oko 4 do 9 px ispod slova, bljesak svakih 5 s i disanje.']
+    ['A2', 'Prije (za usporedbu)', false, 'live-2 ref', () => boltLive,
+      'Munja iz D-055: 2 px, oko 4 do 9 px ispod slova, bljesak svakih 5 s i disanje.']
   ];
   document.getElementById('grid-new').innerHTML = NEW.map(([k, t, rec, cls, svg, d]) => `<section class="card ${cls}" aria-labelledby="h${k}n">
-    <h2 id="h${k}n">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
+    <h2 id="h${k}n">${k}. ${t}${rec ? ' <span class="rec">odabrano</span>' : ''}</h2>
     <div class="bar"><span class="wm s">groove<span class="r">rift${svg()}</span></span><span class="tag">Alfa</span></div>
     <div class="hero"><span class="wm l">groove<span class="r">rift${svg()}</span></span></div>
     <p>${d}</p></section>`).join('');

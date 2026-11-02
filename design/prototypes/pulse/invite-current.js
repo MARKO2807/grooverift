@@ -1,5 +1,6 @@
-/* GrooveRift decision sketch (D-057): new invite currents. The owner wants taller, spiked electric impulses
-   that clearly show two sides joining. Four variants on one canvas engine, compared with today's current.
+/* GrooveRift invite current (D-057, D-058). The owner wanted taller, spiked electric impulses that clearly
+   show two sides joining. Four variants on one canvas engine; invite-current.html compares them, and the
+   app's invite screen uses the chosen one, I4 "branch" (D-058). The other three stay as the decision record.
    Reuses the helpers and the motion flag from current.js (GR_CURRENT, GR_MOTION). Decorative: aria-hidden.
    Markup: <canvas class="ic" data-v="spikes|arc|beat|branch" data-key="..."></canvas>
    Motion: with "Smanji pokrete" or the OS setting, each variant draws one still frame that already shows
@@ -274,23 +275,33 @@
     raf = 0;
     if (document.hidden || M.reduced()) return;
     let any = false;
-    for (const st of states.values()) if (st.visible) { draw(st, now); any = true; }
+    for (const [c, st] of states) {
+      if (!c.isConnected) { drop(c, st); continue; }
+      if (st.visible) { draw(st, now); any = true; }
+    }
     if (any) raf = requestAnimationFrame(tick);
   }
   const kick = () => { if (!raf && !M.reduced()) raf = requestAnimationFrame(tick); };
+  function drop(c, st) { states.delete(c); if (st.ro) st.ro.disconnect(); if (st.io) st.io.disconnect(); }
   function mount(c) {
-    const key = c.dataset.key || c.dataset.v, seed = hash(key);
-    const st = { c, v: V[c.dataset.v] ? c.dataset.v : 'spikes', seed, rnd: rng(seed ^ 0x9e3779b9), packets: [], ev: null, visible: false, intro: performance.now() };
+    const key = c.dataset.key || c.dataset.v, seed = hash(key), now = performance.now();
+    const st = { c, v: V[c.dataset.v] ? c.dataset.v : 'spikes', seed, rnd: rng(seed ^ 0x9e3779b9), packets: [], ev: null, visible: false, intro: now };
     st.n1 = noise(seed); st.n2 = noise(seed ^ 0x51ed); st.n3 = noise(seed ^ 0xa3c5);
-    states.set(c, st); measure(st); draw(st, performance.now());
-    if (window.ResizeObserver) new ResizeObserver(() => { measure(st); draw(st, performance.now()); }).observe(c);
-    new IntersectionObserver(es => { st.visible = es.some(e => e.isIntersecting); if (st.visible) kick(); }, { threshold: 0.05 }).observe(c);
+    // the arrival plays once per key until reset(); a re-render of the same screen does not replay it
+    if (played.has(key)) { st.intro = now - 1e6; st.arrived = true; st.next = now + 600; } else played.add(key);
+    states.set(c, st); measure(st); draw(st, now);
+    if (window.ResizeObserver) { st.ro = new ResizeObserver(() => { measure(st); draw(st, performance.now()); }); st.ro.observe(c); }
+    st.io = new IntersectionObserver(es => { st.visible = es.some(e => e.isIntersecting); if (st.visible) kick(); }, { threshold: 0.05 });
+    st.io.observe(c);
     c.addEventListener('pointerdown', () => { if (!M.reduced() && st.arrived) { event(st, performance.now(), 1.4); kick(); } });
   }
+  const played = new Set();
   M.onChange(() => { const now = performance.now(); for (const st of states.values()) draw(st, now); kick(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
   window.GR_INVITE = {
     scan(root) { (root || document).querySelectorAll('canvas.ic').forEach(c => { if (!states.has(c)) mount(c); }); },
+    /* Lets arrivals play again; app.js calls it when the member moves to another screen. */
+    reset() { played.clear(); },
     /* Plays the arrival again on every canvas. */
     replay() { const now = performance.now(); for (const st of states.values()) { st.intro = now; st.arrived = false; st.packets = []; st.ev = null; } kick(); }
   };
