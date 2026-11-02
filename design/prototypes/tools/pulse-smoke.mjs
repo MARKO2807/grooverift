@@ -163,6 +163,20 @@ const runs = [
   { name: 'daily drop heading', url: `${base}?flow=drop`, test: `(async () => {${HELPERS} expect($('.dd-name').textContent === 'Daily Drop' && $('.dd-date time').textContent === 'Nedjelja, 1. studenoga', 'name and date'); expect(!$('.dd-top').textContent.includes('·'), 'no middle dot'); return 'ok'; })()` },
   { name: 'choices page', url: base.replace('index.html', 'choices.html'), test: `(async () => {${HELPERS} await sleep(400); expect($$('#gallery canvas.dna').length === 8 && $$('#gallery canvas.dna').every(c => c.width > 0), 'gallery drawn'); return 'ok'; })()` },
   { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('.card').length === 4, 'four options'); return 'ok'; })()` },
+  { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
+    expect($$('.card').length === 12, 'twelve option cards');
+    expect(!$('#live').checked, 'live HIBP check is off by default');
+    await click('[data-ex="Zagreb2024!"]'); expect($('#f-la').value === 'Zagreb2024!' && $('#f-hc').value === 'Zagreb2024!', 'example fills every field');
+    await click('[data-submit="la"]'); expect($('#err-la') && $('#err-la').textContent.includes('najmanje 15'), 'short error at 15');
+    await click('[data-submit="lc"]'); await sleep(50); expect(!$('#err-lc') && $('#st-lc .ok'), '11 chars pass at 8');
+    await click('[data-ex="iloveyou1234567"]'); await click('[data-submit="ha"]'); await sleep(50); expect($('#err-ha') && $('#err-ha').textContent.includes('curenjima'), 'simulated breach rejected with the reason');
+    await click('[data-ex="plavi kit pjeva u kadi"]'); expect($('#cnt-fa').classList.contains('ok'), 'counter reaches 15');
+    expect($('#met-fb').dataset.s === '4', 'simulated meter high for a passphrase');
+    await click('[data-ex="lozinka1"]'); expect($('#met-fb').dataset.s === '1', 'simulated meter low for a common word');
+    $('[data-down="hb"]').checked = true; await click('[data-ex="plavi kit pjeva u kadi"]'); await click('[data-submit="hb"]'); await sleep(50); expect($('#err-hb') && $('#err-hb').textContent.includes('ne možemo'), 'fail closed blocks');
+    $('[data-down="ha"]').checked = true; await click('[data-submit="ha"]'); await sleep(50); expect(!$('#err-ha') && $('#st-ha .ok'), 'fail open continues');
+    await click('[data-show="la"]'); expect($('#f-la').type === 'text', 'show password');
+    return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }
 ];
 
