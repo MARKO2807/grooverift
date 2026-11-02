@@ -320,6 +320,8 @@
       <p class="dd-date"><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>${noCur ? '' : current('dd-' + where, 'md', 'dd-current')}</div>`;
   }
   function people(n) {
+    if (!n) return '<p class="dd-meta"><span>Još nitko nije odgovorio.</span></p>';
+    if (NET_OFF) return '';
     const hs = allAnswers().slice(0, 3);
     return `<p class="dd-meta"><span class="stack" aria-hidden="true">${hs.map(a => avatar(a.handle, a.who, 'xs')).join('')}</span><span>${n} ${plAns(n)}${st.mine ? ', uključujući tvoj' : ''}</span></p>`;
   }
@@ -424,9 +426,11 @@
       ${err ? fieldErr('ans', err) : ''}
       ${refsEditor()}
       ${audience('answer')}
+      ${st.postErr ? `<div class="post-err" role="alert">${ic('alert')}<p><b>Odgovor nije objavljen.</b> Veza je pukla. Tekst je ostao ovdje, pokušaj ponovno.</p></div>` : ''}
+      ${NET_OFF ? `<p class="post-off" id="post-off">${ic('offline', 'sm')}<span>Objava treba mrežu. Tekst ostaje ovdje dok je stranica otvorena.</span></p>` : ''}
       <div class="composer-actions">
         <button type="button" class="btn btn-secondary" data-a="cancel-compose" data-k="cancel">Odustani</button>
-        <button type="submit" class="btn btn-primary" data-k="post" aria-describedby="aud">${st.editing ? 'Spremi' : 'Objavi'}</button>
+        <button type="submit" class="btn btn-primary" data-k="post" aria-describedby="aud${NET_OFF ? ' post-off' : ''}"${NET_OFF ? ' disabled' : ''}>${st.postErr ? 'Pokušaj ponovno' : st.editing ? 'Spremi' : 'Objavi'}</button>
       </div>
     </form>`;
   }
@@ -449,10 +453,11 @@
   }
   /* Archived questions stay open for answers (D-036), so the archive says so. */
   const PAST_MSG = 'Ovdje bi se otvorilo to pitanje s odgovorima. Na starija pitanja i dalje možeš odgovoriti, a uz odgovor piše datum (D-036).';
-  function pastList(title, max) {
+  function pastList(title, max, from) {
+    from = from || 0;
     return `<section class="section" aria-labelledby="h-past">
       <h2 id="h-past" class="section-title">${title}</h2>
-      <ul class="past">${D.pastDrops.slice(0, max || 99).map((d, i) => `<li><button class="past-item" data-a="toast" data-msg="${PAST_MSG}" data-k="past-${i}">
+      <ul class="past">${D.pastDrops.slice(from, from + (max || 99)).map((d, i) => `<li><button class="past-item" data-a="toast" data-msg="${PAST_MSG}" data-k="past-${i}">
         <span class="past-date"><time datetime="${d.date}">${longDate(d.date)}</time></span><span class="past-q">${esc(d.q)}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul>
     </section>`;
   }
@@ -605,9 +610,15 @@
     return `<li><button class="peek" data-a="open-drop" data-k="peek-${a.id}">${avatar(a.handle, a.who, 'xs')}<span class="peek-body"><span class="peek-who">${esc(a.who)}</span><span class="peek-text"${a.lang ? ` lang="${a.lang}"` : ''}>${esc(a.text)}</span></span></button></li>`;
   }
   function homeBody() {
+    return pwBanner() + homeMain();
+  }
+  function homeMain() {
     const follow = `<section class="section" aria-labelledby="h-follow"><h2 id="h-follow" class="section-title">Od ljudi koje pratiš</h2>
-      <div class="empty"><p>Još nikoga ne pratiš. Ljude možeš pronaći kroz odgovore na Daily Drop.</p></div></section>`;
-    const past = pastList('Prethodni Daily Dropovi', 3);
+      ${emptyBox(pic('users-three', 'empty-ic'), 'Još nikoga ne pratiš.', 'Ljude možeš pronaći kroz odgovore na Daily Drop.')}</section>`;
+    const past = pastList('Prethodni Daily Dropovi', 3, STATE === 'nodrop' ? 1 : 0);
+    /* Round 10 states (IA §6.2 HOME-01): placeholders while loading, yesterday's Drop when today's is late (J3 E2). */
+    if (STATE === 'loading') return `<div aria-busy="true">${skelDrop()}${skel(2, 'peek')}</div>${follow}`;
+    if (STATE === 'nodrop') return noDropBlock() + follow + past;
     if (HOME_AT === 'a') return dropTeaser() + follow + past;
     if (HOME_AT === 'b') return dropTeaser(true) + follow + past;
     const n = allAnswers().length, peeks = allAnswers().slice(0, ['c', 'e', 'f'].includes(HOME_AT) ? 2 : 3);
@@ -622,8 +633,10 @@
         <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
         ${people(n)}
         <div class="dd-actions dd-actions-inline">${teaserActions(true)}</div>
-        <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}${allPeekCard(n, peeks)}</ul>
-        ${allAnswersLink(n, peeks)}
+        ${NET_OFF ? netHint('Odgovori trebaju mrežu. Učitat će se kad se veza vrati.')
+          : STATE === 'error' && !st.loadOk ? loadErr('Prvi odgovori nisu se učitali.', 'retry-peeks')
+          : peeks.length ? `<ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}${allPeekCard(n, peeks)}</ul>
+        ${allAnswersLink(n, peeks)}` : ''}
       </section>` + follow + past;
     if (HOME_AT === 'f') return `<section class="dd-card dd-live" aria-labelledby="h-teaser">
         <p class="dd-eyebrow">${ddName('dd-name-sm', 'span')}<time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>
@@ -682,7 +695,7 @@
       const days = [{ date: D.drop.date, q: D.drop.question, today: true }].concat(D.pastDrops).slice(0, 7).reverse();
       const sel = days.find(d => d.date === st.hubDay) || days[days.length - 1];
       return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${longDate(d.date)}${d.today ? ', danas' : ''}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
-        ${sel.today ? hubDrop() : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
+        ${sel.today ? (STATE === 'nodrop' ? noDropBlock() : STATE === 'loading' ? skelDrop() : hubDrop()) : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
           <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2>${pastMeta(sel)}<p class="dd-still">Još uvijek možeš odgovoriti.</p>
           <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`}
         ${HUB_AT === 'e' ? hubProgramme() : `<button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Cijela arhiva</button>${suggestBtn()}`}`;
@@ -757,12 +770,12 @@
       body = hits.length ? `<ul class="set-list">${hits.map(([r, k]) => setRow(r, k)).join('')}</ul>` : '<p class="hint">Nema takve postavke.</p>';
     } else body = groups.map(([g, rows], gi) => `<section class="set-group" aria-labelledby="sg-${gi}"><h2 class="set-gt" id="sg-${gi}">${g}</h2><ul class="set-list">${list(rows, gi)}</ul></section>`).join('');
     return `${top}<div id="set-body" class="set-body">${body}</div>
-      <button class="btn btn-secondary btn-block set-out" data-a="toast" data-msg="Odjava (simulacija): u aplikaciji bi te vratila na prijavu." data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
+      <button class="btn btn-secondary btn-block set-out" data-a="logout" data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
       <button class="set-delete" data-a="setsub" data-s="delete" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili obriši račun</button>
       <p class="meta set-ver">${wm()} alfa · skica 3.5</p>`;
   }
   const profAnswers = () => `<section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
-      ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : '<p class="empty">Još nema odgovora.</p>'}
+      ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : emptyBox(pic('calendar-dots', 'empty-ic'), 'Još nema odgovora.', 'Tvoji odgovori na Daily Drop skupljaju se ovdje.')}
     </section>`;
   const profVis = () => `<p class="pf-vis">${ic(st.vis === 'public' ? 'globe' : 'lock', 'sm')}<span>${VIS_LABEL[st.vis] || 'Privatni'} profil. Music DNA vide: ${(DNA_LABEL[st.dnaVis] || 'Samo ja').toLowerCase()}.</span></p>`;
   const profBtns = () => `<div class="foot-row equal pf-btns"><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Uređivanje profila (J4) nije dio skice." data-k="pf-edit">Uredi profil</button>
@@ -813,6 +826,7 @@
   /* Home: the link to all answers, four ways. */
   function allAnswersLink(n, peeks) {
     const rest = Math.max(0, n - peeks.length);
+    if (!rest) return '';
     if (ALL_AT === 'b') return `<button class="btn btn-secondary btn-block all-b" data-a="open-drop" data-k="all-ans">Svi odgovori <span class="all-n">${n}</span>${ic('chevron', 'sm')}</button>`;
     if (ALL_AT === 'c') return `<button class="all-c" data-a="open-drop" data-k="all-ans"><span class="stack" aria-hidden="true">${allAnswers().slice(peeks.length, peeks.length + 3).map(a => avatar(a.handle, a.who, 'xs')).join('')}</span><span>Pročitaj još ${rest} ${plAns(rest)}</span>${ic('chevron', 'sm')}</button>`;
     if (ALL_AT === 'd') return '';
@@ -849,6 +863,11 @@
     return `<li class="act${x.unread ? ' act-new' : ''}">${lead}<div class="act-body"><p class="act-txt">${x.txt}${x.unread ? '<span class="sr-only">, novo</span>' : ''}</p><p class="act-time">${x.time}</p>${btns}</div>${tail}</li>`;
   }
   function activityBody() {
+    /* Round 10 states (IA §6.2 ACT-01): never cached, so offline says so; items from blocked accounts are removed. */
+    if (NET_OFF) return netHint('Aktivnost treba mrežu. Učitat će se kad se veza vrati.');
+    if (STATE === 'loading') return skel(5, 'act');
+    if (STATE === 'error' && !st.loadOk) return loadErr('Obavijesti se nisu učitale.', 'retry-act');
+    if (STATE === 'empty') return emptyBox(ic('bell', 'empty-ic'), 'Još nema obavijesti.', 'Ovdje stižu komentari, reakcije i novi pratitelji.');
     let items = ACT_ITEMS.map((x, i) => [x, i]);
     let head = '';
     if (ACT_AT === 'b') {
@@ -886,19 +905,50 @@
         <div class="field"><label class="label" for="f-bio">Bio</label><textarea class="textarea" id="f-bio" data-k="f-bio" rows="3" maxlength="160">${esc(BIO)}</textarea><p class="help">Do 160 znakova.</p></div>
         ${grp('', row('sub-dna', 'Uredi Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'Uređivanje Music DNA (PROF-09) nije dio skice.'))}
         <button class="btn btn-primary btn-block" data-a="toast" data-msg="Spremljeno (simulacija)." data-k="sub-save">Spremi</button>`],
-    account: ['Račun', () => grp('Prijava', row('a-mail', 'E-pošta', esc(D.email)) + row('a-pw', 'Lozinka', 'Promijenjena prije 2 dana') + row('a-g', 'Google', 'Nije povezano'))
-      + grp('Korisničko ime', row('a-user', `@${esc(st.username || 'ti')}`, 'Promijeni'), 'Možeš ga promijeniti jednom u 30 dana. Staro ime ostaje rezervirano još 30 dana, da te nitko ne može glumiti.')],
-    security: ['Sigurnost', () => grp('Dvostruka provjera', swRow('s-2fa', 'Kod iz aplikacije pri prijavi', 'Preporučeno. Uz to dobiješ kodove za oporavak.', false))
+    /* Round 10 (session 12): the account rows open their own screens (SET-02, SET-03). */
+    account: ['Račun', () => grp('Prijava', subRow('a-mail', 'E-pošta', esc(D.email), 'email') + subRow('a-pw', 'Lozinka', 'Promijenjena prije 2 dana', 'password') + row('a-g', 'Google', 'Nije povezano', 'Povezivanje Google računa: prijava preko Googlea s istom adresom e-pošte. Nije dio skice.'))
+      + grp('Korisničko ime', subRow('a-user', `@${esc(st.username || 'ti')}`, st.userChanged ? `Sljedeća promjena od ${dayMonth(addDays(D.drop.date, 30))}` : 'Promijeni', 'username'), 'Možeš ga promijeniti jednom u 30 dana. Staro ime ostaje rezervirano još 30 dana, da te nitko ne može glumiti.')],
+    email: ['E-pošta', () => `<p class="help">Sada: <b>${esc(D.email)}</b></p>
+        ${field({ id: 'email2', label: 'Nova adresa e-pošte', type: 'email', attrs: 'autocomplete="email"' })}
+        ${field({ id: 'pwold', label: 'Lozinka, za potvrdu', type: 'password', attrs: 'autocomplete="current-password"' })}
+        <p class="set-note">Poslat ćemo poveznicu na novu adresu. Dok je ne otvoriš, vrijedi stara. Na staru adresu stiže obavijest o promjeni.</p>
+        <button class="btn btn-primary btn-block" data-a="toast" data-msg="Poveznica je poslana na novu adresu (simulacija)." data-k="email-save">Pošalji poveznicu</button>`],
+    password: ['Lozinka', () => `${field({ id: 'pwold', label: 'Trenutna lozinka', type: 'password', attrs: 'autocomplete="current-password"' })}
+        ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: 'password', value: st.pw, desc: 'pw-need', attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"' })}
+        <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
+        <label class="age-check sub-check"><input type="checkbox" checked data-k="pw-others"><span>Odjavi i sve druge uređaje</span></label>
+        <button class="btn btn-primary btn-block" data-a="pw-save" data-k="pw-save">Promijeni lozinku</button>
+        <button class="link" data-a="toast" data-msg="Ponovno postavljanje lozinke (PUB-04): poveznica stiže e-poštom." data-k="pw-forgot">Ne sjećaš se trenutne lozinke?</button>`],
+    username: ['Korisničko ime', () => st.userChanged
+      ? `<div class="sub-hero sub-hero-wait">${ic('clock')}<p class="sub-hero-t">@${esc(st.username)}</p><p class="help">Promijenjeno ${dayMonth(D.drop.date)}. Sljedeća promjena moguća je od ${dayMonth(addDays(D.drop.date, 30))}.</p></div>
+        ${grp('Staro ime', `<li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">@${esc(st.oldUser)}</span><span class="set-d">Rezervirano za tebe do ${dayMonth(addDays(D.drop.date, 30))}. Nitko ga ne može uzeti.</span></span></li>`)}`
+      : `${field({ id: 'uname2', label: 'Novo korisničko ime', help: '3 do 20 znakova: mala slova, brojke, točka i donja crta.', value: st.newUser == null ? st.username : st.newUser, prefix: '@', attrs: 'autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"' })}
+        <div id="uname2-status" class="status" aria-live="polite">${u2Status()}</div>
+        <ul class="sub-facts"><li>Mijenjati ga možeš jednom u 30 dana.</li><li>Staro ime ostaje rezervirano 30 dana, pa te nitko ne može glumiti.</li><li>Stare poveznice na tvoj profil prestaju raditi. Ime za prikaz ostaje isto.</li></ul>
+        <button class="btn btn-primary btn-block" data-a="uname-save" data-k="uname-save">Spremi</button>`],
+    security: ['Sigurnost', () => grp('Dvostruka provjera', subRow('s-2fa', 'Kod iz aplikacije pri prijavi', st.twofa ? 'Uključeno' : 'Isključeno. Preporučujemo da je uključiš.', 'twofa'))
       + grp('Uređaji', `<li class="set-row set-row-dev"><span class="set-txt"><span class="set-t">Chrome na Androidu</span><span class="set-d">Ovaj uređaj · Zagreb</span></span></li><li class="set-row set-row-dev"><span class="set-txt"><span class="set-t">Safari na iPhoneu</span><span class="set-d">Prije 3 dana · Zagreb</span></span><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Uređaj je odjavljen (simulacija)." data-k="s-out-1">Odjavi</button></li>`)
-      + '<button class="btn btn-secondary btn-block" data-a="toast" data-msg="Odjavljen si sa svih drugih uređaja (simulacija)." data-k="s-out-all">Odjavi se sa svih drugih uređaja</button>'],
-    privacy: ['Privatnost', () => `${choices('vis2', 'Tko vidi tvoj profil, Music DNA i povijest odgovora?', [{ v: 'public', icon: 'globe', t: 'Javno', d: 'Svi članovi. Pojavljuješ se u Otkrivanju.' }, { v: 'private', icon: 'lock', t: 'Privatno', d: 'Samo pratitelji koje odobriš.' }], st.vis, 'choices-compact')}
-        ${choices('dnaVis2', 'Tko vidi tvoj Music DNA?', [{ v: 'all', icon: 'users', t: 'Svi članovi' }, { v: 'followers', icon: 'user', t: 'Samo pratitelji' }, { v: 'me', icon: 'lock', t: 'Samo ja' }], st.dnaVis, 'choices-compact')}
-        <p class="vrow-same">${ic('users', 'sm')}<span>Odgovore na Daily Drop i komentare uvijek vide svi članovi, i kad je profil privatan.</span></p>`],
-    blocked: ['Blokirani i utišani', () => grp('Blokirani', '<li class="set-empty">Nema blokiranih računa.</li>', 'Blokirani ne vide tvoj profil ni odgovore, a ti ne vidiš njihove. Ne dobiju obavijest o tome.')
-      + grp('Utišani', '<li class="set-empty">Nema utišanih računa.</li>', 'Utišane i dalje možeš posjetiti, samo ih ne vidiš u popisima. Oni to ne znaju.')],
-    notifications: ['Obavijesti', () => grp('Daily Drop', swRow('n-dd', 'Podsjetnik za novo pitanje', st.reminder === 'on' ? `Svaki dan u ${st.remTime} · Zagreb` : 'Jedna obavijest dnevno', st.reminder === 'on'))
-      + grp('Na ovom uređaju', swRow('n-com', 'Komentari na moje odgovore', '', true) + swRow('n-react', 'Reakcije', 'Skupljene, najviše jedna na sat.', false) + swRow('n-fol', 'Novi pratitelji i zahtjevi', '', true))
-      + grp('E-pošta', swRow('n-mail', 'Sažetak tjedna', 'Najbolji odgovori i tvoja aktivnost, nedjeljom.', false), 'Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.')],
+      + '<button class="btn btn-secondary btn-block" data-a="toast" data-msg="Svi drugi uređaji su odjavljeni (simulacija)." data-k="s-out-all">Odjavi sve druge uređaje</button>'],
+    twofa: ['Dvostruka provjera', () => st.twofa
+      ? `<div class="sub-hero">${ic('check')}<p class="sub-hero-t">Dvostruka provjera je uključena</p><p class="help">Spremi kodove za oporavak. Svaki radi jednom, ako izgubiš mobitel.</p></div>
+        <ul class="codes" aria-label="Kodovi za oporavak, primjer">${['k7d2-9qfm', 'p4xa-3hwe', 'z8tn-6cbr', 'm2vj-5yqs', 'e9rk-1lpd', 'w3gh-8nzu', 'b6fy-4tkc', 'q1sx-7mva'].map(c => `<li><code>${c}</code></li>`).join('')}</ul>
+        <div class="foot-row equal"><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Kodovi su preuzeti kao tekstualna datoteka (simulacija)." data-k="codes-dl">Preuzmi</button><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Kodovi su kopirani (simulacija)." data-k="codes-copy">Kopiraj</button></div>
+        <button class="btn btn-primary btn-block" data-a="back" data-k="codes-done">Gotovo</button>
+        <p class="meta">Primjer: kodovi nisu pravi.</p>`
+      : `<ol class="steps">
+          <li><p class="set-t">Otvori aplikaciju za jednokratne kodove</p><p class="set-d">Bilo koju koja podržava TOTP. Možda je već imaš za neki drugi račun.</p></li>
+          <li><p class="set-t">Skeniraj kod</p><div class="qr" aria-hidden="true">${qrFake()}</div><p class="set-d">Ne možeš skenirati? Upiši ključ <code>JBSW Y3DP EHPK 3PXP</code></p></li>
+          <li>${field({ id: 'otp', label: 'Upiši kod od 6 znamenki', attrs: 'inputmode="numeric" autocomplete="one-time-code" maxlength="6"' })}</li>
+        </ol>
+        <button class="btn btn-primary btn-block" data-a="otp-ok" data-k="otp-ok">Uključi</button>
+        <p class="meta">Primjer: kod i ključ nisu pravi. U skici prolazi bilo kojih 6 znamenki.</p>`],
+    privacy: ['Privatnost', () => privacyBody()],
+    blocked: ['Blokirani i utišani', () => (BL_FULL
+      ? grp('Blokirani', blRow('mia_vinyl', 'Odblokiraj', 'Odblokirano (simulacija). @mia_vinyl ne dobije obavijest.') + blRow('tinkovac', 'Odblokiraj', 'Odblokirano (simulacija). @tinkovac ne dobije obavijest.'), 'Blokirani ne vide tvoj profil ni odgovore, a ti ne vidiš njihove. Ne dobiju obavijest o tome.')
+        + grp('Utišani', blRow('lukabass', 'Poništi', 'Utišavanje je poništeno (simulacija).'), 'Utišane i dalje možeš posjetiti, samo ih ne vidiš u popisima. Oni to ne znaju.')
+      : grp('Blokirani', '<li class="set-empty">Nema blokiranih računa.</li>', 'Blokirani ne vide tvoj profil ni odgovore, a ti ne vidiš njihove. Ne dobiju obavijest o tome.')
+        + grp('Utišani', '<li class="set-empty">Nema utišanih računa.</li>', 'Utišane i dalje možeš posjetiti, samo ih ne vidiš u popisima. Oni to ne znaju.'))],
+    notifications: ['Obavijesti', () => notifBody()],
     language: ['Jezik i regija', () => `${choices('lang2', 'Jezik sučelja', [{ v: 'en', t: 'English', lang: 'en' }, { v: 'hr', t: 'Hrvatski' }], st.lang, 'choices-compact')}
         <div class="group"><p class="label">Jezici čitanja</p><p class="help">Takve odgovore češće vidiš u poretku „Za tebe”.</p><div class="chips">${READ_LANGS.map(l => `<button class="chip" data-a="readlang" data-l="${l}" data-k="rl2-${l}" aria-pressed="${st.readLangs.has(l)}"><span class="ck">${ic('check', 'sm')}</span>${l}</button>`).join('')}</div></div>
         <div class="field"><label class="label" for="f-tz">Vremenska zona</label><select class="select" id="f-tz" data-k="f-tz"><option>Europa/Zagreb</option><option>Europa/London</option><option>Amerika/New York</option></select><p class="help">Za vrijeme podsjetnika. Daily Drop izlazi za sve u isto vrijeme.</p></div>`],
@@ -910,12 +960,194 @@
     terms: ['Uvjeti i privatnost', () => grp('', row('t-terms', 'Uvjeti korištenja') + row('t-priv', 'Pravila privatnosti') + row('t-cook', 'Kolačići', 'Koje koristimo i zašto')) + '<p class="meta">Tekstove piše pravnik prije alfe (PUB-10).</p>'],
     about: ['O GrooveRiftu', () => `<div class="sub-hero"><span class="wordmark">groove<span class="wm-rift">rift</span></span><p class="tagline" lang="en">Where musical worlds collide.</p><p class="help">Alfa · skica 3.5</p></div>
         ${grp('', row('ab-contact', 'Kontakt') + row('ab-imp', 'Impresum', 'Tko stoji iza GrooveRifta (OQ-05)') + row('ab-lic', 'Licence', 'MusicBrainz (CC0), ikone Phosphor (MIT), fontovi Sora i Inter (OFL)'))}`],
-    delete: ['Brisanje računa', () => `<div class="sub-copy">${pic('database', 'set-ic')}<div><p class="set-t">Prije toga: kopija tvojih podataka</p><p class="set-d">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci.</p></div><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Pripremamo kopiju. Javit ćemo e-poštom kad bude spremna (simulacija)." data-k="d-copy">Preuzmi</button></div>
+    delete: ['Brisanje računa', () => deleteBody()],
+    deleteA: ['Brisanje računa', () => `<div class="sub-copy">${pic('database', 'set-ic')}<div><p class="set-t">Prije toga: kopija tvojih podataka</p><p class="set-d">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci.</p></div><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Pripremamo kopiju. Javit ćemo e-poštom kad bude spremna (simulacija)." data-k="d-copy">Preuzmi</button></div>
         ${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Vratiš se kad se opet prijaviš.' }, { v: 'del', t: 'Obriši trajno', d: `Račun se skriva odmah, a briše se ${(p => p.day + '. ' + p.mg)(dparts(addDays(D.drop.date, 30)))}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
         ${field({ id: 'delpw', label: 'Za potvrdu upiši lozinku', type: 'password', attrs: 'autocomplete="current-password"' })}
-        <button class="btn btn-danger btn-block" data-a="toast" data-msg="Ovo je skica: ništa nije obrisano. U aplikaciji bi stigla potvrda e-poštom." data-k="d-go">${ic('trash', 'sm')}Nastavi</button>`]
+        <button class="btn btn-danger btn-block" data-a="del-one" data-k="d-go">${ic('trash', 'sm')}Nastavi</button>`]
   };
   function addDays(iso, n) { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  const dayMonth = iso => (p => p.day + '. ' + p.mg)(dparts(iso));
+
+  /* ---------- Round 10 (owner, session 12): key states and the settings flows. Options compared in round10.html. ----------
+     ?state=loading|error|empty|nodrop|blocked|long   a key state on Home, the Daily Drop, Activity and the profile
+     ?net=off       offline (IA §6.1 O)                 ?bl=1   a filled "Blokirani i utišani" list
+     ?ld=a|b|c      loading look         ?off=a|b|c   offline banner      ?emp=a|b   empty states    ?nd=a|b   late question
+     ?prv=a|b       privacy screen       ?ntf=a|b     notifications       ?del=a|b|c deactivate or delete   ?out=a|b   log out
+     ?at=signin     the sign-in screen; &pw=breached shows the D-054 banner on Home, &acct=pending a scheduled deletion
+     ?flow=drop&at=member&as=blocker|blocked   another member's profile after a block (D-019, IA §6.1 B)
+     ?uc=locked     the username was changed today (D-069)
+     Until the owner chooses, the defaults are today's behaviour (prv, ntf, del, out) or the recommendation (new states). */
+  const STATE = pick('state', ['loading', 'error', 'empty', 'nodrop', 'blocked', 'long'], '');
+  const NET_OFF = P.get('net') === 'off';
+  const LD_AT = pick('ld', ['a', 'b', 'c'], 'b');
+  const OFF_AT = pick('off', ['a', 'b', 'c'], 'a');
+  const EMP_AT = pick('emp', ['a', 'b'], 'b');
+  const ND_AT = pick('nd', ['a', 'b'], 'a');
+  const PRV_AT = pick('prv', ['a', 'b'], 'a');
+  const NTF_AT = pick('ntf', ['a', 'b'], 'a');
+  const DEL_AT = pick('del', ['a', 'b', 'c'], 'a');
+  const OUT_AT = pick('out', ['a', 'b'], 'a');
+  const BL_FULL = P.get('bl') === '1' || STATE === 'blocked';
+  if (STATE === 'loading') document.documentElement.classList.add('ld-' + LD_AT);
+  if (STATE === 'empty') { st.answers = []; st.comments = {}; }
+  if (STATE === 'long') {
+    st.displayName = 'Katarina Kovačević-Šimunović'; st.username = 'kata.kovacevic_simun';
+    Object.assign(st.answers[0], { who: 'Ivana Marija Brkljačić-Vukovinski', handle: 'ivana.brkljacic_vuk' });
+    st.answers[1].text = 'Prijestolonasljednikovičičinima bi se svidio ovaj: https://musicbrainz.org/release-group/8e8a594e-2c0d-3a4c-ac21-3fd2c5a1b3e4 pa onda cijela strana B bez preskakanja.';
+  }
+
+  /* Loading (IA §6.1 L): content-shaped placeholders; the title and navigation render at once. a: still blocks.
+     b: the blocks breathe slowly. c: still blocks plus a thin current under the top bar. Motion stops with
+     "Smanji pokrete" or the OS setting. */
+  const SKEL = {
+    ans: '<div class="skel skel-ans" aria-hidden="true"><span class="sk-av"></span><span class="sk-l w40"></span><span class="sk-l sk-wide"></span><span class="sk-l sk-wide"></span><span class="sk-l sk-wide w70"></span></div>',
+    peek: '<div class="skel skel-act" aria-hidden="true"><span class="sk-av"></span><span class="sk-l w40"></span><span class="sk-l w90"></span></div>',
+    act: '<div class="skel skel-act" aria-hidden="true"><span class="sk-av"></span><span class="sk-l w90"></span><span class="sk-l w30"></span></div>'
+  };
+  const skel = (n, kind) => `<div class="skel-wrap" aria-busy="true"><p class="sr-only" role="status">Učitavam…</p>${SKEL[kind || 'ans'].repeat(n)}</div>`;
+  const skelDrop = () => '<div class="skel skel-dd" aria-hidden="true"><span class="sk-l w30"></span><span class="sk-l sk-xl"></span><span class="sk-l sk-xl w70"></span><span class="sk-btn"></span></div>';
+  const loadLine = () => STATE === 'loading' && LD_AT === 'c' ? '<div class="load-line" aria-hidden="true"><span></span></div>' : '';
+
+  /* Error (IA §6.1 E): an inline message where the part failed, with Retry; the rest of the page stays. */
+  const loadErr = (msg, k) => `<div class="cat-err load-err" role="alert">${ic('alert')}<div><p><b>${msg}</b> Ostatak stranice radi.</p><button type="button" class="btn btn-secondary btn-sm" data-a="retry-load" data-k="${k}">Pokušaj ponovno</button></div></div>`;
+
+  /* Offline (IA §6.1 O, J3 E10). a: a bar under the top bar. b: a small pill above the tab bar. c: a chip in the top bar. */
+  const OFF_TIME = '08:14';
+  const netHint = msg => `<p class="net-hint">${ic('offline', 'sm')}<span>${msg}</span></p>`;
+  function netBanner() {
+    if (!NET_OFF || OFF_AT === 'c') return '';
+    if (OFF_AT === 'b') return '';
+    return `<p class="net-bar" role="status">${ic('offline', 'sm')}<span>Nisi na mreži. Prikazujemo spremljeno u ${OFF_TIME}.</span></p>`;
+  }
+  const netPill = () => NET_OFF && OFF_AT === 'b' ? `<div class="net-pill-wrap"><p class="net-pill" role="status">${ic('offline', 'sm')}<span>Nisi na mreži</span></p></div>` : '';
+  const netChip = () => NET_OFF && OFF_AT === 'c' ? `<button class="net-chip" data-a="toast" data-msg="Nisi na mreži. Prikazujemo spremljeno u ${OFF_TIME}. Objava čeka da se veza vrati." data-k="net-chip">${ic('offline', 'sm')}<span>Bez mreže</span></button>` : '';
+
+  /* Empty states (IA §6.2): say what will appear here, never fake activity, no pressure (P2). a: one quiet line in
+     the dashed box. b: a small icon, a short title and one line, no box. */
+  function emptyBox(icon, title, text) {
+    if (EMP_AT === 'a') return `<div class="empty"><p>${title} ${text}</p></div>`;
+    return `<div class="empty-b">${icon}<p class="empty-t">${title}</p><p>${text}</p></div>`;
+  }
+
+  /* The missing-question day (J3 E2): "Today's question is on its way" plus yesterday's Drop with its date. No error
+     code, never an empty day. a: one line above the Drop. b: a card on top, then yesterday's Drop. */
+  function noDropBlock() {
+    const y = D.pastDrops[0];
+    const line = `<p class="dd-late">${ic('clock', 'sm')}<span><b>Današnje pitanje stiže uskoro.</b> Ovo je jučerašnje.</span></p>`;
+    const card = `<div class="dd-wait" role="status">${ic('clock')}<div><p class="dd-wait-t">Današnje pitanje stiže uskoro</p><p>Dok čekaš, jučerašnje je još otvoreno.</p></div></div>`;
+    return `${ND_AT === 'b' ? card : ''}<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser">${ND_AT === 'a' ? line : ''}
+      <div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${y.date}">${longDate(y.date)}</time></p></div>
+      <h2 id="h-teaser" class="dd-q">${esc(y.q)}</h2>${pastMeta(y)}
+      <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`;
+  }
+
+  /* Answers on the Daily Drop page in each state. */
+  function dropList() {
+    if (NET_OFF) return netHint('Pitanje je spremljeno, a odgovori trebaju mrežu. Učitat će se kad se veza vrati.');
+    if (STATE === 'loading') return skel(3);
+    if (STATE === 'error' && !st.loadOk) return loadErr('Odgovori se nisu učitali.', 'retry-ans');
+    if (!st.answers.length) return emptyBox(pic('chat-text', 'empty-ic'), 'Još nema odgovora.', 'Budi prvi ili svrati kasnije.');
+    return `${sortCtl()}
+      ${st.pending ? `<button class="new-pill" data-a="show-new" data-k="show-new">${st.pending.length} ${pl(st.pending.length, 'novi odgovor', 'nova odgovora', 'novih odgovora')}</button>` : ''}
+      <ul class="ans-list" aria-labelledby="h-answers">${ordered().map(a => `<li>${answerItem(a)}</li>`).join('')}</ul>`;
+  }
+  const listReady = () => !NET_OFF && STATE !== 'loading' && !(STATE === 'error' && !st.loadOk);
+
+  /* Breached password after sign-in (D-054): a recommendation banner on Home, never a forced change. */
+  const pwBanner = () => st.pwBanner ? `<div class="notice pw-banner" role="status">${ic('alert')}<div><p><b>Tvoja lozinka pojavila se u javno poznatom curenju podataka.</b> To ne znači da je netko ušao u tvoj račun, ali takve lozinke napadači isprobavaju prve. Preporučujemo da je promijeniš.</p>
+      <div class="pw-banner-btns"><button class="btn btn-secondary btn-sm" data-a="pw-change" data-k="pwb-change">Promijeni lozinku</button><button class="link" data-a="pw-later" data-k="pwb-later">Kasnije</button></div></div></div>` : '';
+
+  /* Settings helpers. */
+  const subRow = (k, t, d, s) => `<li><button class="set-row set-row-plain" data-a="setsub" data-s="${s}" data-k="${k}"><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
+  const blRow = (h, btn, msg) => { const m = D.members[h] || { who: h }; return `<li class="set-row set-row-bl">${avatar(h, m.who, 'sm')}<span class="set-txt"><span class="set-t">${esc(m.who)}</span><span class="set-d">@${esc(h)}</span></span><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="${esc(msg)}" data-k="bl-${h}">${btn}</button></li>`; };
+  function u2Status() {
+    const u = st.newUser == null ? st.username : st.newUser;
+    if (!u || u === st.username) return '';
+    if (!/^[a-z0-9._]+$/.test(u)) return `<p class="status-line bad">${ic('alert')}<span>Koristi samo mala slova, brojke, točku i donju crtu.</span></p>`;
+    if (u.length < 3) return `<p class="status-line bad">${ic('alert')}<span>Treba barem 3 znaka.</span></p>`;
+    if (D.takenUsernames.includes(u)) return `<p class="status-line bad">${ic('alert')}<span>Ovo korisničko ime nije dostupno.</span></p>`;
+    return `<p class="status-line ok">${ic('check')}<span>@${esc(u)} je slobodno.</span></p>`;
+  }
+  /* A fake QR-like pattern for the 2FA sketch: three finder squares and a seeded scatter. Not a real code. */
+  function qrFake() {
+    let s = 7, out = '';
+    const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    const finder = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3"/>`;
+    for (let y = 0; y < 25; y++) for (let x = 0; x < 25; x++) {
+      const inF = (x < 8 && y < 8) || (x > 16 && y < 8) || (x < 8 && y > 16);
+      if (!inF && rnd() > 0.52) out += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+    }
+    return `<svg viewBox="0 0 25 25" shape-rendering="crispEdges" fill="#0B0D12">${finder(0, 0)}${finder(18, 0)}${finder(0, 18)}${out}</svg>`;
+  }
+
+  /* Privacy (SET-05): the same neutral wording as onboarding (D-030). D-032: the answer history follows the profile by
+     default. D-033: follower lists default to followers, and a private profile caps them at followers.
+     a: every choice inline on one page. b: one row per item with its current value; a tap opens a short sheet. */
+  const HIST_LABEL = { same: 'Kao profil', followers: 'Samo pratitelji', me: 'Samo ja' };
+  const LISTS_LABEL = { all: 'Svi članovi', followers: 'Samo pratitelji', me: 'Samo ja' };
+  const PRIV_ITEMS = () => [
+    ['vis2', 'Profil', 'Tko vidi tvoj profil?', [{ v: 'public', icon: 'globe', t: 'Javno', d: 'Profil, Music DNA i povijest odgovora vide svi članovi. Pojavljuješ se u Otkrivanju.' }, { v: 'private', icon: 'lock', t: 'Privatno', d: 'Vide ih samo pratitelji koje odobriš. Ne pojavljuješ se u Otkrivanju.' }], st.vis, VIS_LABEL],
+    ['dnaVis2', 'Music DNA', 'Tko vidi tvoj Music DNA?', [{ v: 'all', icon: 'users', t: 'Svi članovi', d: 'Koristi se i za Otkrivanje i kompatibilnost.' }, { v: 'followers', icon: 'user', t: 'Samo pratitelji' }, { v: 'me', icon: 'lock', t: 'Samo ja', d: 'Nitko drugi, ni u kompatibilnosti.' }], st.dnaVis, DNA_LABEL],
+    ['hist2', 'Povijest odgovora na profilu', 'Tko vidi povijest tvojih odgovora na profilu?', [{ v: 'same', t: 'Kao profil', d: st.vis === 'private' ? 'Sad: samo pratitelji.' : 'Sad: svi članovi.' }, { v: 'followers', t: 'Samo pratitelji' }, { v: 'me', t: 'Samo ja' }], st.histVis || 'same', HIST_LABEL],
+    ['lists2', 'Pratitelji i praćeni', 'Tko vidi popise pratitelja i praćenih te njihove brojeve?', [{ v: 'all', t: 'Svi članovi', d: st.vis === 'private' ? 'Nije moguće dok je profil privatan.' : '' }, { v: 'followers', t: 'Samo pratitelji' }, { v: 'me', t: 'Samo ja' }], st.lists || 'followers', LISTS_LABEL]
+  ];
+  function privacyBody() {
+    const same = `<p class="vrow-same">${ic('users', 'sm')}<span>Odgovore na Daily Drop i komentare uvijek vide svi članovi, i kad je profil privatan.</span></p>`;
+    const note = st.vis === 'private' ? '<p class="set-note">Novi pratitelji šalju zahtjev. Postojeći pratitelji ostaju.</p>' : '';
+    if (PRV_AT === 'b') return grp('', PRIV_ITEMS().map(([n, t, , , v, L]) => `<li><button class="set-row set-row-plain" data-a="pick" data-p="${n}" data-k="pick-${n}"><span class="set-txt"><span class="set-t">${t}</span><span class="set-d">${(L[v] || '')}</span></span>${ic('chevron', 'sm set-go')}</button></li>`).join(''), '') + note + same;
+    return PRIV_ITEMS().map(([n, , q, opts, v]) => choices(n, q, opts, v, 'choices-compact')).join('') + note + same;
+  }
+
+  /* Notifications (SET-06): reminder time and time zone, type × channel, push on this device.
+     a: grouped by channel (today). b: one table, each type with a Mobitel and an E-pošta column. */
+  const NTF = [
+    ['com', 'Komentari na moje odgovore', '', true, false],
+    ['react', 'Reakcije', 'Skupljene, najviše jedna na sat', false, false],
+    ['fol', 'Novi pratitelji i zahtjevi', '', true, false],
+    ['sugg', 'Objavljen moj prijedlog pitanja', '', true, true],
+    ['week', 'Sažetak tjedna', 'Nedjeljom', null, false]
+  ];
+  function notifBody() {
+    const dd = `${swRow('n-dd', 'Podsjetnik za novo pitanje', 'Jedna obavijest dnevno', st.reminder === 'on')}
+      <li class="set-row set-row-plain"><label class="set-t" for="f-time2">Vrijeme</label><select class="select rem-time" id="f-time2" data-k="f-time2">${['07:00', '08:00', '09:00', '12:00', '17:00', '20:00', '22:00'].map(t => `<option${st.remTime === t ? ' selected' : ''}>${t}</option>`).join('')}</select></li>`;
+    const device = grp('Ovaj uređaj', `<li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">Obavijesti preglednika</span><span class="set-d">${st.reminder === 'denied' ? 'Blokirane u pregledniku. Uključuju se u postavkama preglednika.' : 'Dopuštene'}</span></span></li>`, 'Push obavijesti vrijede za svaki uređaj posebno.');
+    const fixed = '<p class="set-note">Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.</p>';
+    if (NTF_AT === 'b') {
+      const cell = (k, ch, on) => on === null ? '<td class="ntf-na"><span aria-hidden="true">—</span><span class="sr-only">nije dostupno</span></td>' : `<td><input type="checkbox" id="n-${k}-${ch}" data-k="n-${k}-${ch}"${on ? ' checked' : ''} aria-labelledby="nt-${k} nc-${ch}"></td>`;
+      return grp('Daily Drop', dd) + `<section class="set-group"><h2 class="set-gt">Što i kako</h2><table class="ntf-table"><thead><tr><td></td><th scope="col" id="nc-push">Mobitel</th><th scope="col" id="nc-mail">E-pošta</th></tr></thead>
+        <tbody>${NTF.map(([k, t, d, p, m]) => `<tr><th scope="row"><span class="set-t" id="nt-${k}">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</th>${cell(k, 'push', p)}${cell(k, 'mail', m)}</tr>`).join('')}</tbody></table>${fixed}</section>` + device;
+    }
+    return grp('Daily Drop', dd)
+      + grp('Na ovom uređaju', NTF.filter(x => x[3] !== null).map(([k, t, d, p]) => swRow('n-' + k, t, d, p)).join(''))
+      + grp('E-pošta', NTF.filter(x => x[4] !== null).map(([k, t, d, , m]) => swRow('n-m-' + k, t, d, m)).join(''), 'Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.') + device;
+  }
+
+  /* Deactivate or delete (SET-09; D-066: the data copy is offered inside this flow). Nothing is pre-selected.
+     a: one page (today). b: short steps: choose, data copy, confirm with the password, done.
+     c: one page, then a dialog where the member types OBRIŠI. Every path ends on the same "done" screen. */
+  const delDate = () => dayMonth(addDays(D.drop.date, 30));
+  function deleteBody() {
+    if (st.delStep === 'done') return st.del === 'off'
+      ? `<div class="sub-hero">${ic('check')}<p class="sub-hero-t">Račun je deaktiviran</p><p class="help">Profil i odgovori su skriveni. Kad se opet prijaviš, sve se vraća.</p></div><button class="btn btn-secondary btn-block" data-a="to-signin" data-k="del-ok">U redu</button>`
+      : `<div class="sub-hero sub-hero-wait">${ic('clock')}<p class="sub-hero-t">Brisanje je zakazano za ${delDate()}.</p><p class="help">Potvrda stiže e-poštom. Ako se predomisliš, prijavi se prije tog datuma i vrati račun.</p></div><button class="btn btn-secondary btn-block" data-a="to-signin" data-k="del-ok">U redu</button>`;
+    if (DEL_AT !== 'b') return SUB.deleteA[1]();
+    const step = st.delStep || 'choose';
+    const prog = (i, n) => `<p class="progress-text">Korak ${i} od ${n}</p>`;
+    if (step === 'choose') return `${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Kad se opet prijaviš, sve se vraća.' }, { v: 'del', t: 'Obriši trajno', d: `Račun se skriva odmah, a briše se ${delDate()}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
+      <button class="btn btn-primary btn-block" data-a="del-next" data-k="del-next">Nastavi</button>`;
+    if (step === 'copy') return `${prog(1, 3)}<div class="sub-step"><span class="step-ic" aria-hidden="true">${pic('database')}</span><h2 class="sub-h">Želiš li prvo kopiju svojih podataka?</h2>
+      <p class="help">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci. Kad bude spremna, javimo e-poštom.</p></div>
+      ${st.delCopy ? `<p class="status-line ok">${ic('check')}<span>Kopija se priprema.</span></p>` : ''}
+      <div class="foot-row equal"><button class="btn btn-secondary" data-a="del-copy" data-k="del-copy"${st.delCopy ? ' disabled' : ''}>Preuzmi kopiju</button><button class="btn btn-secondary" data-a="del-next" data-k="del-next">${st.delCopy ? 'Nastavi' : 'Preskoči'}</button></div>`;
+    if (step === 'confirm') return `${st.del === 'off' ? '' : prog(2, 3)}<h2 class="sub-h">${st.del === 'off' ? 'Deaktiviraj račun' : `Obriši račun ${delDate()}`}</h2>
+      <ul class="sub-facts">${st.del === 'off'
+        ? '<li>Profil, Music DNA i odgovori se skrivaju.</li><li>Nitko ti ne može pisati ni te pratiti.</li><li>Kad se opet prijaviš, sve se vraća.</li>'
+        : `<li>Račun se skriva odmah.</li><li>${delDate()} brišemo profil, Music DNA, odgovore, komentare i reakcije.</li><li>Do tada se možeš prijaviti i vratiti račun.</li><li>Neke zapise moramo čuvati duže jer to traži zakon. Piše u Pravilima privatnosti.</li>`}</ul>
+      ${field({ id: 'delpw', label: 'Za potvrdu upiši lozinku', type: 'password', attrs: 'autocomplete="current-password"' })}
+      <button class="btn btn-danger btn-block" data-a="del-go" data-k="del-go">${st.del === 'off' ? 'Deaktiviraj' : `${ic('trash', 'sm')}Obriši račun`}</button>`;
+    return '';
+  }
 
   const S = {
     invite: () => ({
@@ -1097,10 +1329,8 @@
             ${people(n)}
           </header>
           ${st.mine ? `<div class="mine-wrap">${answerItem(st.mine)}</div>` : ''}
-          <div class="list-head"><h2 class="section-title" id="h-answers">Odgovori <span class="count">${st.answers.length}</span></h2></div>
-          ${sortCtl()}
-          ${st.pending ? `<button class="new-pill" data-a="show-new" data-k="show-new">${st.pending.length} ${pl(st.pending.length, 'novi odgovor', 'nova odgovora', 'novih odgovora')}</button>` : ''}
-          <ul class="ans-list" aria-labelledby="h-answers">${ordered().map(a => `<li>${answerItem(a)}</li>`).join('')}</ul>`,
+          <div class="list-head"><h2 class="section-title" id="h-answers">Odgovori${listReady() && st.answers.length ? ` <span class="count">${st.answers.length}</span>` : ''}</h2></div>
+          ${dropList()}`,
         dock: dock()
       };
     },
@@ -1117,15 +1347,16 @@
             ${cs.length ? `<ul class="com-list">${cs.map((c, i) => `<li><article class="com" aria-labelledby="hc-${i}">
               <header class="ans-head">${avatar(c.handle, c.who, 'sm')}
               <h3 class="ans-who" id="hc-${i}" tabindex="-1"><span class="name">${esc(c.who)}</span><span class="sr-only">, </span><span class="handle">@${esc(c.handle)}</span></h3><span class="ans-time"><time>${c.time}</time></span></header>
-              <p${c.lang ? ` lang="${c.lang}"` : ''}>${esc(c.text)}</p></article></li>`).join('')}</ul>`
-              : '<p class="empty">Još nema komentara. Započni razgovor.</p>'}
+              <p${c.lang ? ` lang="${c.lang}"` : ''}>${esc(c.text)}</p></article></li>${STATE === 'blocked' && i === 0 ? '<li><p class="com-gone">Ovaj komentar nije dostupan.</p></li>' : ''}`).join('')}</ul>`
+              : emptyBox(pic('chats-circle', 'empty-ic'), 'Još nema komentara.', 'Započni razgovor.')}
           </section>
           <form class="composer composer-comment" data-form="comment" novalidate>
             <label class="composer-label" for="f-com">Tvoj komentar</label>
             <div class="live-field"><textarea class="textarea" id="f-com" data-k="f-com" rows="2"${st.err.com ? ' aria-invalid="true" aria-describedby="err-com"' : ''}>${esc(st.commentDraft)}</textarea></div>
             ${st.err.com ? fieldErr('com', st.err.com) : ''}
             ${audience('comment')}
-            <div class="composer-actions composer-split"><button type="button" class="btn btn-secondary" data-a="com-cancel" data-k="com-cancel">Odustani</button><button type="submit" class="btn btn-primary" data-k="com-post" aria-describedby="aud-c">Komentiraj</button></div>
+            ${NET_OFF ? `<p class="post-off" id="com-off">${ic('offline', 'sm')}<span>Objava treba mrežu. Tekst ostaje ovdje dok je stranica otvorena.</span></p>` : ''}
+            <div class="composer-actions composer-split"><button type="button" class="btn btn-secondary" data-a="com-cancel" data-k="com-cancel">Odustani</button><button type="submit" class="btn btn-primary" data-k="com-post" aria-describedby="aud-c${NET_OFF ? ' com-off' : ''}"${NET_OFF ? ' disabled' : ''}>Komentiraj</button></div>
           </form>`
       };
     },
@@ -1140,12 +1371,48 @@
     }),
     setsub: () => {
       const sub = SUB[st.sub] || SUB.account;
-      return { kind: 'app', tab: 'profile', back: true, topTitle: sub[0], topH1: true, body: `<div class="sub">${sub[1]()}</div>` };
+      return { kind: 'app', tab: 'profile', back: true, topTitle: sub[0], topH1: true, body: NET_OFF ? `<p class="net-hint">${ic('offline', 'sm')}<span>Bez mreže postavke možeš samo pregledati.</span></p><fieldset class="sub sub-ro" disabled>${sub[1]()}</fieldset>` : `<div class="sub">${sub[1]()}</div>` };
     },
     settings: () => ({
       kind: 'app', tab: 'profile', back: true, topTitle: 'Postavke', topH1: true,
       body: settingsBody()
-    })
+    }),
+    /* Round 10: sign-in (PUB-02). One generic error that never says which part was wrong. */
+    signin: () => ({
+      kind: 'onb', noProgress: true,
+      body: `<h1>Prijava</h1>
+        ${st.err.signin ? `<div class="notice" role="alert" id="err-signin" tabindex="-1">${ic('alert')}<p>E-pošta ili lozinka nisu točni. Provjeri pa pokušaj ponovno.</p></div>` : ''}
+        ${field({ id: 'email', label: 'E-pošta', type: 'email', value: D.email, attrs: 'autocomplete="email"' })}
+        ${field({ id: 'pwin', label: 'Lozinka', type: st.showPw ? 'text' : 'password', value: st.pwIn || '',
+          attrs: 'autocomplete="current-password" autocapitalize="none" spellcheck="false"',
+          after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
+        <button class="link signin-forgot" data-a="toast" data-msg="Ponovno postavljanje lozinke (PUB-04): poveznica stiže e-poštom i kratko vrijedi." data-k="forgot">Zaboravljena lozinka?</button>
+        <p class="or"><span>ili</span></p>
+        <button class="btn btn-secondary btn-block" data-a="signin-ok" data-k="google">Nastavi s Google računom</button>
+        <p class="fine">Nemaš račun? ${wm()} je zasad samo uz pozivnicu.</p>
+        <p class="meta">Skica: prolazi bilo koja lozinka, a „kriva” pokazuje grešku.</p>`,
+      foot: '<button class="btn btn-primary btn-block" data-a="signin" data-k="signin">Prijavi se</button>'
+    }),
+    /* Sign-in during the 30-day grace period (SET-09). The two choices carry equal weight. */
+    pending: () => ({
+      kind: 'onb', noProgress: true,
+      body: `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic('clock')}</span>
+        <h1>Račun se briše ${delDate()}.</h1>
+        <p class="lead">Brisanje je zatraženo ${dayMonth(D.drop.date)}. Do ${delDate()} možeš vratiti račun i sve ostaje kako je bilo.</p></div>`,
+      foot: `<div class="foot-row equal"><button class="btn btn-secondary" data-a="to-signin" data-k="pend-out">Odjavi se</button><button class="btn btn-secondary" data-a="pend-restore" data-k="pend-restore">Vrati račun</button></div>`
+    }),
+    /* Another member's profile after a block (D-019, IA §6.1 B). as=blocker: the member who blocked sees the header
+       and Unblock. as=blocked: the blocked member gets the neutral "not available" page, the same as a missing one. */
+    member: () => {
+      const h = 'mia_vinyl', m = D.members[h] || { who: 'Mia' };
+      if (P.get('as') === 'blocked') return { kind: 'app', tab: 'home', back: true, topBlank: true,
+        body: `<div class="sys-na"><h1>Ova stranica nije dostupna</h1><p class="lead lead-sm">Možda je poveznica pogrešna ili profil više ne postoji.</p><button class="btn btn-secondary" data-a="tab" data-t="home" data-k="na-home">Na početnu</button></div>` };
+      return { kind: 'app', tab: 'home', back: true, topTitle: '@' + h,
+        body: `<div class="prof-head">${avatar(h, m.who, 'lg')}<div><h1 class="prof-name">${esc(m.who)}</h1><p class="meta">@${h}</p></div></div>
+          ${st.unblocked
+            ? `<div class="blk-card"><p class="set-t">Odblokirano.</p><p class="set-d">Ako želiš, možeš opet pratiti @${h}.</p><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Praćenje (PROF-01) nije dio skice." data-k="blk-follow">Prati</button></div>`
+            : `<div class="blk-card"><p class="set-t">Ovaj račun je blokiran.</p><p class="set-d">Ne vidite profile ni odgovore jedno drugoga. Ta osoba ne dobije obavijest o tome.</p><button class="btn btn-secondary btn-sm" data-a="unblock" data-k="unblock">Odblokiraj</button></div>`}` };
+    }
   };
 
   /* ---------- shell ---------- */
@@ -1157,7 +1424,7 @@
     else if (s.topTitle) mid = s.topH1 ? `<h1 class="top-title">${esc(s.topTitle)}</h1>` : `<span class="top-title">${esc(s.topTitle)}</span>`;
     else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>`;
     const onb = s.kind === 'onb' || s.kind === 'bare';
-    return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
+    return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}${netChip()}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
   }
   function tabbar(active) {
     const T = [['home', 'Početna', 'home'], ['hub', 'Hub', 'hub'], ['activity', 'Aktivnost', 'bell'], ['profile', 'Profil', 'user']];
@@ -1208,6 +1475,22 @@
         <p id="ov-desc">${wm()} je samo za punoljetne. Ako to nije točno, vrati se i promijeni odgovor.</p>
         <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Natrag</button><button class="btn btn-primary" data-a="age18-ok" data-k="ov-ok">Potvrđujem</button></div></div>`;
     }
+    /* Round 10 overlays. */
+    if (o.type === 'pick') {
+      const it = PRIV_ITEMS().find(x => x[0] === o.p);
+      return `<div class="scrim" data-a="overlay-close"></div><div class="sheet sheet-pick" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <div class="sheet-head"><h2 id="ov-title" class="sheet-title">${it[1]}</h2><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
+        ${choices(it[0], it[2], it[3], it[4], 'choices-compact')}
+        <button class="btn btn-primary btn-block" data-a="overlay-close" data-k="ov-done">Gotovo</button></div>`;
+    }
+    const dlg = (title, desc, cancel, okA, okLabel, danger, extra) => `<div class="scrim" data-a="overlay-close"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">
+        <h2 id="ov-title" class="dialog-title">${title}</h2><p id="ov-desc">${desc}</p>${extra || ''}
+        <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">${cancel}</button><button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-a="${okA}" data-k="ov-ok"${o.disabled ? ' disabled' : ''}>${okLabel}</button></div></div>`;
+    if (o.type === 'uname') return dlg(`Promijeniti u @${esc(st.newUser)}?`, `Sljedeća promjena moguća je tek od ${dayMonth(addDays(D.drop.date, 30))}. @${esc(st.username)} ostaje rezervirano za tebe 30 dana.`, 'Odustani', 'uname-confirm', 'Promijeni');
+    if (o.type === 'unblock') return dlg('Odblokirati @mia_vinyl?', 'Opet ćete vidjeti profile i odgovore jedno drugoga. Ta osoba ne dobije obavijest.', 'Odustani', 'unblock-confirm', 'Odblokiraj');
+    if (o.type === 'logout') return dlg('Odjaviti se?', 'Samo na ovom uređaju. Za povratak trebaš e-poštu i lozinku ili Google.', 'Odustani', 'logout-confirm', 'Odjavi se');
+    if (o.type === 'deltype') return dlg(st.del === 'off' ? 'Deaktivirati račun?' : `Obrisati račun ${delDate()}?`, 'Za potvrdu upiši OBRIŠI velikim slovima.', 'Odustani', 'del-type-go', st.del === 'off' ? 'Deaktiviraj' : 'Obriši', true,
+      `<label class="sr-only" for="f-deltype">Upiši OBRIŠI</label><input class="input" id="f-deltype" data-k="f-deltype" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(st.delType || '')}">`);
     if (o.type === 'perm') {
       return `<div class="scrim"></div><div class="dialog perm" role="dialog" aria-modal="true" aria-labelledby="ov-title">
         <p class="perm-tag">Simulacija preglednika</p>
@@ -1245,11 +1528,11 @@
     const standalone = window.top === window;
     let shell = '';
     if (standalone) shell += `<p class="proto-note">Skica 3.5: izmišljeni podaci, privremeni wordmark.</p>`;
-    shell += topbar(s);
+    shell += topbar(s) + loadLine() + netBanner();
     if (s.kind === 'onb' && !s.noProgress) shell += progress();
     shell += `<main id="main" class="screen screen-${st.screen} kind-${s.kind}">${s.body}</main>`;
     if (s.foot) shell += `<div class="foot">${s.foot}</div>`;
-    if (s.kind === 'app') shell += `<div class="bottom">${s.dock || ''}${tabbar(s.tab)}</div>`;
+    if (s.kind === 'app') shell += `<div class="bottom">${netPill()}${s.dock || ''}${tabbar(s.tab)}</div>`;
     root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${shell}</div>${overlayHtml()}`;
     root.dataset.screen = st.screen;
     if (st.swipeDir) { const m = root.querySelector('main'); if (m) m.classList.add('swipe-' + st.swipeDir); st.swipeDir = null; }
@@ -1257,7 +1540,7 @@
     afterRender();
     if (keep) return restore(keep);
     if (st.overlay) {
-      for (const sel of ['.age18 input', '.age18 .btn', '.sheet [data-k="f-ans"]', '.sheet .menu-item', '.dialog .btn', '.sheet .iconbtn']) {
+      for (const sel of ['.age18 input', '.dialog input', '.sheet-pick input:checked', '.sheet-pick input', '.age18 .btn', '.sheet [data-k="f-ans"]', '.sheet .menu-item', '.dialog .btn', '.sheet .iconbtn']) {
         const f = root.querySelector(sel);
         if (f) { f.focus(); break; }
       }
@@ -1282,6 +1565,20 @@
     st.screen = h.screen; st.err = {}; st.overlay = null;
     CUR.reset(); INV.reset(); DNA.reset();
     render(); window.scrollTo(0, h.y || 0); focusH1();
+  }
+
+  /* Round 10: sign in and out. Signing in fills the same fictional member as ?flow=drop. */
+  function signedIn() {
+    Object.assign(st, { displayName: st.displayName || 'Ana', username: st.username || 'ana.slusa', userState: 'ok', vis: st.vis || 'public', dnaVis: st.dnaVis || 'all', reminder: st.reminder || 'off', err: {}, pwIn: '' });
+    if (!st.genres.length) { st.genres = ['Jazz', 'Soul', 'Kantautorska', 'Elektronika']; st.artists = [fx('Nina Simone'), fx('Arsen Dedić'), fx('Massive Attack')]; }
+    if (st.acctPending) return go('pending', { reset: true });
+    st.pwBanner = P.get('pw') === 'breached';
+    go('home', { reset: true });
+  }
+  function signOut() {
+    st.overlay = null; st.delStep = null; st.del = null; st.delCopy = false; st.pwIn = ''; st.showPw = false;
+    go('signin', { reset: true });
+    toast('Odjava je uspjela.');
   }
 
   let toastTimer;
@@ -1358,6 +1655,9 @@
       st.err = { ans: 'Napiši nešto prije objave.' }; render({ keep: true });
       focusSel('[data-k="f-ans"]'); return;
     }
+    /* Round 10, ?state=error: the first post fails, the text stays, and Retry succeeds (JR4). */
+    if (STATE === 'error' && !st.postFailed) { st.postFailed = true; st.postErr = true; render({ keep: true }); return focusSel('[data-k="post"]'); }
+    st.postErr = false;
     let msg;
     if (st.editing) {
       Object.assign(st.mine, { text: t, refs: st.draftRefs.slice(), edited: true });
@@ -1500,6 +1800,61 @@
         st.mine = null; st.overlay = null; render();
         focusSel('[data-k="dock-field"]');
         return toast('Odgovor je obrisan.');
+      /* Round 10. */
+      case 'retry-load': st.loadOk = true; render(); return focusSel('#h-answers, main h1');
+      case 'signin': {
+        st.err = {};
+        if (!st.pwIn) st.err.pwin = 'Upiši lozinku.';
+        else if (st.pwIn === 'kriva') st.err.signin = true;
+        if (Object.keys(st.err).length) { render(); return focusSel(st.err.signin ? '#err-signin' : '#f-pwin'); }
+        return signedIn();
+      }
+      case 'signin-ok': return signedIn();
+      case 'to-signin': signOut(); return;
+      case 'pend-restore': st.acctPending = false; go('home', { reset: true }); return toast('Račun je vraćen. Brisanje je otkazano.');
+      case 'pw-change': st.pwBanner = false; st.sub = 'password'; st.pw = ''; return go('setsub');
+      case 'pw-later': st.pwBanner = false; render(); focusSel('main h1, .dd-q'); return toast('U redu. Podsjetit ćemo te pri sljedećoj provjeri.');
+      case 'pw-save': {
+        const old = root.querySelector('#f-pwold'); st.err = {};
+        if (!old || !old.value) st.err.pwold = 'Upiši trenutnu lozinku.';
+        if (!st.pw) st.err.pw = 'Upiši novu lozinku.';
+        else if (pwMissing(st.pw).length) st.err.pw = `Lozinci još treba: ${pwMissing(st.pw).map(r => r[3]).join(', ')}.`;
+        else if (PW_BREACHED.has(st.pw)) st.err.pw = 'Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.';
+        if (Object.keys(st.err).length) { render(); return focusFirstError(); }
+        st.pw = ''; back(); return toast('Lozinka je promijenjena. Drugi uređaji su odjavljeni.');
+      }
+      case 'uname-save': {
+        const u = st.newUser == null ? st.username : st.newUser;
+        if (u === st.username) return toast('To je već tvoje korisničko ime.');
+        if (!/ok/.test(u2Status())) { st.err.uname2 = 'Odaberi slobodno korisničko ime.'; render({ keep: true }); return focusSel('#f-uname2'); }
+        st.newUser = u; return openOverlay({ type: 'uname' }, b);
+      }
+      case 'uname-confirm': st.oldUser = st.username; st.username = st.newUser; st.newUser = null; st.userChanged = true; st.overlay = null; render(); focusH1(); return toast(`Sad si @${st.username}.`);
+      case 'otp-ok': {
+        const f = root.querySelector('#f-otp');
+        if (!f || !/^\d{6}$/.test(f.value)) { st.err.otp = 'Upiši 6 znamenki iz aplikacije.'; render(); return focusSel('#f-otp'); }
+        st.twofa = true; delete st.err.otp; render(); focusH1(); return toast('Dvostruka provjera je uključena.');
+      }
+      case 'unblock': return openOverlay({ type: 'unblock' }, b);
+      case 'unblock-confirm': st.unblocked = true; st.overlay = null; render(); focusSel('.blk-card .set-t'); return toast('Odblokirano.');
+      case 'pick': return openOverlay({ type: 'pick', p: b.dataset.p }, b);
+      case 'logout': if (OUT_AT === 'b') return openOverlay({ type: 'logout' }, b); signOut(); return;
+      case 'logout-confirm': signOut(); return;
+      case 'del-next': {
+        const step = st.delStep || 'choose';
+        if (step === 'choose' && !st.del) { st.err.del = 'Odaberi jedno.'; render(); return focusFirstError(); }
+        st.delStep = step === 'choose' && st.del === 'del' ? 'copy' : 'confirm'; render(); window.scrollTo(0, 0); return focusSel('main .sub-h, main h1');
+      }
+      case 'del-copy': st.delCopy = true; render({ keep: true }); return toast('Pripremamo kopiju. Javit ćemo e-poštom kad bude spremna (simulacija).');
+      case 'del-go': case 'del-one': {
+        const pw = root.querySelector('#f-delpw'); st.err = {};
+        if (!st.del) st.err.del = 'Odaberi jedno.';
+        if (!pw || !pw.value) st.err.delpw = 'Upiši lozinku.';
+        if (Object.keys(st.err).length) { render({ keep: true }); return focusFirstError(); }
+        if (a === 'del-one' && DEL_AT === 'c' && st.del === 'del') { st.delType = ''; return openOverlay({ type: 'deltype', disabled: true }, b); }
+        st.delStep = 'done'; render(); window.scrollTo(0, 0); return focusSel('.sub-hero-t');
+      }
+      case 'del-type-go': st.overlay = null; st.delStep = 'done'; render(); return focusSel('.sub-hero-t');
       case 'show-new': {
         const first = st.pending[0].id;
         st.answers = st.pending.concat(st.answers); st.pending = null;
@@ -1560,6 +1915,10 @@
       case 'f-refq': { st.refQ = t.value; const r = root.querySelector('#ref-results'); if (r) r.innerHTML = refResults(); return; }
       case 'f-ans': st.draft = t.value; return clearErr('ans', t);
       case 'f-com': st.commentDraft = t.value; return clearErr('com', t);
+      case 'f-pwin': st.pwIn = t.value; clearErr('pwin', t); return;
+      case 'f-pwold': case 'f-delpw': case 'f-otp': return clearErr(t.id.slice(2), t);
+      case 'f-uname2': { st.newUser = t.value.trim(); clearErr('uname2', t); const s2 = root.querySelector('#uname2-status'); if (s2) s2.innerHTML = u2Status(); return; }
+      case 'f-deltype': { st.delType = t.value; const ok = root.querySelector('.dialog [data-k="ov-ok"]'); if (ok) ok.disabled = t.value.trim() !== 'OBRIŠI'; return; }
     }
   });
 
@@ -1570,12 +1929,17 @@
       if (n === 'sort') { st.sort = t.value; return render({ keep: true }); }
       if (n === 'actf') { st.actF = t.value; return render({ keep: true }); }
       if (n === 'vis2') st.vis = t.value; else if (n === 'dnaVis2') st.dnaVis = t.value; else if (n === 'lang2') st.lang = t.value; else if (n === 'del') st.del = t.value;
+      else if (n === 'hist2') st.histVis = t.value; else if (n === 'lists2') st.lists = t.value;
+      /* D-033: a private profile caps the follower lists at followers. */
+      if (n === 'vis2' && t.value === 'private' && (st.lists || 'followers') === 'all') st.lists = 'followers';
+      if (n === 'lists2' && t.value === 'all' && st.vis === 'private') { st.lists = 'followers'; toast('Dok je profil privatan, popise vide najviše pratitelji.'); }
+      if (['vis2', 'dnaVis2', 'hist2', 'lists2'].includes(n)) { render({ keep: true }); }
       if (n === 'age') st.age = t.value;
       else if (n === 'vis') st.vis = t.value;
       else if (n === 'dnaVis') st.dnaVis = t.value;
       else if (n === 'lang') { st.lang = t.value; if (t.value === 'en') toast('U skici je samo hrvatski tekst. U aplikaciji bi se sučelje odmah prebacilo na engleski.'); }
       if (st.err[n]) { delete st.err[n]; const er = root.querySelector('#err-' + n); if (er) er.remove(); const fs = t.closest('fieldset'); if (fs) fs.removeAttribute('aria-describedby'); }
-    } else if (t.id === 'f-time') st.remTime = t.value;
+    } else if (t.id === 'f-time' || t.id === 'f-time2') st.remTime = t.value;
   });
 
   document.addEventListener('keydown', e => {
@@ -1601,8 +1965,17 @@
     st.screen = AT;
     const from = k < 3 ? 0 : 3;
     st.hist = AT === 'username' || AT === 'done' ? [] : ORDER.slice(from, k).map(s => ({ screen: s, y: 0 }));
-  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub'].includes(AT)) {
+  } else if ((AT === 'signin' || AT === 'pending') && !START_DROP) {
+    st.screen = AT; st.acctPending = P.get('acct') === 'pending';
+  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member'].includes(AT)) {
     st.screen = AT;
+    if (AT === 'member') st.hist = [{ screen: 'home', y: 0 }];
+    if (AT === 'settings' && P.get('show') === 'logout' && OUT_AT === 'b') st.overlay = { type: 'logout', ret: 'logout' };
+    if (P.get('uc') === 'locked') { st.oldUser = st.username; st.username = 'ana.zvuk'; st.userChanged = true; }
+    if (AT === 'drop' && STATE === 'error' && P.get('open') === 'compose') { st.draft = 'Kind of Blue. Počinje mirno, nitko ne viče, a na kraju shvatiš da je cijeli sat bio jazz.'; if (P.get('show') === 'posterr') { st.postFailed = true; st.postErr = true; } }
+    if (AT === 'setsub' && P.get('s') === 'delete' && P.get('step')) { st.del = P.get('step') === 'off' ? 'off' : 'del'; st.delStep = { copy: 'copy', confirm: 'confirm', off: 'confirm', done: 'done' }[P.get('step')]; }
+    if (AT === 'setsub' && P.get('s') === 'twofa' && P.get('on') === '1') st.twofa = true;
+    if (AT === 'setsub' && P.get('s') === 'privacy' && P.get('pick')) st.overlay = { type: 'pick', p: P.get('pick') };
     if (AT === 'drop') st.hist = [{ screen: 'home', y: 0 }];
     if (AT === 'settings') st.hist = [{ screen: 'profile', y: 0 }];
     if (AT === 'setsub') { st.sub = P.get('s') || 'account'; st.hist = [{ screen: 'profile', y: 0 }, { screen: 'settings', y: 0 }]; }
@@ -1611,6 +1984,7 @@
     if (AT === 'drop' && P.get('open') === 'compose') st.overlay = { type: 'sheet', ret: 'dock-field' };
   }
 
+  if (START_DROP && P.get('pw') === 'breached') st.pwBanner = true; // ?flow=drop&pw=breached: Home right after sign-in, for the review page
   render();
   if (st.screen === 'dna' && st.artistQ) { runArtistSearch(); setTimeout(() => { const f = root.querySelector('#f-artist'); if (f) f.scrollIntoView({ block: 'start' }); }, 450); }
 })();

@@ -26,7 +26,8 @@
     chevron: '<path d="M9 6l6 6-6 6"/>',
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
     send: '<path d="M4 12l16-7-6 16-3-6.5z"/>',
-    pulse: '<path d="M3 12h4l2-5 3 10 3-8 2 3h4"/>'
+    pulse: '<path d="M3 12h4l2-5 3 10 3-8 2 3h4"/>',
+    offline: '<path d="M3.5 9a12.5 12.5 0 0 1 17 0M6.5 12.3a8 8 0 0 1 11 0M9.6 15.5a3.6 3.6 0 0 1 4.8 0"/><path d="M12 19v.2"/><path d="M4 4l16 16"/>'
   };
   window.GR_ICON = (name, cls) =>
     `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[name] || ''}</svg>`;

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 10: stanja i postavke</title>
+<!-- Owner decision sketch (session 12, round 10): the key screen states (loading, offline, empty, the missing-question
+     day) and the settings flows (privacy, notifications, deactivate or delete, log out). Every frame is the real
+     prototype (index.html) with a URL option. The second half shows what was built from confirmed rules, with no choice. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 0 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 10: stanja ekrana i postavke</h1>
+  <p>Okviri su prava aplikacija: klikaj, upisuj, otvaraj. „Danas” je trenutno stanje u skici, a „preporuka” je moj prijedlog. Svi podaci su izmišljeni.</p>
+  <div class="note"><p><b>Pravila koja vrijede za sva stanja</b> (već potvrđena u IA §6 i J3, nisu izbor):</p>
+    <ul>
+      <li>Naslov i navigacija se pojave odmah, a sadržaj stiže na mjestu gdje će biti.</li>
+      <li>Greška se pokaže tamo gdje je nešto puklo, s gumbom „Pokušaj ponovno”. Ostatak stranice radi.</li>
+      <li>Ništa što je član napisao ne nestaje zbog greške ili prekida veze.</li>
+      <li>Nikad lažna aktivnost i nikad pritisak („Budi prvi ili svrati kasnije”).</li>
+    </ul></div>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-ld">1. Učitavanje</a><a href="#t-off">2. Bez mreže</a><a href="#t-emp">3. Prazno</a><a href="#t-nd">4. Dan bez pitanja</a>
+    <a href="#t-prv">5. Privatnost</a><a href="#t-ntf">6. Obavijesti</a><a href="#t-del">7. Deaktivacija i brisanje</a><a href="#t-out">8. Odjava</a><a href="#t-done">Napravljeno bez izbora</a>
+  </nav>
+  <div id="sections"></div>
+  <h2 class="part" id="t-done">Napravljeno bez izbora</h2>
+  <p>Ovo slijedi već potvrđena pravila. Pogledaj i javi ako nešto ne štima.</p>
+  <div id="done"></div>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-ld', '1. Učitavanje', 'Stranica Daily Dropa dok stižu odgovori. Pitanje je već tu, a na mjestu odgovora su sive kartice istog oblika. Sa „Smanji pokrete” sve miruje.', 'flow=drop&at=drop&state=loading', 'ld', [
+      ['a', 'A. Mirne kartice', 'Sive kartice, ništa se ne miče. Najtiše.', ''],
+      ['b', 'B. Kartice dišu', 'Iste kartice polako blijede i jačaju. Vidi se da nešto radi, bez svjetlucanja.', 'rec'],
+      ['c', 'C. Struja na vrhu', 'Mirne kartice i tanka Coral→Amber crta ispod gornje trake koja juri. Najviše „brenda”, ali je to još jedan motiv izvan dogovorenih mjesta (D-042).', '']
+    ]],
+    ['t-off', '2. Bez mreže', 'Početna kad nema veze. Pitanje se vidi iz spremljene kopije. Odgovori trebaju mrežu, a gumb „Objavi” je isključen uz razlog, dok tekst ostaje upisan.', 'flow=drop&net=off', 'off', [
+      ['a', 'A. Traka ispod vrha', 'Žuta traka „Nisi na mreži. Prikazujemo spremljeno u 08:14.” Uvijek vidljiva, kaže i koliko je kopija stara.', 'rec'],
+      ['b', 'B. Oznaka iznad izbornika', 'Mala pilula „Nisi na mreži” iznad donjeg izbornika. Manje smeta, ali može prekriti sadržaj.', ''],
+      ['c', 'C. Oznaka u gornjoj traci', 'Mala oznaka „Bez mreže” pokraj „Alfa”. Dodir objasni više. Najdiskretnije, lako se previdi.', '']
+    ]],
+    ['t-emp', '3. Prazna stanja', 'Daily Drop na koji još nitko nije odgovorio. Isti stil vrijedi za praćenja, Aktivnost, komentare i profil.', 'flow=drop&at=drop&state=empty', 'emp', [
+      ['a', 'A. Tihi okvir', 'Jedna rečenica u isprekidanom okviru, kao dosad.', 'now'],
+      ['b', 'B. Ikona i naslov', 'Mala ikona, kratki naslov i jedna rečenica, bez okvira. Lakše se uoči da je mjesto prazno namjerno.', 'rec']
+    ]],
+    ['t-nd', '4. Dan kad pitanje kasni', 'Ako današnje pitanje ne izađe ni iz rezerve (J3 E2), nikad ne pokazujemo prazan dan ni kod greške. Pokažemo jučerašnje, s datumom.', 'flow=drop&state=nodrop', 'nd', [
+      ['a', 'A. Jedan red', 'Mala oznaka iznad pitanja: „Današnje pitanje stiže uskoro. Ovo je jučerašnje.”', 'rec'],
+      ['b', 'B. Kartica na vrhu', 'Posebna kartica s objašnjenjem, a ispod jučerašnje pitanje. Jasnije, ali pitanje je niže.', '']
+    ]],
+    ['t-prv', '5. Privatnost', 'Profil, Music DNA, povijest odgovora (D-032: zadano „kao profil”) i popisi pratitelja (D-033: zadano pratitelji; privatan profil to ne može proširiti). Riječi su iste kao u uvodu (D-030).', 'flow=drop&at=setsub&s=privacy', 'prv', [
+      ['a', 'A. Sve na jednoj stranici', 'Svi izbori odmah vidljivi. Duga stranica, puno skrolanja.', 'now'],
+      ['b', 'B. Redovi s vrijednošću', 'Četiri reda, svaki kaže trenutni izbor. Dodir otvori kratki donji list s izborima. Pregledno.', 'rec']
+    ]],
+    ['t-ntf', '6. Obavijesti', 'Podsjetnik i vrijeme, pa koje obavijesti i kamo stižu (IA traži „vrsta × kanal”). Na dnu stanje obavijesti na ovom uređaju.', 'flow=drop&at=setsub&s=notifications', 'ntf', [
+      ['a', 'A. Po kanalu', 'Grupa „Na ovom uređaju”, pa grupa „E-pošta”, s prekidačima. Ista vrsta se pojavi dvaput.', 'now'],
+      ['b', 'B. Tablica', 'Svaka vrsta jednom, s kvačicom za Mobitel i za E-poštu. Kraće i jasnije što ide kamo.', 'rec']
+    ]],
+    ['t-del', '7. Deaktivacija i brisanje', 'Ništa nije unaprijed odabrano. Kopija podataka je unutar ovog postupka (D-066). Brisanje ima 30 dana za predomisliti se. Lozinka je obavezna. Sve verzije završe istim ekranom s datumom.', 'flow=drop&at=setsub&s=delete', 'del', [
+      ['a', 'A. Jedna stranica', 'Kopija, izbor, lozinka i gumb, sve odjednom.', 'now'],
+      ['b', 'B. Kratki koraci', 'Izbor, pa kopija podataka (preuzmi ili preskoči), pa što se točno briše i lozinka, pa potvrda s datumom. Najjasnije, a nije teže od potrebnog.', 'rec'],
+      ['c', 'C. Jedna stranica i „OBRIŠI”', 'Kao A, a na kraju treba upisati OBRIŠI. Uz lozinku je to dupla kočnica i teže je s čitačem zaslona.', '']
+    ]],
+    ['t-out', '8. Odjava', 'Gumb „Odjavi se” u Postavkama, odmah iznad brisanja računa.', 'flow=drop&at=settings', 'out', [
+      ['a', 'A. Odmah', 'Jedan dodir i vraća na prijavu.', 'now'],
+      ['b', 'B. Kratka potvrda', '„Odjaviti se? Samo na ovom uređaju.” Štiti od slučajnog dodira, a nije dosadno jer se rijetko koristi.', 'rec']
+    ]]
+  ];
+  const DONE = [
+    ['Greška i ponovni pokušaj', 'Prvi put pukne, drugi put prođe. Tekst odgovora ostaje (JR4).', [
+      ['Odgovori se nisu učitali', 'flow=drop&at=drop&state=error'], ['Objava nije prošla', 'flow=drop&at=drop&state=error&open=compose&show=posterr']]],
+    ['Blokiranje (D-019)', 'Onaj tko blokira vidi „Ovaj račun je blokiran” i može odblokirati. Blokirani vidi neutralnu stranicu, istu kao da profil ne postoji. U raspravi ostaje „Ovaj komentar nije dostupan”.', [
+      ['Komentar u raspravi', 'flow=drop&at=answer&state=blocked'], ['Tko je blokirao', 'flow=drop&at=member&as=blocker'], ['Tko je blokiran', 'flow=drop&at=member&as=blocked'], ['Popis blokiranih', 'flow=drop&at=setsub&s=blocked&bl=1']]],
+    ['Duga imena i tekst', 'Dugačka hrvatska imena, korisničko ime od 20 znakova, dugačka riječ i poveznica. Ništa ne izlazi iz ekrana ni na 320 px.', [
+      ['Odgovori', 'flow=drop&at=drop&state=long'], ['Profil', 'flow=drop&at=profile&state=long'], ['Postavke', 'flow=drop&at=settings&state=long']]],
+    ['Prijava (D-054)', 'Jedna greška koja ne kaže je li kriva adresa ili lozinka. Ako je lozinka u curenju, na Početnoj stiže preporuka, a ne prisila. Ako HIBP ne odgovara, prijava prolazi bez poruke. Tko se prijavi u 30 dana nakon zahtjeva za brisanje, bira „Vrati račun” ili „Odjavi se”.', [
+      ['Prijava', 'at=signin'], ['Lozinka u curenju', 'flow=drop&pw=breached'], ['Račun čeka brisanje', 'at=pending&acct=pending']]],
+    ['Račun i sigurnost', 'E-pošta s potvrdom na novu adresu, promjena lozinke s istim pravilima kao pri upisu (D-061), korisničko ime jednom u 30 dana uz rezervaciju starog (D-069), dvostruka provjera s kodovima za oporavak.', [
+      ['Račun', 'flow=drop&at=setsub&s=account'], ['E-pošta', 'flow=drop&at=setsub&s=email'], ['Lozinka', 'flow=drop&at=setsub&s=password'], ['Korisničko ime', 'flow=drop&at=setsub&s=username'], ['Nakon promjene', 'flow=drop&at=setsub&s=username&uc=locked'], ['Dvostruka provjera', 'flow=drop&at=setsub&s=twofa'], ['Kodovi za oporavak', 'flow=drop&at=setsub&s=twofa&on=1']]],
+    ['Ostalo', 'Bez mreže postavke možeš samo pregledati. Koraci brisanja iz verzije B.', [
+      ['Postavke bez mreže', 'flow=drop&at=setsub&s=account&net=off'], ['B: kopija', 'flow=drop&at=setsub&s=delete&del=b&step=copy'], ['B: potvrda', 'flow=drop&at=setsub&s=delete&del=b&step=confirm'], ['B: zakazano', 'flow=drop&at=setsub&s=delete&del=b&step=done']]]
+  ];
+  const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+      ${frame(title + ': ' + t, `${base}&${key}=${v}${key === 'out' && v === 'b' ? '&show=logout' : ''}`)}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
+    <div class="grid">${frames.map(([t, src]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src)}</div>`).join('')}</div></section>`).join('');
+})();
+</script>
+</body>
+</html>

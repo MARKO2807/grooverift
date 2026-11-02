@@ -263,6 +263,61 @@ const runs = [
     await click('[data-hit="v3"]'); expect($('[data-hit="v3"]').getAttribute('aria-pressed') === 'true', 'hit pressed under reduced motion');
     expect(getComputedStyle($('[data-hit="v3"] .wave')).animationName === 'none' && getComputedStyle($('#hx-v3 .n')).animationName === 'none', 'no press animation under reduced motion');
     return 'ok'; })()`, w: 1100, h: 900 },
+  /* Round 10 (session 12): key states and the settings flows. */
+  { name: 'r10 loading', url: `${base}?flow=drop&at=drop&state=loading`, test: `(async () => {${HELPERS} expect($('.skel-wrap[aria-busy="true"] .skel-ans') && !$('.ans-list') && $('.dd-q'), 'answers load as placeholders, the question shows at once'); expect(document.documentElement.classList.contains('ld-b'), 'default look b'); return 'ok'; })()` },
+  { name: 'r10 error and retry', url: `${base}?flow=drop&at=drop&state=error`, test: `(async () => {${HELPERS}
+    expect($('.load-err[role="alert"]') && !$('.ans-list'), 'inline error with Retry');
+    await click('[data-a="retry-load"]'); expect($('.ans-list'), 'Retry loads the answers');
+    await click('[data-k="dock-field"]'); await type('#f-ans', 'Moj odgovor koji ne smije nestati'); await submit('form[data-form="answer"]');
+    expect($('.post-err[role="alert"]') && $('#f-ans').value === 'Moj odgovor koji ne smije nestati' && $('[data-k="post"]').textContent === 'Pokušaj ponovno', 'failed post keeps the text (JR4)');
+    await submit('form[data-form="answer"]'); expect(!$('.sheet') && $('.ans-mine'), 'retry posts'); return 'ok'; })()` },
+  { name: 'r10 offline', url: `${base}?flow=drop&at=drop&net=off`, test: `(async () => {${HELPERS}
+    expect($('.net-bar[role="status"]') && $('.net-hint') && !$('.ans-list'), 'offline bar, answers need the network');
+    await click('[data-k="dock-field"]'); expect($('[data-k="post"]').disabled && $('#post-off'), 'Objavi disabled with the reason'); return 'ok'; })()` },
+  { name: 'r10 empty', url: `${base}?flow=drop&at=drop&state=empty`, test: `(async () => {${HELPERS} expect($('.empty-b .empty-t').textContent === 'Još nema odgovora.' && $('.dd-meta').textContent.includes('Još nitko'), 'empty answers'); return 'ok'; })()` },
+  { name: 'r10 missing question', url: `${base}?flow=drop&state=nodrop`, test: `(async () => {${HELPERS} expect($('.dd-late') && $('.dd-q').textContent === 'Koja pjesma je najbolje otvaranje albuma?' && $('.dd-date time').getAttribute('datetime') === '2026-10-31', 'yesterday with its date (J3 E2)'); return 'ok'; })()` },
+  { name: 'r10 blocked', url: `${base}?flow=drop&at=member&as=blocker`, test: `(async () => {${HELPERS}
+    expect($('.blk-card').textContent.includes('blokiran'), 'blocker sees the notice'); await click('[data-a="unblock"]'); expect($('.dialog') && document.activeElement.closest('.dialog'), 'unblock dialog');
+    await click('[data-a="unblock-confirm"]'); expect($('.blk-card').textContent.includes('Odblokirano'), 'unblocked'); return 'ok'; })()` },
+  { name: 'r10 blocked side', url: `${base}?flow=drop&at=member&as=blocked`, test: `(async () => {${HELPERS} expect($('.sys-na h1').textContent === 'Ova stranica nije dostupna' && !document.body.textContent.includes('blokiran'), 'neutral not-available page'); return 'ok'; })()` },
+  { name: 'r10 comment placeholder', url: `${base}?flow=drop&at=answer&state=blocked`, test: `(async () => {${HELPERS} expect($('.com-gone'), 'placeholder in the thread'); return 'ok'; })()` },
+  { name: 'r10 long text 320', url: `${base}?flow=drop&at=drop&state=long`, test: `(async () => {${HELPERS} await sleep(200); expect(document.documentElement.scrollWidth <= innerWidth, 'no sideways scroll: ' + document.documentElement.scrollWidth); return 'ok'; })()`, w: 320, h: 568 },
+  { name: 'r10 long profile 320', url: `${base}?flow=drop&at=profile&state=long`, test: `(async () => {${HELPERS} expect(document.documentElement.scrollWidth <= innerWidth, 'no sideways scroll'); return 'ok'; })()`, w: 320, h: 568 },
+  { name: 'r10 sign-in', url: `${base}?at=signin&pw=breached`, test: `(async () => {${HELPERS}
+    await click('[data-a="signin"]'); expect($('#err-pwin'), 'empty password error');
+    await type('#f-pwin', 'kriva'); await click('[data-a="signin"]'); expect($('#err-signin') && document.activeElement.id === 'err-signin', 'one generic error');
+    await type('#f-pwin', 'Bilo-koja-lozinka1'); await click('[data-a="signin"]'); expect(scr() === 'home' && $('.pw-banner'), 'breach banner on Home (D-054)');
+    await click('[data-a="pw-later"]'); expect(!$('.pw-banner'), 'Kasnije hides it'); return 'ok'; })()` },
+  { name: 'r10 pending deletion', url: `${base}?at=signin&acct=pending`, test: `(async () => {${HELPERS}
+    await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'pending', 'grace-period screen');
+    await click('[data-a="pend-restore"]'); expect(scr() === 'home', 'restored'); return 'ok'; })()` },
+  { name: 'r10 username change', url: `${base}?flow=drop&at=setsub&s=username`, test: `(async () => {${HELPERS}
+    await type('#f-uname2', 'luka'); expect($('#uname2-status .bad'), 'taken name');
+    await type('#f-uname2', 'ana.zvuk'); expect($('#uname2-status .ok'), 'free name');
+    await click('[data-a="uname-save"]'); expect($('.dialog'), 'confirm dialog'); await click('[data-a="uname-confirm"]');
+    expect($('.sub-hero-t').textContent === '@ana.zvuk' && $('.set-row-plain .set-t').textContent === '@ana.slusa', 'locked for 30 days, old name reserved (D-069)'); return 'ok'; })()` },
+  { name: 'r10 password change', url: `${base}?flow=drop&at=setsub&s=password`, test: `(async () => {${HELPERS}
+    await click('[data-a="pw-save"]'); expect($('#err-pwold') && $('#err-pw'), 'both errors');
+    await type('#f-pwold', 'stara'); await type('#f-pw', 'Lozinka2024!'); await click('[data-a="pw-save"]'); expect($('#err-pw').textContent.includes('curenjima'), 'breached rejected');
+    await type('#f-pwold', 'stara'); await type('#f-pw', 'Nova duga lozinka 7!'); await click('[data-a="pw-save"]'); expect(scr() === 'settings', 'saved, back'); return 'ok'; })()` },
+  { name: 'r10 2FA', url: `${base}?flow=drop&at=setsub&s=twofa`, test: `(async () => {${HELPERS}
+    await click('[data-a="otp-ok"]'); expect($('#err-otp'), 'code needed'); await type('#f-otp', '123456'); await click('[data-a="otp-ok"]'); expect($$('.codes li').length === 8, 'recovery codes'); return 'ok'; })()` },
+  { name: 'r10 delete steps', url: `${base}?flow=drop&at=setsub&s=delete&del=b`, test: `(async () => {${HELPERS}
+    expect(!$('input[name="del"]:checked'), 'nothing pre-selected'); await click('[data-a="del-next"]'); expect($('#err-del'), 'choose first');
+    await click('input[name="del"][value="del"]'); await click('[data-a="del-next"]'); expect($('.sub-step'), 'data copy step');
+    await click('[data-a="del-next"]'); expect($('#f-delpw'), 'confirm step'); await click('[data-a="del-go"]'); expect($('#err-delpw'), 'password needed');
+    await type('#f-delpw', 'x'); await click('[data-a="del-go"]'); expect($('.sub-hero-t').textContent.startsWith('Brisanje je zakazano'), 'scheduled');
+    await click('[data-a="to-signin"]'); expect(scr() === 'signin', 'signed out'); return 'ok'; })()` },
+  { name: 'r10 delete typed', url: `${base}?flow=drop&at=setsub&s=delete&del=c`, test: `(async () => {${HELPERS}
+    await click('input[name="del"][value="del"]'); await type('#f-delpw', 'x'); await click('[data-a="del-one"]');
+    expect($('.dialog [data-k="ov-ok"]').disabled && document.activeElement.id === 'f-deltype', 'typed confirmation');
+    await type('#f-deltype', 'OBRIŠI'); expect(!$('.dialog [data-k="ov-ok"]').disabled, 'enabled after OBRIŠI'); await click('[data-a="del-type-go"]'); expect($('.sub-hero-wait'), 'scheduled'); return 'ok'; })()` },
+  { name: 'r10 logout dialog', url: `${base}?flow=drop&at=settings&out=b`, test: `(async () => {${HELPERS} await click('[data-a="logout"]'); expect($('.dialog'), 'dialog'); await click('[data-a="logout-confirm"]'); expect(scr() === 'signin', 'signed out'); return 'ok'; })()` },
+  { name: 'r10 privacy sheet', url: `${base}?flow=drop&at=setsub&s=privacy&prv=b`, test: `(async () => {${HELPERS}
+    expect($('[data-k="pick-hist2"] .set-d').textContent === 'Kao profil', 'history same as profile (D-032)');
+    await click('[data-k="pick-vis2"]'); await click('input[name="vis2"][value="private"]'); await click('[data-k="ov-done"]');
+    await click('[data-k="pick-lists2"]'); await click('input[name="lists2"][value="all"]'); expect($('input[name="lists2"][value="followers"]').checked, 'private caps lists at followers (D-033)'); return 'ok'; })()` },
+  { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 42) throw new Error(42 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }
 ];
 
