@@ -244,8 +244,8 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .inv-cur { max-width: 16rem; }
 .inv-wide { max-width: none; width: calc(100% + 2 * var(--gr-space-4)); } /* centred overflow reaches both screen edges */
 .inv-foot { max-width: none; margin-bottom: calc(-1 * var(--gr-space-1)); }
-@media (max-height: 700px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.875rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } }
-@media (max-height: 600px) { .screen-invite .h-hero { font-size: 1.5rem; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; } .screen-invite .info-stack > p + p { padding-top: 6px; } }
+@media (max-height: 700px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.875rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; font-size: 0.8125rem; line-height: 1.4; } .screen-invite .info-stack > p + p { padding-top: 6px; } }
+@media (max-height: 600px) { .screen-invite .h-hero { font-size: 1.5rem; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; } .screen-invite .info-stack > p + p { padding-top: 6px; } .screen-invite .info-stack { font-size: 0.75rem; line-height: 1.35; } .screen-invite .info-stack .wm-lg { font-size: 1.1em; } .screen-invite .hero .eyebrow { display: none; } }
 .dd-current { max-width: 14rem; margin-top: var(--gr-space-1); }
 @media (forced-colors: active) { canvas.current, canvas.ic, canvas.dna { forced-color-adjust: none; } }
 
@@ -328,8 +328,16 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .chip-genre[aria-pressed="true"]:hover { background: color-mix(in srgb, var(--g) 22%, transparent); }
 .chip-genre .ck { color: var(--g); }
 .chip-genre .ck svg { stroke-width: 3; }
-.g-fam { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin-left: 2px; }
-.g-fam::before { content: "· "; }
+/* Search results (D-063): a two-column grid of equal tiles, the name over its family, so the list reads as a tidy table. */
+.g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gr-space-2); }
+.g-grid .chip { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--gr-space-1); min-height: 52px; padding: 6px var(--gr-space-3); border-radius: 14px; text-align: left; }
+.g-grid .chip[aria-pressed="true"] { padding: 5px calc(var(--gr-space-3) - 1px); }
+.g-grid .chip .ck { grid-column: 2; grid-row: 1; }
+.g-txt { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; min-width: 0; }
+.g-n { overflow-wrap: anywhere; line-height: 1.2; }
+.g-fam { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); font-weight: var(--gr-font-weight-regular); }
+.g-more { padding: 0; }
+@media (max-width: 340px) { .g-grid { grid-template-columns: 1fr; } }
 .dna-mini { border-radius: var(--gr-radius-sheet); background: radial-gradient(ellipse at 50% 50%, #FF586B12, transparent 70%); }
 .screen-dnavis { gap: var(--gr-space-3); padding-top: var(--gr-space-4); padding-bottom: var(--gr-space-2); }
 .screen-dnavis h1 { font: var(--gr-type-title-2); }
@@ -389,9 +397,18 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .notif-t { font: var(--gr-type-label); }
 .notif-q { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .rift-note { font: var(--gr-type-body-sm); padding-left: var(--gr-space-3); border-left: var(--gr-border-width-thick) solid var(--gr-color-highlight-border); }
-.rem-row { display: flex; align-items: flex-end; gap: var(--gr-space-3); flex-wrap: wrap; }
-.rem-row .field { flex: 0 0 8rem; }
-.rem-row .meta { min-height: var(--gr-size-target-min); }
+/* D-063: one centred row, "Podsjetnik u [09:00]  Zagreb", with a compact time field (owner: centre the time or shrink the box). */
+.rem-row { display: flex; align-items: center; justify-content: center; gap: var(--gr-space-2) var(--gr-space-3); flex-wrap: wrap; padding: var(--gr-space-2) var(--gr-space-3); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.rem-time { width: auto; min-width: 6.25rem; text-align: center; text-align-last: center; font: var(--gr-type-label); font-size: var(--gr-font-size-lg); font-variant-numeric: tabular-nums; padding: 0 var(--gr-space-2); }
+.rem-tz { min-height: var(--gr-size-target-min); }
+/* "Drži GrooveRift pri ruci": add to the home screen. On iPhone, web push works only for a site added to the home screen. */
+.install { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--gr-space-3); padding: var(--gr-space-3); border-radius: var(--gr-radius-card); border: var(--gr-border-width-hairline) dashed var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); }
+.install-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--gr-color-bg-canvas); color: var(--gr-color-highlight-text); }
+.install-ic .pi { width: 24px; height: 24px; }
+.install-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.install-t { font: var(--gr-type-label); }
+.install-d { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.lead-done { color: var(--gr-color-text-primary); font-size: var(--gr-font-size-lg); line-height: 1.4; }
 @keyframes gr-notif { from { opacity: 0; transform: translateY(-16px) scale(0.98); } to { opacity: 1; transform: none; } }
 
 /* ---------- Daily Drop ---------- */
@@ -611,7 +628,7 @@ html[data-motion="reduced"] .switch span { transition: none; }
 
 /* Tab bar backgrounds. glass: frosted, content passes under it. float: a frosted pill above the edge.
    ember: solid, the active tab gets a soft Coral→Amber pill. Solid fallback where blur is unsupported or colours are forced. */
-.nav-glass .bottom { background: rgba(11, 13, 18, .5); -webkit-backdrop-filter: blur(12px) saturate(150%); backdrop-filter: blur(12px) saturate(150%); } /* about 20 % clearer than first shown (owner) */
+.nav-glass .bottom { background: rgba(11, 13, 18, .34); -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); } /* clearer again (owner, D-063); a stronger blur keeps the labels readable */
 .nav-glass .tabbar { border-top-color: rgba(255, 255, 255, .08); }
 .nav-float .bottom { background: transparent; padding: 0 var(--gr-space-3) calc(var(--gr-space-2) + env(safe-area-inset-bottom)); }
 .nav-float .dock { margin-bottom: var(--gr-space-2); border-radius: var(--gr-radius-sheet); }
@@ -642,3 +659,99 @@ html[data-motion="reduced"] .switch span { transition: none; }
 @media (prefers-reduced-motion: reduce) { .how-main::before { animation: none; } }
 html[data-motion="reduced"] .how-main::before { animation: none; }
 @media (forced-colors: active) { .how-main::before { display: none; } }
+
+/* ---------- Round 7 (owner, session 11; D-063). Options compared in round7.html. ---------- */
+/* Living "Daily Drop" name, five versions (?ddn=a..e). Raw colours: brand motif art. All stop with "Smanji pokrete"
+   or the OS setting (D-049); forced colours show plain text (rule above). */
+/* a. Tok: the Coral→Amber gradient flows slowly through the letters. */
+.ddn-a .dd-name { background: linear-gradient(90deg, #FF586B, #FFCB69 35%, #FF586B 70%, #FFCB69); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; animation: ddn-flow 9s ease-in-out infinite alternate; }
+@keyframes ddn-flow { from { background-position: 0 0; } to { background-position: 100% 0; } }
+/* b. Odsjaj: every 5 s a white-hot glint crosses the name once. */
+.ddn-b .dd-name { background: linear-gradient(105deg, transparent 38%, #FFF4E6 50%, transparent 62%), var(--gr-gradient-brand); background-size: 250% 100%, 100% 100%; background-repeat: no-repeat; background-position: 160% 0, 0 0; -webkit-background-clip: text; background-clip: text; animation: ddn-glint 5s ease-in-out infinite; }
+@keyframes ddn-glint { 0%, 62% { background-position: 160% 0, 0 0; } 82%, 100% { background-position: -60% 0, 0 0; } }
+/* c. Strujica: a hairline under the name with a spark that runs along it. */
+.ddn-c .dd-name { position: relative; }
+.ddn-c .dd-name::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: -3px; height: 1.5px; border-radius: 1px; background: linear-gradient(90deg, transparent, #FF586B99 15%, #FFCB6999 85%, transparent); }
+.ddn-c .dd-name::before { content: ""; position: absolute; left: 4%; bottom: -4.5px; width: 22%; height: 4.5px; border-radius: 3px; background: radial-gradient(closest-side, #FFF4E6, #FFCB69AA 45%, transparent); filter: blur(.3px); animation: ddn-run 3.2s cubic-bezier(.45, 0, .25, 1) infinite; }
+@keyframes ddn-run { 0% { transform: translateX(-20%); opacity: 0; } 12% { opacity: 1; } 70% { transform: translateX(340%); opacity: 1; } 80%, 100% { transform: translateX(340%); opacity: 0; } }
+/* d. Treptaj: like the bolt under the wordmark, the name flickers briefly every 6 s and glows for a moment. */
+.ddn-d .dd-name { animation: ddn-flick 6s linear infinite; }
+@keyframes ddn-flick { 0%, 84% { filter: none; opacity: 1; } 85% { filter: drop-shadow(0 0 6px #FF7A6BAA); opacity: 1; } 86% { opacity: .45; } 87.5% { opacity: 1; filter: drop-shadow(0 0 9px #FFB070AA); } 89% { opacity: .7; } 90.5% { opacity: 1; } 95%, 100% { filter: none; opacity: 1; } }
+/* e. Val: a wave passes through the letters, as if the name were a sound. */
+.ddn-e .dd-name { background: none; color: inherit; }
+.ddn-letters { display: inline-flex; }
+.ddn-letters > span { display: inline-block; animation: ddn-wave 4s ease-in-out infinite; animation-delay: calc(var(--i) * 70ms); }
+@keyframes ddn-wave { 0%, 40%, 100% { transform: none; } 50% { transform: translateY(-.12em); } 60% { transform: translateY(.03em); } 66% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ddn-a .dd-name, .ddn-b .dd-name, .ddn-d .dd-name, .ddn-letters > span { animation: none; } .ddn-c .dd-name::before { display: none; } }
+html[data-motion="reduced"] .ddn-a .dd-name, html[data-motion="reduced"] .ddn-b .dd-name, html[data-motion="reduced"] .ddn-d .dd-name, html[data-motion="reduced"] .ddn-letters > span { animation: none; }
+html[data-motion="reduced"] .ddn-c .dd-name::before { display: none; }
+@media (forced-colors: active) { .ddn-letters > span { color: CanvasText !important; } .ddn-c .dd-name::before, .ddn-c .dd-name::after { display: none; } }
+
+/* Home e (and the compact Drop on the Hub): smaller question, smaller button next to the read link, narrower margins. */
+.home-e .screen-home { padding-left: var(--gr-space-3); padding-right: var(--gr-space-3); }
+.dd-e { gap: var(--gr-space-2); padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-5); }
+.dd-e .dd-name { font-size: 1.625rem; }
+.dd-e .dd-q { font: var(--gr-type-title-2); font-size: 1.5rem; line-height: 1.25; margin-top: var(--gr-space-1); }
+.dd-e .btn-cta, .dd-g .btn-cta, .dd-live .btn-cta { min-width: 0; min-height: var(--gr-size-target-min); padding: 0 var(--gr-space-6); font-size: 1rem; }
+.dd-actions-inline { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: var(--gr-space-2) var(--gr-space-4); }
+/* Home f: one card with a living edge, the same charge that circles the Daily Drop card on "Kako radi". */
+.dd-live { position: relative; isolation: isolate; border-color: #FF586B40; }
+.dd-live::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 2px; pointer-events: none; z-index: 1;
+  background: conic-gradient(from var(--how-a), transparent 0 58%, #FF586B55 70%, #FF586B 84%, #FFCB69 92%, #FFF4E6 95%, transparent 96.5%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 4px #FF8A6BCC); animation: how-orbit 5s linear infinite; }
+.dd-live .dd-q-sm { font-size: 1.375rem; line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) { .dd-live::before { animation: none; } }
+html[data-motion="reduced"] .dd-live::before { animation: none; }
+@media (forced-colors: active) { .dd-live::before { display: none; } }
+/* Home g: edge to edge, left-aligned, no card; the first answers scroll sideways. */
+.home-g .screen-home { padding-left: var(--gr-space-3); padding-right: var(--gr-space-3); }
+.dd-g { display: flex; flex-direction: column; gap: var(--gr-space-2); padding: var(--gr-space-2) 0 var(--gr-space-4); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.dd-g .dd-eyebrow { justify-content: flex-start; }
+.dd-g .dd-q-sm { font-size: 1.5rem; line-height: 1.25; }
+.peeks-row { flex-direction: row; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: var(--gr-space-1) calc(-1 * var(--gr-space-3)) 0; padding: 0 var(--gr-space-3); width: auto; }
+.peeks-row::-webkit-scrollbar { display: none; }
+.peeks-row li { flex: 0 0 78%; scroll-snap-align: start; }
+.peeks-row .peek { height: 100%; }
+.dd-g > .link { align-self: flex-start; }
+
+/* Hub b: archive by month. */
+.month-title { font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-text-secondary); margin-top: var(--gr-space-1); }
+.past-compact .past-item { grid-template-columns: 2.25rem 1fr auto; }
+.past-compact .past-q { grid-column: 2; }
+.past-compact .past-ic { grid-column: 3; grid-row: 1; }
+.past-day { font: var(--gr-type-label); font-variant-numeric: tabular-nums; color: var(--gr-color-highlight-text); grid-column: 1; grid-row: 1; }
+.screen-hub > .link { align-self: center; font: var(--gr-type-label); min-height: var(--gr-size-target-min); }
+/* Hub c: the last seven days. */
+.day-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.day { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 4px 0; border-radius: 14px; border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: var(--gr-color-bg-surface); color: var(--gr-color-text-primary); }
+.day:hover { border-color: var(--gr-color-border-strong); }
+.day[aria-pressed="true"] { border: var(--gr-border-width-thick) solid var(--gr-color-selected-border); background: var(--gr-color-selected-bg); }
+.day-wd { font: var(--gr-type-caption); font-size: 0.6875rem; color: var(--gr-color-text-secondary); }
+.day-n { font: var(--gr-type-label); font-size: var(--gr-font-size-md); font-variant-numeric: tabular-nums; }
+/* Hub d: programme cards (Weekly Poll and Did You Know? arrive in B2). */
+.soon { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: var(--gr-radius-full); padding: 0 8px; margin-left: var(--gr-space-1); vertical-align: middle; }
+.prog-card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--gr-space-2); padding: var(--gr-space-4); border-radius: var(--gr-radius-sheet); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.prog-tag { display: flex; align-items: center; gap: var(--gr-space-2); font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-highlight-text); }
+.prog-ic { width: 18px; height: 18px; }
+.prog-t { font: var(--gr-type-title-3); text-wrap: balance; }
+.prog-d { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+
+/* Settings (SET-01): grouped rows, as on the large platforms. */
+.top-ic { width: 24px; height: 24px; }
+.screen-settings { gap: var(--gr-space-5); }
+.set-group { display: flex; flex-direction: column; gap: var(--gr-space-2); }
+.set-gt { font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-text-secondary); padding: 0 var(--gr-space-1); }
+.set-list { display: flex; flex-direction: column; border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); overflow: hidden; }
+.set-list > li + li { border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.set-row { width: 100%; display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: var(--gr-space-3); min-height: 56px; padding: var(--gr-space-2) var(--gr-space-3); border: 0; background: none; color: var(--gr-color-text-primary); text-align: left; }
+button.set-row:hover { background: var(--gr-color-bg-raised); }
+.set-ic-wrap { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--gr-color-bg-canvas); color: var(--gr-color-highlight-text); }
+.set-ic { width: 20px; height: 20px; }
+.set-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.set-t { font: var(--gr-type-label); font-size: var(--gr-font-size-md); }
+.set-d { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.set-go { color: var(--gr-color-text-secondary); }
+.set-danger .set-t, .set-danger .set-ic-wrap { color: var(--gr-color-state-danger); }
+.set-out { gap: var(--gr-space-2); }
+.set-ver { justify-content: center; }

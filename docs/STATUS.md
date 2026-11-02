@@ -12,8 +12,8 @@ _Last updated: 2026-11-02 (session 11)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) and the follow-ups (D-061, D-062). All in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
-| 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063). All in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
 | 3.8 HR/EN copy tone guide | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-062. Key ones:
+- Decisions D-001 to D-063. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -73,6 +73,11 @@ _Last updated: 2026-11-02 (session 11)_
     - Genre search covers the MusicBrainz list (about 2,200 genres), with a parent family from Wikidata.
     - The "Kako radi" cards fill the screen.
     - Research on artist search and Spotify: `docs/research/2026-11-02-artist-search-genres-spotify.md`. Spotify sign-in is deferred (OQ-27).
+  - **Round 7 (session 11, D-063):**
+    - **Dark only:** no light theme (replaces D-045; step 3.4b cancelled).
+    - Invite: edge-to-edge current, new lead, a PWA line. Genre search in a two-column grid. Reminder: compact time row and an "add to home screen" card. Done: "Sad si dio Rifta." Clearer glass tab bar. No current on the Hub.
+    - Settings screen from a gear on the profile; "Smanji pokrete" moves into it. Research: `docs/research/2026-11-02-settings-benchmark.md`.
+    - **Pending owner choice:** living Daily Drop name, Home and Hub layouts, the notification question, the language icon (`pulse/round7.html`).
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -87,7 +92,7 @@ _Last updated: 2026-11-02 (session 11)_
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text. Also the sign-in screen with the breached-password banner (D-054) and the HIBP-unreachable path.
    - 200 % zoom and the desktop adaptation.
    - Screen reader (Narrator) and high-contrast checks.
-2. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first, then the owner decides.
+2. **Owner choices from round 7** (`pulse/round7.html`), then apply them.
 3. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
    - OQ-24: music news idea, after the alpha scope.
@@ -102,7 +107,7 @@ _Last updated: 2026-11-02 (session 11)_
 - None for planning or design. Before the alpha: legal entity (OQ-05), moderation staffing (OQ-06), age policy (OQ-10), DPIA, legal documents.
 
 ## Top risks
-1. Scope vs. capacity (A-01). The light theme (D-045) adds design and test work for every component. Living motifs (D-049) and the generative Music DNA (D-048) need care for performance and battery on real phones.
+1. Scope vs. capacity (A-01). Dropping the light theme (D-063) removes a second set of design and contrast tests. Living motifs (D-049) and the generative Music DNA (D-048) need care for performance and battery on real phones.
 2. Artwork rights; the design must work without covers or photos (D-017).
 3. Authorization complexity (S-02). Mitigated in part by the resolved visibility rules.
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.

@@ -125,7 +125,10 @@ window.GR_DATA = {
   pastDrops: [
     { date: '2026-10-31', q: 'Koja pjesma je najbolje otvaranje albuma?' },
     { date: '2026-10-30', q: 'Koji koncert pamtiš do danas?' },
-    { date: '2026-10-29', q: 'Koju pjesmu najčešće šalješ prijateljima?' }
+    { date: '2026-10-29', q: 'Koju pjesmu najčešće šalješ prijateljima?' },
+    { date: '2026-10-28', q: 'Koji album prvi spašavaš iz poplave?' },
+    { date: '2026-10-27', q: 'Koja pjesma te uvijek digne iz loše volje?' },
+    { date: '2026-10-26', q: 'Koji izvođač zaslužuje puno više slušatelja?' }
   ],
 
   /* One reaction (D-056): icon only (a small audio wave), named "Sviđa mi se" / "Like" for notifications,

@@ -317,6 +317,12 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
   - EN listed first, and both reading languages preselected.
   - No current on the Daily Drop page.
   - `viewer.html` updated.
+- D-063 (same session, round 7):
+  - Dark only (step 3.4b cancelled).
+  - Invite: edge-to-edge current, new lead, PWA line. Language step: globe icon. Genre search: two-column grid, new hint lines.
+  - Reminder: compact time row, personal example question, "add to home screen" card. Done: "Sad si dio Rifta." Clearer glass tab bar. No current on the Hub.
+  - Settings screen (gear on the profile), "Smanji pokrete" under Pristupačnost.
+  - Options waiting for the owner: `pulse/round7.html`.
 - D-062 (same session, owner review after D-061):
   - One password line under the field, red with the missing rules and green when done.
   - Terms in two centred lines. No stray line in the visibility comparison table.

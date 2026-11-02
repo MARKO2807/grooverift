@@ -53,6 +53,16 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - `app.js` `afterRender()` calls `INV.scan`, and navigation calls `INV.reset()`.
   - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived), `pulse/invite-current.html`, `pulse/invite-layout.html` and `pulse/round6.html`. Both mark the choice as "odabrano".
   - The owner did not take the recommendations (N3, I1); the choices were N2 and I4.
+  - **D-063 (same session): round 7.**
+    - Dark only: D-045 is superseded and step 3.4b is cancelled. Keep forced colours and reduced motion working.
+    - Invite: `invCur(h, 'inv-wide')` runs edge to edge; three lines in `.info-stack` (alpha, PWA, home screen). Short screens (≤700 px) shrink the info box; ≤600 px hides the eyebrow. Fits 360×640 and 320×568 (tested).
+    - `picons.js` gained 12 Phosphor light icons (list in `ICONS-LICENSE.md`). The language step uses `globe-hemisphere-east`.
+    - Genre search: `genreChip(name, fam, tile)` renders tiles in `.g-grid`; `updateDnaStep` now updates every `[data-a="genre"]`.
+    - Reminder: `NOTIF_QS` / `?nq=1..4` (the example question is separate from `D.drop.question`), `.rem-row` with `.rem-time`, and the `.install` card. Done: `.lead-done`.
+    - Round 7 URL options: `?ddn=a..e` (living name, `ddName()`), `?home=e|f|g`, `?hub=b|c|d` (`hubBody()`, `st.hubDay`). Defaults stay as before (home c, hub a, plain name) until the owner chooses.
+    - Settings: screen `settings` (`?flow=drop&at=settings`), `SET_GROUPS()`, `settingsBody()`; gear in the profile top bar. The profile no longer has the motion switch.
+    - `D.pastDrops` has seven days; Home shows three. Archive rows say that old questions are still open for answers (D-036).
+    - Tests: `pulse-smoke.mjs` 22/22 (adds settings, reminder, done, Hub and round 7 page checks); `smoke.mjs` 3/3.
   - **D-062 (same session): owner review after D-061.**
     - Password: `pwMeter()` now renders one line, `#pw-need` (`.pw-need`, `.ok` when all rules are met). It is in the input's `aria-describedby` via `field({ desc })`. It is hidden while `#err-pw` shows, and `clearErr` now runs before the re-render. The `.pw-rules` list is gone.
     - Terms: `.fine-terms` holds two block spans. The visibility table has no top border on `thead td`.
@@ -107,7 +117,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first. "Match system" is RECOMMENDED. Coral and Amber need darker text variants on light backgrounds. The Spirala family colours, the current, the invite discharge and the bolt glow also need a light-theme check.
+2. **Apply the owner's round 7 choices** (`pulse/round7.html`): living Daily Drop name, Home and Hub layouts, notification question, language icon. Step 3.4b is cancelled (D-063, dark only).
 3. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
 4. **Offer a real-phone test:** a local web server on the owner's home network (no internet exposure, no cost), so `pulse/index.html` opens on a phone. Ask before starting it.
 5. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
@@ -118,7 +128,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
   - Public option wording vs. the separate Music DNA choice
   - equal-weight reminder buttons (RECOMMENDED)
   - the visibility step now uses short table labels
-- **From 3.4b (upcoming):** light palette options, and whether "match system" is offered.
+- **From round 7 (D-063):** the five pending choices above. From the settings research: whether Music DNA personalisation needs a consent toggle (counsel), and muted words (scope, later).
 - **From 3.3:**
   - JO1: Remove follower (OPEN).
   - JO2–JO6: RECOMMENDED defaults.

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 7: prijedlozi</title>
+<!-- Owner decision sketch (session 11, round 7, D-063): the living Daily Drop name, Home and Hub layouts, the example
+     question in the reminder notification, the language icon and the Settings screen. Phone frames are the real
+     prototype (index.html) with a URL option; the notification and icon rows are static copies. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  p { color: var(--gr-color-text-secondary); margin: 0 0 10px; max-width: 80ch; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt.sm { width: 300px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 0 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 640px; }
+  iframe.short { height: 300px; }
+  /* static copies */
+  .card { border-radius: 18px; padding: 16px; background: #0B0D12; border: 1px solid var(--gr-color-border-subtle); }
+  .notif { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px; border-radius: 18px; background: var(--gr-color-bg-high); border: 1px solid var(--gr-color-border-subtle); }
+  .notif-app { width: 44px; height: 44px; border-radius: 11px; background: #0B0D12; display: grid; place-items: center; }
+  .notif-app i { display: block; width: 30px; height: 2px; border-radius: 1px; background: linear-gradient(90deg, #FF586B, #FFCB69); box-shadow: 0 0 6px #FF7A6B; }
+  .notif-top { display: flex; justify-content: space-between; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .notif-top b { color: var(--gr-color-text-primary); font-family: var(--gr-font-family-heading); }
+  .notif-top b span { color: var(--gr-color-text-accent); }
+  .notif-t { display: block; font: var(--gr-type-label); }
+  .notif-q { display: block; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+  .icon-tile { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto 0; background: var(--gr-color-bg-surface); border: 1px solid var(--gr-color-border-subtle); color: var(--gr-color-highlight-text); }
+  .icon-tile svg { width: 36px; height: 36px; }
+  .opt a, p a { color: var(--gr-color-text-link); }
+  ul.list { margin: 0; padding-left: 18px; color: var(--gr-color-text-secondary); font: var(--gr-type-body-sm); max-width: 80ch; }
+  ul.list li { margin: 4px 0; }
+  ul.list b { color: var(--gr-color-text-primary); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 7: prijedlozi</h1>
+  <p>Okviri s mobitelom su prava aplikacija, pa možeš klikati, skrolati i swipeati. „Danas” je trenutno stanje, a „preporuka” je moj prijedlog. Pokreti staju ako uključiš „Smanji pokrete” (Profil → Postavke → Pristupačnost).</p>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-ddn">1. Živi naslov Daily Drop</a><a href="#t-home">2. Početna</a><a href="#t-hub">3. Hub</a><a href="#t-nq">4. Pitanje u obavijesti</a><a href="#t-icon">5. Ikona za jezik</a><a href="#t-set">6. Postavke</a>
+  </nav>
+  <div id="sections"></div>
+
+  <section aria-labelledby="t-nq">
+    <h2 class="sec" id="t-nq">4. Pitanje u obavijesti (korak 10)</h2>
+    <p>Primjer obavijesti na koraku „Ne propusti Daily Drop”. Pitanje je osobno i poziva na priču o ljudima, a ne samo na popis albuma. Sva četiri su rodno neutralna.</p>
+    <div class="grid" id="nq"></div>
+  </section>
+
+  <section aria-labelledby="t-icon">
+    <h2 class="sec" id="t-icon">5. Ikona za jezik (korak 2)</h2>
+    <p>Sve tri su iz istog seta (Phosphor, tanka linija) kao ostale ikone u skici.</p>
+    <div class="grid" id="icons"></div>
+  </section>
+
+  <section aria-labelledby="t-set">
+    <h2 class="sec" id="t-set">6. Postavke</h2>
+    <p>Usporedio sam Instagram, Threads, X, Reddit, Discord, Bluesky, Spotify i TikTok (<code>docs/research/2026-11-02-settings-benchmark.md</code>). Nitko nema postavke kao zasebnu karticu na dnu, nego su iza tvog profila ili avatara. Prijedlog:</p>
+    <ul class="list">
+      <li><b>Ulaz:</b> zupčanik gore desno na tvom Profilu. Uz to izravni prečaci, npr. iz podsjetnika ravno u Obavijesti.</li>
+      <li><b>Ime za prikaz</b> mijenjaš u „Uredi profil”, a <b>korisničko ime</b> u „Račun” (najviše jednom u 30 dana).</li>
+      <li><b>Brisanje računa</b> je u „Tvoji podaci”, odmah ispod preuzimanja podataka. Traži ponovnu prijavu, pokaže točan datum brisanja i daje 30 dana da se predomisliš, kao Instagram, X i TikTok.</li>
+      <li><b>Novo u odnosu na plan:</b> Odjava, Pristupačnost (tamo seli „Smanji pokrete”), Status računa, O GrooveRiftu i pravni linkovi. Svjetla tema ne postoji.</li>
+    </ul>
+    <div class="grid"><div class="opt"><h3>Postavke <span class="rec">preporuka</span></h3>
+      <div class="phone"><iframe title="Postavke" loading="lazy" src="index.html?flow=drop&at=settings"></iframe></div>
+      <p>Klikni redove: svaki kaže koji bi se ekran otvorio. „Smanji pokrete” stvarno radi.</p></div></div>
+  </section>
+</div>
+<script src="picons.js"></script>
+<script>
+(function () {
+  const T = [
+    ['t-ddn', '1. Živi naslov „Daily Drop”', 'Isti naslov svugdje, pet načina da „živi”. Svi su tihi i usporeni, a s „Smanji pokrete” miruju. Gledaj vrh ekrana nekoliko sekundi.', 'flow=drop', 'ddn', [
+      ['', 'Danas', 'Mirni Coral→Amber prijelaz.', 'now'],
+      ['a', 'A. Tok', 'Boje polako teku kroz slova, tamo-amo. Najmirniji od pet.', ''],
+      ['b', 'B. Odsjaj', 'Svakih 5 sekundi bijelo-vrući odsjaj jednom prijeđe preko slova, kao svjetlo po metalu.', ''],
+      ['c', 'C. Strujica', 'Tanka linija ispod naslova po kojoj putuje iskra. Veže se uz struju na pozivnici.', 'rec'],
+      ['d', 'D. Treptaj', 'Svakih 6 sekundi kratko zatreperi i zasvijetli, kao munjica ispod wordmarka.', ''],
+      ['e', 'E. Val', 'Val prolazi kroz slova kao zvuk. Svako slovo ima svoju nijansu.', '']
+    ]],
+    ['t-home', '2. Početna', 'Manje pitanje, manji gumb i uži rubovi, u tri smjera. Sadržaj ispod ostaje: tvoji ljudi i prethodna pitanja.', 'flow=drop', 'home', [
+      ['c', 'Danas (C)', 'Veliko pitanje, veliki gumb, dva prva odgovora.', 'now'],
+      ['e', 'E. Kompaktno', 'Isti redoslijed, ali manje pitanje, manji gumb uz „Prvo pročitaj odgovore” i uži rubovi. Više stane na ekran.', 'rec'],
+      ['f', 'F. Kartica sa živim rubom', 'Sve o današnjem pitanju u jednoj kartici, poravnato lijevo. Rubom kruži ista iskra kao na „Kako radi”.', ''],
+      ['g', 'G. Od ruba do ruba', 'Bez kartice, poravnato lijevo, a prvi odgovori se listaju vodoravno.', '']
+    ]],
+    ['t-hub', '3. Hub', 'Početna je tvoja: današnje pitanje s prvim odgovorima, a od vala B1 i feed ljudi koje pratiš. Hub je program redakcije i arhiva: Daily Drop, od vala B2 i Weekly Poll i Did You Know?. Ispod imena više nema struje.', 'flow=drop&at=hub', 'hub', [
+      ['a', 'A. Danas', 'Daily Drop, pa arhiva kao popis i „Predloži pitanje”.', 'now'],
+      ['b', 'B. Arhiva po mjesecima', 'Kompaktan Daily Drop, a arhiva grupirana po mjesecima s danom ispred pitanja.', ''],
+      ['c', 'C. Zadnjih 7 dana', 'Traka s danima na vrhu. Dodirni dan i vidiš to pitanje. Na staro pitanje i dalje možeš odgovoriti.', 'rec'],
+      ['d', 'D. Puni Hub (od B2)', 'Kako će Hub izgledati kad stignu Weekly Poll i Did You Know?. Anketa i činjenica su primjer.', '']
+    ]]
+  ];
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+      <div class="phone"><iframe title="${title}: ${t}" loading="lazy" ${key === 'ddn' ? 'class="short" ' : ''}src="index.html?${base}${v ? `&${key}=${v}` : ''}"></iframe></div>
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+
+  const NQ = [
+    ['Koja te pjesma zbližila s nekim?', 'Poziva na priču o prijatelju, partneru, obitelji. Najviše „connecting”.', 'rec'],
+    ['Koja pjesma najbolje govori tko si?', 'Kratko i osobno. Odgovori odmah pokažu ljude.', ''],
+    ['Koja te pjesma uvijek vrati jednoj osobi?', 'Nostalgično i emotivno.', ''],
+    ['Koju pjesmu svi u tvom društvu znaju napamet?', 'Vedrije, o ekipi i zajedničkom pjevanju.', '']
+  ];
+  document.getElementById('nq').innerHTML = NQ.map(([q, d, tag], i) => `<div class="opt sm"><h3>${i + 1}.${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
+    <div class="card"><div class="notif"><span class="notif-app" aria-hidden="true"><i></i></span><span><span class="notif-top"><b>groove<span>rift</span></b><span>sada</span></span><span class="notif-t">Daily Drop je stigao</span><span class="notif-q">${q}</span></span></div></div>
+    <p>${d} <a href="index.html?at=reminder&nq=${i + 1}">Otvori korak →</a></p></div>`).join('');
+
+  const IC = [['translate', 'Prijevod', 'Dosadašnja: slova dvaju pisama.', ''], ['globe-hemisphere-east', 'Globus (Europa)', 'Odmah se čita kao „jezik i regija”. Ista ikona je u postavkama. Već je u skici.', 'rec'], ['chats-circle', 'Dva oblačića', 'Govor i razgovor, toplije, ali manje jasno da je riječ o jeziku.', '']];
+  document.getElementById('icons').innerHTML = IC.map(([n, t, d, tag]) => `<div class="opt sm"><h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+    <div class="card"><div class="icon-tile">${window.GR_PICON(n)}</div><p style="text-align:center;margin-top:10px;color:var(--gr-color-text-primary)">Odaberi jezik</p></div><p>${d}</p></div>`).join('');
+})();
+</script>
+</body>
+</html>

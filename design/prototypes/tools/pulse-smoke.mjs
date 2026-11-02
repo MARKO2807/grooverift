@@ -100,7 +100,8 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-g="Punk"]'); expect($('[data-g="Punk"]').getAttribute('aria-pressed') === 'false', 'max 10 holds');
   for (const g of ['Rock', 'Pop', 'Rap', 'Metal', 'Folk', 'Klasična']) await click('[data-g="' + g + '"]');
   await click('[data-a="more-genres"]');
-  expect(+$('#genre-hint').textContent.replace(/[^0-9]/g, '').slice(0, 4) > 2000, 'search covers the MusicBrainz genre list');
+  expect($('#genre-hint').textContent.includes('preko 2.000') && window.GR_DATA.moreGenres.length > 2000, 'search covers the MusicBrainz genre list, hint says "preko 2.000" (D-063)');
+  expect($('#genre-results.g-grid') && !$('#more-genres').textContent.includes('Upiši više slova'), 'results in a two-column grid, no count line (D-063)');
   await type('#f-genre', 'metal'); expect(['Heavy metal', 'Black metal', 'Death metal'].every(n => $('#genre-results [data-g="' + n + '"]')) && $('#genre-results [data-g="Heavy metal"] .g-fam').textContent.endsWith('Metal'), 'metal finds the well-known subgenres with their family');
   await type('#f-genre', 'hip'); expect($('#genre-results .chip-genre').dataset.g === 'Rap', 'alias: hip finds Rap first');
   await type('#f-genre', 'klap'); await click('#genre-results [data-g="Klapa"]');
@@ -122,10 +123,12 @@ const FLOW = `(async () => {${HELPERS}
   expect(!$('main canvas.current') && fits(), 'how: no current, fits the screen without scrolling (session 11)');
   await click('[data-a="next"]'); expect(scr() === 'reminder', 'reminder');
   expect($('.notif') && $('.foot-row.equal'), 'notification preview and equal buttons');
+  expect($('.notif-q').textContent === 'Koja te pjesma zbližila s nekim?' && $('.rem-time') && $('.install [data-k="install"]'), 'personal example question, compact time, add to home screen (D-063)');
   await click('[data-a="remind-on"]'); expect($('.perm'), 'perm dialog'); await click('[data-a="perm-block"]'); expect($('.notice'), 'denied notice');
   await click('[data-a="next"]'); expect(scr() === 'done', 'done');
   expect(document.body.textContent.includes('Privatni') && document.body.textContent.includes('Samo pratitelji'), 'done summary');
   expect($$('.facts-grid > div').length === 4 && $('.dna-card canvas.dna'), 'done tiles and DNA');
+  expect($('.lead-done').textContent.includes('Sad si dio Rifta.'), 'done: part of the Rift (D-063)');
   expect(!$('.dna-genres') && !$('.traits') && $('.dna-card .sr-only'), 'no visible tags under DNA, text for screen readers');
   await click('[data-a="finish"]'); expect(scr() === 'home', 'home');
   expect($('.dd-name') && $('.dd-date time') && !$('.dd-top').textContent.includes('·'), 'name and date apart, no middle dot');
@@ -159,11 +162,14 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="comments"]'); expect(scr() === 'answer', 'comments screen');
   await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
   await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
+  expect(!$('[data-a="calm"]'), 'motion setting moved off the profile (D-063)');
+  await click('[data-a="settings"]'); expect(scr() === 'settings' && $$('.set-group').length === 5 && $('[data-k="logout"]'), 'settings: five groups and log out (D-063)');
   const calmBefore = $('[data-a="calm"]').getAttribute('aria-checked');
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');
   await click('[data-a="calm"]');
-  await click('[data-t="activity"]'); await click('[data-t="hub"]'); expect(scr() === 'hub', 'hub');
+  await click('[data-a="back"]'); expect(scr() === 'profile', 'back from settings');
+  await click('[data-t="activity"]'); await click('[data-t="hub"]'); expect(scr() === 'hub' && !$('main canvas.current'), 'hub, no current under the name (D-063)');
   const ids = $$('[id]').map(e => e.id); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
   expect(!dup.length, 'duplicate ids: ' + dup.join(','));
   return 'ok';
@@ -209,6 +215,7 @@ const runs = [
   { name: 'invite layouts', url: base.replace('index.html', 'invite-layout.html'), test: `(async () => {${HELPERS} await sleep(1500); const f = $$('.fit'); expect(f.length === 4 && f.every(e => e.dataset.over !== undefined && +e.dataset.over <= 1), 'all four invite layouts fit 360x640: ' + f.map(e => e.dataset.over).join()); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'invite layout B 320x568', url: base.replace('index.html', 'invite-layout.html?s=320x568'), test: `(async () => {${HELPERS} await sleep(1500); const b = $('#fit-b'); expect(b && b.dataset.over !== undefined && +b.dataset.over <= 1, 'the chosen layout B fits 320x568 (D-059)'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 6 page', url: base.replace('index.html', 'round6.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 17) throw new Error('17 option frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'round 7 page', url: base.replace('index.html', 'round7.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 15) throw new Error('15 option frames, got ' + n); if ($('.notif').length !== 4 || $('.icon-tile svg path').length !== 3) throw new Error('static options'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');

@@ -1,6 +1,6 @@
 # Third-party icons in this prototype
 
-`picons.js` embeds the path data of six icons from **Phosphor Icons** v2.1.1 (`@phosphor-icons/core`, weight "light"): chart-bar-horizontal, lightbulb-filament, users-three, eye, eye-slash, lightning. Source: https://github.com/phosphor-icons/core. Fetched 2026-11-02 for prototype use only; the product icon library is decided in step 3.6 (OQ-23).
+`picons.js` embeds the path data of 21 icons from **Phosphor Icons** v2.1.1 (`@phosphor-icons/core`, weight "light"): calendar-dots, translate, device-mobile, chart-bar-horizontal, lightbulb-filament, users-three, eye, eye-slash, lightning, chat-text, chats-circle, database, export, gear-six, globe-hemisphere-east, plus-square, question, shield-check, sign-out, sliders-horizontal, user-circle. Source: https://github.com/phosphor-icons/core (the last twelve from https://unpkg.com/@phosphor-icons/core@2.1.1/assets/light/). Fetched 2026-11-02 for prototype use only; the product icon library is decided in step 3.6 (OQ-23).
 
 ```
 MIT License

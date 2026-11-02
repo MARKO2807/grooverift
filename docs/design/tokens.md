@@ -131,7 +131,7 @@ Recorded run (2026-11-01), full table in [`contrast-report.md`](../../design/tok
 The check is rerun in step 3.9 and, from Phase 4, in CI.
 
 ## 9. Not in v0.1
-- **Light theme: CONFIRMED as a member setting, dark default (D-045).** Designed in step 3.4b. The token structure (semantic roles over primitives) allows the light set without renaming. Coral and Amber need light-background text variants, because Coral on white is 3.06 and Amber on white is 1.50.
+- **No light theme (D-063, replaces D-045).** The product is dark only. The semantic token structure would still allow a light set later without renaming.
 - Component tokens (button padding, avatar sizes and so on): step 3.6.
 - Data-visualization colors: not needed in the alpha. Music DNA proportions must reflect what the member actually selected (brand README §4).
 - Cyrillic, Greek and Vietnamese font subsets ([fonts README](../../design/fonts/README.md)).
