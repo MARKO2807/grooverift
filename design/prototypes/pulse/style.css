@@ -60,6 +60,15 @@ html[data-motion="reduced"] .wm-bolt .bolt { opacity: 1; }
 .foot-row { display: flex; gap: var(--gr-space-2); }
 .foot-row.equal > .btn { flex: 1; }
 .btn-grow { flex: 1; }
+/* Swipe between tabs (session 11): the browser keeps vertical panning; horizontal moves go to the swipe handler. */
+.kind-app { touch-action: pan-y; }
+.kind-app .chips { touch-action: pan-x pan-y; }
+.swipe-next { animation: swipe-next 200ms ease-out; }
+.swipe-prev { animation: swipe-prev 200ms ease-out; }
+@keyframes swipe-next { from { transform: translateX(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+@keyframes swipe-prev { from { transform: translateX(-40px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .swipe-next, .swipe-prev { animation: none; } }
+html[data-motion="reduced"] .swipe-next, html[data-motion="reduced"] .swipe-prev { animation: none; }
 .bottom { position: sticky; bottom: 0; z-index: var(--gr-z-nav); background: var(--gr-color-bg-canvas); }
 .tabbar { display: flex; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); padding-bottom: env(safe-area-inset-bottom); }
 .tab { flex: 1; min-width: 0; min-height: 60px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); position: relative; }

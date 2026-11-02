@@ -177,6 +177,15 @@ const runs = [
   { name: 'flow calm setting', url: `${base}?calm=1`, test: FLOW.replace("expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');", '') },
   { name: 'catalog failure', url: `${base}?at=dna&catalog=fail`, test: CATALOG_FAIL },
   { name: 'dna helix', url: `${base}?at=dnavis`, test: VARIANTS },
+  { name: 'tab swipe', url: `${base}?flow=drop`, test: `(async () => {${HELPERS}
+    const sw = async (pts) => { const m = $('main'); const ev = (t, [x, y]) => m.dispatchEvent(new PointerEvent(t, { bubbles: true, clientX: x, clientY: y, pointerId: 7, pointerType: 'touch', isPrimary: true })); ev('pointerdown', pts[0]); for (const p of pts.slice(1)) { ev('pointermove', p); await sleep(16); } ev('pointerup', pts[pts.length - 1]); await sleep(120); };
+    expect(scr() === 'home', 'starts on home');
+    await sw([[300, 300], [260, 302], [180, 304], [120, 305]]); expect(scr() === 'hub', 'swipe left opens the next tab');
+    await sw([[100, 300], [160, 302], [240, 304], [300, 305]]); expect(scr() === 'home', 'swipe right opens the previous tab');
+    await sw([[100, 300], [160, 302], [240, 304], [300, 305]]); expect(scr() === 'home', 'no tab before home');
+    await sw([[200, 200], [205, 260], [210, 340], [212, 420]]); expect(scr() === 'home', 'a vertical move does not switch');
+    await sw([[300, 300], [285, 301], [275, 302]]); expect(scr() === 'home', 'a short move snaps back');
+    return 'ok'; })()` },
   { name: 'daily drop heading', url: `${base}?flow=drop`, test: `(async () => {${HELPERS} expect($('.dd-name').textContent === 'Daily Drop' && $('.dd-date time').textContent === 'Nedjelja, 1. studenoga', 'name and date'); expect(!$('.dd-top').textContent.includes('·'), 'no middle dot'); return 'ok'; })()` },
   { name: 'choices page', url: base.replace('index.html', 'choices.html'), test: `(async () => {${HELPERS} await sleep(400); expect($$('#gallery canvas.dna').length === 8 && $$('#gallery canvas.dna').every(c => c.width > 0), 'gallery drawn'); return 'ok'; })()` },
   { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('#grid .card').length === 4 && $$('#grid-live .card').length === 3, 'four options and three live intensities'); expect(getComputedStyle($('.live-1 .glint')).animationName === 'glint9', 'live bolt animates'); return 'ok'; })()` },

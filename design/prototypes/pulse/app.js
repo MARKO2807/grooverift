@@ -798,6 +798,7 @@
     if (s.kind === 'app') shell += `<div class="bottom">${s.dock || ''}${tabbar(s.tab)}</div>`;
     root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${shell}</div>${overlayHtml()}`;
     root.dataset.screen = st.screen;
+    if (st.swipeDir) { const m = root.querySelector('main'); if (m) m.classList.add('swipe-' + st.swipeDir); st.swipeDir = null; }
     if (s.kind === 'onb' && !s.noProgress) { const h = root.querySelector('main h1'); if (h) h.setAttribute('aria-describedby', 'prog-text'); }
     afterRender();
     if (keep) return restore(keep);
@@ -943,6 +944,39 @@
   }
 
   /* ---------- events ---------- */
+  /* Swipe between the four main tabs (owner, session 11, like Instagram). Tapping the tab bar still works, so the
+     swipe is only an extra path (WCAG 2.5.1). The page follows the finger; a short or mostly vertical move snaps
+     back. Ignored on form fields, canvases, horizontal scrollers and while a sheet or menu is open. */
+  const TABS = ['home', 'hub', 'activity', 'profile'];
+  let sw = null, swDragged = false;
+  root.addEventListener('click', e => { if (swDragged) { swDragged = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  root.addEventListener('pointerdown', () => { swDragged = false; }, true);
+  const swMain = () => root.querySelector('main');
+  root.addEventListener('pointerdown', e => {
+    if (st.overlay || !TABS.includes(st.screen) || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.target.closest('input, textarea, select, canvas, .chips, [data-noswipe]')) return;
+    sw = { x: e.clientX, y: e.clientY, t: performance.now(), h: null, id: e.pointerId };
+  });
+  root.addEventListener('pointermove', e => {
+    if (!sw || e.pointerId !== sw.id) return;
+    const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+    if (sw.h === null && Math.hypot(dx, dy) > 10) sw.h = Math.abs(dx) > Math.abs(dy) * 1.4;
+    if (sw.h === false) { sw = null; return; }
+    if (!sw.h) return;
+    const i = TABS.indexOf(st.screen), edge = (dx > 0 && i === 0) || (dx < 0 && i === TABS.length - 1);
+    const m = swMain(); if (m) { m.style.transition = 'none'; m.style.transform = `translateX(${dx * (edge ? 0.15 : 0.5)}px)`; }
+  });
+  function swEnd(e, cancel) {
+    if (!sw || (e && e.pointerId !== sw.id)) return;
+    const dx = e ? e.clientX - sw.x : 0, fast = performance.now() - sw.t < 700, h = sw.h; sw = null;
+    if (h) swDragged = true; // the click that follows a drag must not open what was under the finger
+    const i = TABS.indexOf(st.screen) + (dx < 0 ? 1 : -1);
+    if (!cancel && h && fast && Math.abs(dx) >= 60 && i >= 0 && i < TABS.length) { st.swipeDir = dx < 0 ? 'next' : 'prev'; return go(TABS[i], { reset: true }); }
+    const m = swMain(); if (m && m.style.transform) { m.style.transition = 'transform 180ms ease-out'; m.style.transform = ''; }
+  }
+  root.addEventListener('pointerup', e => swEnd(e, false));
+  root.addEventListener('pointercancel', e => swEnd(e, true));
+
   root.addEventListener('click', e => {
     const b = e.target.closest('[data-a]');
     if (!b || !root.contains(b)) return;
