@@ -58,6 +58,8 @@ _Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then 
    - extend `pulse-smoke.mjs` for the new states
 3. **Step 3.4b ⛳: light theme tokens** (effort: High). Clickable options first. "Match system" is RECOMMENDED. Coral and Amber need darker text variants on light backgrounds. The Spirala family colours and the current also need a light-theme check.
 4. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
+5. **Offer a real-phone test:** a local web server on the owner's home network (no internet exposure, no cost), so `pulse/index.html` opens on a phone. Ask before starting it.
+6. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
 
 ## Open owner questions
 - **From 3.5 (copy, for 3.8):**
@@ -71,7 +73,7 @@ _Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then 
   - JO2–JO6: RECOMMENDED defaults.
 - **IA leftovers:** Q4 (alpha people search) and Q5 (signed-out playlists).
 - **Pre-alpha:** OQ-05 to OQ-10. OQ-10 is now only about implementing the 18+ gate.
-- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23, OQ-24.
+- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news), OQ-25 (password rules, next session), OQ-26 (wordmark accent, next session).
 - **Counsel question B.5:** DSA Art. 16 notice form for non-members (PUB-11).
 
 ## Notes

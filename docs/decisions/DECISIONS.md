@@ -140,6 +140,9 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | R-08 | Email-bound, single-use, expiring invites | S-08 |
 | R-09 | ~~Text on Coral or Amber fills uses Void Black, never white~~ Confirmed → D-038 (token `color.text.on-accent`) | B-03 |
 | R-10 | Native Claude Code orchestration; reconsider a GSD Core pilot after Phase 4 | P-01 |
+| R-11 | Music DNA grows with the member: albums and artists from their Daily Drop answers add beads to the Spirala over time (Master Prompt: "evolving musical identity"). Needs a data-model and privacy check first | D-048 |
+| R-12 | A compatibility view that shows two members' Spirale side by side, with shared genres lit up; designed with Discover (B4) | D-048 |
+| R-13 | Keep "same picks, same Music DNA": identical taste gives an identical helix, which suits Music Twins | D-048 |
 
 ---
 
