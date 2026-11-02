@@ -93,7 +93,8 @@ _Last updated: 2026-11-02 (session 11)_
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text. Also the sign-in screen with the breached-password banner (D-054) and the HIBP-unreachable path.
    - 200 % zoom and the desktop adaptation.
    - Screen reader (Narrator) and high-contrast checks.
-2. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
+2. **Settings walkthrough** with the owner, then the key sub-screens (account, privacy, notifications, your data and deletion, log out).
+3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 3. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
    - OQ-24: music news idea, after the alpha scope.
