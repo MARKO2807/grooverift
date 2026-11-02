@@ -118,7 +118,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** the index (SET-01) exists; review it together, then prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use .
+2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** the index (SET-01) exists; review it together, then prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
 3. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
