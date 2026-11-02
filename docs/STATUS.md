@@ -12,7 +12,7 @@ _Last updated: 2026-11-03 (session 12)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070). All in `design/prototypes/pulse/`. 200 % zoom, desktop and the screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070; notifications look D-071). All in `design/prototypes/pulse/`. 200 % zoom, desktop and the screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-03 (session 12)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-070. Key ones:
+- Decisions D-001 to D-071. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -82,7 +82,7 @@ _Last updated: 2026-11-03 (session 12)_
     - **Ideas backlog:** `docs/product/backlog.md` lists every idea outside the confirmed scope.
     - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Chosen (D-068): a short 18+ confirmation, faces for "all answers", answers only on past days, Activity by day, three-column profile counts, comments as text plus catalogue cards (images from B1).
     - **D-069:** @username changes once every 30 days, old name reserved 30 days; "Ukloni pratitelja" for private profiles (JO1, approved); naming odgovor / komentar / reakcija.
-    - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`.
+    - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`. **D-071:** the notifications screen has one switch for this phone on top, the types below (`pulse/round11.html`).
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -131,7 +131,7 @@ No application code. No dependencies installed.
 - `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (the D-058 bolt options, with the D-055 rounds archived), `invite-current.html` and `invite-current.js` (the D-058 invite current; the app uses variant I4 "branch"), `invite-layout.html` (the D-059 layouts in phone frames), `round6.html` (the D-060 options in phone frames), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 45/45 (session 12).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 46/46 (session 12).
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.

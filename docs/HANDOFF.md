@@ -10,7 +10,7 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
 - **Session 12: round 10, key states and settings flows (D-070, OQ-32).**
-  - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so `ntf=c` (push only) is the default and "Sažetak tjedna" is gone.
+  - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so the notifications are push only and "Sažetak tjedna" is gone. Round 11 (`pulse/round11.html`, D-071) chose the look: `ntf=d`, one "this phone" switch on top (`st.pushDev`, action `push-dev`) over the types in `fieldset.ntf-types`. `?ntf=c|e|f` show the other looks.
   - URL options in `app.js` (Round 10 block after `addDays`): `?state=loading|error|empty|nodrop|blocked|long`, `?net=off`, `?ld`, `?off`, `?emp`, `?nd`, `?prv`, `?ntf`, `?del`, `?out`, `?bl=1`, `?uc=locked`, `?at=signin` (`&pw=breached`, `&acct=pending`), `?at=pending`, `?flow=drop&at=member&as=blocker|blocked`, `?flow=drop&pw=breached`, `&step=copy|confirm|done` on the delete sub-screen, `&show=logout`, `&show=posterr`.
   - New screens: `signin`, `pending`, `member`. New sub-screens: `email`, `password`, `username`, `twofa`; `privacy`, `notifications` and `delete` are now functions (`privacyBody`, `notifBody`, `deleteBody`; the old one-page delete is `SUB.deleteA`).
   - `st.histVis` holds the answer-history setting (`st.hist` is the navigation history; do not reuse it).
@@ -121,7 +121,7 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 45/45 (session 12).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 46/46 (session 12).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks

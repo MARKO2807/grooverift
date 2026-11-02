@@ -985,7 +985,7 @@
   const EMP_AT = pick('emp', ['a', 'b'], 'b');
   const ND_AT = pick('nd', ['a', 'b'], 'a');
   const PRV_AT = pick('prv', ['a', 'b'], 'b'); // chosen: b, rows with a sheet (D-070)
-  const NTF_AT = pick('ntf', ['a', 'b', 'c'], 'c'); // chosen (D-070): c, push only; social emails deferred (OQ-32)
+  const NTF_AT = pick('ntf', ['a', 'b', 'c', 'd', 'e', 'f'], 'd'); // push only (D-070, OQ-32); chosen look: d, this device on top (D-071)
   const DEL_AT = pick('del', ['a', 'b', 'c'], 'b'); // chosen: b, short steps (D-070)
   const OUT_AT = pick('out', ['a', 'b'], 'b'); // chosen: b, a short confirmation (D-070)
   const BL_FULL = P.get('bl') === '1' || STATE === 'blocked';
@@ -1113,7 +1113,37 @@
     const device = grp('Ovaj uređaj', `<li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">Obavijesti preglednika</span><span class="set-d">${st.reminder === 'denied' ? 'Blokirane u pregledniku. Uključuju se u postavkama preglednika.' : 'Dopuštene'}</span></span></li>`, 'Push obavijesti vrijede za svaki uređaj posebno.');
     const fixed = '<p class="set-note">Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.</p>';
     /* c (D-070): no social emails in the alpha (OQ-32), so one list of switches for this device. */
-    if (NTF_AT === 'c') return grp('Daily Drop', dd) + grp('Obavijesti na mobitelu', NTF.map(([k, t, d, p]) => swRow('n-' + k, t, d, p)).join(''), 'E-poštom stižu samo poruke o računu i sigurnosti, na primjer poveznica za novu lozinku.') + device;
+    const mailNote = 'E-poštom stižu samo poruke o računu i sigurnosti, na primjer poveznica za novu lozinku.';
+    if (NTF_AT === 'c') return grp('Daily Drop', dd) + grp('Obavijesti na mobitelu', NTF.map(([k, t, d, p]) => swRow('n-' + k, t, d, p)).join(''), mailNote) + device;
+    /* Round 11 (owner, session 12: "kako će izgledati?"): three more looks for the push-only screen.
+       d: this device on top with one switch; the types below go quiet while it is off.
+       e: rows with an icon, like the main Settings list, and one example line under each.
+       f: each type shows a small preview of the notification it sends. */
+    const NX = {
+      dd: ['Daily Drop', pic('calendar-dots', 'set-ic'), 'Daily Drop je stigao', esc(NOTIF_Q)],
+      com: ['Komentar', ic('comment', 'set-ic'), 'Luka komentira tvoj odgovor', '„Slažem se, Blue in Green mi je bio ulaz.”'],
+      react: ['Reakcije', `<span class="set-ic wave-wrap">${WAVE}</span>`, 'Reakcije na tvoj odgovor', 'Petra, Tin i još 3'],
+      fol: ['Praćenje', ic('users', 'set-ic'), 'Mia želi te pratiti', 'Prihvati ili odbij u Aktivnosti'],
+      sugg: ['Prijedlog', pic('lightbulb-filament', 'set-ic'), 'Tvoj prijedlog je objavljen', '„Koju pjesmu najčešće šalješ prijateljima?”']
+    };
+    const ICONROW = (k, t, d, on) => `<li class="set-row set-row-ic"><span class="set-ic-wrap" aria-hidden="true">${NX[k][1]}</span><span class="set-txt"><span class="set-t" id="n-${k}-l">${t}</span><span class="set-d" id="n-${k}-d">${d}</span></span><button type="button" class="switch" role="switch" aria-checked="${!!on}" aria-labelledby="n-${k}-l" aria-describedby="n-${k}-d" data-a="sw" data-k="n-${k}"><span></span></button></li>`;
+    const PREV = k => `<span class="ntf-prev" aria-hidden="true"><span class="ntf-prev-app">${current('np-' + k, 'sm')}</span><span class="ntf-prev-body"><span class="ntf-prev-t">${NX[k][2]}</span><span class="ntf-prev-q">${NX[k][3]}</span></span></span>`;
+    const PREVROW = (k, t, d, on) => `<li class="set-row set-row-prev"><span class="set-txt"><span class="set-t" id="n-${k}-l">${t}</span>${d ? `<span class="set-d" id="n-${k}-d">${d}</span>` : ''}</span><button type="button" class="switch" role="switch" aria-checked="${!!on}" aria-labelledby="n-${k}-l"${d ? ` aria-describedby="n-${k}-d"` : ''} data-a="sw" data-k="n-${k}"><span></span></button>${PREV(k)}</li>`;
+    const time = `<li class="set-row set-row-plain"><label class="set-t" for="f-time2">Vrijeme</label><select class="select rem-time" id="f-time2" data-k="f-time2">${['07:00', '08:00', '09:00', '12:00', '17:00', '20:00', '22:00'].map(t => `<option${st.remTime === t ? ' selected' : ''}>${t}</option>`).join('')}</select></li>`;
+    const ex = { dd: 'Jednom dnevno, kad izađe pitanje', com: 'Npr. „Luka komentira tvoj odgovor”', react: 'Skupljene, najviše jednom na sat', fol: 'Novi pratitelji i zahtjevi za praćenje', sugg: 'Kad urednici objave tvoje pitanje' };
+    const NAMES = { com: 'Komentari na moje odgovore', react: 'Reakcije', fol: 'Pratitelji i zahtjevi', sugg: 'Objavljen moj prijedlog pitanja' };
+    if (NTF_AT === 'd') {
+      const on = st.pushDev !== false;
+      return `<section class="ntf-dev${on ? '' : ' is-off'}"><div class="ntf-dev-top"><span class="set-ic-wrap" aria-hidden="true">${pic('device-mobile', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="n-dev-l">Obavijesti na ovom mobitelu</span><span class="set-d" id="n-dev-d">${on ? 'Uključene. Odaberi koje ispod.' : 'Isključene. Ništa ne stiže na ovaj mobitel; Aktivnost i dalje sve pokazuje.'}</span></span><button type="button" class="switch" role="switch" aria-checked="${on}" aria-labelledby="n-dev-l" aria-describedby="n-dev-d" data-a="push-dev" data-k="n-dev"><span></span></button></div></section>
+        <fieldset class="ntf-types"${on ? '' : ' disabled'}><legend class="sr-only">Vrste obavijesti</legend>
+        ${grp('Daily Drop', swRow('n-dd', 'Podsjetnik za novo pitanje', 'Jedna obavijest dnevno', st.reminder === 'on') + time)}
+        ${grp('Ljudi i razgovori', NTF.map(([k, t, d, p]) => swRow('n-' + k, NAMES[k], d, p)).join(''))}</fieldset>
+        <p class="set-note">${mailNote}</p>`;
+    }
+    if (NTF_AT === 'e') return grp('', ICONROW('dd', 'Daily Drop podsjetnik', ex.dd, st.reminder === 'on') + time)
+      + grp('', NTF.map(([k, , , p]) => ICONROW(k, NAMES[k], ex[k], p)).join(''), mailNote) + device;
+    if (NTF_AT === 'f') return grp('Daily Drop', PREVROW('dd', 'Podsjetnik za novo pitanje', '', st.reminder === 'on') + time)
+      + grp('Na mobitelu', NTF.map(([k, , d, p]) => PREVROW(k, NAMES[k], d, p)).join(''), mailNote) + device;
     if (NTF_AT === 'b') {
       const cell = (k, ch, on) => on === null ? '<td class="ntf-na"><span aria-hidden="true">—</span><span class="sr-only">nije dostupno</span></td>' : `<td><input type="checkbox" id="n-${k}-${ch}" data-k="n-${k}-${ch}"${on ? ' checked' : ''} aria-labelledby="nt-${k} nc-${ch}"></td>`;
       return grp('Daily Drop', dd) + `<section class="set-group"><h2 class="set-gt">Što i kako</h2><table class="ntf-table"><thead><tr><td></td><th scope="col" id="nc-push">Mobitel</th><th scope="col" id="nc-mail">E-pošta</th></tr></thead>
@@ -1768,6 +1798,7 @@
       case 'age18-minor': st.age = 'minor'; st.overlay = null; return go('minor');
       case 'com-cancel': st.commentDraft = ''; delete st.err.com; return back();
       case 'setsub': st.sub = b.dataset.s; return go('setsub');
+      case 'push-dev': st.pushDev = st.pushDev === false; return render({ keep: true });
       case 'sw': return b.setAttribute('aria-checked', b.getAttribute('aria-checked') !== 'true');
       case 'perm-block': st.reminder = 'denied'; st.overlay = null; render(); return focusSel('.notice');
       case 'finish': return go('home', { reset: true });

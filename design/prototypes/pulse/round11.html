@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 11: obavijesti</title>
+<!-- Owner decision sketch (session 12, round 11): four looks for the push-only notifications screen (D-070, OQ-32).
+     Every frame is the real prototype (index.html) with ?ntf=. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  p { color: var(--gr-color-text-secondary); max-width: 80ch; margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 0 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 11: kako izgleda ekran Obavijesti</h1>
+  <p style="color:var(--gr-color-text-primary)"><b>Odabrano (D-071):</b> B, uređaj na vrhu. To je sad zadano u skici.</p>
+  <p>Sadržaj je isti u sve četiri verzije: podsjetnik za Daily Drop s vremenom, pa komentari, reakcije, pratitelji i objavljen prijedlog pitanja. Ništa društveno ne ide e-poštom (D-070, OQ-32). Prekidači rade, klikaj. U Aktivnosti se uvijek sve vidi; ovo je samo ono što stiže na mobitel.</p>
+  <div class="grid" id="opts"></div>
+</div>
+<script>
+(function () {
+  const O = [
+    ['c', 'A. Jednostavni popis', 'Tri grupe: Daily Drop, obavijesti na mobitelu i ovaj uređaj. Najkraće.', 'now'],
+    ['d', 'B. Uređaj na vrhu', 'Jedan glavni prekidač za ovaj mobitel na vrhu. Kad ga isključiš, sve ispod se utiša. Jasno je gdje se sve gasi odjednom.', 'rec'],
+    ['e', 'C. Ikone i objašnjenje', 'Kao glavni popis Postavki: ikona, naziv i kratko objašnjenje pod svakim.', ''],
+    ['f', 'D. Primjer obavijesti', 'Pod svakim prekidačem mali primjer obavijesti koju dobiješ. Najjasnije što uključuješ, ali najduže.', '']
+  ];
+  document.getElementById('opts').innerHTML = O.map(([v, t, d, tag]) => `<div class="opt"><h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+    <div class="phone"><iframe title="Obavijesti: ${t}" loading="lazy" src="index.html?flow=drop&at=setsub&s=notifications&ntf=${v}"></iframe></div><p>${d}</p></div>`).join('');
+})();
+</script>
+</body>
+</html>
