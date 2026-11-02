@@ -121,9 +121,9 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
 2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** the index (SET-01) exists; review it together, then prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
-3. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
-4. **Offer a real-phone test:** a local web server on the owner's home network (no internet exposure, no cost), so `pulse/index.html` opens on a phone. Ask before starting it.
-5. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
+5. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
+6. **Real-phone test:** `design/prototypes/tools/serve.mjs` serves the prototypes read-only on the home network. Start it only when the owner asks, and follow the port rule.
+7. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
 
 ## Open owner questions
 - **From 3.5 (copy, for 3.8):**
