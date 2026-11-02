@@ -763,3 +763,21 @@ button.set-row:hover { background: var(--gr-color-bg-raised); }
 @keyframes invite-ring { 0% { box-shadow: 0 0 0 0 #FF586B73; } 55%, 100% { box-shadow: 0 0 0 14px #FF586B00; } }
 @media (prefers-reduced-motion: reduce) { .btn-invite::after { animation: none; } }
 html[data-motion="reduced"] .btn-invite::after { animation: none; }
+
+/* Settings round 8 (D-065): a quiet account status on top, delete at the very bottom, four arrangements. */
+.set-body { display: flex; flex-direction: column; gap: var(--gr-space-5); }
+.set-status { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--gr-space-3) 0 var(--gr-space-2); margin-bottom: calc(-1 * var(--gr-space-2)); border-radius: var(--gr-radius-full); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
+.set-status svg { color: var(--gr-color-state-success); stroke-width: 2.4; }
+.set-status:hover { border-color: var(--gr-color-border-strong); color: var(--gr-color-text-primary); }
+@media (pointer: coarse) { .set-status { min-height: var(--gr-size-target-min); } }
+.set-me { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--gr-space-3); padding: var(--gr-space-3); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); color: var(--gr-color-text-primary); text-align: left; }
+.set-me:hover { background: var(--gr-color-bg-raised); }
+.set-me .avatar > span { border-color: var(--gr-color-bg-surface); }
+.set-status-in { margin-top: calc(-1 * var(--gr-space-2)); }
+.set-flat { background: none; border: 0; border-radius: 0; }
+.set-flat > li + li { border-top: 0; }
+.set-flat .set-row { min-height: 52px; padding-left: var(--gr-space-1); padding-right: var(--gr-space-1); border-radius: var(--gr-radius-control); }
+.set-flat .set-ic-wrap { background: none; color: var(--gr-color-text-primary); }
+.set-gap { height: 1px; margin: var(--gr-space-2) 0; background: var(--gr-color-border-subtle); }
+.set-delete { align-self: center; display: inline-flex; align-items: center; gap: var(--gr-space-2); min-height: var(--gr-size-target-min); padding: 0 var(--gr-space-3); border: 0; background: none; color: var(--gr-color-state-danger); font: var(--gr-type-label); border-radius: var(--gr-radius-control); }
+.set-delete:hover { background: var(--gr-color-state-danger-bg); }

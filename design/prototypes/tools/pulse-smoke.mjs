@@ -164,7 +164,7 @@ const FLOW = `(async () => {${HELPERS}
   await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
   await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
   expect(!$('[data-a="calm"]'), 'motion setting moved off the profile (D-063)');
-  await click('[data-a="settings"]'); expect(scr() === 'settings' && $$('.set-group').length === 5 && $('[data-k="logout"]'), 'settings: five groups and log out (D-063)');
+  await click('[data-a="settings"]'); expect(scr() === 'settings' && $$('.set-group').length === 4 && $('[data-k="logout"]') && $('.set-status') && $('.set-body ~ .set-delete') && !document.body.textContent.includes('Preuzmi svoje podatke'), 'settings: status on top, four groups, log out, delete at the bottom (D-065)');
   const calmBefore = $('[data-a="calm"]').getAttribute('aria-checked');
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');
@@ -219,6 +219,7 @@ const runs = [
   { name: 'invite layout B 320x568', url: base.replace('index.html', 'invite-layout.html?s=320x568'), test: `(async () => {${HELPERS} await sleep(1500); const b = $('#fit-b'); expect(b && b.dataset.over !== undefined && +b.dataset.over <= 1, 'the chosen layout B fits 320x568 (D-059)'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 6 page', url: base.replace('index.html', 'round6.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 17) throw new Error('17 option frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 7 page', url: base.replace('index.html', 'round7.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 15) throw new Error('15 option frames, got ' + n); if ($('.notif').length !== 4 || $('.icon-tile svg path').length !== 3) throw new Error('static options'); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'round 8 page', url: base.replace('index.html', 'round8.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 4) throw new Error('4 settings frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');

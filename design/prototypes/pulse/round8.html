@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 8: postavke</title>
+<!-- Owner decision sketch (session 11, round 8, D-065): four arrangements of the Settings screen. Every frame is the
+     real prototype (index.html?flow=drop&at=settings&set=a..d). -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2 { font: var(--gr-type-title-2); margin: 40px 0 6px; }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 8: postavke</h1>
+  <p>U sve četiri verzije: nema zasebnog reda „Preuzmi svoje podatke”, „Deaktiviraj ili obriši račun” je na samom dnu (ispod Odjave), a status računa je mala oznaka „Račun je u redu” pri vrhu. Skrolaj do dna. „Smanji pokrete” stvarno radi, a u verziji D radi i pretraga.</p>
+  <div class="grid" id="opts"></div>
+
+  <h2>Kopija podataka: treba tvoja odluka</h2>
+  <div class="note">
+    <p><b>Zašto pitam:</b> Master Prompt (§3) kaže da članovi mogu izvesti svoje podatke, a GDPR (čl. 15 i 20) daje pravo na kopiju podataka u strojno čitljivom obliku. Zakon ne traži poseban gumb, ali traži da to bude moguće i da odgovorimo u roku od mjesec dana.</p>
+    <ul>
+      <li><b>A. Unutar brisanja (preporuka):</b> nema reda u postavkama. Kad netko krene brisati račun, ponudimo „Prije brisanja preuzmi kopiju”. Uz to se kopija može zatražiti preko kontakta za privatnost.</li>
+      <li><b>B. Tihi red pri dnu:</b> mali red „Kopija tvojih podataka” odmah iznad brisanja.</li>
+      <li><b>C. Samo na zahtjev:</b> nigdje u aplikaciji, samo preko kontakta za privatnost. Zakonito, ali ručni posao za tebe svaki put.</li>
+    </ul>
+  </div>
+</div>
+<script>
+(function () {
+  const O = [
+    ['a', 'A. Grupe', 'Četiri grupe s naslovima. Status je mala oznaka na vrhu.', true],
+    ['b', 'B. Kartica profila', 'Na vrhu tvoje ime i @korisničko ime, dodir otvara „Uredi profil”. Status je odmah ispod.', false],
+    ['c', 'C. Jedan popis', 'Bez naslova grupa i bez pločica oko ikona, samo tanke crte između cjelina. Najmirnije, kao Instagram.', false],
+    ['d', 'D. S pretragom', 'Polje „Traži u postavkama” na vrhu, kad postavki bude više. Upiši npr. „obav”.', false]
+  ];
+  document.getElementById('opts').innerHTML = O.map(([v, t, d, rec]) => `<div class="opt"><h3>${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h3>
+    <div class="phone"><iframe title="Postavke: ${t}" loading="lazy" src="index.html?flow=drop&at=settings&set=${v}"></iframe></div><p>${d}</p></div>`).join('');
+})();
+</script>
+</body>
+</html>

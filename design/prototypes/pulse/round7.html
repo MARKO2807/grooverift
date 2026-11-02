@@ -126,7 +126,7 @@
     <div class="card"><div class="notif"><span class="notif-app" aria-hidden="true"><i></i></span><span><span class="notif-top"><b>groove<span>rift</span></b><span>sada</span></span><span class="notif-t">Daily Drop je stigao</span><span class="notif-q">${q}</span></span></div></div>
     <p>${d} <a href="index.html?at=reminder&nq=${i + 1}">Otvori korak →</a></p></div>`).join('');
 
-  const IC = [['translate', 'Prijevod', 'Dosadašnja: slova dvaju pisama.', ''], ['globe-hemisphere-east', 'Globus (Europa)', 'Odmah se čita kao „jezik i regija”. Ista ikona je u postavkama. Već je u skici.', 'rec'], ['chats-circle', 'Dva oblačića', 'Govor i razgovor, toplije, ali manje jasno da je riječ o jeziku.', '']];
+  const IC = [['translate', 'Prijevod', 'Dosadašnja: slova dvaju pisama.', ''], ['globe-hemisphere-east', 'Globus (Europa)', 'Odmah se čita kao „jezik i regija”. Ista ikona je u postavkama. Odabrano (D-065).', 'rec'], ['chats-circle', 'Dva oblačića', 'Govor i razgovor, toplije, ali manje jasno da je riječ o jeziku.', '']];
   document.getElementById('icons').innerHTML = IC.map(([n, t, d, tag]) => `<div class="opt sm"><h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
     <div class="card"><div class="icon-tile">${window.GR_PICON(n)}</div><p style="text-align:center;margin-top:10px;color:var(--gr-color-text-primary)">Odaberi jezik</p></div><p>${d}</p></div>`).join('');
 })();

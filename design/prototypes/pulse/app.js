@@ -706,25 +706,26 @@
   /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
   const profDna = h => st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', h)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>` : '<p class="empty">Još nema odabira.</p>';
   const profArtists = () => st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : '';
-  /* Settings (SET-01), round 7 (D-063). Entered from the gear at the top right of the member's own profile, as on
-     Instagram, TikTok and Spotify (docs/research/2026-11-02-settings-benchmark.md). Five groups, then Log out.
-     Only "Smanji pokrete" works here; every other row says which screen it opens. */
+  /* Settings (SET-01). Entered from the gear at the top right of the member's own profile (D-063), as on Instagram,
+     TikTok and Spotify (docs/research/2026-11-02-settings-benchmark.md). Round 8 (owner, D-065): no separate "download
+     your data" row (PENDING: GDPR export, OQ-30), "Deaktiviraj ili obriši račun" at the very bottom, and the account
+     status shown quietly at the top. Four arrangements, ?set=a..d, compared in round8.html.
+     a: groups with titles, the status as one quiet line on top. b: a profile card on top with the status inside it.
+     c: one flat list without group titles and plain icons. d: a search field on top that filters the rows.
+     Only "Smanji pokrete" and the search work; every other row says which screen it opens. */
+  const SET_AT = pick('set', ['a', 'b', 'c', 'd'], 'a');
   const SET_GROUPS = () => [
-    ['Tvoj račun', [
-      ['user-circle', 'Uredi profil', 'Ime za prikaz, bio i slika', 'PROF-08'],
+    ['Račun', [
+      ...(SET_AT === 'b' ? [] : [['user-circle', 'Uredi profil', 'Ime za prikaz, bio i slika', 'PROF-08']]),
       ['user', 'Račun', `E-pošta, lozinka, Google, @${esc(st.username || 'ti')}`, 'SET-02, SET-03'],
       ['shield-check', 'Sigurnost', 'Dvostruka provjera, uređaji i odjava sa svih', 'SET-04']]],
-    ['Privatnost i sigurnost', [
+    ['Privatnost', [
       ['lock', 'Privatnost', `${VIS_LABEL[st.vis] || 'Privatni'} profil · Music DNA: ${(DNA_LABEL[st.dnaVis] || 'Samo ja').toLowerCase()}`, 'SET-05'],
-      ['x', 'Blokirani i utišani', 'Nitko', 'SAFE-08'],
-      ['check', 'Status računa', 'Sve je u redu', 'SAFE-04, SAFE-05']]],
+      ['x', 'Blokirani i utišani', 'Nitko', 'SAFE-08']]],
     ['Aplikacija', [
       ['bell', 'Obavijesti', st.reminder === 'on' ? `Daily Drop u ${st.remTime}` : 'Daily Drop podsjetnik isključen', 'SET-06'],
       ['globe-hemisphere-east', 'Jezik i regija', 'Hrvatski · Zagreb', 'SET-07'],
-      ['motion', 'Pristupačnost', '', '']]],
-    ['Tvoji podaci', [
-      ['database', 'Preuzmi svoje podatke', 'ZIP s JSON datotekama', 'SET-09'],
-      ['trash', 'Deaktiviraj ili obriši račun', '30 dana da se predomisliš', 'SET-09']]],
+      ['motion', 'Pristupačnost', 'Smanji pokrete', '']]],
     ['Pomoć i informacije', [
       ['question', 'Pomoć i povratne informacije', '', 'SET-12'],
       ['users', 'Pravila zajednice', '', 'PUB-11'],
@@ -732,12 +733,31 @@
       ['pulse', 'O GrooveRiftu', 'Kontakt, impresum, licence, verzija', '']]]
   ];
   const setIcon = n => ['user', 'lock', 'x', 'check', 'bell', 'trash', 'users', 'info', 'pulse'].includes(n) ? ic(n, 'set-ic') : pic(n, 'set-ic');
+  const STATUS_MSG = 'Status računa (SAFE-04, SAFE-05): ovdje bi pisala upozorenja i odluke moderacije s obrazloženjem i mogućnošću žalbe. Sad nema ničega.';
+  const DELETE_MSG = 'Deaktivacija ili brisanje (SET-09): ponovna prijava, točan datum brisanja i 30 dana da se predomisliš. Kopija podataka: vidi otvoreno pitanje OQ-30.';
+  const setStatus = cls => `<button class="set-status${cls ? ' ' + cls : ''}" data-a="toast" data-msg="${STATUS_MSG}" data-k="set-status">${ic('check', 'sm')}<span>Račun je u redu</span><span class="sr-only">, status računa</span></button>`;
+  function setRow(r, k) {
+    const [i, t, d, id] = r;
+    if (i === 'motion') return `<li class="set-row set-row-switch"><span class="set-ic-wrap" aria-hidden="true">${pic('sliders-horizontal', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="calm-l">Smanji pokrete</span><span class="set-d" id="calm-d">Pristupačnost. Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</span></span>
+        <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></li>`;
+    return `<li><button class="set-row" data-a="toast" data-msg="${esc(t)}${id ? ` (${id})` : ''} nije dio ove skice." data-k="set-${k}"><span class="set-ic-wrap" aria-hidden="true">${setIcon(i)}</span><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
+  }
   function settingsBody() {
-    return SET_GROUPS().map(([g, rows], gi) => `<section class="set-group" aria-labelledby="sg-${gi}"><h2 class="set-gt" id="sg-${gi}">${g}</h2><ul class="set-list">${rows.map(([i, t, d, id], ri) => i === 'motion'
-      ? `<li class="set-row set-row-switch"><span class="set-ic-wrap" aria-hidden="true">${pic('sliders-horizontal', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="calm-l">Smanji pokrete</span><span class="set-d" id="calm-d">Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</span></span>
-        <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></li>`
-      : `<li><button class="set-row${i === 'trash' ? ' set-danger' : ''}" data-a="toast" data-msg="${esc(t)}${id ? ` (${id})` : ''} nije dio ove skice." data-k="set-${gi}-${ri}"><span class="set-ic-wrap" aria-hidden="true">${setIcon(i)}</span><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`).join('')}</ul></section>`).join('')
-      + `<button class="btn btn-secondary btn-block set-out" data-a="toast" data-msg="Odjava (simulacija): u aplikaciji bi te vratila na prijavu." data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
+    const groups = SET_GROUPS();
+    const q = SET_AT === 'd' ? CAT.fold((st.setQ || '').trim()) : '';
+    const list = (rows, k) => rows.map((r, ri) => setRow(r, k + '-' + ri)).join('');
+    let top = '', body;
+    if (SET_AT === 'b') top = `<button class="set-me" data-a="toast" data-msg="Uredi profil (PROF-08) nije dio ove skice." data-k="set-me">${avatar(st.username, st.displayName || 'T', 'sm')}<span class="set-txt"><span class="set-t">${esc(st.displayName || 'Ti')}</span><span class="set-d">@${esc(st.username || 'ti')} · Uredi profil</span></span>${ic('chevron', 'sm set-go')}</button>${setStatus('set-status-in')}`;
+    else if (SET_AT === 'd') top = `<div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><label class="sr-only" for="f-setq">Traži u postavkama</label><input class="input" id="f-setq" data-k="f-setq" type="search" autocomplete="off" placeholder="Traži u postavkama" value="${esc(st.setQ || '')}"></div>${setStatus()}`;
+    else top = setStatus();
+    if (SET_AT === 'c') body = `<ul class="set-list set-flat">${groups.map(([, rows], gi) => list(rows, gi)).join('<li class="set-gap" aria-hidden="true"></li>')}</ul>`;
+    else if (q) {
+      const hits = groups.flatMap(([, rows], gi) => rows.map((r, ri) => [r, gi + '-' + ri])).filter(([r]) => CAT.fold(r[1] + ' ' + r[2]).includes(q));
+      body = hits.length ? `<ul class="set-list">${hits.map(([r, k]) => setRow(r, k)).join('')}</ul>` : '<p class="hint">Nema takve postavke.</p>';
+    } else body = groups.map(([g, rows], gi) => `<section class="set-group" aria-labelledby="sg-${gi}"><h2 class="set-gt" id="sg-${gi}">${g}</h2><ul class="set-list">${list(rows, gi)}</ul></section>`).join('');
+    return `${top}<div id="set-body" class="set-body">${body}</div>
+      <button class="btn btn-secondary btn-block set-out" data-a="toast" data-msg="Odjava (simulacija): u aplikaciji bi te vratila na prijavu." data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
+      <button class="set-delete" data-a="toast" data-msg="${DELETE_MSG}" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili obriši račun</button>
       <p class="meta set-ver">${wm()} alfa · skica 3.5</p>`;
   }
   const profAnswers = () => `<section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
@@ -1371,6 +1391,7 @@
       case 'f-uname': st.username = t.value.trim(); clearErr('uname', t); return checkUser();
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();
       case 'f-genre': { st.genreQ = t.value; const m = root.querySelector('#more-genres'); if (m) { m.innerHTML = moreGenres(); const f = root.querySelector('#f-genre'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
+      case 'f-setq': { st.setQ = t.value; const b = root.querySelector('#set-body'); if (b) { const tmp = document.createElement('div'); tmp.innerHTML = settingsBody(); b.innerHTML = tmp.querySelector('#set-body').innerHTML; } return; }
       case 'f-refq': { st.refQ = t.value; const r = root.querySelector('#ref-results'); if (r) r.innerHTML = refResults(); return; }
       case 'f-ans': st.draft = t.value; return clearErr('ans', t);
       case 'f-com': st.commentDraft = t.value; return clearErr('com', t);

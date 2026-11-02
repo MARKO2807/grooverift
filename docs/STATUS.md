@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-064. Key ones:
+- Decisions D-001 to D-065. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -78,6 +78,8 @@ _Last updated: 2026-11-02 (session 11)_
     - Invite: edge-to-edge current, new lead, a PWA line. Genre search in a two-column grid. Reminder: compact time row and an "add to home screen" card. Done: "Sad si dio Rifta." Clearer glass tab bar. No current on the Hub.
     - Settings screen from a gear on the profile; "Smanji pokrete" moves into it. Research: `docs/research/2026-11-02-settings-benchmark.md`.
     - **Choices (D-064):** the "Strujica" Daily Drop name; Home E with a single "Odgovori" button and a soft invite ring; the Hub with the last seven days, this week's programme (B2) and the archives; the notification question "Koja pjesma najbolje govori tko si?"; the globe icon.
+    - **Settings (D-065):** no data-download row, delete at the very bottom, a quiet status mark on top; four arrangements in `pulse/round8.html`. Data copy is OPEN (OQ-30). Globe is the language icon.
+    - **Ideas backlog:** `docs/product/backlog.md` lists every idea outside the confirmed scope.
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -93,7 +95,7 @@ _Last updated: 2026-11-02 (session 11)_
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text. Also the sign-in screen with the breached-password banner (D-054) and the HIBP-unreachable path.
    - 200 % zoom and the desktop adaptation.
    - Screen reader (Narrator) and high-contrast checks.
-2. **Settings walkthrough** with the owner, then the key sub-screens (account, privacy, notifications, your data and deletion, log out).
+2. **Settings:** the owner picks an arrangement in `pulse/round8.html` and answers OQ-30 (data copy); then the key sub-screens (account, privacy, notifications, deletion, log out).
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.

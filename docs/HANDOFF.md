@@ -60,6 +60,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - Genre search: `genreChip(name, fam, tile)` renders tiles in `.g-grid`; `updateDnaStep` now updates every `[data-a="genre"]`.
     - Reminder: `NOTIF_QS` / `?nq=1..4` (the example question is separate from `D.drop.question`), `.rem-row` with `.rem-time`, and the `.install` card. Done: `.lead-done`.
     - Round 7 URL options: `?ddn=none|a..e` (living name, `ddName()`), `?home=c..g`, `?hub=a..e` (`hubBody()`, `hubProgramme()`, `st.hubDay`), `?nq=1..4`.
+  - **D-065 (same session): Settings round 8.** `?set=a..d` (`SET_AT`, default a), `setRow()`, `setStatus()`, `settingsBody()`; d filters rows through `#f-setq` (`st.setQ`). No export row; `.set-delete` sits under Log out; status pill `.set-status` on top. OQ-30 (data copy) is OPEN and touches the Master Prompt §3 and GDPR: ask, do not decide. Backlog of all ideas: `docs/product/backlog.md`. Rule from the owner: always ask before anything that touches a strict Master Prompt rule.
   - **D-064 (same session): round 7 choices, now the defaults.** `ddn=c` (Strujica), `home=e` with `teaserActions(true)` (one `.btn-invite` button with a soft ring, no read link), `hub=e` (seven-day strip plus `hubProgramme()`), `nq=2`, the globe icon. OQ-28 (archive depth) is OPEN and conflicts with the confirmed permanent archive; do not limit the archive without an owner decision.
     - Settings: screen `settings` (`?flow=drop&at=settings`), `SET_GROUPS()`, `settingsBody()`; gear in the profile top bar. The profile no longer has the motion switch.
     - `D.pastDrops` has seven days; Home shows three. Archive rows say that old questions are still open for answers (D-036).
@@ -118,7 +119,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** the index (SET-01) exists; review it together, then prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
+2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** the owner picks an arrangement in `pulse/round8.html` and answers OQ-30; then prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
 5. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).

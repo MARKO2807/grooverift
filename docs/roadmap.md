@@ -101,5 +101,6 @@ Measurable launch criteria (defined with the owner), professional trademark and 
 
 ## Future ideas (backlog, not in the confirmed scope)
 Owner ideas recorded for later. None of them is scheduled; each needs an explicit owner decision on scope and wave first.
+- **All ideas in one list:** [`product/backlog.md`](product/backlog.md).
 - **Hub expansion (session 11, OQ-29):** **Hidden Gems** (members share underrated songs and artists, with a weekly community pick) and **On Repeat** (the song a member plays most right now). Details and constraints: [`product/future-hub-ideas.md`](product/future-hub-ideas.md).
 - **Music news (session 9, OQ-24):** for example popular concerts in Croatia. Needs a source and rights check.
