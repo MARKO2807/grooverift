@@ -195,7 +195,7 @@
       const on = sel.has(a.id);
       return `<li><button type="button" class="result" data-a="artist-add" data-id="${esc(a.id)}" data-k="art-${esc(a.id)}"${on ? ' aria-disabled="true"' : ''}>
         ${artistTile(a)}
-        <span class="r-body"><span class="r-title">${esc(a.name)}</span><span class="r-meta">${esc(a.meta)}</span>${a.credit ? `<span class="r-credit">${esc(a.credit)}</span>` : ''}</span>
+        <span class="r-body"><span class="r-title">${esc(a.name)}</span>${artistMeta(a, r.items) ? `<span class="r-meta">${esc(artistMeta(a, r.items))}</span>` : ''}${a.credit ? `<span class="r-credit">${esc(a.credit)}</span>` : ''}</span>
         <span class="r-add">${on ? `${ic('check', 'sm')}<span class="sr-only">Dodano</span>` : `${ic('plus', 'sm')}<span class="sr-only">Dodaj</span>`}</span></button></li>`;
     }).join('');
   }
@@ -262,9 +262,9 @@
   const findAnswer = id => allAnswers().find(a => a.id === id);
 
   /* Name on top, date under it (style A, D-047), then the live current. */
-  function ddHead(where) {
+  function ddHead(where, noCur) {
     return `<div class="dd-top"><p class="dd-name">Daily Drop</p>
-      <p class="dd-date"><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>${current('dd-' + where, 'md', 'dd-current')}</div>`;
+      <p class="dd-date"><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>${noCur ? '' : current('dd-' + where, 'md', 'dd-current')}</div>`;
   }
   function people(n) {
     const hs = allAnswers().slice(0, 3);
@@ -378,14 +378,16 @@
     </form>`;
   }
 
-  function dropTeaser() {
-    const n = allAnswers().length;
-    const actions = st.mine
+  function teaserActions() {
+    return st.mine
       ? '<button class="btn btn-secondary btn-cta" data-a="open-drop" data-k="open-drop">Pogledaj odgovore</button>'
       : `<button class="btn btn-primary btn-cta" data-a="open-compose" data-k="open-compose">Odgovori</button>
          <button class="link read-link" data-a="open-drop" data-k="open-drop">Prvo pročitaj odgovore</button>`;
+  }
+  function dropTeaser(noCur) {
+    const n = allAnswers().length, actions = teaserActions();
     return `<section class="dd dd-teaser" aria-labelledby="h-teaser">
-      ${ddHead('home')}
+      ${ddHead('home', noCur)}
       <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
       ${people(n)}
       <div class="dd-actions">${actions}</div>
@@ -472,6 +474,137 @@
   const INV_AT = ['a', 'b', 'c', 'd'].includes(P.get('inv')) ? P.get('inv') : 'b';
   const invCur = (h, cls) => `<canvas class="ic inv-cur${cls ? ' ' + cls : ''}" data-v="branch" data-key="invite" data-h="${h}" aria-hidden="true"></canvas>`;
 
+  /* ---------- Round 6 options (owner, session 11). PENDING owner choice; compared side by side in round6.html. ----------
+     ?vis=cols|rows|compact   profile visibility step (cols = today's one card with two columns, D-053)
+     ?art=country|smart|genre artist results (country = today's rule, D-053)
+     ?home=a|b|c|d            Daily Drop on Home (a = today)
+     ?prof=a|b|c              profile page (a = today)
+     ?nav=solid|glass|float|ember  tab bar background (solid = today) */
+  const pick = (k, list) => list.includes(P.get(k)) ? P.get(k) : list[0];
+  const VIS_AT = pick('vis', ['cols', 'rows', 'compact']);
+  const ART_AT = pick('art', ['country', 'smart', 'genre']);
+  const HOME_AT = pick('home', ['a', 'b', 'c', 'd']);
+  const PROF_AT = pick('prof', ['a', 'b', 'c']);
+  const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember']);
+  if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
+
+  /* Artist result meta line. country: the country, plus a short description only for same-name artists.
+     smart: nothing at all unless two results share a name. genre: main genres, plus the country for same-name artists. */
+  function artistMeta(a, items) {
+    const dup = items.filter(x => x.name === a.name).length > 1;
+    if (ART_AT === 'smart') return dup ? a.meta : '';
+    if (ART_AT === 'genre') {
+      const g = (a.g || []).join(', ');
+      if (!g) return a.meta;
+      if (!dup) return g;
+      const yrs = (a.meta.match(/\(([^)]*)\)/) || [])[1];
+      return `${g}. ${a.meta.split(',')[0]}${yrs ? ', ' + yrs : ''}`;
+    }
+    return a.meta;
+  }
+
+  /* Visibility as two rows (owner: "u dva reda"). The same facts as the table; the rules both options share are said once. */
+  const VIS_ROWS = [
+    ['public', 'globe', 'Javno', ['Profil, Music DNA i povijest odgovora vide svi članovi.', 'Pojavljuješ se u Otkrivanju i kompatibilnosti.', 'Neprijavljeni vide ime, avatar i bio.']],
+    ['private', 'lock', 'Privatno', ['Profil, Music DNA i povijest odgovora vide samo pratitelji koje odobriš.', 'Ne pojavljuješ se u Otkrivanju.', 'Neprijavljeni ne vide ništa.']]
+  ];
+  const VIS_TABLE = [
+    ['Profil i Music DNA', 'Svi članovi', 'Samo pratitelji'], ['Povijest odgovora', 'Svi članovi', 'Samo pratitelji'],
+    ['Odgovori i komentari', 'Svi članovi', 'Svi članovi'], ['Popis pratitelja', 'Samo pratitelji', 'Samo pratitelji'],
+    ['Otkrivanje i kompatibilnost', 'Da', 'Ne'], ['Neprijavljeni', 'Ime, avatar, bio', 'Ništa']
+  ];
+  function visibilityRows(compact) {
+    const err = st.err.vis;
+    return `<h1>Tko vidi tvoj profil?</h1>
+      <p class="lead lead-sm" id="vis-help">Odaberi jedno. Možeš promijeniti bilo kad.</p>
+      <fieldset class="vrows${compact ? ' vrows-c' : ''}"${err ? ' aria-describedby="err-vis"' : ''}>
+        <legend class="sr-only">Vidljivost profila</legend>
+        ${VIS_ROWS.map(([v, i, t, lines]) => `<label class="vrow">
+          <input type="radio" name="vis" value="${v}" data-k="vis-${v}"${st.vis === v ? ' checked' : ''}>
+          <span class="vrow-head"><span class="vis-badge" aria-hidden="true">${ic(i, 'vis-ic')}</span><span class="vis-t">${t}</span><span class="vis-mark" aria-hidden="true">${ic('check')}</span></span>
+          <span class="vrow-list">${(compact ? lines.slice(0, 1) : lines).map(l => `<span>${l}</span>`).join('')}</span>
+        </label>`).join('')}
+      </fieldset>
+      ${err ? fieldErr('vis', err) : ''}
+      <p class="vrow-same">${ic('users', 'sm')}<span>U oba slučaja odgovore i komentare vide svi članovi, a popis pratitelja samo pratitelji.</span></p>
+      ${compact ? `<details class="vrow-more"><summary>Usporedi sve razlike</summary>
+        <table class="vrow-table"><thead><tr><td></td><th scope="col">Javno</th><th scope="col">Privatno</th></tr></thead>
+        <tbody>${VIS_TABLE.map(([k, a, b]) => `<tr><th scope="row">${k}</th><td>${a}</td><td>${b}</td></tr>`).join('')}</tbody></table></details>` : ''}
+      <p class="fine fine-left">Music DNA možeš dodatno suziti u sljedećim koracima.</p>`;
+  }
+
+  /* Home: the Daily Drop in four arrangements. */
+  function answerPeek(a) {
+    return `<li><button class="peek" data-a="open-drop" data-k="peek-${a.id}">${avatar(a.handle, a.who, 'xs')}<span class="peek-body"><span class="peek-who">${esc(a.who)}</span><span class="peek-text"${a.lang ? ` lang="${a.lang}"` : ''}>${esc(a.text)}</span></span></button></li>`;
+  }
+  function homeBody() {
+    const follow = `<section class="section" aria-labelledby="h-follow"><h2 id="h-follow" class="section-title">Od ljudi koje pratiš</h2>
+      <div class="empty"><p>Još nikoga ne pratiš. Ljude možeš pronaći kroz odgovore na Daily Drop.</p></div></section>`;
+    const past = pastList('Prethodni Daily Dropovi');
+    if (HOME_AT === 'a') return dropTeaser() + follow + past;
+    if (HOME_AT === 'b') return dropTeaser(true) + follow + past;
+    const n = allAnswers().length, peeks = allAnswers().slice(0, HOME_AT === 'c' ? 2 : 3);
+    const eyebrow = `<p class="dd-eyebrow"><span class="dd-name dd-name-sm">Daily Drop</span><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>`;
+    if (HOME_AT === 'c') return `<section class="dd dd-teaser dd-c" aria-labelledby="h-teaser">
+        ${eyebrow}
+        <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
+        <div class="dd-actions">${teaserActions()}</div>
+        <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}</ul>
+        <button class="link" data-a="open-drop" data-k="all-ans">Pogledaj sve odgovore (${n})</button>
+      </section>` + follow + past;
+    return `<section class="dd-card" aria-labelledby="h-teaser">
+        ${eyebrow}
+        <h2 id="h-teaser" class="dd-q dd-q-sm">${esc(D.drop.question)}</h2>
+        <div class="dd-actions dd-actions-row">${teaserActions()}</div>
+      </section>
+      <section class="section" aria-labelledby="h-peek"><h2 id="h-peek" class="section-title">Odgovori zajednice <span class="count">${n}</span></h2>
+        <ul class="peeks">${peeks.map(answerPeek).join('')}</ul>
+        <button class="link" data-a="open-drop" data-k="all-ans">Pogledaj sve odgovore</button></section>` + follow + past;
+  }
+
+  /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
+  const profDna = h => st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', h)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>` : '<p class="empty">Još nema odabira.</p>';
+  const profArtists = () => st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : '';
+  const profSettings = () => `<section class="section" aria-labelledby="h-set"><h2 id="h-set" class="section-title">Prikaz</h2>
+      <div class="setting"><div><p class="set-t" id="calm-l">Smanji pokrete</p><p class="help" id="calm-d">Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</p></div>
+      <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></div>
+    </section>`;
+  const profAnswers = () => `<section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
+      ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : '<p class="empty">Još nema odgovora.</p>'}
+    </section>`;
+  const profVis = () => `<p class="pf-vis">${ic(st.vis === 'public' ? 'globe' : 'lock', 'sm')}<span>${VIS_LABEL[st.vis] || 'Privatni'} profil. Music DNA vide: ${(DNA_LABEL[st.dnaVis] || 'Samo ja').toLowerCase()}.</span></p>`;
+  const profBtns = () => `<div class="foot-row equal pf-btns"><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Uređivanje profila (J4) nije dio skice." data-k="pf-edit">Uredi profil</button>
+      <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Dijeljenje profila nije dio skice." data-k="pf-share">${ic('share', 'sm')}Podijeli</button></div>`;
+  const BIO = 'Jazz ujutro, techno navečer.';
+  function profileBody() {
+    const name = esc(st.displayName || 'Ti'), handle = esc(st.username || 'ti');
+    if (PROF_AT === 'b') return `<div class="pf-b">${avatar(st.username, st.displayName || 'T', 'lg')}
+        <dl class="pf-stats"><div><dt>Odgovori</dt><dd>${st.mine ? 1 : 0}</dd></div><div><dt>Pratitelji</dt><dd>12</dd></div><div><dt>Prati</dt><dd>18</dd></div></dl></div>
+      <div class="pf-id"><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p><p class="pf-bio">${BIO}</p>${profVis()}</div>
+      ${profBtns()}
+      <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>${profDna(170)}${profArtists()}</section>
+      ${profAnswers()}${profSettings()}
+      <p class="meta">Brojke i bio su izmišljeni. Ostatak profila (J4) nije dio ove skice.</p>`;
+    if (PROF_AT === 'c') return `<div class="pf-c">
+        ${st.genres.length ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}</figcaption></figure>` : ''}
+        <div class="pf-c-id">${avatar(st.username, st.displayName || 'T', 'lg')}<div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div></div>
+      <p class="pf-bio">${BIO}</p>
+      <p class="pf-c-stats"><span><b>12</b> pratitelja</span><span>prati <b>18</b></span><span><b>${st.mine ? 1 : 0}</b> ${plAns(st.mine ? 1 : 0)}</span></p>
+      ${profVis()}${profBtns()}
+      ${st.artists.length ? `<section class="section" aria-labelledby="h-part"><h2 id="h-part" class="section-title">Izvođači</h2>${profArtists()}</section>` : ''}
+      ${profAnswers()}${profSettings()}
+      <p class="meta">Brojke i bio su izmišljeni. Ostatak profila (J4) nije dio ove skice.</p>`;
+    return `<div class="prof-head">${avatar(st.username, st.displayName || 'T', 'lg')}
+        <div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div>
+      <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>${profDna(184)}${profArtists()}</section>
+      <dl class="facts-grid">
+        <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni (nije odabrano)'}</dd></div>
+        <div>${ic('users', 'ft-ic')}<dt>DNA vide</dt><dd>${DNA_LABEL[st.dnaVis] || 'Samo ja'}</dd></div>
+      </dl>
+      ${profSettings()}${profAnswers()}
+      <p class="meta">Ostatak profila (J4) nije dio ove skice.</p>`;
+  }
+
   const S = {
     invite: () => ({
       kind: 'bare',
@@ -549,7 +682,7 @@
         </div>`,
       foot: nextBtn()
     }),
-    visibility: () => ({ kind: 'onb', back: true, body: visibilityStep(), foot: nextBtn() }),
+    visibility: () => ({ kind: 'onb', back: true, body: VIS_AT === 'cols' ? visibilityStep() : visibilityRows(VIS_AT === 'compact'), foot: nextBtn() }),
     dna: () => ({
       kind: 'onb', back: true,
       body: `<h1>Što slušaš?</h1>
@@ -627,13 +760,7 @@
 
     home: () => ({
       kind: 'app', tab: 'home',
-      body: `<h1 class="sr-only">Početna</h1>
-        ${dropTeaser()}
-        <section class="section" aria-labelledby="h-follow">
-          <h2 id="h-follow" class="section-title">Od ljudi koje pratiš</h2>
-          <div class="empty"><p>Još nikoga ne pratiš. Ljude možeš pronaći kroz odgovore na Daily Drop.</p></div>
-        </section>
-        ${pastList('Prethodni Daily Dropovi')}`
+      body: `<h1 class="sr-only">Početna</h1>${homeBody()}`
     }),
     hub: () => ({
       kind: 'app', tab: 'hub', topTitle: 'Hub', topH1: true,
@@ -690,24 +817,7 @@
     }),
     profile: () => ({
       kind: 'app', tab: 'profile', topTitle: 'Profil',
-      body: `<div class="prof-head">${avatar(st.username, st.displayName || 'T', 'lg')}
-          <div><h1 class="prof-name">${esc(st.displayName || 'Ti')}</h1><p class="meta">@${esc(st.username || 'ti')}</p></div></div>
-        <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>
-          ${st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', 184)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>
-            ${st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : ''}` : '<p class="empty">Još nema odabira.</p>'}
-        </section>
-        <dl class="facts-grid">
-          <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni (nije odabrano)'}</dd></div>
-          <div>${ic('users', 'ft-ic')}<dt>DNA vide</dt><dd>${DNA_LABEL[st.dnaVis] || 'Samo ja'}</dd></div>
-        </dl>
-        <section class="section" aria-labelledby="h-set"><h2 id="h-set" class="section-title">Prikaz</h2>
-          <div class="setting"><div><p class="set-t" id="calm-l">Smanji pokrete</p><p class="help" id="calm-d">Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</p></div>
-          <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></div>
-        </section>
-        <section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
-          ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : '<p class="empty">Još nema odgovora.</p>'}
-        </section>
-        <p class="meta">Ostatak profila (J4) nije dio ove skice.</p>`
+      body: profileBody()
     })
   };
 
@@ -1111,6 +1221,7 @@
     if (before('username')) { st.displayName = 'Ana'; st.username = 'ana.slusa'; st.userState = 'ok'; }
     if (before('visibility')) st.vis = PRIV ? 'private' : 'public';
     if (before('dna') || (AT === 'dna' && P.get('picks') === '1')) { st.genres = ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk']; st.artists = [fx('Metallica'), fx('Nina Simone'), fx('Arsen Dedić'), fx('Charlotte de Witte')]; }
+    if (AT === 'dna' && P.get('q')) st.artistQ = P.get('q');
     if (before('dnavis')) st.dnaVis = 'all';
     if (before('reminder')) st.reminder = 'off';
     st.screen = AT;
@@ -1124,4 +1235,5 @@
   }
 
   render();
+  if (st.screen === 'dna' && st.artistQ) { runArtistSearch(); setTimeout(() => { const f = root.querySelector('#f-artist'); if (f) f.scrollIntoView({ block: 'start' }); }, 450); }
 })();

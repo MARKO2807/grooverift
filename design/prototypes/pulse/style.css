@@ -521,3 +521,81 @@ html[data-motion="reduced"] .react-like.pressing .wave, html[data-motion="reduce
 /* the in-app setting also stops the CSS entrance animations */
 html[data-motion="reduced"] .how-card, html[data-motion="reduced"] .notif, html[data-motion="reduced"] .sheet { animation: none; }
 html[data-motion="reduced"] .switch span { transition: none; }
+
+/* ---------- Round 6 options (owner, session 11; PENDING choice, see round6.html) ---------- */
+/* Visibility as two rows. Equal weight, nothing pre-selected (D-030). */
+.vrows { display: flex; flex-direction: column; gap: var(--gr-space-2); }
+.vrow { position: relative; display: flex; flex-direction: column; gap: 6px; padding: var(--gr-space-3); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); cursor: pointer; }
+.vrow input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.vrow:hover { background: var(--gr-color-bg-raised); }
+.vrow:has(input:checked) { background: linear-gradient(160deg, #FF586B26, #FF586B0D 60%), var(--gr-color-bg-surface); box-shadow: inset 0 0 0 2px var(--gr-color-selected-border); border-color: transparent; }
+.vrow:has(input:focus-visible) { box-shadow: inset 0 0 0 2px var(--gr-color-selected-border), 0 0 0 var(--gr-focus-gap) var(--gr-color-focus-gap), 0 0 0 calc(var(--gr-focus-gap) + var(--gr-focus-width)) var(--gr-color-focus-ring); }
+.vrow-head { display: flex; align-items: center; gap: var(--gr-space-2); }
+.vrow-head .vis-mark { margin-left: auto; }
+.vrow:has(input:checked) .vis-badge { background: var(--gr-gradient-brand); border-color: transparent; color: var(--gr-color-text-on-accent); }
+.vrow:has(input:checked) .vis-mark { background: var(--gr-color-action-primary); border-color: var(--gr-color-action-primary); }
+.vrow:has(input:checked) .vis-mark svg { visibility: visible; }
+.vrow-list { display: flex; flex-direction: column; gap: 2px; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); padding-left: calc(30px + var(--gr-space-2)); }
+.vrow-list > span { position: relative; }
+.vrow-list > span::before { content: ""; position: absolute; left: -12px; top: .6em; width: 4px; height: 4px; border-radius: 50%; background: var(--gr-color-border-strong); }
+.vrows-c .vrow-list > span::before { display: none; }
+.vrow-same { display: flex; gap: var(--gr-space-2); align-items: flex-start; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.vrow-same svg { flex: none; margin-top: 2px; }
+.vrow-more summary { font: var(--gr-type-label); color: var(--gr-color-text-link); cursor: pointer; min-height: var(--gr-size-target-min); display: flex; align-items: center; }
+.vrow-table { width: 100%; border-collapse: collapse; font: var(--gr-type-caption); margin-top: var(--gr-space-1); }
+.vrow-table th, .vrow-table td { padding: 5px 4px; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); text-align: center; }
+.vrow-table th[scope="row"] { text-align: left; color: var(--gr-color-text-secondary); font-weight: var(--gr-font-weight-medium); }
+.vrow-table thead th { font-weight: var(--gr-font-weight-semibold); border-top: 0; }
+@media (forced-colors: active) { .vrow:has(input:checked) { outline: 3px solid Highlight; } }
+
+/* Home: Daily Drop arrangements c and d. */
+.dd-eyebrow { display: flex; align-items: baseline; justify-content: center; gap: var(--gr-space-2); font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); flex-wrap: wrap; }
+.dd-name-sm { font-size: var(--gr-font-size-lg); }
+.dd-c .dd-actions { margin-top: 0; }
+.peeks { display: flex; flex-direction: column; gap: var(--gr-space-2); width: 100%; text-align: left; }
+.peek { width: 100%; display: flex; gap: var(--gr-space-3); align-items: flex-start; padding: var(--gr-space-3); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); text-align: left; color: inherit; }
+.peek:hover { background: var(--gr-color-bg-raised); }
+.peek-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.peek-who { font: var(--gr-type-label); }
+.peek-text { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dd-card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--gr-space-2); padding: var(--gr-space-4); margin-top: var(--gr-space-3); border-radius: var(--gr-radius-sheet); background: linear-gradient(160deg, #FF586B1F, #FFCB690D 55%, transparent 80%), var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid #FF586B55; }
+.dd-card .dd-eyebrow { justify-content: flex-start; }
+.dd-q-sm { font: var(--gr-type-title-2); text-wrap: balance; }
+.dd-actions-row { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
+.dd-actions-row .btn-cta { min-width: 0; padding: 0 var(--gr-space-6); }
+
+/* Profile arrangements b and c. */
+.pf-b { display: flex; align-items: center; gap: var(--gr-space-4); padding-top: var(--gr-space-2); }
+.pf-stats { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+.pf-stats > div { display: flex; flex-direction: column-reverse; }
+.pf-stats dd { font: var(--gr-type-title-2); }
+.pf-stats dt { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.pf-id { display: flex; flex-direction: column; gap: 2px; }
+.pf-bio { font: var(--gr-type-body); }
+.pf-vis { display: flex; gap: var(--gr-space-2); align-items: flex-start; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin-top: var(--gr-space-1); }
+.pf-vis svg { flex: none; margin-top: 1px; }
+.pf-btns .btn { flex: 1; }
+.pf-c { position: relative; margin: calc(-1 * var(--gr-space-5)) calc(-1 * var(--gr-space-4)) 0; }
+.pf-c-hero { margin: 0; padding: var(--gr-space-3) 0 0; background: radial-gradient(120% 80% at 50% 40%, #FF586B14, transparent 70%); }
+.pf-c-hero canvas { width: 100%; }
+.pf-c-id { display: flex; align-items: flex-end; gap: var(--gr-space-3); padding: 0 var(--gr-space-4); margin-top: calc(-1 * var(--gr-space-6)); position: relative; }
+.pf-c-stats { display: flex; gap: var(--gr-space-4); flex-wrap: wrap; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.pf-c-stats b { color: var(--gr-color-text-primary); font-weight: var(--gr-font-weight-semibold); }
+
+/* Tab bar backgrounds. glass: frosted, content passes under it. float: a frosted pill above the edge.
+   ember: solid, the active tab gets a soft Coral→Amber pill. Solid fallback where blur is unsupported or colours are forced. */
+.nav-glass .bottom { background: rgba(11, 13, 18, .62); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); }
+.nav-glass .tabbar { border-top-color: rgba(255, 255, 255, .08); }
+.nav-float .bottom { background: transparent; padding: 0 var(--gr-space-3) calc(var(--gr-space-2) + env(safe-area-inset-bottom)); }
+.nav-float .dock { margin-bottom: var(--gr-space-2); border-radius: var(--gr-radius-sheet); }
+.nav-float .tabbar { border: var(--gr-border-width-hairline) solid rgba(255, 255, 255, .10); border-radius: 24px; background: rgba(24, 27, 36, .72); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); box-shadow: 0 10px 28px rgba(0, 0, 0, .45); padding-bottom: 0; overflow: hidden; }
+.nav-float .tab { min-height: 56px; }
+.nav-float .tab[aria-current="page"]::before { top: auto; bottom: 6px; left: 42%; right: 42%; }
+.nav-ember .tab[aria-current="page"]::before { display: none; }
+.nav-ember .tab svg { padding: 3px 16px; border-radius: 14px; box-sizing: content-box; transition: background-color var(--gr-motion-duration-base); }
+.nav-ember .tab[aria-current="page"] svg { background: linear-gradient(135deg, #FF586B33, #FFCB6922); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .nav-glass .bottom, .nav-float .tabbar { background: var(--gr-color-bg-canvas); } }
+@media (forced-colors: active) { .nav-glass .bottom, .nav-float .tabbar { background: Canvas; backdrop-filter: none; } }
+.vrows:not(.vrows-c) .vrow { padding: 10px var(--gr-space-3); gap: 4px; }
+.vrows:not(.vrows-c) .vrow-list { line-height: 1.35; gap: 3px; }
+.screen-visibility .vrow-same { line-height: 1.35; }

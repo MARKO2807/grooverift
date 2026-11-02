@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 6: prijedlozi</title>
+<!-- Owner decision sketch (session 11, round 6): profile visibility layout, artist result line, Daily Drop on Home,
+     profile page and tab bar background. Every frame is the real prototype (index.html) with a URL option. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  p { color: var(--gr-color-text-secondary); margin: 0 0 10px; max-width: 80ch; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  nav.toc a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 0 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 640px; }
+  .fit { font: var(--gr-type-caption); min-height: 1em; }
+  .fit.ok { color: #7EE0A1; } .fit.no { color: #FF8A96; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 6: prijedlozi</h1>
+  <p>Svaki okvir je prava aplikacija, pa možeš klikati, skrolati i swipeati između kartica. Oznaka „danas” je trenutno stanje, a „preporuka” je moj prijedlog. Brojke i bio na profilu su izmišljeni.</p>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-vis">1. Tko vidi profil</a><a href="#t-art">2. Izvođači</a><a href="#t-home">3. Daily Drop na početnoj</a><a href="#t-prof">4. Profil</a><a href="#t-nav">5. Navigacija</a>
+  </nav>
+  <div id="sections"></div>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-vis', '1. Tko vidi tvoj profil', 'Isti podaci, drukčiji raspored. Ništa nije unaprijed odabrano i obje opcije imaju istu težinu (D-030). Ispod svakog okvira piše stane li korak na ekran.', 'at=visibility', 'vis', [
+      ['cols', 'A. Jedna kartica, dva stupca', 'Današnja tablica: Javno i Privatno jedno do drugog, red po red.', 'now'],
+      ['rows', 'B. Dva reda', 'Javno i Privatno su dvije kartice jedna ispod druge, svaka s tri kratke rečenice. Ono što je isto za oba piše jednom, ispod.', 'rec'],
+      ['compact', 'C. Dva reda, kratko', 'Kao B, ali samo jedna rečenica po opciji, a cijela usporedba se otvara na „Usporedi sve razlike”.', '']
+    ], true],
+    ['t-art', '2. Izvođači u pretrazi', 'Upisano je „ni”, pa se vide i obični izvođači i dvije različite Nirvane. Zemlja je bila tu da se razlikuju izvođači istog imena.', 'at=dna&q=ni', 'art', [
+      ['country', 'A. Zemlja', 'Ispod imena piše zemlja. Za izvođače istog imena dodaje se kratak opis.', 'now'],
+      ['smart', 'B. Samo ime', 'Ispod imena ne piše ništa. Opis se pojavi samo kad dva izvođača imaju isto ime, kao Nirvana.', ''],
+      ['genre', 'C. Žanr', 'Ispod imena su glavni žanrovi, što glazbenoj aplikaciji više znači od zemlje. Kod istog imena dodaje se i zemlja.', 'rec']
+    ]],
+    ['t-home', '3. Daily Drop na početnoj', 'Četiri rasporeda istog sadržaja. Ispod Daily Dropa su „Od ljudi koje pratiš” i prethodna pitanja.', 'flow=drop', 'home', [
+      ['a', 'A. Danas', 'Ime Daily Drop, datum i struja, pa pitanje, ljudi i gumbi.', 'now'],
+      ['b', 'B. Bez struje', 'Isti redoslijed, samo bez struje ispod imena.', ''],
+      ['c', 'C. Pitanje i prvi odgovori', 'Mali naslov s datumom, veliko pitanje, gumb „Odgovori”, a odmah ispod dva prva odgovora da se vidi o čemu ljudi pričaju.', 'rec'],
+      ['d', 'D. Kartica i odgovori', 'Pitanje u istaknutoj kartici s gumbom, a ispod nje odmah odgovori zajednice, kao feed.', '']
+    ]],
+    ['t-prof', '4. Profil', 'Tvoj profil nakon registracije. Na dnu je i dalje „Smanji pokrete”, dok ne napravimo postavke.', 'flow=drop&at=profile', 'prof', [
+      ['a', 'A. Danas', 'Ime, Music DNA, kartice s postavkama vidljivosti, pa odgovori.', 'now'],
+      ['b', 'B. Poznati raspored', 'Kao na Instagramu: avatar i brojke u jednom redu, ime i bio, gumbi „Uredi profil” i „Podijeli”, pa Music DNA.', ''],
+      ['c', 'C. Music DNA na vrhu', 'Tvoja spirala je naslovna slika profila, avatar sjedi na njenom rubu. Najviše „tvoje”, odmah se vidi ukus.', 'rec']
+    ]],
+    ['t-nav', '5. Navigacija na dnu', 'Ista četiri gumba, različita pozadina. Skrolaj početnu da vidiš kako sadržaj prolazi ispod trake.', 'flow=drop', 'nav', [
+      ['solid', 'A. Puna', 'Današnja: tamna, puna traka s tankom linijom iznad aktivne kartice.', 'now'],
+      ['glass', 'B. Staklo', 'Mutno staklo: sadržaj se nazire ispod trake dok skrolaš, kao na Instagramu.', 'rec'],
+      ['float', 'C. Plutajuća', 'Stakleni „otok” odvojen od ruba ekrana, zaobljenih kutova.', ''],
+      ['ember', 'D. Ember naglasak', 'Puna traka, a aktivna kartica dobije mekani Coral→Amber jastučić iza ikone.', '']
+    ]]
+  ];
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts, fit]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+      <div class="phone"><iframe title="${title}: ${t}" loading="lazy" src="index.html?${base}&${key}=${v}"></iframe></div>
+      ${fit ? `<p class="fit" data-fit></p>` : ''}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  /* app.js reports from each frame whether the screen fits without scrolling. */
+  window.addEventListener('message', e => {
+    if (!e.data || e.data.gr !== 'fit' || e.data.screen !== 'visibility') return;
+    const f = [...document.querySelectorAll('iframe')].find(x => x.contentWindow === e.source);
+    const el = f && f.closest('.opt').querySelector('[data-fit]');
+    if (!el) return;
+    el.className = 'fit ' + (e.data.over <= 1 ? 'ok' : 'no'); el.dataset.over = e.data.over;
+    el.textContent = e.data.over <= 1 ? 'Stane na ekran 360 × 640.' : `Ne stane: ${e.data.over} px viška.`;
+  });
+})();
+</script>
+</body>
+</html>
