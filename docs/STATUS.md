@@ -98,9 +98,11 @@ _Last updated: 2026-11-02 (session 11)_
 4. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
    - OQ-24: music news idea, after the alpha scope.
+   - OQ-29: Hub ideas Hidden Gems and On Repeat (backlog, `docs/product/future-hub-ideas.md`; not now).
 
 ## Owner actions outside Claude
 - `git push` after each session (Claude's push is blocked).
+- Terminal display options (shorter output, focus view, Ctrl+O): `docs/claude-code-tips.md`.
 - Review the refined prototype yourself (D-044): `design/prototypes/pulse/viewer.html`. Open `pulse/index.html` on a phone too.
 - MetaBrainz registration (D-018), when convenient before Phase 5.
 - Start looking for an accountant and lawyer (`docs/legal/questions-for-counsel.md`). Needed before the alpha.
