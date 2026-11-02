@@ -1,14 +1,22 @@
 # Session handoff
 
-_Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
+_Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In session 11 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
+3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In sessions 11 and 12 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
+- **Session 12: round 10, key states and settings flows (D-070, OQ-32).**
+  - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so `ntf=c` (push only) is the default and "Sažetak tjedna" is gone.
+  - URL options in `app.js` (Round 10 block after `addDays`): `?state=loading|error|empty|nodrop|blocked|long`, `?net=off`, `?ld`, `?off`, `?emp`, `?nd`, `?prv`, `?ntf`, `?del`, `?out`, `?bl=1`, `?uc=locked`, `?at=signin` (`&pw=breached`, `&acct=pending`), `?at=pending`, `?flow=drop&at=member&as=blocker|blocked`, `?flow=drop&pw=breached`, `&step=copy|confirm|done` on the delete sub-screen, `&show=logout`, `&show=posterr`.
+  - New screens: `signin`, `pending`, `member`. New sub-screens: `email`, `password`, `username`, `twofa`; `privacy`, `notifications` and `delete` are now functions (`privacyBody`, `notifBody`, `deleteBody`; the old one-page delete is `SUB.deleteA`).
+  - `st.histVis` holds the answer-history setting (`st.hist` is the navigation history; do not reuse it).
+  - Helpers: `skel()`, `skelDrop()`, `loadErr()`, `netHint()`, `netBanner()`, `emptyBox()`, `noDropBlock()`, `dropList()`, `pwBanner()`, `subRow()`, `signedIn()`, `signOut()`. Offline settings render inside `<fieldset disabled>`. `icons.js` gained `offline`.
+  - Copy rule kept: no gendered past tense or pronouns for members ("Odjava je uspjela", "Ta osoba ne dobije obavijest").
+  - Phone server: `serve.mjs` ran on port 8080 this session (see the closing check in the session report).
 - **Review entry points:**
   - `pulse/viewer.html`: phone frame, jump to any screen, device sizes, live catalog, catalog failure, "Smanji pokrete", private profile.
   - `pulse/choices.html`: Spirala gallery of eight fictional members, a genre playground, and the current, orbit and calm comparison.
@@ -113,17 +121,16 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 21/21 (session 11).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 45/45 (session 12).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
-1. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6. The owner liked the Spirala (genre-matched pulse speed, soft classical colours), the current under the Daily Drop name and the dock orbit; keep them.
-   - states: empty, loading for answers, network error with kept text, offline, blocked, missing-question day, long text and names, the sign-in screen with the breached-password banner (D-054)
+1. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6. The owner liked the Spirala (genre-matched pulse speed, soft classical colours), the current under the Daily Drop name and the dock orbit; keep them. The key states are done (D-070).
    - 200 % zoom
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** arrangement B is chosen and the data copy goes into the delete flow (D-066); now prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
+2. **Settings:** done in round 10 (D-070). Left: confirm R-15 to R-18 with the owner; the catalogue-card picker in the comment form (D-068).
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
 5. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.

@@ -175,8 +175,8 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');
   await click('[data-a="calm"]');
-  await click('[data-k="set-1-0"]'); expect(scr() === 'setsub' && $('h1').textContent === 'Privatnost' && $$('input[name="vis2"]').length === 2, 'settings row opens its sub-screen (D-067)');
-  await click('[data-a="back"]'); await click('[data-k="set-delete"]'); expect(scr() === 'setsub' && $('[data-k="d-copy"]') && $('#f-delpw'), 'delete flow offers the data copy first (D-066)');
+  await click('[data-k="set-1-0"]'); expect(scr() === 'setsub' && $('h1').textContent === 'Privatnost' && $$('[data-a="pick"]').length === 4, 'settings row opens its sub-screen (D-067), privacy as rows (D-070)');
+  await click('[data-a="back"]'); await click('[data-k="set-delete"]'); expect(scr() === 'setsub' && !$('input[name="del"]:checked'), 'delete flow, nothing pre-selected'); await click('input[name="del"][value="del"]'); await click('[data-a="del-next"]'); expect($('[data-k="del-copy"]'), 'delete steps offer the data copy first (D-066, D-070)');
   await click('[data-a="back"]');
   await click('[data-a="back"]'); expect(scr() === 'profile', 'back from settings');
   await click('[data-t="activity"]'); expect($$('.act').length === 7 && $('.act-new') && $('.act-btns'), 'activity with sample items (D-067)');
@@ -317,7 +317,8 @@ const runs = [
     expect($('[data-k="pick-hist2"] .set-d').textContent === 'Kao profil', 'history same as profile (D-032)');
     await click('[data-k="pick-vis2"]'); await click('input[name="vis2"][value="private"]'); await click('[data-k="ov-done"]');
     await click('[data-k="pick-lists2"]'); await click('input[name="lists2"][value="all"]'); expect($('input[name="lists2"][value="followers"]').checked, 'private caps lists at followers (D-033)'); return 'ok'; })()` },
-  { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 42) throw new Error(42 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'r10 notifications push only', url: `${base}?flow=drop&at=setsub&s=notifications`, test: `(async () => {${HELPERS} expect(!document.body.textContent.includes('Sažetak') && !$('.ntf-table') && $$('.switch').length === 5, 'push switches only, no social email (D-070, OQ-32)'); return 'ok'; })()` },
+  { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 43) throw new Error(43 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }
 ];
 

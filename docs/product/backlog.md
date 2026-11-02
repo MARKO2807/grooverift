@@ -27,6 +27,7 @@ Labels: **DEFERRED** (owner wants it later), **IDEA** (proposed, not yet discuss
 | Sign in with Spotify, or import top artists | DEFERRED | Owner, session 11 (OQ-27) | Blocked: 5-user limit, 250k MAU rule, Policy III.13. |
 | Member-authorised import from ListenBrainz | IDEA | D-062 research | Check its licence and terms first. |
 | "Remove follower" for private profiles | **Approved (D-069)** | JO1 (step 3.3) | Moves into the confirmed scope (J4, PROF-07). |
+| Opt-in social emails (follow requests, DMs) | DEFERRED | Owner, session 12 (OQ-32) | Confirmed scope in the Master Prompt §8; the alpha sends only security and account emails (D-070). |
 
 ## Settings (from the settings benchmark)
 | Idea | Status | Source | Notes |

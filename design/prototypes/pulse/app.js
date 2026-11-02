@@ -977,17 +977,17 @@
      ?at=signin     the sign-in screen; &pw=breached shows the D-054 banner on Home, &acct=pending a scheduled deletion
      ?flow=drop&at=member&as=blocker|blocked   another member's profile after a block (D-019, IA §6.1 B)
      ?uc=locked     the username was changed today (D-069)
-     Until the owner chooses, the defaults are today's behaviour (prv, ntf, del, out) or the recommendation (new states). */
+     Owner choices (D-070): ld=b, off=a, emp=b, nd=a, prv=b, ntf=c (push only, no social emails in the alpha), del=b, out=b. */
   const STATE = pick('state', ['loading', 'error', 'empty', 'nodrop', 'blocked', 'long'], '');
   const NET_OFF = P.get('net') === 'off';
   const LD_AT = pick('ld', ['a', 'b', 'c'], 'b');
   const OFF_AT = pick('off', ['a', 'b', 'c'], 'a');
   const EMP_AT = pick('emp', ['a', 'b'], 'b');
   const ND_AT = pick('nd', ['a', 'b'], 'a');
-  const PRV_AT = pick('prv', ['a', 'b'], 'a');
-  const NTF_AT = pick('ntf', ['a', 'b'], 'a');
-  const DEL_AT = pick('del', ['a', 'b', 'c'], 'a');
-  const OUT_AT = pick('out', ['a', 'b'], 'a');
+  const PRV_AT = pick('prv', ['a', 'b'], 'b'); // chosen: b, rows with a sheet (D-070)
+  const NTF_AT = pick('ntf', ['a', 'b', 'c'], 'c'); // chosen (D-070): c, push only; social emails deferred (OQ-32)
+  const DEL_AT = pick('del', ['a', 'b', 'c'], 'b'); // chosen: b, short steps (D-070)
+  const OUT_AT = pick('out', ['a', 'b'], 'b'); // chosen: b, a short confirmation (D-070)
   const BL_FULL = P.get('bl') === '1' || STATE === 'blocked';
   if (STATE === 'loading') document.documentElement.classList.add('ld-' + LD_AT);
   if (STATE === 'empty') { st.answers = []; st.comments = {}; }
@@ -1100,19 +1100,20 @@
   }
 
   /* Notifications (SET-06): reminder time and time zone, type × channel, push on this device.
-     a: grouped by channel (today). b: one table, each type with a Mobitel and an E-pošta column. */
+     a: grouped by channel. b: one table, each type with a Mobitel and an E-pošta column. c (chosen, D-070): push only. */
   const NTF = [
     ['com', 'Komentari na moje odgovore', '', true, false],
     ['react', 'Reakcije', 'Skupljene, najviše jedna na sat', false, false],
     ['fol', 'Novi pratitelji i zahtjevi', '', true, false],
-    ['sugg', 'Objavljen moj prijedlog pitanja', '', true, true],
-    ['week', 'Sažetak tjedna', 'Nedjeljom', null, false]
+    ['sugg', 'Objavljen moj prijedlog pitanja', '', true, true]
   ];
   function notifBody() {
     const dd = `${swRow('n-dd', 'Podsjetnik za novo pitanje', 'Jedna obavijest dnevno', st.reminder === 'on')}
       <li class="set-row set-row-plain"><label class="set-t" for="f-time2">Vrijeme</label><select class="select rem-time" id="f-time2" data-k="f-time2">${['07:00', '08:00', '09:00', '12:00', '17:00', '20:00', '22:00'].map(t => `<option${st.remTime === t ? ' selected' : ''}>${t}</option>`).join('')}</select></li>`;
     const device = grp('Ovaj uređaj', `<li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">Obavijesti preglednika</span><span class="set-d">${st.reminder === 'denied' ? 'Blokirane u pregledniku. Uključuju se u postavkama preglednika.' : 'Dopuštene'}</span></span></li>`, 'Push obavijesti vrijede za svaki uređaj posebno.');
     const fixed = '<p class="set-note">Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.</p>';
+    /* c (D-070): no social emails in the alpha (OQ-32), so one list of switches for this device. */
+    if (NTF_AT === 'c') return grp('Daily Drop', dd) + grp('Obavijesti na mobitelu', NTF.map(([k, t, d, p]) => swRow('n-' + k, t, d, p)).join(''), 'E-poštom stižu samo poruke o računu i sigurnosti, na primjer poveznica za novu lozinku.') + device;
     if (NTF_AT === 'b') {
       const cell = (k, ch, on) => on === null ? '<td class="ntf-na"><span aria-hidden="true">—</span><span class="sr-only">nije dostupno</span></td>' : `<td><input type="checkbox" id="n-${k}-${ch}" data-k="n-${k}-${ch}"${on ? ' checked' : ''} aria-labelledby="nt-${k} nc-${ch}"></td>`;
       return grp('Daily Drop', dd) + `<section class="set-group"><h2 class="set-gt">Što i kako</h2><table class="ntf-table"><thead><tr><td></td><th scope="col" id="nc-push">Mobitel</th><th scope="col" id="nc-mail">E-pošta</th></tr></thead>

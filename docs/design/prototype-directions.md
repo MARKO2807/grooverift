@@ -104,6 +104,7 @@ These items should be settled in the chosen direction or in step 3.8.
 | D-045 | Light theme as a member setting, dark default. Designed in step 3.4b. |
 
 **Refinement of C, remaining after session 9** (done items are in §7):
+- **Session 12 update:** the key states below (empty, loading, error with Retry and kept text, offline, blocked, the missing-question day, long text) and every settings flow are done in round 10 (D-070, `pulse/round10.html`). The rest of this list still stands.
 - Key states:
   - empty: no answers yet, no follows
   - loading skeletons for answers (the artist search already has them)
