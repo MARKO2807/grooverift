@@ -12,7 +12,7 @@ _Last updated: 2026-11-02 (session 10)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and the password rules in session 10 (D-054), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054) and the wordmark accent (D-055), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 10)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-054. Key ones:
+- Decisions D-001 to D-055. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -43,6 +43,7 @@ _Last updated: 2026-11-02 (session 10)_
     - Music DNA colours carry meaning (rap blue, jazz green and so on), and there are no tag lists under it (D-052)
     - 20 main genres plus a "+ Još žanrova" chip; artists show the country only; "Kako se zoveš?"; profile visibility is one card (D-053)
   - **Password rules (session 10, D-054, resolves OQ-25):** 15 characters minimum, 128 maximum, no composition rules, no expiry; a counter while typing ("Najmanje 15 znakova. Odaberi sigurnu lozinku."); Have I Been Pwned k-anonymity check with fail-open; a monthly sign-in re-check that shows a recommendation banner, not a forced change. Argon2id is R-14 (Phase 4). Counsel question C.10 added.
+  - **Wordmark accent (session 10, D-055, resolves OQ-26):** a short Coral→Amber bolt under "rift", quietly alive (a glint every 5 s, a slow breath), on the standalone wordmark only; stopped by reduced-motion settings. Brief for the designer: `pulse/wordmark.html`.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -54,7 +55,6 @@ _Last updated: 2026-11-02 (session 10)_
 
 ## Next
 1. **Owner agenda, remaining from session 10:**
-   - the **wordmark accent** choice (OQ-26, `pulse/wordmark.html`)
    - the **reaction set** (OQ-13; "Isto / Novo mi je / Dobar izbor" are placeholders)
    - the owner's review of round 3: colours, one-card visibility, icons
 2. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
@@ -81,17 +81,17 @@ _Last updated: 2026-11-02 (session 10)_
 2. Artwork rights; the design must work without covers or photos (D-017).
 3. Authorization complexity (S-02). Mitigated in part by the resolved visibility rules.
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.
-5. Missing production wordmark and vector logo (B-01, D-011).
+5. Missing production wordmark and vector logo (B-01, D-011). The wordmark brief now exists (D-055).
 6. Trademark: "RIFT" marks in classes 9/41 (gamigo EU, Meta, LOST RIFT); attorney assessment needed before filing or brand spend.
 
 ## Code
 No application code. No dependencies installed.
 - `design/prototypes/ia/`, `journeys/` and `tokens/` hold static decision sketches (HTML/CSS/vanilla JS, fictional data).
 - `design/prototypes/directions/` holds the step 3.5 round-1 prototypes: three directions on a shared engine, plus a comparison page (unchanged record).
-- `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (OQ-26 sketches), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
+- `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (the D-055 brief, with the live-bolt intensities), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 11/11 (session 10: password page, counter and breach rejection added).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 12/12 (session 10: password page, counter, breach rejection, live bolt and its reduced-motion stop added).
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
 - `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css`, and `contrast-check.mjs` checks 87 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.

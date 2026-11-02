@@ -28,7 +28,18 @@ svg.i.sm { width: var(--gr-size-icon-sm); height: var(--gr-size-icon-sm); }
 .topbar > .wordmark, .topbar > .top-title { margin-left: var(--gr-space-2); }
 .topbar > .iconbtn + .wordmark, .topbar > .iconbtn + .top-title { margin-left: 0; }
 .wordmark { font-family: var(--gr-font-family-heading); font-weight: var(--gr-font-weight-bold); font-size: var(--gr-font-size-xl); letter-spacing: -0.02em; }
-.wm-rift { color: var(--gr-color-text-accent); }
+.wm-rift { color: var(--gr-color-text-accent); position: relative; display: inline-block; }
+/* Wordmark accent (D-055): a bolt under "rift" in the top bar only. A glint every 5 s and a quiet breath;
+   both stop with "Smanji pokrete" or the OS setting (D-049). Raw colours: brand motif art, mirrors the primitives. */
+.wm-bolt { position: absolute; left: 0; bottom: -6px; width: 100%; height: 6px; overflow: visible; }
+.wm-bolt .bolt { animation: wm-breathe 4s ease-in-out infinite alternate; }
+.wm-bolt .glint { stroke: #FFF1D6; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 14 100; stroke-dashoffset: 14; opacity: 0; animation: wm-glint 5s linear infinite; }
+@keyframes wm-glint { 0% { stroke-dashoffset: 14; opacity: 0; } 2% { opacity: .9; } 24% { stroke-dashoffset: -100; opacity: .9; } 25%, 100% { stroke-dashoffset: -100; opacity: 0; } }
+@keyframes wm-breathe { from { opacity: .72; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .wm-bolt .bolt, .wm-bolt .glint { animation: none; } .wm-bolt .glint { opacity: 0; } }
+html[data-motion="reduced"] .wm-bolt .bolt, html[data-motion="reduced"] .wm-bolt .glint { animation: none; }
+html[data-motion="reduced"] .wm-bolt .glint { opacity: 0; }
+@media (forced-colors: active) { .wm-bolt .bolt { stroke: CanvasText; } }
 .wm { font-family: var(--gr-font-family-heading); font-weight: var(--gr-font-weight-bold); letter-spacing: -0.02em; white-space: nowrap; }
 .top-title { flex: 1; min-width: 0; font: var(--gr-type-title-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: var(--gr-space-1); }

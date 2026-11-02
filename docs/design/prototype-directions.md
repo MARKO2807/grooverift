@@ -242,6 +242,8 @@ Decision sketch `pulse/password.html`: twelve live copies of the account field, 
 - a password from the sketch's breached list is rejected after "Napravi račun" with the reason (simulated list, marked in `app.js`)
 - the sign-in banner is not in the flow prototype, because J1 and J3 have no sign-in screen; it belongs to the states round (§6)
 
+**Wordmark accent (D-055, same session):** the owner chose A ("definitivno A, samo da je malo živa, jako suptilno"). `wordmark.html` gained a section with three intensities of a live bolt (a glint every 9, 5 or 3 s; the stronger two also breathe). The owner chose **A2** (glint every 5 s, breath 72–100 % over 4 s) and the bolt **only on the standalone wordmark**, not on the brand name in sentences. Applied to the top bar in `app.js` (`bolt()`) and `style.css` (`.wm-bolt`, `wm-glint`, `wm-breathe`); both stop under `html[data-motion="reduced"]` and `prefers-reduced-motion`, and the smoke test checks that in every run.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

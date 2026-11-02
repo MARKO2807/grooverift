@@ -81,6 +81,10 @@
   const dnaCanvas = (key, h, cls) => `<canvas class="dna${cls ? ' ' + cls : ''}" data-dna="${key}" data-h="${h}" aria-hidden="true"></canvas>`;
   /* The brand name in running text is set like the wordmark: lowercase, Sora, "rift" in Coral (owner, session 9). */
   const wm = () => '<span class="wm">groove<span class="wm-rift">rift</span></span>';
+  /* Wordmark accent (D-055): a quiet live bolt under "rift", only on the standalone wordmark in the top bar,
+     never on the brand name inside sentences. Motion stops with "Smanji pokrete" (style.css). */
+  const BOLT_PTS = '0,6 34,6 42,1 50,9 58,2 66,8 72,5 100,5';
+  const bolt = () => `<svg class="wm-bolt" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wm-g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs><polyline class="bolt" points="${BOLT_PTS}" fill="none" stroke="url(#wm-g)" stroke-width="2" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/><polyline class="glint" pathLength="100" points="${BOLT_PTS}" fill="none" vector-effect="non-scaling-stroke"/></svg>`;
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
   /* Password rules (D-054): 15 code points minimum, a counter instead of a strength meter, breached passwords
@@ -693,7 +697,7 @@
     let mid;
     if (s.topBlank) mid = '<span class="top-title"></span>';
     else if (s.topTitle) mid = s.topH1 ? `<h1 class="top-title">${esc(s.topTitle)}</h1>` : `<span class="top-title">${esc(s.topTitle)}</span>`;
-    else mid = '<span class="wordmark">groove<span class="wm-rift">rift</span></span>';
+    else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>`;
     const onb = s.kind === 'onb' || s.kind === 'bare';
     return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
   }

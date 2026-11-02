@@ -40,18 +40,18 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
   - `app.js`: `PW_MIN`, `pwMeter()`, a SIMULATED `PW_BREACHED` list; `style.css`: `.pw-meter`, `.pw-count`, `.pw-track`.
   - Docs touched: DECISIONS (D-054, R-14, OQ-25), threat model §6, J1 step 3, IA PUB-02, counsel C.10, prototype-directions §7 round 4.
   - Primary sources used: NIST SP 800-63B-4 final (pages.nist.gov/800-63-4/sp800-63b.html, §3.1.1.2: 15 characters is a SHALL for single-factor; §3.2.2: 100 consecutive failures), Better Auth email-password, HIBP plugin and rate-limit docs, the HIBP API v3 page (no key, no rate limit, `Add-Padding`).
+- **Session 10: wordmark accent (D-055, OQ-26 resolved).** A2: a bolt under "rift", a glint every 5 s and a breath 72–100 %, top bar only. `app.js` `bolt()`, `style.css` `.wm-bolt`; the SVG gradient id `wm-g` exists once per render (the smoke test checks duplicate ids). `wordmark.html` holds the three intensities as the designer's brief.
 - **Open items:**
   - OQ-23: icon library. Phosphor is RECOMMENDED; `pulse/picons.js` embeds six icons as path data, with the MIT notice in `ICONS-LICENSE.md`.
   - OQ-24: the owner's music news idea, after the alpha scope.
-  - OQ-26: **wordmark accent**, four sketches in `pulse/wordmark.html`; A is RECOMMENDED.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 11/11 (session 10).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 12/12 (session 10).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
 1. **Continue the owner's agenda.**
    - ~~Password rules (OQ-25)~~ done in session 10 (D-054).
-   - **Wordmark accent** (OQ-26): `pulse/wordmark.html`, four options, A RECOMMENDED.
+   - ~~Wordmark accent (OQ-26)~~ done in session 10 (D-055).
    - **Reaction set** (OQ-13): explain the options and ask.
    - Round 3 feedback: the genre colours (D-052), the one-card visibility step, the Phosphor icons.
    - The owner liked: the Spirala, with genre-matched pulse speed and soft classical colours; the current under the Daily Drop name; the dock orbit; the invite current.
@@ -78,7 +78,7 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
   - JO2–JO6: RECOMMENDED defaults.
 - **IA leftovers:** Q4 (alpha people search) and Q5 (signed-out playlists).
 - **Pre-alpha:** OQ-05 to OQ-10. OQ-10 is now only about implementing the 18+ gate.
-- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news), OQ-26 (wordmark accent). OQ-25 resolved (D-054).
+- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news). OQ-25 and OQ-26 resolved (D-054, D-055).
 - **Counsel question B.5:** DSA Art. 16 notice form for non-members (PUB-11).
 
 ## Notes
@@ -90,6 +90,7 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
 - **PDFs:** `pdftoppm` is not installed. A zero-dependency Node `zlib` text extraction worked for the EDPB PDF.
 - **Shell:**
   - Single quotes inside `node -e '...'` break on apostrophes.
+  - `git commit -m @'...'@` breaks in PowerShell 5.1 when the message contains double quotes (the text is split into pathspecs). Write the message to a scratchpad file and use `git commit -F <file>`.
   - Long Bash heredocs with non-ASCII text fail; write scripts with the Write tool into the session scratchpad.
   - In JS `String.replace`, `$$` in the replacement string becomes `$`. Use `split().join()` when the text contains `$$`.
   - Chrome `--screenshot` needs an absolute output path.

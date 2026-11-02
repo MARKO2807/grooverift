@@ -52,7 +52,7 @@ The Master Prompt copy `docs/product/master-prompt.txt` has SHA-256 `906801e4e76
 
 ### Known asset gaps and issues
 1. **No vector (SVG/AI/PDF) version of the symbol.** Only raster files exist.
-2. **No standalone wordmark file.** The "groove**rift**" wordmark exists only inside the mockup raster, which is not production quality.
+2. **No standalone wordmark file.** The "groove**rift**" wordmark exists only inside the mockup raster, which is not production quality. The accent for the future vector wordmark is decided (D-055, 2026-11-02): a short jagged Coral→Amber bolt under "rift" only, quietly alive in the product (a glint every 5 s and a slow breath, both stopped by reduced-motion settings). The brief is `design/prototypes/pulse/wordmark.html`, section "A, živa".
 3. **Background-removal artifacts in the PNG.** Greenish-yellow fringe pixels and a jagged glow edge are visible near the inner right contour, beside the waveform. They need cleanup for large-format use.
 4. **Glow and lightning detail are designed for dark backgrounds.** They will not survive at favicon or notification-icon sizes (16–48 px). Android notification badges also require a **monochrome silhouette**.
 

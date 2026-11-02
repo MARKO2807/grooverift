@@ -33,6 +33,21 @@
   .s .glyph { width: 9px; height: 14px; margin-left: 2px; } .l .glyph { width: 22px; height: 36px; margin-left: 4px; }
   canvas.current { display: block; }
   .s canvas.current { width: 104px; margin: 2px auto 0; } .l canvas.current { width: 280px; margin: 6px auto 0; }
+  /* Live bolt (owner, session 10: "A, samo da je malo živa, jako suptilno"). A glint runs along the bolt once per
+     period; the stronger variants also breathe. "Smanji pokrete" and the OS setting stop everything (D-049). */
+  .glint { stroke: #FFF1D6; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 14 100; stroke-dashoffset: 14; opacity: 0; }
+  .live-1 .glint { animation: glint9 9s linear infinite; }
+  .live-2 .glint { animation: glint5 5s linear infinite; } .live-2 .bolt { animation: breathe 4s ease-in-out infinite alternate; }
+  .live-3 .glint { animation: glint3 3s linear infinite; } .live-3 .bolt { animation: breathe3 2.5s ease-in-out infinite alternate; }
+  @keyframes glint9 { 0% { stroke-dashoffset: 14; opacity: 0; } 1% { opacity: .9; } 13% { stroke-dashoffset: -100; opacity: .9; } 14%, 100% { stroke-dashoffset: -100; opacity: 0; } }
+  @keyframes glint5 { 0% { stroke-dashoffset: 14; opacity: 0; } 2% { opacity: .9; } 24% { stroke-dashoffset: -100; opacity: .9; } 25%, 100% { stroke-dashoffset: -100; opacity: 0; } }
+  @keyframes glint3 { 0% { stroke-dashoffset: 14; opacity: 0; } 3% { opacity: 1; } 40% { stroke-dashoffset: -100; opacity: 1; } 41%, 100% { stroke-dashoffset: -100; opacity: 0; } }
+  @keyframes breathe { from { opacity: .72; } to { opacity: 1; } }
+  @keyframes breathe3 { from { opacity: .55; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .glint, .bolt { animation: none !important; } .glint { opacity: 0 !important; } }
+  html[data-motion="reduced"] .glint, html[data-motion="reduced"] .bolt { animation: none; }
+  html[data-motion="reduced"] .glint { opacity: 0; }
+  h2.sec { font: var(--gr-type-title-2); margin: 40px 0 8px; }
 </style>
 </head>
 <body>
@@ -44,6 +59,10 @@
     <linearGradient id="gv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFCB69"/><stop offset="1" stop-color="#FF586B"/></linearGradient>
   </defs></svg>
   <div class="grid" id="grid"></div>
+
+  <h2 class="sec" id="h-live">A, živa: tri jačine</h2>
+  <p>Odabran je A (sesija 10), uz želju da munja bude „malo živa, jako suptilno”. Ovdje su tri jačine iste munje. Bljesak prođe munjom slijeva nadesno jednom u periodu; jače verzije uz to tiho dišu. Uz „Smanji pokrete” (<code>?calm=1</code>) ili OS postavku sve stoji i ostaje statična munja iz A. Gledaj traku: to je mjesto gdje je munja stalno vidljiva.</p>
+  <div class="grid" id="grid-live"></div>
 </div>
 <script src="data.js"></script>
 <script src="current.js"></script>
@@ -66,6 +85,17 @@
     <h2 id="h${k}">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
     <div class="bar">${html('s', k)}<span class="tag">Alfa</span></div>
     <div class="hero">${html('l', k)}</div>
+    <p>${d}</p></section>`).join('');
+  const boltLive = '<svg class="under" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><polyline class="bolt" points="0,6 34,6 42,1 50,9 58,2 66,8 72,5 100,5" fill="none" stroke="url(#g)" stroke-width="2" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/><polyline class="glint" pathLength="100" points="0,6 34,6 42,1 50,9 58,2 66,8 72,5 100,5" fill="none" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>';
+  const LIVE = [
+    ['A1', 'Jedva: bljesak svakih 9 s', true, 'live-1', 'Munja miruje; jednom u devet sekundi kroz nju prođe kratak svijetli bljesak (oko 1 s). Ništa drugo se ne miče. Većina ljudi to primijeti tek drugi ili treći put.'],
+    ['A2', 'Tiho: bljesak svakih 5 s i disanje', false, 'live-2', 'Bljesak češće, a munja uz to polako diše (72 % do 100 % svjetline, 4 s). Vidljivo kad gledaš, ne smeta kad čitaš.'],
+    ['A3', 'Primjetno: bljesak svakih 3 s', false, 'live-3', 'Najživlje: bljesak svake tri sekunde i jače disanje (55 % do 100 %). Gornja granica; u traci koja je stalno vidljiva vjerojatno previše.']
+  ];
+  document.getElementById('grid-live').innerHTML = LIVE.map(([k, t, rec, cls, d]) => `<section class="card ${cls}" aria-labelledby="h${k}">
+    <h2 id="h${k}">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
+    <div class="bar"><span class="wm s">groove<span class="r">rift${boltLive}</span></span><span class="tag">Alfa</span></div>
+    <div class="hero"><span class="wm l">groove<span class="r">rift${boltLive}</span></span></div>
     <p>${d}</p></section>`).join('');
   window.GR_CURRENT.scan(document);
 })();

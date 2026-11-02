@@ -50,6 +50,8 @@ const HELPERS = `
 const FLOW = `(async () => {${HELPERS}
   expect($('canvas.current[data-cur="invite"]'), 'invite current');
   expect($('main h1 .wm .wm-rift'), 'brand name set like the wordmark');
+  expect($('.topbar .wordmark .wm-bolt') && !$('main .wm-bolt'), 'bolt under rift in the top bar only (D-055)');
+  { const gl = getComputedStyle($('.topbar .wm-bolt .glint')).animationName; expect(document.documentElement.dataset.motion === 'reduced' ? gl === 'none' : gl === 'wm-glint', 'bolt glint follows the motion setting'); }
   await click('[data-a="next"]'); expect(scr() === 'age', 'age');
   expect(getComputedStyle($('.center-block h1')).textAlign === 'center', 'age centred');
   await click('[data-a="next"]'); expect($('#err-age'), 'age error shown');
@@ -166,7 +168,8 @@ const runs = [
   { name: 'dna helix', url: `${base}?at=dnavis`, test: VARIANTS },
   { name: 'daily drop heading', url: `${base}?flow=drop`, test: `(async () => {${HELPERS} expect($('.dd-name').textContent === 'Daily Drop' && $('.dd-date time').textContent === 'Nedjelja, 1. studenoga', 'name and date'); expect(!$('.dd-top').textContent.includes('·'), 'no middle dot'); return 'ok'; })()` },
   { name: 'choices page', url: base.replace('index.html', 'choices.html'), test: `(async () => {${HELPERS} await sleep(400); expect($$('#gallery canvas.dna').length === 8 && $$('#gallery canvas.dna').every(c => c.width > 0), 'gallery drawn'); return 'ok'; })()` },
-  { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('.card').length === 4, 'four options'); return 'ok'; })()` },
+  { name: 'wordmark page', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('#grid .card').length === 4 && $$('#grid-live .card').length === 3, 'four options and three live intensities'); expect(getComputedStyle($('.live-1 .glint')).animationName === 'glint9', 'live bolt animates'); return 'ok'; })()` },
+  { name: 'wordmark page calm', url: base.replace('index.html', 'wordmark.html?calm=1'), test: `(async () => {${HELPERS} expect(getComputedStyle($('.live-1 .glint')).animationName === 'none' && getComputedStyle($('.live-1 .glint')).opacity === '0', 'live bolt still with reduced motion'); return 'ok'; })()` },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');
