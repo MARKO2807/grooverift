@@ -44,7 +44,7 @@ Clickable examples for every option: [`design/prototypes/journeys/`](../../../de
 ## Other open items raised in this step
 | # | Item | Status |
 |---|---|---|
-| JO1 | **Remove follower** action for private profiles. Without it, the only way to drop an approved follower is a block. Small addition to J4 and PROF-07. | OPEN: proposed scope addition, needs owner approval |
+| JO1 | **Remove follower** action for private profiles. Without it, the only way to drop an approved follower is a block. Small addition to J4 and PROF-07. | **CONFIRMED (D-069):** added to J4 and PROF-07; no notification to the removed follower |
 | JO2 | OQ-16: editorial content needs approved HR **and** EN before scheduling. J6 is drawn this way. | RECOMMENDED (pending since Phase 1) |
 | JO3 | Editorial review by a second person. A small alpha team may have one editor. J6 allows self-approval with a checklist in the alpha and asks for a different reviewer in the beta where possible. | RECOMMENDED |
 | JO4 | Reserve low-water mark of 7 approved reserve questions, and a 72-hour gap alert. | RECOMMENDED (values tunable in ADM-17) |

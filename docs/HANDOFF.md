@@ -61,6 +61,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - Reminder: `NOTIF_QS` / `?nq=1..4` (the example question is separate from `D.drop.question`), `.rem-row` with `.rem-time`, and the `.install` card. Done: `.lead-done`.
     - Round 7 URL options: `?ddn=none|a..e` (living name, `ddName()`), `?home=c..g`, `?hub=a..e` (`hubBody()`, `hubProgramme()`, `st.hubDay`), `?nq=1..4`.
   - **D-067 (same session): round 9.** `nameFix()` (three words, capitals), `dna.js` heavy family block (`CHAR`, glow, sparks; family 0 only), comment form `.live-field` and `com-cancel`, `SUB` sub-screens via screen `setsub` (`?flow=drop&at=setsub&s=<key>`, `swRow`/`row`/`grp` helpers, `data-a="sw"` toggles). Options: `?age18=a|b|c` (`&show=age18` opens it on `at=age`), `?all=a..d`, `?past=a..c` (`&day=<iso>` on the Hub), `?act=a..c`, `?prow=a..d`. `pastDrops` have fictional `n`, `c`, `r` counts. Tests: `pulse-smoke.mjs` 24/24.
+  - **D-069 (same session):** OQ-15 settled (30 days / 30 days; update the Račun sub-screen note, which still cites OQ-15), JO1 "Ukloni pratitelja" approved (prototype it on the followers list when PROF-07 is sketched), naming odgovor / komentar / reakcija confirmed.
   - **D-068 (same session): round 9 choices, now the defaults:** `age18=a`, `all=c`, `past=a`, `act=a`, `prow=b`. OQ-31 resolved: comments are text plus catalogue cards; **to do:** add the catalogue-card picker to the comment form (reuse the answer composer's `refsEditor` pattern).
   - **D-066 (same session):** settings default is `set=b` (profile card `.set-me`); the data copy lives inside the delete flow (OQ-30 resolved).
   - **D-065 (same session): Settings round 8.** `?set=a..d` (`SET_AT`, now default b), `setRow()`, `setStatus()`, `settingsBody()`; d filters rows through `#f-setq` (`st.setQ`). No export row; `.set-delete` sits under Log out; status pill `.set-status` on top. OQ-30 was resolved by D-066. Backlog of all ideas: `docs/product/backlog.md`. Rule from the owner: always ask before anything that touches a strict Master Prompt rule.
@@ -125,7 +126,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
 2. **Settings walkthrough with the owner (owner, session 11: "nismo prošli postavke"):** arrangement B is chosen and the data copy goes into the delete flow (D-066); now prototype the key sub-screens: Uredi profil, Račun (username change rules, OQ-15), Privatnost, Obavijesti, Tvoji podaci (export, deactivate, delete with re-authentication and a 30-day grace period) and Log out. Use `docs/research/2026-11-02-settings-benchmark.md`.
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
-5. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
+5. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.
 6. **Real-phone test:** `design/prototypes/tools/serve.mjs` serves the prototypes read-only on the home network. Start it only when the owner asks, and follow the port rule.
 7. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
 
@@ -137,7 +138,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
   - the visibility step now uses short table labels
 - **From round 7:** OQ-28, archive depth. From the settings research: whether Music DNA personalisation needs a consent toggle (counsel), and muted words (scope, later).
 - **From 3.3:**
-  - JO1: Remove follower (OPEN).
+  - JO1: Remove follower (approved, D-069).
   - JO2–JO6: RECOMMENDED defaults.
 - **IA leftovers:** Q4 (alpha people search) and Q5 (signed-out playlists).
 - **Pre-alpha:** OQ-05 to OQ-10. OQ-10 is now only about implementing the 18+ gate.

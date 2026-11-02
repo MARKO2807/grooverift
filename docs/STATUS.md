@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-068. Key ones:
+- Decisions D-001 to D-069. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -81,6 +81,7 @@ _Last updated: 2026-11-02 (session 11)_
     - **Settings (D-065):** no data-download row, delete at the very bottom, a quiet status mark on top; four arrangements in `pulse/round8.html`. Globe is the language icon. **Chosen (D-066):** B, the profile card on top; the data copy is offered inside the delete flow.
     - **Ideas backlog:** `docs/product/backlog.md` lists every idea outside the confirmed scope.
     - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Chosen (D-068): a short 18+ confirmation, faces for "all answers", answers only on past days, Activity by day, three-column profile counts, comments as text plus catalogue cards (images from B1).
+    - **D-069:** @username changes once every 30 days, old name reserved 30 days; "Ukloni pratitelja" for private profiles (JO1, approved); naming odgovor / komentar / reakcija.
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -99,7 +100,7 @@ _Last updated: 2026-11-02 (session 11)_
 2. **Settings sub-screens** (arrangement B, D-066): edit profile, account, privacy, notifications, the delete flow with the data copy first, log out.
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
-   - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
+   - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).
    - OQ-24: music news idea, after the alpha scope.
    - OQ-29: Hub ideas Hidden Gems and On Repeat (backlog, `docs/product/future-hub-ideas.md`; not now).
 
