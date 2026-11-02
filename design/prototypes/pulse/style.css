@@ -212,6 +212,15 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 /* ---------- motifs ---------- */
 canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-action: manipulation; }
 .hero-current { max-width: 20rem; }
+/* Simple single-question steps (age, language; session 11): a quiet icon above the question. */
+.step-ic { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto var(--gr-space-3); border-radius: 50%; background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); color: var(--gr-color-highlight-text); }
+.step-ic .pi { width: 28px; height: 28px; }
+/* Invite note (owner, session 11): the alpha note and a home-screen tip (PWA) share one box. */
+.info-stack { flex-direction: column; gap: var(--gr-space-2); }
+.info-stack > p { display: flex; gap: var(--gr-space-2); align-items: flex-start; }
+.info-stack > p + p { padding-top: var(--gr-space-2); border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.info-stack svg { flex: none; color: var(--gr-color-text-secondary); width: var(--gr-size-icon-md); height: var(--gr-size-icon-md); }
+.info-stack .pwa-ic { color: var(--gr-color-highlight-text); }
 /* Invite (owner, session 11): everything fits the viewport without scrolling; the current is small. */
 .screen-invite { padding-top: var(--gr-space-3); padding-bottom: var(--gr-space-4); gap: var(--gr-space-4); justify-content: center; }
 .screen-invite .hero { padding-top: 0; gap: var(--gr-space-2); }
@@ -219,7 +228,8 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .inv-cur { max-width: 16rem; }
 .inv-wide { max-width: none; width: calc(100% + 2 * var(--gr-space-4)); } /* centred overflow reaches both screen edges */
 .inv-foot { max-width: none; margin-bottom: calc(-1 * var(--gr-space-1)); }
-@media (max-height: 600px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.75rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } }
+@media (max-height: 700px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.875rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } }
+@media (max-height: 600px) { .screen-invite .h-hero { font-size: 1.5rem; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; } .screen-invite .info-stack > p + p { padding-top: 6px; } }
 .dd-current { max-width: 14rem; margin-top: var(--gr-space-1); }
 @media (forced-colors: active) { canvas.current, canvas.ic, canvas.dna { forced-color-adjust: none; } }
 

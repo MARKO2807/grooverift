@@ -46,7 +46,7 @@
   }
   const longDate = iso => { const d = dparts(iso); return `${cap(d.wd)}, ${d.day}. ${d.mg}`; };
 
-  const ONB = ['age', 'account', 'username', 'language', 'visibility', 'dna', 'dnavis', 'how', 'reminder'];
+  const ONB = ['age', 'uilang', 'account', 'username', 'language', 'visibility', 'dna', 'dnavis', 'how', 'reminder'];
   const VIS_LABEL = { public: 'Javni', private: 'Privatni' };
   const DNA_LABEL = { all: 'Svi članovi', followers: 'Samo pratitelji', me: 'Samo ja' };
   const READ_LANGS = ['Hrvatski', 'English', 'Deutsch', 'Italiano', 'Slovenščina'];
@@ -485,25 +485,40 @@
         <p class="eyebrow">Pozivnica</p>
         <h1 class="h-hero">Imaš pozivnicu za ${wm()}</h1>
         <p class="tagline" lang="en">Where musical worlds collide.</p>
-        ${INV_AT === 'b' ? invCur(56) : INV_AT === 'c' ? invCur(56, 'inv-wide') : ''}
+        ${INV_AT === 'b' ? invCur(window.matchMedia('(max-height: 600px)').matches ? 40 : 56) : INV_AT === 'c' ? invCur(56, 'inv-wide') : ''}
         <p class="lead">Ovdje se razgovara o glazbi: svaki dan jedno pitanje za sve, tvoj Music DNA i ljudi sličnog ili sasvim drukčijeg ukusa.</p>
       </div>
-      <div class="info">${ic('info')}<p>Ovo je zatvorena alfa. Neke stvari još nedostaju i mogu se promijeniti. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></p></div>`,
+      <div class="info info-stack">
+        <p>${ic('info')}<span>Zatvorena alfa: neke stvari još nedostaju i mogu se promijeniti. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></span></p>
+        <p>${pic('device-mobile', 'pwa-ic')}<span>Dodaj ${wm()} na početni zaslon: otvara se kao aplikacija, uz podsjetnike. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorile kratke upute za iPhone i Android (Dodaj na početni zaslon)." data-k="pwa-how">Kako?</button></span></p>
+      </div>`,
       foot: `${INV_AT === 'd' ? invCur(48, 'inv-foot') : ''}<button class="btn btn-primary btn-block" data-a="next" data-k="next">Prihvati pozivnicu</button><p class="fine">Pozivnica vrijedi za ${esc(D.email)}.</p>`
     }),
     age: () => ({
       kind: 'onb', back: true,
       body: `<div class="center-block">
-        <h1>Je li ti 18 ili više godina?</h1>
-        <p class="lead">GrooveRift je samo za odrasle. Ne tražimo datum rođenja.</p>
-        ${choices('age', 'Odaberi što vrijedi za tebe.', [{ v: 'adult', t: 'Imam 18 ili više godina' }, { v: 'minor', t: 'Imam manje od 18 godina' }], st.age, 'choices-center')}
+        <span class="step-ic" aria-hidden="true">${pic('users-three')}</span>
+        <h1>Imaš li 18 ili više godina?</h1>
+        <p class="lead">${wm()} je zajednica punoljetnih ljubitelja glazbe. Ne tražimo datum rođenja, samo tvoj odgovor.</p>
+        ${choices('age', 'Odaberi što vrijedi za tebe.', [{ v: 'adult', t: 'Da, imam 18 ili više' }, { v: 'minor', t: 'Ne, imam manje od 18' }], st.age, 'choices-center')}
+      </div>`,
+      foot: nextBtn()
+    }),
+    uilang: () => ({
+      kind: 'onb', back: true,
+      body: `<div class="center-block">
+        <span class="step-ic" aria-hidden="true">${pic('translate')}</span>
+        <h1>Odaberi jezik</h1>
+        <p class="lead" lang="en">Choose your language</p>
+        ${choices('lang', 'Jezik sučelja', [{ v: 'hr', t: 'Hrvatski' }, { v: 'en', t: 'English', lang: 'en' }], st.lang, 'choices-center')}
+        <p class="fine">Možeš ga promijeniti bilo kad u postavkama.</p>
       </div>`,
       foot: nextBtn()
     }),
     minor: () => ({
       kind: 'onb', back: true, noProgress: true,
       body: `<div class="center-block">
-        <h1>GrooveRift je samo za odrasle</h1>
+        <h1>${wm()} je zasad samo za punoljetne</h1>
         <p class="lead">Hvala na iskrenom odgovoru. Ništa nismo spremili, a pozivnica je ostala netaknuta.</p>
         <p>Ako je odgovor bio greška, vrati se korak natrag.</p>
         <p><button class="link" data-a="toast" data-msg="Pravila zajednice (PUB-11) nisu dio skice." data-k="rules">Pravila zajednice</button></p></div>`,
@@ -532,11 +547,9 @@
     }),
     language: () => ({
       kind: 'onb', back: true,
-      body: `<h1>Jezik</h1>
-        ${choices('lang', 'Jezik sučelja', [{ v: 'hr', t: 'Hrvatski' }, { v: 'en', t: 'English', lang: 'en' }], st.lang)}
+      body: `<h1 id="rl-label">Na kojim jezicima rado čitaš odgovore?</h1>
         <div class="group" role="group" aria-labelledby="rl-label" aria-describedby="rl-help">
-          <p class="group-label" id="rl-label">Na kojim jezicima rado čitaš odgovore? <span class="opt">Neobavezno</span></p>
-          <p class="help" id="rl-help">Takve odgovore češće vidiš u poretku „Za tebe”. Ništa se ne skriva.</p>
+          <p class="help" id="rl-help"><span class="opt">Neobavezno.</span> Takve odgovore češće vidiš u poretku „Za tebe”. Ništa se ne skriva.</p>
           <div class="chips">${READ_LANGS.map(l => `<button class="chip" data-a="readlang" data-l="${l}" data-k="rl-${l}" aria-pressed="${st.readLangs.has(l)}"><span class="ck">${ic('check', 'sm')}</span>${l}</button>`).join('')}</div>
         </div>`,
       foot: nextBtn()
@@ -783,7 +796,7 @@
     const s = S[st.screen]();
     const standalone = window.top === window;
     let shell = '';
-    if (standalone) shell += `<p class="proto-note">Skica 3.5. Izmišljeni podaci, wordmark je privremen (D-011).</p>`;
+    if (standalone) shell += `<p class="proto-note">Skica 3.5: izmišljeni podaci, privremeni wordmark.</p>`;
     shell += topbar(s);
     if (s.kind === 'onb' && !s.noProgress) shell += progress();
     shell += `<main id="main" class="screen screen-${st.screen} kind-${s.kind}">${s.body}</main>`;
@@ -856,7 +869,8 @@
       case 'invite': return go('age');
       case 'age':
         if (!st.age) { err.age = 'Odaberi jedan odgovor.'; break; }
-        return go(st.age === 'adult' ? 'account' : 'minor');
+        return go(st.age === 'adult' ? 'uilang' : 'minor');
+      case 'uilang': return go('account');
       case 'account':
         if (pwLen(st.pw) < PW_MIN) { const n = pwLen(st.pw); err.pw = n ? `Lozinka ima ${n} ${pl(n, 'znak', 'znaka', 'znakova')}. Treba ih najmanje ${PW_MIN}.` : 'Upiši lozinku.'; break; }
         if (PW_BREACHED.has(st.pw)) { err.pw = 'Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.'; break; }
@@ -1059,7 +1073,7 @@
   });
 
   /* ?at=<screen> opens a given screen with earlier steps filled in, so the review page can jump straight to it. */
-  const ORDER = ['invite', 'age', 'account', 'username', 'language', 'visibility', 'dna', 'dnavis', 'how', 'reminder', 'done'];
+  const ORDER = ['invite', 'age', 'uilang', 'account', 'username', 'language', 'visibility', 'dna', 'dnavis', 'how', 'reminder', 'done'];
   const AT = P.get('at');
   if (AT && !START_DROP && ORDER.includes(AT)) {
     const k = ORDER.indexOf(AT);

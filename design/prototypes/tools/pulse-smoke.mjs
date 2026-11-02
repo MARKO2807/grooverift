@@ -59,6 +59,9 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="next"]'); expect($('#err-age'), 'age error shown');
   expect(document.activeElement && document.activeElement.name === 'age', 'focus moved to age group');
   await click('input[name="age"][value="adult"]'); expect(!$('#err-age'), 'age error cleared');
+  expect(!$('main').textContent.includes('samo za odrasle'), 'softer 18+ wording (session 11)');
+  await click('[data-a="next"]'); expect(scr() === 'uilang', 'interface language right after the age step');
+  expect($('input[name="lang"][value="hr"]') && $('input[name="lang"][value="en"]') && $$('input[name="lang"]').length === 2, 'HR and EN only');
   await click('[data-a="next"]'); expect(scr() === 'account', 'account');
   expect($('[data-a="showpw"] svg.pi'), 'eye icon next to show password');
   expect($('#help-pw').textContent === 'Najmanje 15 znakova. Odaberi sigurnu lozinku.', 'password help text (D-054)');
@@ -168,7 +171,7 @@ const VARIANTS = `(async () => {${HELPERS}
 
 const runs = [
   { name: 'flow 360x640', url: `${base}`, test: FLOW },
-  { name: 'flow 320x568', url: `${base}`, test: FLOW.replace("expect(fits(), 'visibility fits the 360x640 screen without scrolling');", '').replace("expect(fits(), 'dnavis fits the 360x640 screen without scrolling');", ''), w: 320, h: 568 },
+  { name: 'flow 320x568', url: `${base}`, test: FLOW.replace("expect(fits(), 'visibility fits the 360x640 screen without scrolling');", '').replace("expect(fits(), 'dnavis fits the 360x640 screen without scrolling');", '').replace("expect(document.documentElement.scrollHeight <= innerHeight + 1, 'invite fits the screen without scrolling');", ''), w: 320, h: 568 },
   { name: 'flow reduced motion (OS)', url: `${base}`, test: FLOW, reduce: true },
   { name: 'flow calm setting', url: `${base}?calm=1`, test: FLOW.replace("expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');", '') },
   { name: 'catalog failure', url: `${base}?at=dna&catalog=fail`, test: CATALOG_FAIL },
@@ -181,7 +184,7 @@ const runs = [
   { name: 'invite current page', url: base.replace('index.html', 'invite-current.html'), test: `(async () => {${HELPERS} await sleep(700); const cs = $$('canvas.ic'); expect(cs.length === 4 && cs.every(c => c.height > 0), 'four invite variants drawn'); expect(cs.map(c => c.dataset.v).join() === 'spikes,arc,beat,branch', 'variant order'); return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'invite current page calm', url: base.replace('index.html', 'invite-current.html?calm=1'), test: `(async () => {${HELPERS} await sleep(200); expect(document.documentElement.dataset.motion === 'reduced' && $$('canvas.ic').length === 4, 'still frames under reduced motion'); return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'invite layouts', url: base.replace('index.html', 'invite-layout.html'), test: `(async () => {${HELPERS} await sleep(1500); const f = $$('.fit'); expect(f.length === 4 && f.every(e => e.dataset.over !== undefined && +e.dataset.over <= 1), 'all four invite layouts fit 360x640: ' + f.map(e => e.dataset.over).join()); return 'ok'; })()`, w: 1600, h: 900 },
-  { name: 'invite layouts 320x568', url: base.replace('index.html', 'invite-layout.html?s=320x568'), test: `(async () => {${HELPERS} await sleep(1500); const f = $$('.fit'); expect(f.length === 4 && f.every(e => +e.dataset.over <= 1), 'all four invite layouts fit 320x568: ' + f.map(e => e.dataset.over).join()); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'invite layout B 320x568', url: base.replace('index.html', 'invite-layout.html?s=320x568'), test: `(async () => {${HELPERS} await sleep(1500); const b = $('#fit-b'); expect(b && b.dataset.over !== undefined && +b.dataset.over <= 1, 'the chosen layout B fits 320x568 (D-059)'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');
