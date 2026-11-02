@@ -81,7 +81,7 @@
   const current = (key, size, cls) => `<canvas class="current${cls ? ' ' + cls : ''}" data-cur="${key}" data-size="${size || 'md'}" aria-hidden="true"></canvas>`;
   const dnaCanvas = (key, h, cls) => `<canvas class="dna${cls ? ' ' + cls : ''}" data-dna="${key}" data-h="${h}" aria-hidden="true"></canvas>`;
   /* The brand name in running text is set like the wordmark: lowercase, Sora, "rift" in Coral (owner, session 9). */
-  const wm = () => '<span class="wm">groove<span class="wm-rift">rift</span></span>';
+  const wm = lg => `<span class="wm${lg ? ' wm-lg' : ''}">groove<span class="wm-rift">rift</span></span>`; // lg: a larger brand name in a sentence (owner, session 11), never with the bolt
   /* Wordmark accent (D-055, redone by D-058): a hairline bolt that hangs from the baseline of "rift", with a
      white-hot core and a soft glow. Every 4.5 s it flickers and three small sparks jump off its tips (N2). Only on
      the standalone wordmark in the top bar, never on the brand name inside sentences. Motion stops with
@@ -619,7 +619,7 @@
       </div>
       <div class="info info-stack">
         <p>${ic('info')}<span>Zatvorena alfa: neke stvari još nedostaju i mogu se promijeniti. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></span></p>
-        <p>${pic('device-mobile', 'pwa-ic')}<span>Dodaj ${wm()} na početni zaslon: otvara se kao aplikacija, uz podsjetnike. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorile kratke upute za iPhone i Android (Dodaj na početni zaslon)." data-k="pwa-how">Kako?</button></span></p>
+        <p>${pic('device-mobile', 'pwa-ic')}<span>Dodaj ${wm(true)} na početni zaslon: otvara se kao aplikacija, uz podsjetnike. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorile kratke upute za iPhone i Android (Dodaj na početni zaslon)." data-k="pwa-how">Kako?</button></span></p>
       </div>`,
       foot: `${INV_AT === 'd' ? invCur(48, 'inv-foot') : ''}<button class="btn btn-primary btn-block" data-a="next" data-k="next">Prihvati pozivnicu</button><p class="fine">Pozivnica vrijedi za ${esc(D.email)}.</p>`
     }),
@@ -628,7 +628,7 @@
       body: `<div class="center-block">
         <span class="step-ic" aria-hidden="true">${pic('users-three')}</span>
         <h1>Imaš li 18 ili više godina?</h1>
-        <p class="lead">${wm()} je zajednica punoljetnih ljubitelja glazbe. Ne tražimo datum rođenja, samo tvoj odgovor.</p>
+        <p class="lead">${wm(true)} je zajednica punoljetnih ljubitelja glazbe. Ne tražimo datum rođenja, samo tvoj odgovor.</p>
         ${choices('age', 'Odaberi što vrijedi za tebe.', [{ v: 'adult', t: 'Da, imam 18 ili više' }, { v: 'minor', t: 'Ne, imam manje od 18' }], st.age, 'choices-center')}
       </div>`,
       foot: nextBtn()

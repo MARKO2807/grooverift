@@ -68,6 +68,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - Phosphor path data added: translate, device-mobile, calendar-dots.
     - `?q=` prefills the artist search, for the review frames.
     - `?at=profile` needs `?flow=drop`.
+    - Follow-up: `wm(true)` gives a larger brand name in a sentence (invite tip, 18+). The "Kako radi" Daily Drop card has a CSS orbit border (`.how-main::before`, `--how-a`).
     - Open idea from the owner: a small effect that stands for the Daily Drop on Home, in place of the current. Offer options later if useful.
   - **D-059 (same session):**
     - The invite fits one screen. The current is `data-h="56"` under the tagline: layout B, `INV_AT` in `app.js`; `?inv=a|c|d` shows the rejected layouts.

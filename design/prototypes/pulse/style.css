@@ -599,3 +599,19 @@ html[data-motion="reduced"] .switch span { transition: none; }
 .vrows:not(.vrows-c) .vrow { padding: 10px var(--gr-space-3); gap: 4px; }
 .vrows:not(.vrows-c) .vrow-list { line-height: 1.35; gap: 3px; }
 .screen-visibility .vrow-same { line-height: 1.35; }
+
+/* Session 11 follow-up (owner): a larger brand name inside some sentences (no bolt), and a living border round the
+   Daily Drop card on "Kako radi": a Coral→Amber charge circles the edge. Stops with "Smanji pokrete" (D-049). */
+.wm-lg { font-size: 1.2em; line-height: 1; color: var(--gr-color-text-primary); }
+@property --how-a { syntax: '<angle>'; inherits: false; initial-value: 220deg; }
+.how-main { position: relative; isolation: isolate; }
+.how-main::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 2px; pointer-events: none; z-index: 1;
+  background: conic-gradient(from var(--how-a), transparent 0 58%, #FF586B55 70%, #FF586B 84%, #FFCB69 92%, #FFF4E6 95%, transparent 96.5%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 4px #FF8A6BCC) drop-shadow(0 0 1px #FFCB69); animation: how-orbit 3.6s linear infinite; }
+@keyframes how-orbit { to { --how-a: 580deg; } }
+.how-main .how-vis { background: var(--gr-gradient-brand); border-color: transparent; }
+.how-main .how-vis .how-ic { color: var(--gr-color-text-on-accent); }
+@media (prefers-reduced-motion: reduce) { .how-main::before { animation: none; } }
+html[data-motion="reduced"] .how-main::before { animation: none; }
+@media (forced-colors: active) { .how-main::before { display: none; } }

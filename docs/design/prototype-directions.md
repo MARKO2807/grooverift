@@ -309,6 +309,9 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
 - Notes for later:
   - The invite fit check at 320×568 runs in a frame. The standalone prototype note takes a line that the real app does not have.
   - "Kako radi" fits 360×640 and 375×667; at 320×568 it scrolls.
+- Follow-up (same session):
+  - The brand name in the invite PWA tip and in the 18+ sentence is larger (`wm(true)`, `.wm-lg`, primary colour, no bolt).
+  - The Daily Drop card on "Kako radi" has a living border: a Coral→Amber charge circles the edge (CSS `@property` angle on a conic gradient), and the icon tile is filled with the brand gradient. It stops under reduced motion and is hidden in forced colours.
 - Verification: `pulse-smoke.mjs` 21/21; `smoke.mjs` 3/3.
 
 ### Verification (session 9)
