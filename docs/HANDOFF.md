@@ -51,8 +51,24 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - `invite-current.js` (`GR_INVITE`) holds all four variants, chosen with `data-v`. The app uses `<canvas class="ic" data-v="branch" data-key="invite">`.
     - Height 112 px. Charges travel in for 760 ms, then a branching tree flashes twice (0–90 ms, a gap, then 130–330 ms).
     - `app.js` `afterRender()` calls `INV.scan`, and navigation calls `INV.reset()`.
-  - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived), `pulse/invite-current.html` and `pulse/invite-layout.html`. Both mark the choice as "odabrano".
+  - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived), `pulse/invite-current.html`, `pulse/invite-layout.html` and `pulse/round6.html`. Both mark the choice as "odabrano".
   - The owner did not take the recommendations (N3, I1); the choices were N2 and I4.
+  - **D-060 (same session): round 6 review of the whole flow.**
+    - New `uilang` step after `age` (ORDER and ONB). The `language` step now holds only the reading languages.
+    - The invite note is `.info-stack`: the alpha note plus the PWA tip. Compact invite rules start at `max-height: 700px`, and the current is 40 px when the screen is 600 px tall or less.
+    - "Kako radi" is compact rows (`.screen-how`). The Done screen has no current.
+    - Tab swipe: pointer handlers in `app.js` (`TABS`, `swEnd`). `.kind-app` has `touch-action: pan-y`, and the click after a drag is swallowed.
+    - Round 6 options are URL params, with the chosen defaults in `pick(..., def)`:
+      - `vis`: `compact`, via `visibilityRows()`
+      - `art`: `genre`, via `artistMeta()`
+      - `home`: `c`, via `homeBody()` and `answerPeek()`
+      - `prof`: `c`, via `profileBody()`
+      - `nav`: `glass`, a class on `<html>`
+    - The `dna.js` tip shows the genre only.
+    - Phosphor path data added: translate, device-mobile, calendar-dots.
+    - `?q=` prefills the artist search, for the review frames.
+    - `?at=profile` needs `?flow=drop`.
+    - Open idea from the owner: a small effect that stands for the Daily Drop on Home, in place of the current. Offer options later if useful.
   - **D-059 (same session):**
     - The invite fits one screen. The current is `data-h="56"` under the tagline: layout B, `INV_AT` in `app.js`; `?inv=a|c|d` shows the rejected layouts.
     - Branch packets are taller zigzags, and the halos are smaller.
@@ -64,7 +80,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 19/19 (session 11).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 21/21 (session 11).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks

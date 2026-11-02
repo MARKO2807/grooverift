@@ -219,14 +219,11 @@
     const r = st.c.getBoundingClientRect(), x = e.clientX - r.left, pad = 14;
     const u = Math.max(0, Math.min(1, (x - pad) / Math.max(1, r.width - pad * 2)));
     const s = m.segs[segAt(m, u, 0)];
-    const arts = m.arts.filter(a => a.g.includes(s.g.n) || (s.g.parent && a.g.includes(s.g.parent))).map(a => a.name);
     const host = st.c.parentElement; if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
     let el = host.querySelector(':scope > .dna-tip');
     if (!el) { el = document.createElement('span'); el.className = 'dna-tip'; el.setAttribute('aria-hidden', 'true'); host.appendChild(el); }
     el.innerHTML = '';
-    const dot = document.createElement('i'); dot.style.background = css(s.col); el.appendChild(dot);
     const b = document.createElement('b'); b.textContent = s.g.n; el.appendChild(b);
-    if (arts.length) { const sm = document.createElement('small'); sm.textContent = arts.join(', '); el.appendChild(sm); }
     const cx = st.c.offsetLeft + pad + ((s.u0 + s.u1) / 2) * (r.width - pad * 2);
     el.style.left = Math.max(70, Math.min(host.clientWidth - 70, cx)) + 'px';
     el.style.top = (st.c.offsetTop + 4) + 'px';

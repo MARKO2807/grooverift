@@ -78,10 +78,10 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="next"]'); expect(scr() === 'visibility', 'visibility');
   expect(!$('input[name="vis"]:checked'), 'nothing pre-selected');
   expect(fits(), 'visibility fits the 360x640 screen without scrolling');
-  expect($$('.vis-table tbody tr').length === 6, 'six comparison rows');
+  expect($$('.vrows-c .vrow').length === 2 && $$('.vrow-table tbody tr').length === 6, 'two short rows, six rows in the full comparison (D-060)');
   await click('[data-a="next"]'); expect($('#err-vis'), 'vis error');
   await click('input[name="vis"][value="private"]');
-  expect(getComputedStyle($('.vis-opt-priv'), '::before').boxShadow !== 'none' && getComputedStyle($('.vis-opt-pub'), '::before').boxShadow === 'none', 'chosen column highlighted');
+  expect(getComputedStyle($('input[value="private"]').closest('.vrow')).boxShadow !== 'none' && getComputedStyle($('input[value="public"]').closest('.vrow')).boxShadow === 'none', 'chosen row highlighted');
   await click('[data-a="next"]'); expect(scr() === 'dna', 'dna');
   expect(!$('[data-a="skip"]'), 'no skip: genres are required');
   expect($$('#genre-chips .chip-genre').length === 20 && $('#genre-chips .chip-more'), '20 main genres and the more chip');
@@ -98,7 +98,7 @@ const FLOW = `(async () => {${HELPERS}
   expect(!$('.traits'), 'no trait tags');
   expect(getComputedStyle($('[data-g="Jazz"] .gdot')).display !== 'none' && getComputedStyle($('[data-g="Pop"] .gdot')).display === 'none', 'genre colour dot on picked chips only');
   await type('#f-artist', 'metalica'); expect($('#artist-results [data-a="artist-add"] .r-title').textContent === 'Metallica', 'typo finds Metallica');
-  expect($('#artist-results [data-a="artist-add"] .r-meta').textContent === 'SAD', 'country only');
+  expect($('#artist-results [data-a="artist-add"] .r-meta').textContent === 'Metal', 'main genre under the name (D-060)');
   await type('#f-artist', 'nirv'); expect($$('#artist-results [data-a="artist-add"]').length === 2, 'two Nirvanas');
   await click('#artist-results [data-a="artist-add"]'); expect(document.activeElement.id === 'f-artist', 'focus back to search');
   expect($$('#picked .portraits li').length === 1, 'portrait added');
@@ -118,6 +118,8 @@ const FLOW = `(async () => {${HELPERS}
   expect(!$('.dna-genres') && !$('.traits') && $('.dna-card .sr-only'), 'no visible tags under DNA, text for screen readers');
   await click('[data-a="finish"]'); expect(scr() === 'home', 'home');
   expect($('.dd-name') && $('.dd-date time') && !$('.dd-top').textContent.includes('·'), 'name and date apart, no middle dot');
+  expect(!$('.dd-teaser canvas.current') && $$('.dd-c .peeks .peek').length === 2, 'Home: no current, the first two answers (D-060)');
+  expect(document.documentElement.classList.contains('nav-glass'), 'glass tab bar (D-060)');
   expect($('.dd-actions [data-a="open-compose"]').textContent.trim() === 'Odgovori', 'button says Odgovori');
   await click('[data-a="open-compose"]'); expect(scr() === 'drop' && $('.sheet-compose'), 'answer sheet from home');
   expect($('.notice#aud'), 'private notice before posting');
@@ -145,7 +147,7 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="more"]'); expect($('.menu'), 'menu'); await click('[data-a="menu"]'); expect(!$('.menu'), 'menu closed');
   await click('[data-a="comments"]'); expect(scr() === 'answer', 'comments screen');
   await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
-  await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.dna-card canvas.dna'), 'profile with DNA');
+  await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
   const calmBefore = $('[data-a="calm"]').getAttribute('aria-checked');
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');

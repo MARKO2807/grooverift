@@ -584,7 +584,7 @@ html[data-motion="reduced"] .switch span { transition: none; }
 
 /* Tab bar backgrounds. glass: frosted, content passes under it. float: a frosted pill above the edge.
    ember: solid, the active tab gets a soft Coral→Amber pill. Solid fallback where blur is unsupported or colours are forced. */
-.nav-glass .bottom { background: rgba(11, 13, 18, .62); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); }
+.nav-glass .bottom { background: rgba(11, 13, 18, .5); -webkit-backdrop-filter: blur(12px) saturate(150%); backdrop-filter: blur(12px) saturate(150%); } /* about 20 % clearer than first shown (owner) */
 .nav-glass .tabbar { border-top-color: rgba(255, 255, 255, .08); }
 .nav-float .bottom { background: transparent; padding: 0 var(--gr-space-3) calc(var(--gr-space-2) + env(safe-area-inset-bottom)); }
 .nav-float .dock { margin-bottom: var(--gr-space-2); border-radius: var(--gr-radius-sheet); }

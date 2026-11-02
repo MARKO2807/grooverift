@@ -298,6 +298,19 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
 | 10 | The 18+ step feels like signing up for an adult site. Soften it (design or an extra sentence); the 18+ rule (D-051) stays. | Direct, wording options if needed |
 | 11 | Invite: under the alpha note, recommend adding a home-screen shortcut, because the app is a PWA. | Direct; the invite must still fit one screen (D-059) |
 
+**Outcome (D-060).**
+- Direct items 3, 4 and 8 to 11 are applied.
+- Options items, from `round6.html`:
+  - visibility C (two short rows)
+  - artist line C (genre)
+  - Home C with the name and date of B
+  - profile C (Music DNA on top) with a genre-only tap tip
+  - glass tab bar, about 20 % clearer
+- Notes for later:
+  - The invite fit check at 320×568 runs in a frame. The standalone prototype note takes a line that the real app does not have.
+  - "Kako radi" fits 360×640 and 375×667; at 320×568 it scrolls.
+- Verification: `pulse-smoke.mjs` 21/21; `smoke.mjs` 3/3.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

@@ -474,18 +474,19 @@
   const INV_AT = ['a', 'b', 'c', 'd'].includes(P.get('inv')) ? P.get('inv') : 'b';
   const invCur = (h, cls) => `<canvas class="ic inv-cur${cls ? ' ' + cls : ''}" data-v="branch" data-key="invite" data-h="${h}" aria-hidden="true"></canvas>`;
 
-  /* ---------- Round 6 options (owner, session 11). PENDING owner choice; compared side by side in round6.html. ----------
-     ?vis=cols|rows|compact   profile visibility step (cols = today's one card with two columns, D-053)
-     ?art=country|smart|genre artist results (country = today's rule, D-053)
-     ?home=a|b|c|d            Daily Drop on Home (a = today)
-     ?prof=a|b|c              profile page (a = today)
-     ?nav=solid|glass|float|ember  tab bar background (solid = today) */
-  const pick = (k, list) => list.includes(P.get(k)) ? P.get(k) : list[0];
-  const VIS_AT = pick('vis', ['cols', 'rows', 'compact']);
-  const ART_AT = pick('art', ['country', 'smart', 'genre']);
-  const HOME_AT = pick('home', ['a', 'b', 'c', 'd']);
-  const PROF_AT = pick('prof', ['a', 'b', 'c']);
-  const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember']);
+  /* ---------- Round 6 (owner, session 11; D-060). The chosen option is the default; the URL still shows the others,
+     compared side by side in round6.html.
+     ?vis=cols|rows|compact   profile visibility step; chosen: compact (cols was the D-053 card)
+     ?art=country|smart|genre artist results; chosen: genre (country was the D-053 rule)
+     ?home=a|b|c|d            Daily Drop on Home; chosen: c, with the name and date set as in b
+     ?prof=a|b|c              profile page; chosen: c, the Music DNA on top
+     ?nav=solid|glass|float|ember  tab bar background; chosen: glass, a little clearer than first shown */
+  const pick = (k, list, def) => list.includes(P.get(k)) ? P.get(k) : def;
+  const VIS_AT = pick('vis', ['cols', 'rows', 'compact'], 'compact');
+  const ART_AT = pick('art', ['country', 'smart', 'genre'], 'genre');
+  const HOME_AT = pick('home', ['a', 'b', 'c', 'd'], 'c');
+  const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
+  const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
   if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
 
   /* Artist result meta line. country: the country, plus a short description only for same-name artists.
@@ -546,7 +547,7 @@
     const n = allAnswers().length, peeks = allAnswers().slice(0, HOME_AT === 'c' ? 2 : 3);
     const eyebrow = `<p class="dd-eyebrow"><span class="dd-name dd-name-sm">Daily Drop</span><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>`;
     if (HOME_AT === 'c') return `<section class="dd dd-teaser dd-c" aria-labelledby="h-teaser">
-        ${eyebrow}
+        ${ddHead('home', true)}
         <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
         <div class="dd-actions">${teaserActions()}</div>
         <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}</ul>
