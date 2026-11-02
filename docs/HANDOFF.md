@@ -1,11 +1,11 @@
 # Session handoff
 
-_Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
+_Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
+3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
@@ -34,24 +34,29 @@ _Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then 
     - Artist results show the country only, and tiles without a photo show one initial.
     - The name step asks "Kako se zoveš?", and "Prikaži" has an eye icon.
     - Profile visibility is one card. The chosen column is `.vis-opt::before`; `::after` makes the whole column clickable.
-- **New open items:**
+- **Session 10: password rules (D-054, OQ-25 resolved).**
+  - Decision sketch `pulse/password.html` (twelve live fields; opt-in live HIBP query). The owner chose: 15 characters; a counter, no strength meter; HIBP with fail-open; a recommendation banner after a sign-in time hit (a conscious deviation from NIST's "force a change", recorded in D-054).
+  - Help text "Najmanje 15 znakova. Odaberi sigurnu lozinku." The owner wrote "Odaberite" first; the "ti" form was confirmed. Note it in the 3.8 tone guide.
+  - `app.js`: `PW_MIN`, `pwMeter()`, a SIMULATED `PW_BREACHED` list; `style.css`: `.pw-meter`, `.pw-count`, `.pw-track`.
+  - Docs touched: DECISIONS (D-054, R-14, OQ-25), threat model §6, J1 step 3, IA PUB-02, counsel C.10, prototype-directions §7 round 4.
+  - Primary sources used: NIST SP 800-63B-4 final (pages.nist.gov/800-63-4/sp800-63b.html, §3.1.1.2: 15 characters is a SHALL for single-factor; §3.2.2: 100 consecutive failures), Better Auth email-password, HIBP plugin and rate-limit docs, the HIBP API v3 page (no key, no rate limit, `Add-Padding`).
+- **Open items:**
   - OQ-23: icon library. Phosphor is RECOMMENDED; `pulse/picons.js` embeds six icons as path data, with the MIT notice in `ICONS-LICENSE.md`.
   - OQ-24: the owner's music news idea, after the alpha scope.
-  - OQ-25: **password rules**. The owner wants a dedicated step next session. Start from NIST SP 800-63B-4 and Better Auth.
   - OQ-26: **wordmark accent**, four sketches in `pulse/wordmark.html`; A is RECOMMENDED.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 10/10.
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 11/11 (session 10).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
-1. **Start with the owner's agenda.**
-   - **Password rules** (OQ-25, effort High): the owner said "posebno definirati nakon ovog prompta". Build clickable options first, per the decisions-as-choice memory.
+1. **Continue the owner's agenda.**
+   - ~~Password rules (OQ-25)~~ done in session 10 (D-054).
    - **Wordmark accent** (OQ-26): `pulse/wordmark.html`, four options, A RECOMMENDED.
    - **Reaction set** (OQ-13): explain the options and ask.
    - Round 3 feedback: the genre colours (D-052), the one-card visibility step, the Phosphor icons.
    - The owner liked: the Spirala, with genre-matched pulse speed and soft classical colours; the current under the Daily Drop name; the dock orbit; the invite current.
 2. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6:
-   - states: empty, loading for answers, network error with kept text, offline, blocked, missing-question day, long text and names
+   - states: empty, loading for answers, network error with kept text, offline, blocked, missing-question day, long text and names, the sign-in screen with the breached-password banner (D-054)
    - 200 % zoom
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
@@ -73,7 +78,7 @@ _Session 9, 2026-11-01 to 2026-11-02. Next session: read `docs/STATUS.md`, then 
   - JO2–JO6: RECOMMENDED defaults.
 - **IA leftovers:** Q4 (alpha people search) and Q5 (signed-out playlists).
 - **Pre-alpha:** OQ-05 to OQ-10. OQ-10 is now only about implementing the 18+ gate.
-- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news), OQ-25 (password rules, next session), OQ-26 (wordmark accent, next session).
+- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news), OQ-26 (wordmark accent). OQ-25 resolved (D-054).
 - **Counsel question B.5:** DSA Art. 16 notice form for non-members (PUB-11).
 
 ## Notes

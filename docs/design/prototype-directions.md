@@ -72,7 +72,7 @@ These items should be settled in the chosen direction or in step 3.8.
 1. **Copy: "answer" and "reply" are both "odgovor" in Croatian.** The prototypes use *komentar / Komentiraj* for replies. Glossary decision in 3.8.
 2. **Copy: Public option text vs. a separate Music DNA choice.** IA §7 requires the Public option to say that Music DNA is visible to all members, but ONB-06 then lets the member narrow it. The prototype adds "Music DNA možeš suziti u sljedećim koracima". Final wording in 3.8.
 3. **Reminder buttons have equal weight** ("Not now" and "Turn on", both secondary). This applies the P3 spirit to an opt-in permission. RECOMMENDED.
-4. **Password rule shown as "at least 15 characters".** Placeholder, following NIST SP 800-63B-4 for single-factor passwords. To confirm with the Phase 4 library choice.
+4. **Password rule shown as "at least 15 characters".** Confirmed by D-054 (session 10) together with the counter and the breached-password check.
 5. **Contrast pair for C, done.** `gradient.brand` as an indicator on `bg.canvas` (6.35) and `bg.surface` (5.97) was added to `contrast-pairs.json`. The check now runs 87/87 pass.
 
 ## 5. Verification (2026-11-01)
@@ -230,6 +230,17 @@ The owner said the Spirala and the current were "super", and that the Spirala re
 **Explained to the owner, no change:**
 - The reaction chips "Isto / Novo mi je / Dobar izbor" are placeholders for OQ-13.
 - What Home and Hub hold (IA HOME-01, HUB-01, D-031).
+
+### Round 4: password rules (2026-11-02, session 10)
+
+Decision sketch `pulse/password.html`: twelve live copies of the account field, one rule set each, with an example row that fills them all. Simulated apart from an opt-in live HIBP range query from the browser. Sources: NIST SP 800-63B-4 §3.1.1.2 and §3.2.2 (final text, August 2025), Better Auth email-password, HIBP plugin and rate-limit docs, the HIBP API page.
+
+**Owner choices (D-054):** 15 characters; a counter instead of a strength meter; HIBP with fail-open; a recommendation banner, not a forced change, after a sign-in time hit. Help text "Najmanje 15 znakova. Odaberi sigurnu lozinku." (the owner first wrote "Odaberite"; the "ti" form was confirmed for consistency with the rest of the app, to be recorded in the 3.8 tone guide).
+
+**Changes in `pulse/`:**
+- the account step shows the counter and bar under the password field, and the check mark at 15
+- a password from the sketch's breached list is rejected after "Napravi račun" with the reason (simulated list, marked in `app.js`)
+- the sign-in banner is not in the flow prototype, because J1 and J3 have no sign-in screen; it belongs to the states round (§6)
 
 ### Verification (session 9)
 

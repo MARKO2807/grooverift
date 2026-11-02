@@ -57,7 +57,11 @@ const FLOW = `(async () => {${HELPERS}
   await click('input[name="age"][value="adult"]'); expect(!$('#err-age'), 'age error cleared');
   await click('[data-a="next"]'); expect(scr() === 'account', 'account');
   expect($('[data-a="showpw"] svg.pi'), 'eye icon next to show password');
-  await type('#f-pw', 'kratko'); await click('[data-a="next"]'); expect($('#err-pw'), 'pw error');
+  expect($('#help-pw').textContent === 'Najmanje 15 znakova. Odaberi sigurnu lozinku.', 'password help text (D-054)');
+  await type('#f-pw', 'kratko'); expect($('#pw-meter .pw-count').textContent.includes('6 od 15'), 'counter counts');
+  await click('[data-a="next"]'); expect($('#err-pw') && $('#err-pw').textContent.includes('najmanje 15'), 'pw error');
+  await type('#f-pw', 'iloveyou1234567'); expect($('#pw-meter .pw-count.ok'), 'counter reaches 15');
+  await click('[data-a="next"]'); expect($('#err-pw') && $('#err-pw').textContent.includes('curenjima'), 'breached password rejected with the reason');
   await type('#f-pw', 'ovo je dovoljno duga lozinka'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
   expect($('main h1').textContent === 'Kako se zoveš?', 'name question');
   await click('[data-a="next"]'); expect($('#err-dname') && $('#err-uname'), 'username errors');

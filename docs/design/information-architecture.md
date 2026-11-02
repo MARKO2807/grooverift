@@ -46,7 +46,7 @@ Routes use these placeholders: `<id>` is an opaque, non-sequential public ID; `<
 | ID | Screen | Route | Wave | Notes |
 |---|---|---|---|---|
 | PUB-01 | Landing | `/` (signed out) | α | Name, tagline, "invite-only" explanation, Sign in. No waitlist: not a confirmed feature. |
-| PUB-02 | Sign in | `/signin` | α | Email and password, Google. Links to reset. |
+| PUB-02 | Sign in | `/signin` | α | Email and password, Google. Links to reset. A sign-in time breached-password hit (D-054) shows a dismissible recommendation banner on HOME-01. |
 | PUB-03 | Second-factor challenge | `/signin/verify` | α | TOTP or recovery code; mandatory for staff (passkeys per R-02 if approved). |
 | PUB-04 | Password reset (request, new password) | `/reset`, `/reset/new` | α | Token handling per §5.3. |
 | PUB-05 | Invite acceptance and account creation | `/invite/<token>` → `/join` | α | Leads into onboarding (ONB). |

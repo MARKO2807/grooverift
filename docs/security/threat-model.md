@@ -52,7 +52,8 @@ Browser/PWA ↔ Next.js web service ↔ Postgres. Web ↔ worker (via the job qu
 - **Backups:** encrypted at rest; a separate R2 bucket with restricted credentials; restore drills on an isolated database.
 
 ## 6. Open items
-- Breached-password check provider (privacy review).
+- ~~Breached-password check provider (privacy review).~~ Decided (D-054): Have I Been Pwned range API from the server, k-anonymity with `Add-Padding`, fail-open with a logged event and a re-check at the next sign-in. Counsel question C.10 covers the privacy-policy wording.
+- Password hashing parameters: Argon2id (R-14) to decide in Phase 4.
 - Hash matching for known illegal content: availability and legal obligations.
 - Account-linking heuristics for ban evasion (privacy trade-off).
 - Real-device verification of iOS EU Web Push.

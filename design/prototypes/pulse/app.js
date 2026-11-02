@@ -83,6 +83,18 @@
   const wm = () => '<span class="wm">groove<span class="wm-rift">rift</span></span>';
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
+  /* Password rules (D-054): 15 code points minimum, a counter instead of a strength meter, breached passwords
+     rejected with the reason. PW_BREACHED is a SIMULATED stand-in for the HIBP range check (server-side in the app). */
+  const PW_MIN = 15;
+  const PW_BREACHED = new Set(['iloveyou1234567', 'passwordpassword', '123456789012345', 'qwertyuiopasdfg']);
+  const pwLen = s => Array.from(s).length;
+  function pwMeter() {
+    const n = pwLen(st.pw), ok = n >= PW_MIN;
+    return `<div class="pw-count${ok ? ' ok' : ''}"><span>${ok ? `${ic('check', 'sm')}Može. Dulje je još bolje.` : `${n} od ${PW_MIN} znakova`}</span><span>${ok ? n : (n ? 'još ' + (PW_MIN - n) : '')}</span></div>
+      <div class="pw-track${ok ? ' ok' : ''}" aria-hidden="true"><span style="width:${Math.min(100, n / PW_MIN * 100)}%"></span></div>
+      <p class="sr-only" role="status">${ok ? 'Lozinka ima dovoljno znakova.' : ''}</p>`;
+  }
+
   function avatar(handle, who, size) {
     const m = D.members[handle];
     const dna = handle === st.username ? st.genres : (m ? m.dna : []);
@@ -483,9 +495,10 @@
       kind: 'onb', back: true,
       body: `<h1>Napravi račun</h1>
         ${field({ id: 'email', label: 'E-pošta', help: 'Pozivnica je vezana uz ovu adresu.', type: 'email', value: D.email, attrs: 'readonly autocomplete="email"' })}
-        ${field({ id: 'pw', label: 'Lozinka', help: 'Najmanje 15 znakova. Najlakše je nekoliko riječi zaredom.', type: st.showPw ? 'text' : 'password', value: st.pw,
+        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova. Odaberi sigurnu lozinku.`, type: st.showPw ? 'text' : 'password', value: st.pw,
           attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"',
           after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
+        <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
         <p class="or"><span>ili</span></p>
         <button class="btn btn-secondary btn-block" data-a="google" data-k="google">Nastavi s Google računom</button>
         <p class="fine">Nastavkom prihvaćaš <button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="terms">Uvjete korištenja</button>. Kako koristimo podatke piše u <button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="privacy">Pravilima privatnosti</button>.</p>`,
@@ -823,7 +836,8 @@
         if (!st.age) { err.age = 'Odaberi jedan odgovor.'; break; }
         return go(st.age === 'adult' ? 'account' : 'minor');
       case 'account':
-        if (st.pw.length < 15) { err.pw = st.pw ? `Lozinka ima ${st.pw.length} ${pl(st.pw.length, 'znak', 'znaka', 'znakova')}. Treba ih najmanje 15.` : 'Upiši lozinku.'; break; }
+        if (pwLen(st.pw) < PW_MIN) { const n = pwLen(st.pw); err.pw = n ? `Lozinka ima ${n} ${pl(n, 'znak', 'znaka', 'znakova')}. Treba ih najmanje ${PW_MIN}.` : 'Upiši lozinku.'; break; }
+        if (PW_BREACHED.has(st.pw)) { err.pw = 'Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.'; break; }
         go('username', { reset: true }); toast('Račun je napravljen.'); return;
       case 'username':
         if (st.userState === 'checking') checkUser(true);
@@ -987,7 +1001,7 @@
   root.addEventListener('input', e => {
     const t = e.target;
     switch (t.id) {
-      case 'f-pw': st.pw = t.value; return clearErr('pw', t);
+      case 'f-pw': { st.pw = t.value; const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return clearErr('pw', t); }
       case 'f-dname': st.displayName = t.value; return clearErr('dname', t);
       case 'f-uname': st.username = t.value.trim(); clearErr('uname', t); return checkUser();
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();
