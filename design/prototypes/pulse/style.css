@@ -128,6 +128,14 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .has-after .input { padding-right: 6.75rem; }
 .pw-ic { width: 20px; height: 20px; }
 .input-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: absolute; right: 2px; min-height: 40px; min-width: 6rem; border: 0; background: none; color: var(--gr-color-text-link); font: var(--gr-type-label); border-radius: var(--gr-radius-control); }
+/* D-061: one line per rule, ticked while typing. */
+.pw-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 4px var(--gr-space-3); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.pw-rules li { display: flex; align-items: center; gap: 6px; }
+.pw-rules li:first-child, .pw-rules li:last-child { grid-column: span 2; }
+.pw-tick { width: 16px; height: 16px; flex: none; border-radius: 50%; border: var(--gr-border-width-thick) solid var(--gr-color-border-strong); display: grid; place-items: center; }
+.pw-rules li.ok { color: var(--gr-color-state-success); }
+.pw-rules li.ok .pw-tick { border-color: var(--gr-color-state-success); }
+.pw-tick svg { width: 11px; height: 11px; stroke-width: 3; }
 .pw-meter { display: flex; flex-direction: column; gap: var(--gr-space-1); margin-top: calc(var(--gr-space-1) * -1); }
 .pw-count { display: flex; justify-content: space-between; gap: var(--gr-space-2); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
 .pw-count > span:first-child { display: inline-flex; align-items: center; gap: var(--gr-space-1); }

@@ -49,7 +49,7 @@
   const ONB = ['age', 'uilang', 'account', 'username', 'language', 'visibility', 'dna', 'dnavis', 'how', 'reminder'];
   const VIS_LABEL = { public: 'Javni', private: 'Privatni' };
   const DNA_LABEL = { all: 'Svi članovi', followers: 'Samo pratitelji', me: 'Samo ja' };
-  const READ_LANGS = ['Hrvatski', 'English', 'Deutsch', 'Italiano', 'Slovenščina'];
+  const READ_LANGS = ['English', 'Hrvatski']; // only these two for now (owner, session 11)
   const OFF_ARTISTS = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta, g: a.g }));
   const fx = name => OFF_ARTISTS.find(a => a.name === name);
 
@@ -60,7 +60,7 @@
     err: {},
     age: null, pw: '', showPw: false,
     displayName: START_DROP ? 'Ana' : '', username: START_DROP ? 'ana.slusa' : '', userState: START_DROP ? 'ok' : 'idle',
-    lang: 'hr', readLangs: new Set(['Hrvatski']),
+    lang: 'hr', readLangs: new Set(['English', 'Hrvatski']),
     vis: START_DROP ? (PRIV ? 'private' : 'public') : null,
     genres: START_DROP ? ['Jazz', 'Soul', 'Kantautorska', 'Elektronika'] : [],
     moreOpen: false, genreQ: '',
@@ -91,16 +91,24 @@
   const bolt = () => `<svg class="wm-bolt" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wm-g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs><g class="bolt"><polyline class="bolt-line" points="${BOLT_PTS}" stroke="url(#wm-g)"/><polyline class="bolt-core" points="${BOLT_PTS}"/>${BOLT_SPARKS.map(p => `<polyline class="spark" points="${p}"/>`).join('')}</g></svg>`;
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
-  /* Password rules (D-054): 15 code points minimum, a counter instead of a strength meter, breached passwords
-     rejected with the reason. PW_BREACHED is a SIMULATED stand-in for the HIBP range check (server-side in the app). */
-  const PW_MIN = 15;
-  const PW_BREACHED = new Set(['iloveyou1234567', 'passwordpassword', '123456789012345', 'qwertyuiopasdfg']);
+  /* Password rules (D-061, amends D-054 at the owner's request): 12 code points minimum plus an upper-case letter, a
+     lower-case letter and a special character, each ticked while typing. Breached passwords are still rejected with
+     the reason. PW_BREACHED is a SIMULATED stand-in for the HIBP range check (server-side in the app); it holds
+     passwords that pass the composition rules, because those are the predictable ones attackers try first. */
+  const PW_MIN = 12;
+  const PW_BREACHED = new Set(['Lozinka2024!', 'Password123!', 'Zagreb2024!!', 'Qwerty12345!']);
   const pwLen = s => Array.from(s).length;
+  const PW_RULES = [
+    ['len', s => pwLen(s) >= PW_MIN, `Najmanje ${PW_MIN} znakova`, `najmanje ${PW_MIN} znakova`],
+    ['up', s => /\p{Lu}/u.test(s), 'Veliko slovo', 'veliko slovo'],
+    ['low', s => /\p{Ll}/u.test(s), 'Malo slovo', 'malo slovo'],
+    ['sym', s => /[^\p{L}\p{N}\s]/u.test(s), 'Poseban znak, npr. ! ? # %', 'poseban znak']
+  ];
+  const pwMissing = s => PW_RULES.filter(r => !r[1](s));
   function pwMeter() {
-    const n = pwLen(st.pw), ok = n >= PW_MIN;
-    return `<div class="pw-count${ok ? ' ok' : ''}"><span>${ok ? `${ic('check', 'sm')}Može. Dulje je još bolje.` : `${n} od ${PW_MIN} znakova`}</span><span>${ok ? n : (n ? 'još ' + (PW_MIN - n) : '')}</span></div>
-      <div class="pw-track${ok ? ' ok' : ''}" aria-hidden="true"><span style="width:${Math.min(100, n / PW_MIN * 100)}%"></span></div>
-      <p class="sr-only" role="status">${ok ? 'Lozinka ima dovoljno znakova.' : ''}</p>`;
+    const n = pwLen(st.pw), miss = pwMissing(st.pw);
+    return `<ul class="pw-rules" aria-label="Pravila za lozinku">${PW_RULES.map(([k, f, t]) => { const ok = f(st.pw); return `<li class="${ok ? 'ok' : ''}" data-r="${k}"><span class="pw-tick" aria-hidden="true">${ok ? ic('check', 'sm') : ''}</span><span>${t}${k === 'len' && n && !ok ? ` (${n})` : ''}</span><span class="sr-only">${ok ? ', ispunjeno' : ', nije ispunjeno'}</span></li>`; }).join('')}</ul>
+      <p class="sr-only" role="status">${st.pw && !miss.length ? 'Lozinka ispunjava sva pravila.' : ''}</p>`;
   }
 
   function avatar(handle, who, size) {
@@ -639,7 +647,7 @@
         <span class="step-ic" aria-hidden="true">${pic('translate')}</span>
         <h1>Odaberi jezik</h1>
         <p class="lead" lang="en">Choose your language</p>
-        ${choices('lang', 'Jezik sučelja', [{ v: 'hr', t: 'Hrvatski' }, { v: 'en', t: 'English', lang: 'en' }], st.lang, 'choices-center')}
+        ${choices('lang', 'Jezik sučelja', [{ v: 'en', t: 'English', lang: 'en' }, { v: 'hr', t: 'Hrvatski' }], st.lang, 'choices-center')}
         <p class="fine">Možeš ga promijeniti bilo kad u postavkama.</p>
       </div>`,
       foot: nextBtn()
@@ -657,7 +665,7 @@
       kind: 'onb', back: true,
       body: `<h1>Napravi račun</h1>
         ${field({ id: 'email', label: 'E-pošta', help: 'Pozivnica je vezana uz ovu adresu.', type: 'email', value: D.email, attrs: 'readonly autocomplete="email"' })}
-        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova. Odaberi sigurnu lozinku.`, type: st.showPw ? 'text' : 'password', value: st.pw,
+        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw,
           attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"',
           after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
         <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
@@ -775,7 +783,7 @@
         kind: 'app', tab: 'hub', back: true, topBlank: true,
         topActions: `<button class="iconbtn" data-a="toast" data-msg="Poveznica kopirana (simulacija). Neprijavljeni vide samo pitanje i poziv da se pridruže (D-022)." data-k="share" aria-label="Podijeli pitanje">${ic('share')}</button>`,
         body: `<header class="dd dd-page">
-            ${ddHead('drop')}
+            ${ddHead('drop', true)}
             <h1 class="dd-q">${esc(D.drop.question)}</h1>
             ${people(n)}
           </header>
@@ -978,7 +986,8 @@
         return go(st.age === 'adult' ? 'uilang' : 'minor');
       case 'uilang': return go('account');
       case 'account':
-        if (pwLen(st.pw) < PW_MIN) { const n = pwLen(st.pw); err.pw = n ? `Lozinka ima ${n} ${pl(n, 'znak', 'znaka', 'znakova')}. Treba ih najmanje ${PW_MIN}.` : 'Upiši lozinku.'; break; }
+        if (!st.pw) { err.pw = 'Upiši lozinku.'; break; }
+        if (pwMissing(st.pw).length) { err.pw = `Lozinci još treba: ${pwMissing(st.pw).map(r => r[3]).join(', ')}.`; break; }
         if (PW_BREACHED.has(st.pw)) { err.pw = 'Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.'; break; }
         go('username', { reset: true }); toast('Račun je napravljen.'); return;
       case 'username':

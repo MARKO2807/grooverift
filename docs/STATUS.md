@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-060. Key ones:
+- Decisions D-001 to D-061. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -42,7 +42,7 @@ _Last updated: 2026-11-02 (session 11)_
     - **18+ only** (D-051)
     - Music DNA colours carry meaning (rap blue, jazz green and so on), and there are no tag lists under it (D-052)
     - 20 main genres plus a "+ Još žanrova" chip; artists show the country only; "Kako se zoveš?"; profile visibility is one card (D-053)
-  - **Password rules (session 10, D-054, resolves OQ-25):** 15 characters minimum, 128 maximum, no composition rules, no expiry; a counter while typing ("Najmanje 15 znakova. Odaberi sigurnu lozinku."); Have I Been Pwned k-anonymity check with fail-open; a monthly sign-in re-check that shows a recommendation banner, not a forced change. Argon2id is R-14 (Phase 4). Counsel question C.10 added.
+  - **Password rules (session 10, D-054, resolves OQ-25; amended by D-061 to 12 characters plus composition rules):** 15 characters minimum, 128 maximum, no composition rules, no expiry; a counter while typing ("Najmanje 15 znakova. Odaberi sigurnu lozinku."); Have I Been Pwned k-anonymity check with fail-open; a monthly sign-in re-check that shows a recommendation banner, not a forced change. Argon2id is R-14 (Phase 4). Counsel question C.10 added.
   - **Wordmark accent (session 10, D-055, resolves OQ-26):** a short Coral→Amber bolt under "rift", quietly alive (a glint every 5 s, a slow breath), on the standalone wordmark only; stopped by reduced-motion settings. Brief for the designer: `pulse/wordmark.html`.
   - **Reaction (session 10, D-056, resolves OQ-13):** one like-style reaction per member per answer, icon only (a small audio wave that beats when pressed), count visible to all, named "Sviđa mi se" / "Like" in notifications and for screen readers.
   - **Round 3 review (session 10, D-057):** genre colours and the one-card visibility stay; Phosphor light is the icon library (OQ-23). The wordmark bolt (D-055) is reopened: not electric enough, too far from "rift", too thick. The owner also wants more invite-current designs with taller, spiked impulses that show connection.
@@ -63,6 +63,10 @@ _Last updated: 2026-11-02 (session 11)_
     - Home shows the question with the first two answers and no current.
     - The profile has the Music DNA on top. The tab bar is glass.
     - Sketch: `pulse/round6.html`.
+  - **Passwords and languages (session 11, D-061):**
+    - Passwords need 12+ characters plus an upper-case letter, a lower-case letter and a special character. The owner chose this knowing it deviates from NIST, and it is recorded in the threat model.
+    - English comes first on the language step. The reading languages are English and Hrvatski, both selected by default.
+    - The Daily Drop page has no current under the question.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts

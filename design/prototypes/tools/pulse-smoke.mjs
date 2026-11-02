@@ -64,12 +64,12 @@ const FLOW = `(async () => {${HELPERS}
   expect($('input[name="lang"][value="hr"]') && $('input[name="lang"][value="en"]') && $$('input[name="lang"]').length === 2, 'HR and EN only');
   await click('[data-a="next"]'); expect(scr() === 'account', 'account');
   expect($('[data-a="showpw"] svg.pi'), 'eye icon next to show password');
-  expect($('#help-pw').textContent === 'Najmanje 15 znakova. Odaberi sigurnu lozinku.', 'password help text (D-054)');
-  await type('#f-pw', 'kratko'); expect($('#pw-meter .pw-count').textContent.includes('6 od 15'), 'counter counts');
-  await click('[data-a="next"]'); expect($('#err-pw') && $('#err-pw').textContent.includes('najmanje 15'), 'pw error');
-  await type('#f-pw', 'iloveyou1234567'); expect($('#pw-meter .pw-count.ok'), 'counter reaches 15');
+  expect($('#help-pw').textContent === 'Najmanje 12 znakova, veliko i malo slovo te poseban znak.', 'password help text (D-061)');
+  await type('#f-pw', 'kratko'); expect($$('#pw-meter .pw-rules li').length === 4 && $('#pw-meter [data-r="low"].ok') && !$('#pw-meter [data-r="up"].ok') && $('#pw-meter [data-r="len"]').textContent.includes('(6)'), 'rules ticked while typing');
+  await click('[data-a="next"]'); expect($('#err-pw') && $('#err-pw').textContent.includes('najmanje 12') && $('#err-pw').textContent.includes('poseban znak'), 'pw error names the missing rules');
+  await type('#f-pw', 'Lozinka2024!'); expect($$('#pw-meter .pw-rules li.ok').length === 4, 'all four rules met');
   await click('[data-a="next"]'); expect($('#err-pw') && $('#err-pw').textContent.includes('curenjima'), 'breached password rejected with the reason');
-  await type('#f-pw', 'ovo je dovoljno duga lozinka'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
+  await type('#f-pw', 'Ovo je duga lozinka, 7 nota!'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
   expect($('main h1').textContent === 'Kako se zoveš?', 'name question');
   await click('[data-a="next"]'); expect($('#err-dname') && $('#err-uname'), 'username errors');
   await type('#f-dname', 'Ana'); await type('#f-uname', 'ana'); await sleep(600);

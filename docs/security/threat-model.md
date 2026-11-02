@@ -52,6 +52,7 @@ Browser/PWA ↔ Next.js web service ↔ Postgres. Web ↔ worker (via the job qu
 - **Backups:** encrypted at rest; a separate R2 bucket with restricted credentials; restore drills on an isolated database.
 
 ## 6. Open items
+- Password composition (D-061): 12 characters plus upper, lower and special, a conscious deviation from NIST SP 800-63B-4 §3.1.1.2 (15 characters for password-only sign-in, no composition rules). Mitigations: the breached-password check must cover predictable patterns ("Lozinka2024!"); rate limits per D-054; passkeys or a second factor to be weighed in Phase 4. Revisit before the alpha.
 - ~~Breached-password check provider (privacy review).~~ Decided (D-054): Have I Been Pwned range API from the server, k-anonymity with `Add-Padding`, fail-open with a logged event and a re-check at the next sign-in. Counsel question C.10 covers the privacy-policy wording.
 - Password hashing parameters: Argon2id (R-14) to decide in Phase 4.
 - Hash matching for known illegal content: availability and legal obligations.

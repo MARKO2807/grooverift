@@ -53,6 +53,13 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - `app.js` `afterRender()` calls `INV.scan`, and navigation calls `INV.reset()`.
   - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived), `pulse/invite-current.html`, `pulse/invite-layout.html` and `pulse/round6.html`. Both mark the choice as "odabrano".
   - The owner did not take the recommendations (N3, I1); the choices were N2 and I4.
+  - **D-061 (same session):**
+    - Passwords use `PW_MIN = 12` and `PW_RULES` (len, up, low, sym), with `pwMissing()` and a ticked list in `.pw-rules`.
+    - `PW_BREACHED` (SIMULATED) now holds rule-passing patterns such as "Lozinka2024!".
+    - `READ_LANGS` is English and Hrvatski, both preselected. EN is listed first on `uilang`.
+    - The drop page head has no current.
+    - `viewer.html` lists the new steps (Jezik, Jezici čitanja, Aktivnost).
+    - `password.html` is unchanged; it is the D-054 record.
   - **D-060 (same session): round 6 review of the whole flow.**
     - New `uilang` step after `age` (ORDER and ONB). The `language` step now holds only the reading languages.
     - The invite note is `.info-stack`: the alpha note plus the PWA tip. Compact invite rules start at `max-height: 700px`, and the current is 40 px when the screen is 600 px tall or less.

@@ -312,6 +312,11 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
 - Follow-up (same session):
   - The brand name in the invite PWA tip and in the 18+ sentence is larger (`wm(true)`, `.wm-lg`, primary colour, no bolt).
   - The Daily Drop card on "Kako radi" has a living border: a Coral→Amber charge circles the edge (CSS `@property` angle on a conic gradient), and the icon tile is filled with the brand gradient. It stops under reduced motion and is hidden in forced colours.
+- D-061 (same session):
+  - Password composition rules with a ticked list (12+ characters, upper, lower, special).
+  - EN listed first, and both reading languages preselected.
+  - No current on the Daily Drop page.
+  - `viewer.html` updated.
 - Verification: `pulse-smoke.mjs` 21/21; `smoke.mjs` 3/3.
 
 ### Verification (session 9)
