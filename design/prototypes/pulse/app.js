@@ -471,18 +471,24 @@
       </ol>`;
   }
 
+  /* Invite layout (owner, session 11): the whole invite fits the viewport with no scrolling, and the current is
+     smaller. ?inv=a|b|c|d picks one of the layouts compared in invite-layout.html (PENDING owner choice). */
+  const INV_AT = ['a', 'b', 'c', 'd'].includes(P.get('inv')) ? P.get('inv') : 'a';
+  const invCur = (h, cls) => `<canvas class="ic inv-cur${cls ? ' ' + cls : ''}" data-v="branch" data-key="invite" data-h="${h}" aria-hidden="true"></canvas>`;
+
   const S = {
     invite: () => ({
       kind: 'bare',
       body: `<div class="hero">
-        <canvas class="ic hero-current" data-v="branch" data-key="invite" aria-hidden="true"></canvas>
+        ${INV_AT === 'a' ? invCur(64) : ''}
         <p class="eyebrow">Pozivnica</p>
         <h1 class="h-hero">Imaš pozivnicu za ${wm()}</h1>
         <p class="tagline" lang="en">Where musical worlds collide.</p>
+        ${INV_AT === 'b' ? invCur(56) : INV_AT === 'c' ? invCur(56, 'inv-wide') : ''}
         <p class="lead">Ovdje se razgovara o glazbi: svaki dan jedno pitanje za sve, tvoj Music DNA i ljudi sličnog ili sasvim drukčijeg ukusa.</p>
       </div>
       <div class="info">${ic('info')}<p>Ovo je zatvorena alfa. Neke stvari još nedostaju i mogu se promijeniti. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></p></div>`,
-      foot: `<button class="btn btn-primary btn-block" data-a="next" data-k="next">Prihvati pozivnicu</button><p class="fine">Pozivnica vrijedi za ${esc(D.email)}.</p>`
+      foot: `${INV_AT === 'd' ? invCur(48, 'inv-foot') : ''}<button class="btn btn-primary btn-block" data-a="next" data-k="next">Prihvati pozivnicu</button><p class="fine">Pozivnica vrijedi za ${esc(D.email)}.</p>`
     }),
     age: () => ({
       kind: 'onb', back: true,
@@ -764,7 +770,11 @@
   }
 
   /* Motifs after each render: mount the current, the dock orbit and the Music DNA canvases. */
-  function afterRender() { CUR.scan(root); INV.scan(root); DNA.scan(root); }
+  function afterRender() {
+    CUR.scan(root); INV.scan(root); DNA.scan(root);
+    // review pages in iframes (invite-layout.html) ask whether the screen fits without scrolling
+    if (window.parent !== window) setTimeout(() => parent.postMessage({ gr: 'fit', screen: st.screen, over: document.documentElement.scrollHeight - window.innerHeight }, '*'), 250);
+  }
 
   function render(opt) {
     opt = opt || {};

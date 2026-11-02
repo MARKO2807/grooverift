@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · raspored pozivnice: prijedlozi</title>
+<!-- Owner decision sketch (session 11): the invite must fit the viewport with no scrolling, and the I4 current
+     must be smaller. Four layouts of the real invite screen (index.html?inv=a|b|c|d) in phone frames. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 110rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  p { color: var(--gr-color-text-secondary); margin: 0 0 12px; max-width: 76ch; }
+  .ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 16px 0 0; }
+  .ctl span { margin-right: 4px; }
+  .ctl button { min-height: 44px; padding: 0 16px; border-radius: 9999px; border: 1px solid var(--gr-color-border-strong); background: none; color: var(--gr-color-text-primary); font: var(--gr-type-label); cursor: pointer; }
+  .ctl button[aria-pressed="true"] { background: var(--gr-color-selected-bg); border: 2px solid var(--gr-color-selected-border); }
+  .ctl button:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 24px; align-items: flex-start; }
+  .opt { display: flex; flex-direction: column; gap: 10px; }
+  .opt h2 { font: var(--gr-type-title-3); margin: 0; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; }
+  .fit { font: var(--gr-type-caption); }
+  .fit.ok { color: #7EE0A1; } .fit.no { color: #FF8A96; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Pozivnica bez skrolanja: četiri rasporeda</h1>
+  <p>Struja je sad mala (48 do 64 px umjesto 112 px), impulsi su viši dok putuju prema sredini, a sjaj pri sudaru je manji i slabiji. U sva četiri rasporeda cijela pozivnica stane na ekran, bez skrolanja. Ovo je prava aplikacija u okviru telefona, pa možeš i kliknuti struju.</p>
+  <p>Promijeni veličinu ekrana gore i provjeri da sve i dalje stane. Ispod svakog telefona piše stane li sadržaj.</p>
+  <div class="ctl" role="group" aria-label="Veličina ekrana">
+    <span>Ekran:</span>
+    <button type="button" data-s="360x640" aria-pressed="true">360 × 640 (manji Android)</button>
+    <button type="button" data-s="390x844">390 × 844 (iPhone)</button>
+    <button type="button" data-s="320x568">320 × 568 (najmanji)</button>
+    <button type="button" id="replay">Ponovi dolazak</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<script>
+(function () {
+  const O = [
+    ['a', 'A. Manja, na vrhu', 'Isto mjesto kao dosad, ali 64 px visoko i uže. Najmanja promjena.'],
+    ['b', 'B. Ispod slogana', 'Struja ide ispod „Where musical worlds collide.” i tako podcrtava slogan o sudaru svjetova. 56 px.'],
+    ['c', 'C. Ispod slogana, od ruba do ruba', 'Kao B, ali struja ide preko cijele širine ekrana, kao da dvije strane dolaze izvan ekrana. 56 px.'],
+    ['d', 'D. Iznad gumba', 'Struja je u donjem dijelu, odmah iznad „Prihvati pozivnicu”: susret se događa tamo gdje se prihvaća poziv. 48 px.']
+  ];
+  const grid = document.getElementById('grid');
+  let size = new URLSearchParams(location.search).get('s') || '360x640';
+  document.querySelectorAll('[data-s]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.s === size)));
+  function build() {
+    const [w, h] = size.split('x').map(Number);
+    grid.innerHTML = O.map(([k, t, d]) => `<section class="opt" aria-labelledby="h-${k}" style="width:${w + 16}px">
+      <h2 id="h-${k}">${t}</h2>
+      <div class="phone"><iframe title="Pozivnica, raspored ${k.toUpperCase()}" src="index.html?inv=${k}" width="${w}" height="${h}"></iframe></div>
+      <p class="fit" id="fit-${k}">Provjeravam…</p>
+      <p>${d}</p></section>`).join('');
+  }
+  /* app.js reports from inside each frame whether the screen fits (postMessage works across file:// frames). */
+  window.addEventListener('message', e => {
+    if (!e.data || e.data.gr !== 'fit') return;
+    const i = [...grid.querySelectorAll('iframe')].findIndex(f => f.contentWindow === e.source);
+    if (i < 0) return;
+    const el = document.getElementById('fit-' + O[i][0]), over = e.data.over;
+    el.className = 'fit ' + (over <= 1 ? 'ok' : 'no');
+    el.dataset.over = over;
+    el.textContent = e.data.screen !== 'invite' ? '' : over <= 1 ? 'Sve stane, bez skrolanja.' : `Ne stane: ${over} px viška.`;
+  });
+  document.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => {
+    size = b.dataset.s;
+    document.querySelectorAll('[data-s]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    build();
+  }));
+  document.getElementById('replay').addEventListener('click', () => grid.querySelectorAll('iframe').forEach(f => f.contentWindow.location.reload()));
+  build();
+})();
+</script>
+</body>
+</html>

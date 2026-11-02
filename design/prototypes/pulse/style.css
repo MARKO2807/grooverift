@@ -212,6 +212,14 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 /* ---------- motifs ---------- */
 canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-action: manipulation; }
 .hero-current { max-width: 20rem; }
+/* Invite (owner, session 11): everything fits the viewport without scrolling; the current is small. */
+.screen-invite { padding-top: var(--gr-space-3); padding-bottom: var(--gr-space-4); gap: var(--gr-space-4); justify-content: center; }
+.screen-invite .hero { padding-top: 0; gap: var(--gr-space-2); }
+.screen-invite .hero .lead { margin-top: var(--gr-space-1); }
+.inv-cur { max-width: 16rem; }
+.inv-wide { max-width: none; width: calc(100% + 2 * var(--gr-space-4)); } /* centred overflow reaches both screen edges */
+.inv-foot { max-width: none; margin-bottom: calc(-1 * var(--gr-space-1)); }
+@media (max-height: 600px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.75rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } }
 .dd-current { max-width: 14rem; margin-top: var(--gr-space-1); }
 @media (forced-colors: active) { canvas.current, canvas.ic, canvas.dna { forced-color-adjust: none; } }
 

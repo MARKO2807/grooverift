@@ -49,6 +49,7 @@ const HELPERS = `
 
 const FLOW = `(async () => {${HELPERS}
   expect($('canvas.ic[data-key="invite"][data-v="branch"]'), 'invite current I4 branch (D-058)');
+  expect(document.documentElement.scrollHeight <= innerHeight + 1, 'invite fits the screen without scrolling');
   expect($('main h1 .wm .wm-rift'), 'brand name set like the wordmark');
   expect($('.topbar .wordmark .wm-bolt') && !$('main .wm-bolt'), 'bolt under rift in the top bar only (D-055)');
   expect($$('.topbar .wm-bolt .spark').length === 3, 'bolt has three sparks (D-058)');
@@ -179,6 +180,8 @@ const runs = [
   { name: 'wordmark round 2', url: base.replace('index.html', 'wordmark.html'), test: `(async () => {${HELPERS} expect($$('#grid-new .card').length === 5 && $$('#grid-new .n2 .sp').length === 6, 'four new bolts plus today, N2 sparks'); expect(getComputedStyle($('.n2 .all')).animationName === 'nb-flick', 'new bolt flickers'); return 'ok'; })()` },
   { name: 'invite current page', url: base.replace('index.html', 'invite-current.html'), test: `(async () => {${HELPERS} await sleep(700); const cs = $$('canvas.ic'); expect(cs.length === 4 && cs.every(c => c.height > 0), 'four invite variants drawn'); expect(cs.map(c => c.dataset.v).join() === 'spikes,arc,beat,branch', 'variant order'); return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'invite current page calm', url: base.replace('index.html', 'invite-current.html?calm=1'), test: `(async () => {${HELPERS} await sleep(200); expect(document.documentElement.dataset.motion === 'reduced' && $$('canvas.ic').length === 4, 'still frames under reduced motion'); return 'ok'; })()`, w: 1100, h: 900 },
+  { name: 'invite layouts', url: base.replace('index.html', 'invite-layout.html'), test: `(async () => {${HELPERS} await sleep(1500); const f = $$('.fit'); expect(f.length === 4 && f.every(e => e.dataset.over !== undefined && +e.dataset.over <= 1), 'all four invite layouts fit 360x640: ' + f.map(e => e.dataset.over).join()); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'invite layouts 320x568', url: base.replace('index.html', 'invite-layout.html?s=320x568'), test: `(async () => {${HELPERS} await sleep(1500); const f = $$('.fit'); expect(f.length === 4 && f.every(e => +e.dataset.over <= 1), 'all four invite layouts fit 320x568: ' + f.map(e => e.dataset.over).join()); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');

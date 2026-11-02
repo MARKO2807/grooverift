@@ -2,7 +2,7 @@
    show two sides joining. Four variants on one canvas engine; invite-current.html compares them, and the
    app's invite screen uses the chosen one, I4 "branch" (D-058). The other three stay as the decision record.
    Reuses the helpers and the motion flag from current.js (GR_CURRENT, GR_MOTION). Decorative: aria-hidden.
-   Markup: <canvas class="ic" data-v="spikes|arc|beat|branch" data-key="..."></canvas>
+   Markup: <canvas class="ic" data-v="spikes|arc|beat|branch" data-key="..." data-h="height in px, default 112"></canvas>
    Motion: with "Smanji pokrete" or the OS setting, each variant draws one still frame that already shows
    the two sides joined. Frames are drawn only while a canvas is on screen and the tab is visible. */
 (function () {
@@ -183,7 +183,14 @@
         const { w, h } = st, xc = w / 2;
         for (const p of st.packets) {
           const hx = p.side < 0 ? p.u * xc : w - p.u * xc, R = rng(p.seed ^ Math.floor(T / 45));
-          for (let i = 0; i < xs.length; i++) { const t = tri(xs[i] - hx, 14); if (t) ys[i] += (R() * 2 - 1) * h * 0.14 * t; }
+          // a sharp zigzag packet: alternating spikes, tallest at the head (owner, session 11: taller while travelling)
+          const step = 3.5, K = 8, pts = [];
+          for (let k = -K; k <= K; k++) pts.push((k % 2 ? -1 : 1) * (0.45 + 0.55 * R()));
+          for (let i = 0; i < xs.length; i++) {
+            const d = xs[i] - hx; if (Math.abs(d) >= K * step) continue;
+            const f = d / step + K, k0 = Math.floor(f), fr = f - k0, v = pts[k0] * (1 - fr) + pts[Math.min(2 * K, k0 + 1)] * fr;
+            ys[i] += v * h * 0.3 * tri(d, K * step) * Math.min(1, p.u * 4);
+          }
         }
         if (!st.ev) return;
         const k = st.ev.big * Math.exp(-(T - st.ev.born) / 280);
@@ -191,14 +198,14 @@
       },
       extra(st, T, ctx, xs, ys, still) {
         const { w, h } = st;
-        for (const p of st.packets) { const i = Math.round((p.side < 0 ? p.u * 0.5 : 1 - p.u * 0.5) * (xs.length - 1)); glow(ctx, xs[i], ys[i], h * 0.16, p.side < 0 ? CORAL : AMBER, 0.8); }
+        for (const p of st.packets) { const i = Math.round((p.side < 0 ? p.u * 0.5 : 1 - p.u * 0.5) * (xs.length - 1)); glow(ctx, xs[i], ys[i], h * 0.14, p.side < 0 ? CORAL : AMBER, 0.55); }
         if (!st.ev) return;
         const a = T - st.ev.born;
         // two flashes: 0–90 ms, dark 90–130 ms, 130–330 ms fading
         const vis = still ? 0.9 : a < 90 ? 1 : a < 130 ? 0.08 : a < 330 ? 0.95 * (1 - (a - 130) / 200) : 0;
         if (vis <= 0.01) return;
         const big = Math.min(1.3, st.ev.big), J = rng(st.ev.seed ^ Math.floor(T / 30));
-        glow(ctx, w / 2, h / 2, h * 0.5, mix(CORAL, AMBER, 0.5), 0.5 * vis * big);
+        glow(ctx, w / 2, h / 2, h * 0.3, mix(CORAL, AMBER, 0.5), 0.22 * vis * big); // smaller halo (owner, session 11)
         for (const [x1, y1, x2, y2, d] of this.tree(st)) {
           const jx = still ? 0 : (J() * 2 - 1) * 0.8;
           const col = mix(y2 < h / 2 ? AMBER : CORAL, HOT, 0.45 - d * 0.15);
@@ -213,8 +220,8 @@
 
   /* ---------- engine ---------- */
   function measure(st) {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.max(80, Math.round(st.c.getBoundingClientRect().width)), h = H;
-    if (st.w === w && st.dpr === dpr) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.max(80, Math.round(st.c.getBoundingClientRect().width)), h = +st.c.dataset.h || H;
+    if (st.w === w && st.h === h && st.dpr === dpr) return;
     st.w = w; st.h = h; st.dpr = dpr;
     st.c.width = Math.round(w * dpr); st.c.height = Math.round(h * dpr); st.c.style.height = h + 'px';
     st.n = Math.max(80, Math.round(w / 1.2));
