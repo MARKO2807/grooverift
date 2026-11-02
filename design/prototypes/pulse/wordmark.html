@@ -48,16 +48,56 @@
   html[data-motion="reduced"] .glint, html[data-motion="reduced"] .bolt { animation: none; }
   html[data-motion="reduced"] .glint { opacity: 0; }
   h2.sec { font: var(--gr-type-title-2); margin: 40px 0 8px; }
+  /* Round 2 bolt (D-057): "not electric enough, too far from rift, a little too thick".
+     The bolt now hangs from the baseline (Sora baseline = 0.84em from the top at line-height 1, measured in
+     Chrome), is a hairline with a white-hot core and a soft glow, and flickers instead of breathing. */
+  .wm .r { line-height: 1; }
+  .nb { position: absolute; left: -0.03em; width: calc(100% + 0.06em); top: 0.86em; height: 0.3em; overflow: visible; }
+  .s .nb { --sw: 1.15px; --core: .55px; --blur: 1.2px; }
+  .l .nb { --sw: 2.2px; --core: 1px; --blur: 3px; }
+  .nb polyline { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: miter; stroke-miterlimit: 10; stroke-linecap: round; }
+  .nb .b { stroke: url(#g); stroke-width: var(--sw); }
+  .nb .ba { stroke: #FF586B; stroke-width: var(--sw); }
+  .nb .bb { stroke: #FFCB69; stroke-width: var(--sw); }
+  .nb .core { stroke: #FFF4E6; stroke-width: var(--core); opacity: .55; }
+  .nb .sp { stroke: #FFE2B0; stroke-width: calc(var(--sw) * .8); opacity: 0; }
+  .nb .all { filter: drop-shadow(0 0 var(--blur) rgba(255, 120, 100, .85)); opacity: .85; }
+  @keyframes nb-flick { 0%, 82% { opacity: .82; } 83% { opacity: 1; } 84% { opacity: .2; } 85.5% { opacity: 1; } 87% { opacity: .4; } 88% { opacity: 1; } 92%, 100% { opacity: .82; } }
+  @keyframes nb-core { 0%, 82% { opacity: .5; } 83%, 88% { opacity: 1; } 92%, 100% { opacity: .5; } }
+  @keyframes nb-spark { 0%, 82.5% { opacity: 0; } 83% { opacity: 1; } 84% { opacity: 0; } 85.5% { opacity: .9; } 87%, 100% { opacity: 0; } }
+  .n1 .all, .n2 .all { animation: nb-flick 4.5s linear infinite; }
+  .n1 .core, .n2 .core { animation: nb-core 4.5s linear infinite; }
+  .n2 .sp { animation: nb-spark 4.5s linear infinite; }
+  .n4 .ga { animation: nb-flick 4.5s linear infinite; }
+  .n4 .gb { animation: nb-flick 4.5s linear infinite -0.4s; }
+  .n4 .core { animation: nb-core 4.5s linear infinite; }
+  .nb .ga, .nb .gb { opacity: .85; }
+  @media (prefers-reduced-motion: reduce) { .nb * { animation: none !important; } .nb .sp { opacity: 0 !important; } .nb .all { opacity: 1 !important; } }
+  html[data-motion="reduced"] .nb * { animation: none !important; }
+  html[data-motion="reduced"] .nb .sp { opacity: 0 !important; }
+  html[data-motion="reduced"] .nb .all, html[data-motion="reduced"] .nb .ga, html[data-motion="reduced"] .nb .gb { opacity: 1; }
+  @media (forced-colors: active) { .nb polyline { stroke: CanvasText; } .nb .all { filter: none; } }
+  .ctl { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin: 16px 0 0; }
+  .ctl label { display: inline-flex; gap: 8px; align-items: center; min-height: 44px; }
+  .ctl input { width: 20px; height: 20px; accent-color: #FF586B; }
+  .ref { opacity: .9; border-style: dashed; }
 </style>
 </head>
 <body>
 <div class="page">
-  <h1>Wordmark s munjicom: četiri prijedloga</h1>
-  <p>Svaki je prikazan u gornjoj traci (stvarna veličina u aplikaciji) i veliko. Ovo je privremeni wordmark u fontu Sora (D-011). Konačni vektorski logo radi dizajner prije lansiranja, a sam simbol se ne dira. Odabrani prijedlog postaje upute za dizajnera.</p>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <linearGradient id="g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient>
     <linearGradient id="gv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFCB69"/><stop offset="1" stop-color="#FF586B"/></linearGradient>
   </defs></svg>
+
+  <h1>Nova munja ispod „rift”: četiri prijedloga (D-057)</h1>
+  <p>Tvoja povratna informacija: „ne djeluje dovoljno electric, previše je udaljena od rift, malo predebela”. Sve četiri nove munje vise <strong>tik ispod slova</strong> (oko 2 px u traci, prije oko 4 do 9 px), <strong>tanke su kao dlaka</strong> (oko 1 px, prije 2 px), imaju <strong>usijanu bijelu jezgru i mekani sjaj</strong> i <strong>trepere</strong> umjesto da polako dišu. Mjesto ostaje isto: samo ispod „rift”, samo na samostalnom wordmarku. Uz „Smanji pokrete” sve stoji.</p>
+  <p>Gledaj prvo traku: tamo je munja stalno vidljiva. Za usporedbu je zadnja kartica današnja munja (A2).</p>
+  <div class="ctl"><label><input type="checkbox" id="calm"> Smanji pokrete (prikaži mirnu verziju)</label></div>
+  <div class="grid" id="grid-new"></div>
+
+  <h2 class="sec">Arhiva: prvi krug (sesija 9 i 10)</h2>
+  <p>Svaki je prikazan u gornjoj traci (stvarna veličina u aplikaciji) i veliko. Ovo je privremeni wordmark u fontu Sora (D-011). Konačni vektorski logo radi dizajner prije lansiranja, a sam simbol se ne dira. Odabrani prijedlog postaje upute za dizajnera.</p>
   <div class="grid" id="grid"></div>
 
   <h2 class="sec" id="h-live">A, živa: tri jačine</h2>
@@ -98,6 +138,58 @@
     <div class="hero"><span class="wm l">groove<span class="r">rift${boltLive}</span></span></div>
     <p>${d}</p></section>`).join('');
   window.GR_CURRENT.scan(document);
+
+  /* ---------- round 2 (D-057) ---------- */
+  const ZZ = '0,3.2 22,3 27,1.6 31,3.4 36,0 41,9.5 46,1.2 50,6.5 54,3 72,3 76,1.8 79,3.6 82,3 100,3';
+  const SPARKS = ['36,0 38.5,-2.4 40,-2', '41,9.5 39,13 40.5,14.5', '50,6.5 53,10 55,9.6 57,12.5'];
+  const svgOpen = '<svg class="nb" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false">';
+  const single = (sparks, pts) => `${svgOpen}<g class="all"><polyline class="b" points="${pts || ZZ}"/><polyline class="core" points="${pts || ZZ}"/>${sparks ? SPARKS.map(p => `<polyline class="sp" points="${p}"/>`).join('') : ''}</g></svg>`;
+  const A_PTS = '0,3 30,3 35,0 40,8 45,1.5 50,9.5 55,3 62,3';
+  const B_PTS = '38,3 44,3 48,8.5 52,0.5 57,7.5 63,1 67,3 100,3';
+  const two = () => `${svgOpen}<g class="ga all"><polyline class="ba" points="${A_PTS}"/><polyline class="core" points="${A_PTS}"/></g><g class="gb all"><polyline class="bb" points="${B_PTS}"/><polyline class="core" points="${B_PTS}"/></g></svg>`;
+  const NEW = [
+    ['N1', 'Nit', false, 'n1', () => single(false),
+      'Ista ideja kao A, ali tanka kao dlaka, tik ispod slova i nepravilnije nazubljena. Svakih 4,5 s kratko zatreperi (dva brza trzaja), inače mirno svijetli. Samo CSS.'],
+    ['N2', 'Nit s iskrama', false, 'n2', () => single(true),
+      'N1, a u trenutku treptaja s vrhova munje odskoče tri sitne iskre. Između treptaja iskri nema. Samo CSS.'],
+    ['N3', 'Pucketanje', true, 'n3', () => single(true),
+      'Najelektričnije: svakih 4 do 6 s munja na tren „pukne”, nekoliko puta promijeni oblik (oko 0,3 s) i iskri, pa se vrati u svoj oblik. Svaki put malo drukčije, kao prava iskra. Treba malo JavaScripta.'],
+    ['N4', 'Dvije niti', false, 'n4', two,
+      'Coral nit dolazi slijeva, Amber zdesna i ispod „rift” se isprepletu. Isti motiv kao spajanje na pozivnici. Trepere naizmjence. Samo CSS.'],
+    ['A2', 'Danas (za usporedbu)', false, 'live-2 ref', () => boltLive,
+      'Trenutna munja u aplikaciji: 2 px, oko 4 do 9 px ispod slova, bljesak svakih 5 s i disanje.']
+  ];
+  document.getElementById('grid-new').innerHTML = NEW.map(([k, t, rec, cls, svg, d]) => `<section class="card ${cls}" aria-labelledby="h${k}n">
+    <h2 id="h${k}n">${k}. ${t}${rec ? ' <span class="rec">preporuka</span>' : ''}</h2>
+    <div class="bar"><span class="wm s">groove<span class="r">rift${svg()}</span></span><span class="tag">Alfa</span></div>
+    <div class="hero"><span class="wm l">groove<span class="r">rift${svg()}</span></span></div>
+    <p>${d}</p></section>`).join('');
+
+  /* N3: a short crackle. The zigzag re-forms a few times in about 0.3 s, sparks flash, then it settles. */
+  const base = ZZ.split(' ').map(p => p.split(',').map(Number));
+  const fmt = pts => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const n3 = [...document.querySelectorAll('.n3 .nb')];
+  function crackle() {
+    if (document.hidden || window.GR_MOTION.reduced()) return;
+    const frames = [0, 45, 95, 160, 230, 320];
+    frames.forEach((at, f) => setTimeout(() => {
+      const last = f === frames.length - 1;
+      n3.forEach(svg => {
+        const pts = last ? base : base.map(([x, y], i) => (i < 2 || i > base.length - 3) ? [x, y]
+          : [x + (Math.random() * 2 - 1) * 1.6, Math.max(-1.5, Math.min(11, y + (Math.random() * 2 - 1) * 3.2))]);
+        svg.querySelectorAll('.b, .core').forEach(p => p.setAttribute('points', fmt(pts)));
+        svg.querySelector('.core').style.opacity = last ? '' : String(0.7 + Math.random() * 0.3);
+        svg.querySelector('.all').style.opacity = last ? '' : String(f % 2 ? 0.35 : 1);
+        svg.querySelectorAll('.sp').forEach(s => { s.style.opacity = last ? '' : (Math.random() < 0.6 ? '1' : '0'); });
+      });
+    }, at));
+  }
+  (function loop() { setTimeout(() => { crackle(); loop(); }, 4000 + Math.random() * 2000); })();
+  setTimeout(crackle, 900);
+
+  const calm = document.getElementById('calm');
+  calm.checked = window.GR_MOTION.calm();
+  calm.addEventListener('change', () => window.GR_MOTION.setCalm(calm.checked));
 })();
 </script>
 </body>
