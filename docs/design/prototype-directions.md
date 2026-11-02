@@ -280,6 +280,24 @@ The owner's D-057 requests, answered with clickable options first.
 
 **Verification:** `pulse-smoke.mjs` passes 19/19 after D-059 (17/17 after D-058; new runs: wordmark round 2, the invite page, the invite page under reduced motion; the flow now checks the I4 canvas, the three sparks and that the flicker follows the motion setting; after D-059 the flow also checks that the invite fits, and two runs check all four layouts at 360×640 and 320×568). `smoke.mjs` passes 3/3. Real-time CDP frames at 390 px confirm the invite discharge and the top-bar bolt, with no JS errors.
 
+### Round 6: owner review of the whole flow (2026-11-02, session 11)
+
+The owner's list, in order. **Direct** items change the prototype; **options** items get clickable examples first.
+
+| # | Feedback | How it is handled |
+|---|---|---|
+| 1 | Profile visibility step ("Tko vidi tvoj profil"): try another layout, for example two rows instead of two columns. This revisits the one-card layout that D-053 and D-057 confirmed. | Options |
+| 2 | Artist picker: show artists without their country? The owner is unsure ("hmmm?"). | Options |
+| 3 | "Kako radi" step: the current in the Daily Drop illustration looks bad; the page must fit 100vh without scrolling. | Direct |
+| 4 | "Spremno" (Done): drop the current at the top. The logo and the Music DNA are enough effects. | Direct |
+| 5 | Home: maybe drop the current on the Daily Drop too; the owner wants a few examples, perhaps in a different order. | Options |
+| 6 | Profile page: a few examples. | Options |
+| 7 | Bottom navigation: good as it is, but show different background styles, for example a "glass" look like Instagram's current one. | Options |
+| 8 | Swipe between the main tabs as well as tapping them, like Instagram. | Direct |
+| 9 | Ask for the interface language right after the 18+ step: English and Croatian only at first. A simple page like the 18+ one, perhaps with a language icon. | Direct |
+| 10 | The 18+ step feels like signing up for an adult site. Soften it (design or an extra sentence); the 18+ rule (D-051) stays. | Direct, wording options if needed |
+| 11 | Invite: under the alpha note, recommend adding a home-screen shortcut, because the app is a PWA. | Direct; the invite must still fit one screen (D-059) |
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.
