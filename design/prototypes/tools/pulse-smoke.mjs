@@ -60,7 +60,10 @@ const FLOW = `(async () => {${HELPERS}
   expect(document.activeElement && document.activeElement.name === 'age', 'focus moved to age group');
   await click('input[name="age"][value="adult"]'); expect(!$('#err-age'), 'age error cleared');
   expect(!$('main').textContent.includes('samo za odrasle'), 'softer 18+ wording (session 11)');
-  await click('[data-a="next"]'); expect(scr() === 'uilang', 'interface language right after the age step');
+  await click('[data-a="next"]'); expect($('.dialog.age18') && document.activeElement.closest('.age18'), '18+ confirmation dialog with focus inside (D-068)');
+  await click('[data-k="ov-cancel"]'); expect(scr() === 'age' && !$('.age18'), 'Natrag closes the confirmation');
+  await click('[data-a="next"]'); await click('[data-k="ov-ok"]');
+  expect(scr() === 'uilang', 'interface language right after the age step');
   expect($('input[name="lang"][value="hr"]') && $('input[name="lang"][value="en"]') && $$('input[name="lang"]').length === 2, 'HR and EN only');
   await click('[data-a="next"]'); expect(scr() === 'account', 'account');
   expect($('[data-a="showpw"] svg.pi'), 'eye icon next to show password');

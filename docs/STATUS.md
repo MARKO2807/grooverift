@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-067. Key ones:
+- Decisions D-001 to D-068. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -80,7 +80,7 @@ _Last updated: 2026-11-02 (session 11)_
     - **Choices (D-064):** the "Strujica" Daily Drop name; Home E with a single "Odgovori" button and a soft invite ring; the Hub with the last seven days, this week's programme (B2) and the archives; the notification question "Koja pjesma najbolje govori tko si?"; the globe icon.
     - **Settings (D-065):** no data-download row, delete at the very bottom, a quiet status mark on top; four arrangements in `pulse/round8.html`. Globe is the language icon. **Chosen (D-066):** B, the profile card on top; the data copy is offered inside the delete flow.
     - **Ideas backlog:** `docs/product/backlog.md` lists every idea outside the confirmed scope.
-    - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Pending choices in `pulse/round9.html`; images in comments is OQ-31.
+    - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Chosen (D-068): a short 18+ confirmation, faces for "all answers", answers only on past days, Activity by day, three-column profile counts, comments as text plus catalogue cards (images from B1).
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options

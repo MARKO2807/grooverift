@@ -36,7 +36,7 @@ Labels: **DEFERRED** (owner wants it later), **IDEA** (proposed, not yet discuss
 | Quiet hours for notifications | IDEA | Settings research §3 | Could sit in SET-06. |
 | Consent switch for Music DNA personalisation | OPEN, counsel | Settings research §3 | Only if consent is the legal basis. |
 | Search inside Settings | IDEA | Round 8 option D | Useful once there are many settings. |
-| Images in comments | OPEN (OQ-31) | Owner, session 11 | RECOMMENDED with the B1 media pipeline, not in the alpha. |
+| Images in comments | DEFERRED to B1 (D-068) | Owner, session 11 | With the B1 media pipeline (moderation, storage, metadata stripping). |
 | Weekly e-mail summary | IDEA | Round 9 notifications sketch | Shown as a switch in the sketch; needs an e-mail provider decision. |
 
 ## Platforms

@@ -804,11 +804,11 @@
      ?act=a|b|c     the Activity screen with sample items
      ?prow=a|b|c|d  the counts row on the profile
      Settings rows open real sub-screens (screen "setsub", ?flow=drop&at=setsub&s=<key>). */
-  const AGE18_AT = pick('age18', ['a', 'b', 'c'], '');
-  const ALL_AT = pick('all', ['a', 'b', 'c', 'd'], 'a');
-  const PAST_AT = pick('past', ['a', 'b', 'c'], 'a');
-  const ACT_AT = pick('act', ['a', 'b', 'c'], 'a');
-  const PROW_AT = pick('prow', ['a', 'b', 'c', 'd'], 'a');
+  const AGE18_AT = pick('age18', ['none', 'a', 'b', 'c'], 'a'); // chosen: a (D-068); none = no confirmation
+  const ALL_AT = pick('all', ['a', 'b', 'c', 'd'], 'c'); // chosen: c, faces (D-068)
+  const PAST_AT = pick('past', ['a', 'b', 'c'], 'a'); // chosen: a, answers only (D-068)
+  const ACT_AT = pick('act', ['a', 'b', 'c'], 'a'); // chosen: a, by day (D-068)
+  const PROW_AT = pick('prow', ['a', 'b', 'c', 'd'], 'b'); // chosen: b, three columns (D-068)
 
   /* Home: the link to all answers, four ways. */
   function allAnswersLink(n, peeks) {
@@ -1318,7 +1318,7 @@
       case 'invite': return go('age');
       case 'age':
         if (!st.age) { err.age = 'Odaberi jedan odgovor.'; break; }
-        if (st.age === 'adult' && AGE18_AT) return openOverlay({ type: 'age18' }, root.querySelector('[data-k="next"]'));
+        if (st.age === 'adult' && AGE18_AT !== 'none') return openOverlay({ type: 'age18' }, root.querySelector('[data-k="next"]'));
         return go(st.age === 'adult' ? 'uilang' : 'minor');
       case 'uilang': return go('account');
       case 'account':
@@ -1593,7 +1593,7 @@
     if (before('account')) st.pw = 'primjer lozinke za skicu';
     if (before('username')) { st.displayName = 'Ana'; st.username = 'ana.slusa'; st.userState = 'ok'; }
     if (before('visibility')) st.vis = PRIV ? 'private' : 'public';
-    if (AT === 'age' && P.get('show') === 'age18' && AGE18_AT) { st.age = 'adult'; st.overlay = { type: 'age18' }; }
+    if (AT === 'age' && P.get('show') === 'age18' && AGE18_AT !== 'none') { st.age = 'adult'; st.overlay = { type: 'age18' }; }
     if (before('dna') || (AT === 'dna' && P.get('picks') === '1')) { st.genres = ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk']; st.artists = [fx('Metallica'), fx('Nina Simone'), fx('Arsen Dedić'), fx('Charlotte de Witte')]; }
     if (AT === 'dna' && P.get('q')) st.artistQ = P.get('q');
     if (before('dnavis')) st.dnaVis = 'all';
