@@ -42,18 +42,18 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
   - Primary sources used: NIST SP 800-63B-4 final (pages.nist.gov/800-63-4/sp800-63b.html, §3.1.1.2: 15 characters is a SHALL for single-factor; §3.2.2: 100 consecutive failures), Better Auth email-password, HIBP plugin and rate-limit docs, the HIBP API v3 page (no key, no rate limit, `Add-Padding`).
 - **Session 10: wordmark accent (D-055, OQ-26 resolved).** A2: a bolt under "rift", a glint every 5 s and a breath 72–100 %, top bar only. `app.js` `bolt()`, `style.css` `.wm-bolt`; the SVG gradient id `wm-g` exists once per render (the smoke test checks duplicate ids). `wordmark.html` holds the three intensities as the designer's brief.
 - **Session 10: reaction (D-056, OQ-13 resolved).** One like-style reaction, icon only (audio wave, look V3), count visible to all, name "Sviđa mi se" / "Like". The owner found the three stances unclear. `reactions.html` keeps all options (sections 1–4), the four looks (6) and the name-in-context examples (7). `app.js` `react()` and `WAVE`; `style.css` `.react-like`; `data.js` sums the old per-stance counts; `index.html` defines the shared `gr-ember` gradient. Own answers show the count without a button.
+- **Session 10: round 3 review (D-057).** Genre colours stay; the one-card visibility stays; Phosphor light is the icon library (OQ-23 resolved, install approval in 3.6). **The wordmark bolt is reopened** and the owner wants **new invite-current designs**; see "Next concrete tasks" 1.
 - **Open items:**
-  - OQ-23: icon library. Phosphor is RECOMMENDED; `pulse/picons.js` embeds six icons as path data, with the MIT notice in `ICONS-LICENSE.md`.
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
   - `node design/prototypes/tools/pulse-smoke.mjs` passes 14/14 (session 10).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
-1. **Continue the owner's agenda.**
-   - ~~Password rules (OQ-25)~~ done in session 10 (D-054).
-   - ~~Wordmark accent (OQ-26)~~ done in session 10 (D-055).
-   - ~~Reaction set (OQ-13)~~ done in session 10 (D-056).
+1. **Start with the owner's D-057 requests** (clickable options first, then ask; effort High):
+   - **Wordmark bolt, redo.** The owner's words: "ne djeluje dovoljno electric, previše je udaljena od rift, malo predebela". Today: `.wm-bolt` in `style.css` sits 6 px under "rift" (`bottom: -6px`), stroke 2 px, points `0,6 34,6 42,1 50,9 58,2 66,8 72,5 100,5`, glint every 5 s. Try: hugging the baseline or the descenders, a hairline stroke (about 1–1.25 px) with a brighter core and a soft glow, sharper and more irregular zigzags, small branching sparks, a flicker instead of a smooth breath. Keep: under "rift" only, standalone wordmark only, stops with "Smanji pokrete". Add the options to `pulse/wordmark.html` as a new section; apply the winner to the top bar and update D-055/OQ-26.
+   - **Invite current, new designs.** The owner wants taller, spiked electric impulses that clearly show joining, a connection. Today: `current.js` `drawCurrent()`; the invite uses `data-size="lg"` (`SIZE.lg` h 64, amp 1; amplitude `A = h * amp * (0.07 + 0.05 * I + 0.17 * surge)`), charges flow from both sides and collide in the middle. Ideas: taller canvas and sharp ECG-like spikes where the two charges meet; a closing arc that bridges a gap; a heartbeat-style double spike at the moment of contact; a brief branching discharge. Show 3–4 as a comparison page (like `choices.html` §4), all respecting `GR_MOTION`.
+   - Then the rest of 3.5 below.
    - Round 3 feedback: the genre colours (D-052), the one-card visibility step, the Phosphor icons.
    - The owner liked: the Spirala, with genre-matched pulse speed and soft classical colours; the current under the Daily Drop name; the dock orbit; the invite current.
 2. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6:
