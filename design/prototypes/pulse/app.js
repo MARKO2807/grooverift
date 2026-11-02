@@ -713,7 +713,7 @@
      a: groups with titles, the status as one quiet line on top. b: a profile card on top with the status inside it.
      c: one flat list without group titles and plain icons. d: a search field on top that filters the rows.
      Only "Smanji pokrete" and the search work; every other row says which screen it opens. */
-  const SET_AT = pick('set', ['a', 'b', 'c', 'd'], 'a');
+  const SET_AT = pick('set', ['a', 'b', 'c', 'd'], 'b'); // chosen: b, the profile card (D-066)
   const SET_GROUPS = () => [
     ['Račun', [
       ...(SET_AT === 'b' ? [] : [['user-circle', 'Uredi profil', 'Ime za prikaz, bio i slika', 'PROF-08']]),
@@ -734,7 +734,7 @@
   ];
   const setIcon = n => ['user', 'lock', 'x', 'check', 'bell', 'trash', 'users', 'info', 'pulse'].includes(n) ? ic(n, 'set-ic') : pic(n, 'set-ic');
   const STATUS_MSG = 'Status računa (SAFE-04, SAFE-05): ovdje bi pisala upozorenja i odluke moderacije s obrazloženjem i mogućnošću žalbe. Sad nema ničega.';
-  const DELETE_MSG = 'Deaktivacija ili brisanje (SET-09): ponovna prijava, točan datum brisanja i 30 dana da se predomisliš. Kopija podataka: vidi otvoreno pitanje OQ-30.';
+  const DELETE_MSG = 'Deaktivacija ili brisanje (SET-09): ponovna prijava, točan datum brisanja i 30 dana da se predomisliš. Prije brisanja nudi i kopiju tvojih podataka (D-066).';
   const setStatus = cls => `<button class="set-status${cls ? ' ' + cls : ''}" data-a="toast" data-msg="${STATUS_MSG}" data-k="set-status">${ic('check', 'sm')}<span>Račun je u redu</span><span class="sr-only">, status računa</span></button>`;
   function setRow(r, k) {
     const [i, t, d, id] = r;

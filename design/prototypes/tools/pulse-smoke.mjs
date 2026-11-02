@@ -164,7 +164,7 @@ const FLOW = `(async () => {${HELPERS}
   await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
   await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
   expect(!$('[data-a="calm"]'), 'motion setting moved off the profile (D-063)');
-  await click('[data-a="settings"]'); expect(scr() === 'settings' && $$('.set-group').length === 4 && $('[data-k="logout"]') && $('.set-status') && $('.set-body ~ .set-delete') && !document.body.textContent.includes('Preuzmi svoje podatke'), 'settings: status on top, four groups, log out, delete at the bottom (D-065)');
+  await click('[data-a="settings"]'); expect(scr() === 'settings' && $('.set-me') && $$('.set-group').length === 4 && $('[data-k="logout"]') && $('.set-status') && $('.set-body ~ .set-delete') && !document.body.textContent.includes('Preuzmi svoje podatke'), 'settings: status on top, four groups, log out, delete at the bottom (D-065)');
   const calmBefore = $('[data-a="calm"]').getAttribute('aria-checked');
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');

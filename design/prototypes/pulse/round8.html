@@ -32,6 +32,7 @@
 <body>
 <div class="page">
   <h1>Runda 8: postavke</h1>
+  <p style="color:var(--gr-color-text-primary)"><b>Odabrano (D-066):</b> B, kartica profila. Kopija podataka nudi se unutar brisanja računa.</p>
   <p>U sve četiri verzije: nema zasebnog reda „Preuzmi svoje podatke”, „Deaktiviraj ili obriši račun” je na samom dnu (ispod Odjave), a status računa je mala oznaka „Račun je u redu” pri vrhu. Skrolaj do dna. „Smanji pokrete” stvarno radi, a u verziji D radi i pretraga.</p>
   <div class="grid" id="opts"></div>
 
@@ -48,8 +49,8 @@
 <script>
 (function () {
   const O = [
-    ['a', 'A. Grupe', 'Četiri grupe s naslovima. Status je mala oznaka na vrhu.', true],
-    ['b', 'B. Kartica profila', 'Na vrhu tvoje ime i @korisničko ime, dodir otvara „Uredi profil”. Status je odmah ispod.', false],
+    ['a', 'A. Grupe', 'Četiri grupe s naslovima. Status je mala oznaka na vrhu.', false],
+    ['b', 'B. Kartica profila (odabrano)', 'Na vrhu tvoje ime i @korisničko ime, dodir otvara „Uredi profil”. Status je odmah ispod.', false],
     ['c', 'C. Jedan popis', 'Bez naslova grupa i bez pločica oko ikona, samo tanke crte između cjelina. Najmirnije, kao Instagram.', false],
     ['d', 'D. S pretragom', 'Polje „Traži u postavkama” na vrhu, kad postavki bude više. Upiši npr. „obav”.', false]
   ];
