@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · reakcije: prijedlozi</title>
+<!-- Owner decision sketch (session 10, OQ-13): the reaction set on Daily Drop answers. Every card is a live copy
+     of the answer card from app.js with one variant each; tap the chips. Fictional data. The three extra
+     Phosphor icons (sparkle, equals, thumbs-up; light weight, MIT, see ICONS-LICENSE.md) are embedded here only
+     until the owner decides; nothing is installed (D-027).
+     Decided (D-056): one reaction, single per member, icon only in look V3 (audio wave), count visible to all,
+     named "Sviđa mi se" / "Like". Applied in app.js and style.css; sections 1–4 stay as the record of the options. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: #07080B; }
+  .page { max-width: 80rem; margin: 0 auto; padding: 32px 24px 80px; }
+  .page > h1 { margin-bottom: 8px; }
+  .page > p, .page section > p { color: var(--gr-color-text-secondary); margin: 0 0 12px; max-width: 72ch; }
+  .page h2 { font: var(--gr-type-title-2); margin: 40px 0 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 20px; }
+  .card { border-radius: 20px; border: 1px solid var(--gr-color-border-subtle); background: var(--gr-color-bg-surface); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .card h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .card > p { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); margin: 0; }
+  .phone { border-radius: 12px; background: var(--gr-color-bg-canvas); border: 1px solid var(--gr-color-border-subtle); padding: 12px; }
+  .phone .ans { background: var(--gr-color-bg-surface); border-radius: 18px; padding: var(--gr-space-4) var(--gr-space-4) var(--gr-space-2); }
+  .en { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .en code { font-family: var(--gr-font-family-body); color: var(--gr-color-text-primary); }
+  .react .pi { width: 18px; height: 18px; }
+  .react-ico { min-width: 44px; justify-content: center; }
+  .who-link { font: var(--gr-type-caption); margin-top: 4px; }
+  .note { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px dashed var(--gr-color-border-strong); border-radius: 8px; padding: 6px 10px; }
+  /* Section 6: one icon-only reaction with a count, four looks (owner, session 10: "samo ikona, ali jako dobra",
+     "brojke ... fora izgled"). Press feedback stops with "Smanji pokrete" and the OS setting (D-049). */
+  .hit { gap: 6px; min-height: 36px; padding: 0 10px 0 8px; border-color: var(--gr-color-border-strong); }
+  .hit svg { width: 20px; height: 20px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+  .hit .n { font: var(--gr-type-label); color: var(--gr-color-text-secondary); display: inline-block; min-width: 1ch; }
+  .hit[aria-pressed="true"] { border-color: var(--gr-color-ember-coral); background: none; padding: 0 10px 0 8px; }
+  .hit[aria-pressed="true"] .n { color: var(--gr-color-ember-coral); }
+  .hit.v1[aria-pressed="true"] svg { fill: var(--gr-color-ember-coral); stroke: var(--gr-color-ember-coral); }
+  .hit.v2[aria-pressed="true"] .bolt { fill: url(#hg); stroke: none; }
+  .hit.v2 { position: relative; }
+  .hit.v2[aria-pressed="true"]::after { content: ""; position: absolute; left: 6px; top: 50%; width: 24px; height: 24px; margin-top: -12px; border-radius: 50%; border: 1.5px solid var(--gr-color-ember-amber); opacity: 0; pointer-events: none; }
+  .hit.v3[aria-pressed="true"] .wave { stroke: url(#hg); }
+  .hit.v3 .wave { transform-origin: 50% 50%; transform-box: fill-box; }
+  .hit.v4 .ring { stroke-width: 1.6; }
+  .hit.v4[aria-pressed="true"] .ring { fill: url(#hg); stroke: none; }
+  .hit.v4[aria-pressed="true"] .bolt { fill: #0B0D12; stroke: none; }
+  .pressing.v1 svg, .pressing.v4 svg { animation: pop 220ms var(--gr-motion-easing-standard); }
+  .pressing.v2::after { animation: spark 420ms ease-out; }
+  .pressing.v2 .bolt { animation: pop 220ms var(--gr-motion-easing-standard); }
+  .pressing.v3 .wave { animation: beat 360ms ease-out; }
+  .hit .n.bump { animation: bump 240ms var(--gr-motion-easing-standard); }
+  /* Section 7: where the reaction name shows up */
+  .spot { display: flex; flex-direction: column; gap: 6px; }
+  .spot-l { font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-text-secondary); }
+  .notif { animation: none; }
+  .notif-app svg { width: 28px; height: 28px; fill: none; stroke: url(#hg); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .act-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--gr-color-bg-surface); font: var(--gr-type-body-sm); }
+  .act-row .stack { position: relative; }
+  .act-row .badge { position: absolute; right: -6px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--gr-color-bg-canvas); display: grid; place-items: center; }
+  .act-row .badge svg { width: 13px; height: 13px; fill: none; stroke: url(#hg); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .act-row .t { color: var(--gr-color-text-secondary); font: var(--gr-type-caption); display: block; }
+  .who-sheet { border-radius: 12px; background: var(--gr-color-bg-surface); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .who-sheet h5 { font: var(--gr-type-label); margin: 0; display: flex; align-items: center; gap: 6px; }
+  .who-sheet h5 svg { width: 18px; height: 18px; fill: none; stroke: url(#hg); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .who-sheet ul { display: flex; flex-direction: column; gap: 6px; font: var(--gr-type-body-sm); }
+  .who-sheet li { display: flex; align-items: center; gap: 8px; }
+  .sr-say { border-radius: 12px; border: 1px dashed var(--gr-color-border-strong); padding: 10px 12px; font: var(--gr-type-body-sm); display: flex; gap: 8px; align-items: flex-start; }
+  .sr-say .pi { flex: none; width: 20px; height: 20px; margin-top: 1px; color: var(--gr-color-text-secondary); }
+  .sr-say q { color: var(--gr-color-text-primary); }
+  @keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
+  @keyframes spark { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+  @keyframes beat { 0% { transform: scaleY(1); } 40% { transform: scaleY(1.45); } 100% { transform: scaleY(1); } }
+  @keyframes bump { 0% { transform: translateY(45%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .pressing svg, .pressing::after, .pressing .bolt, .pressing .wave, .hit .n.bump { animation: none !important; } }
+  html[data-motion="reduced"] .pressing svg, html[data-motion="reduced"] .pressing::after, html[data-motion="reduced"] .pressing .bolt, html[data-motion="reduced"] .pressing .wave, html[data-motion="reduced"] .hit .n.bump { animation: none; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Reakcije na odgovore: prijedlozi</h1>
+  <p>Svaka kartica je živa kopija kartice odgovora iz Daily Dropa, s jednom varijantom reakcija. Klikni čipove. Master Prompt traži reakcije uz odgovore, a da brojke ne vladaju poretkom; audit (S-05) preporučuje mali, fiksni, glazbeni set od 3 do 5 i nikakve ljestvice. Hrvatske oznake izbjegavaju rod (nema „Nisam znao/la”), jer ih izgovara svatko.</p>
+
+  <section aria-labelledby="h1x">
+    <h2 id="h1x">1. Što reakcije znače</h2>
+    <p>Reakcija je stav prema <b>glazbi</b> u odgovoru, ne ocjena osobe. Tri seta, od najmanjeg do najšireg.</p>
+    <div class="grid" id="g-set"></div>
+  </section>
+
+  <section aria-labelledby="h2x">
+    <h2 id="h2x">2. Jedna ili više reakcija po odgovoru</h2>
+    <p>Isti set A u oba. U lijevoj kartici klik na drugi čip prebaci reakciju; u desnoj se mogu složiti.</p>
+    <div class="grid" id="g-mode"></div>
+  </section>
+
+  <section aria-labelledby="h3x">
+    <h2 id="h3x">3. Oblik čipa</h2>
+    <p>Set A u tri oblika. Ikone su Phosphor (light), kao i ostale u prototipu (OQ-23).</p>
+    <div class="grid" id="g-form"></div>
+  </section>
+
+  <section aria-labelledby="h4x">
+    <h2 id="h4x">4. Brojke</h2>
+    <p>Brojke ne utječu na poredak (Master Prompt §5). Pitanje je samo tko ih i kada vidi. „Tko je reagirao” (POST-04) postoji u svim varijantama i filtrira blokirane.</p>
+    <div class="grid" id="g-counts"></div>
+  </section>
+
+  <section aria-labelledby="h6x">
+    <h2 id="h6x">6. Jedna reakcija, samo ikona: četiri izgleda</h2>
+    <p>Odlučeno (sesija 10): jedna reakcija tipa „lajk”, zamjenjiva, samo ikona, broj vidljiv svima, i jedno i drugo mora izgledati dobro. Ovdje su četiri izgleda ikone s brojem. Klikni čip: ikona se upali, broj skoči, a ovisno o varijanti ima i kratku iskru ili otkucaj. Uz „Smanji pokrete” (<code>?calm=1</code>) ili OS postavku sve je bez pokreta, a upaljeno stanje ostaje jasno. Uz svaki izgled je i prijedlog imena, jer ime čuju čitači zaslona i piše u obavijestima („Petra i još 3: Pogodak”).</p>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="hg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs></svg>
+    <div class="grid" id="g-hit"></div>
+  </section>
+
+  <section aria-labelledby="h7x">
+    <h2 id="h7x">7. Ime reakcije: gdje se vidi</h2>
+    <p>Odabran je izgled V3 „Puls”. Na kartici odgovora vidi se samo ikona, bez riječi. Ali reakcija ipak treba ime, jer se pojavljuje na mjestima gdje ikona sama nije dovoljna. Svaka kartica ispod pokazuje ista četiri mjesta s jednim prijedlogom imena: obavijest na mobitelu, redak u Aktivnosti, popis „tko je reagirao” i što izgovara čitač zaslona slijepim članovima.</p>
+    <div class="grid" id="g-name"></div>
+  </section>
+
+  <section aria-labelledby="h5x">
+    <h2 id="h5x">5. Preporučene zadane postavke, bez posebnog pitanja</h2>
+    <ul class="rules" style="padding-left:1.2em;list-style:disc;color:var(--gr-color-text-secondary);font:var(--gr-type-body-sm);max-width:72ch;display:flex;flex-direction:column;gap:6px">
+      <li>Isti set vrijedi i za <b>komentare</b> (odgovore na odgovore) i kasnije za objave u beti; u skicu ulazi u rundi stanja.</li>
+      <li>Reakcija na vlastiti odgovor nije moguća.</li>
+      <li>Obavijest o reakciji se <b>grupira</b> („Petra i još 3: Dobar izbor”), nikad jedna po reakciji (ACT-01).</li>
+      <li>Nema javnih ljestvica ni ukupnog broja reakcija na profilu (S-05).</li>
+      <li>Čip je gumb s <code>aria-pressed</code>; ime uključuje reakciju, broj i „ti” ako si reagirao (WCAG 4.1.2).</li>
+    </ul>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="current.js"></script>
+<script src="icons.js"></script>
+<script src="picons.js"></script>
+<script>
+(function () {
+  const ic = window.GR_ICON, pic = window.GR_PICON;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pl = (n, a, b, c) => { const m = n % 10, h = n % 100; return (m === 1 && h !== 11) ? a : (m >= 2 && m <= 4 && (h < 12 || h > 14)) ? b : c; };
+  /* Phosphor light, embedded for this sketch only. */
+  const P2 = {
+    sparkle: 'M196.89,130.94,144.4,111.6,125.06,59.11a13.92,13.92,0,0,0-26.12,0L79.6,111.6,27.11,130.94a13.92,13.92,0,0,0,0,26.12L79.6,176.4l19.34,52.49a13.92,13.92,0,0,0,26.12,0L144.4,176.4l52.49-19.34a13.92,13.92,0,0,0,0-26.12Zm-4.15,14.86-55.08,20.3a6,6,0,0,0-3.56,3.56l-20.3,55.08a1.92,1.92,0,0,1-3.6,0L89.9,169.66a6,6,0,0,0-3.56-3.56L31.26,145.8a1.92,1.92,0,0,1,0-3.6l55.08-20.3a6,6,0,0,0,3.56-3.56l20.3-55.08a1.92,1.92,0,0,1,3.6,0l20.3,55.08a6,6,0,0,0,3.56,3.56l55.08,20.3a1.92,1.92,0,0,1,0,3.6ZM146,40a6,6,0,0,1,6-6h18V16a6,6,0,0,1,12,0V34h18a6,6,0,0,1,0,12H182V64a6,6,0,0,1-12,0V46H152A6,6,0,0,1,146,40ZM246,88a6,6,0,0,1-6,6H230v10a6,6,0,0,1-12,0V94H208a6,6,0,0,1,0-12h10V72a6,6,0,0,1,12,0V82h10A6,6,0,0,1,246,88Z',
+    equals: 'M222,160a6,6,0,0,1-6,6H40a6,6,0,0,1,0-12H216A6,6,0,0,1,222,160ZM40,102H216a6,6,0,0,0,0-12H40a6,6,0,0,0,0,12Z',
+    'thumbs-up': 'M232.49,81.44A22,22,0,0,0,216,74H158V56a38,38,0,0,0-38-38,6,6,0,0,0-5.37,3.32L76.29,98H32a14,14,0,0,0-14,14v88a14,14,0,0,0,14,14H204a22,22,0,0,0,21.83-19.27l12-96A22,22,0,0,0,232.49,81.44ZM30,200V112a2,2,0,0,1,2-2H74v92H32A2,2,0,0,1,30,200ZM225.92,97.24l-12,96A10,10,0,0,1,204,202H86V105.42l37.58-75.17A26,26,0,0,1,146,56V80a6,6,0,0,0,6,6h64a10,10,0,0,1,9.92,11.24Z'
+  };
+  const pi = name => P2[name] ? `<svg class="pi" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="${P2[name]}"/></svg>` : pic(name);
+
+  const R = {
+    same: { id: 'same', label: 'Isto', en: 'Same', icon: 'equals' },
+    new: { id: 'new', label: 'Novo mi je', en: 'New to me', icon: 'sparkle' },
+    good: { id: 'good', label: 'Dobar izbor', en: 'Good pick', icon: 'thumbs-up' },
+    hit: { id: 'hit', label: 'Pogodak', en: 'Hit', icon: 'lightning' },
+    listen: { id: 'listen', label: 'Poslušat ću', en: "I'll listen", icon: 'sparkle' }
+  };
+  const SETS = {
+    A: [R.same, R.new, R.good],
+    B: [R.hit],
+    C: [R.same, R.new, R.good, R.listen]
+  };
+  const BASE = { same: 4, new: 1, good: 6, hit: 9, listen: 2 };
+  const cards = {}; // id -> { cfg, my: Set, reacted: bool }
+
+  function reacts(id) {
+    const c = cards[id], cfg = c.cfg;
+    const showN = cfg.counts === 'all' || (cfg.counts === 'after' && c.reacted);
+    return cfg.set.map(r => {
+      const on = c.my.has(r.id), n = BASE[r.id] + (on ? 1 : 0);
+      const icon = cfg.form !== 'text' ? pi(r.icon) : '';
+      const label = cfg.form === 'iconOnly' ? '' : `<span>${r.label}</span>`;
+      return `<button class="react${cfg.form === 'iconOnly' ? ' react-ico' : ''}" data-card="${id}" data-r="${r.id}" aria-pressed="${on}" aria-label="${r.label}, ${n} ${pl(n, 'reakcija', 'reakcije', 'reakcija')}${on ? ', ti' : ''}">${on && cfg.form === 'text' ? ic('check', 'sm') : ''}${icon}${label}${showN && n ? `<span class="n">${n}</span>` : ''}</button>`;
+    }).join('');
+  }
+  function ansCard(id, cfg) {
+    cards[id] = { cfg, my: new Set(), reacted: false };
+    return `<div class="phone"><article class="ans" aria-labelledby="h-${id}">
+      <header class="ans-head">
+        <span class="avatar" style="--ring:conic-gradient(#2E8B57,#3A6EA5,#2E8B57)" aria-hidden="true"><span>P</span></span>
+        <h4 class="ans-who" id="h-${id}"><span class="name">Petra</span><span class="sr-only">, </span><span class="handle">@petra.zvuk</span></h4>
+        <span class="ans-time"><time>08:12</time></span>
+        <button class="iconbtn ans-more" aria-label="Više opcija: odgovor korisnika Petra">${ic('more')}</button>
+      </header>
+      <div class="ans-text"><p>Kind of Blue. Svi ga preporučuju s razlogom: ništa ne žuri i svaka pjesma ima prostora.</p></div>
+      <div class="ans-actions">
+        <div class="reacts" role="group" aria-label="Reakcije" id="rx-${id}">${reacts(id)}</div>
+        <button class="comments-btn">${ic('comment', 'sm')}<span>2 komentara</span></button>
+      </div>
+      ${cfg.counts === 'none' ? `<p class="who-link"><button class="link">Tko je reagirao</button></p>` : ''}
+    </article></div>`;
+  }
+  const card = (k, title, rec, body, desc, en) => `<section class="card" aria-labelledby="h-c-${k}">
+    <h3 id="h-c-${k}">${title}${rec ? ' <span class="rec">preporuka</span>' : ''}</h3>${body}${en ? `<p class="en">EN: ${en}</p>` : ''}<p>${desc}</p></section>`;
+  const base = { set: SETS.A, mode: 'single', form: 'text', counts: 'all' };
+
+  document.getElementById('g-set').innerHTML = [
+    card('sa', 'A. Razgovor: tri stava', true, ansCard('sa', { ...base }),
+      'Slaganje („i ja bih to”), otkriće („idem poslušati”) i priznanje („nisam to odabrala, ali je dobro”). Tri različite stvari koje se u razgovoru o glazbi stvarno događaju. Ono što je sad u skici.', '<code>Same · New to me · Good pick</code>'),
+    card('sb', 'B. Jedna reakcija', false, ansCard('sb', { ...base, set: SETS.B }),
+      'Jedan čip s munjom, jedan broj. Najjednostavnije i najpoznatije, ali je to „lajk” s drugim imenom: ne kaže ništa o glazbi i lako postane natjecanje.', '<code>Hit</code>'),
+    card('sc', 'C. Razgovor i namjera', false, ansCard('sc', { ...base, set: SETS.C }),
+      'Set A plus „Poslušat ću”, koje bi odgovor spremilo i u tvoj privatni popis za slušanje. Najkorisnije, ali četiri čipa na 320 px idu u dva reda, a „Poslušat ću” miješa reakciju i spremanje (koje već postoji kao zasebna radnja).', '<code>Same · New to me · Good pick · I\'ll listen</code>')
+  ].join('');
+
+  document.getElementById('g-mode').innerHTML = [
+    card('ma', 'Jedna po odgovoru', true, ansCard('ma', { ...base }),
+      'Reakcija je stav, a stav je jedan. Klik na drugi čip ga zamijeni. Brojke ostaju iskrene („4 ljudi: isto”), kartica mirna.'),
+    card('mb', 'Više po odgovoru', false, ansCard('mb', { ...base, mode: 'multi' }),
+      '„Isto” i „Dobar izbor” se mogu složiti. Prirodnije u trenutku, ali se čipovi gomilaju i brojke prestaju značiti koliko ljudi tako misli.')
+  ].join('');
+
+  document.getElementById('g-form').innerHTML = [
+    card('fa', 'Samo tekst', true, ansCard('fa', { ...base }),
+      'Riječ je jasna na prvi pogled i na oba jezika. Odabrani čip dobiva kvačicu i Coral rub. Nema što učiti i nema „emoji” dojma.'),
+    card('fb', 'Ikona i tekst', false, ansCard('fb', { ...base, form: 'icon' }),
+      'Ikona pomaže u obavijestima i na brzinu, ali „Isto” nema prirodnu ikonu (ovdje je znak jednakosti), pa dvije od tri ikone treba naučiti.'),
+    card('fc', 'Samo ikona', false, ansCard('fc', { ...base, form: 'iconOnly' }),
+      'Najkompaktnije, ali značenje se mora naučiti, a čitačima zaslona i prevoditeljima ime i dalje daje tekst. Najbliže generičkom „emoji reakcije” uzorku.')
+  ].join('');
+
+  document.getElementById('g-counts').innerHTML = [
+    card('ca', 'Brojke vidljive svima', true, ansCard('ca', { ...base }),
+      'Mali broj uz svaki čip. Pošteno i jednostavno; brojke ionako ne rangiraju. Rizik: ljudi reagiraju tamo gdje već ima reakcija.'),
+    card('cb', 'Brojke tek nakon što reagiraš', false, ansCard('cb', { ...base, counts: 'after' }),
+      'Dok ne reagiraš, čipovi su bez brojki, pa se prvo odlučiš sam. Nakon klika vidiš sve. Manje „vagona”, malo više skrivanja.'),
+    card('cc', 'Bez brojki', false, ansCard('cc', { ...base, counts: 'none' }),
+      'Nema brojki nigdje; tko je reagirao vidiš tek na poveznici. Najmirnije, ali autor odgovora ne vidi odjek bez dodatnog koraka.')
+  ].join('');
+
+  /* ---------- 6. one icon-only reaction, four looks ---------- */
+  const HIT = {
+    v1: { name: 'Pogodak', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon class="bolt" points="13,2 4,14 11,14 10,22 20,9 13,9 14,2"/></svg>' },
+    v2: { name: 'Pogodak', svg: '<svg viewBox="0 0 14 22" aria-hidden="true"><polygon class="bolt" points="9,0 1,12 6.5,12 4,22 13,8 7.5,8 10.5,0"/></svg>' },
+    v3: { name: 'Puls', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg>' },
+    v4: { name: 'Rift', svg: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="10"/><polygon class="bolt" points="12.8,5.5 8,13 11.5,13 11,18.5 16,10.5 12.5,10.5 13.2,5.5"/></svg>' }
+  };
+  const hits = {}; // v -> { on, n }
+  function hitChip(v) {
+    const h = hits[v], d = HIT[v];
+    return `<button class="react react-ico hit ${v}" data-hit="${v}" aria-pressed="${h.on}" aria-label="${d.name}, ${h.n} ${pl(h.n, 'reakcija', 'reakcije', 'reakcija')}${h.on ? ', ti' : ''}">${d.svg}<span class="n">${h.n}</span></button>`;
+  }
+  function hitCard(v) {
+    hits[v] = { on: false, n: 9 };
+    return `<div class="phone"><article class="ans" aria-labelledby="h-${v}">
+      <header class="ans-head">
+        <span class="avatar" style="--ring:conic-gradient(#2E8B57,#3A6EA5,#2E8B57)" aria-hidden="true"><span>P</span></span>
+        <h4 class="ans-who" id="h-${v}"><span class="name">Petra</span><span class="sr-only">, </span><span class="handle">@petra.zvuk</span></h4>
+        <span class="ans-time"><time>08:12</time></span>
+        <button class="iconbtn ans-more" aria-label="Više opcija: odgovor korisnika Petra">${ic('more')}</button>
+      </header>
+      <div class="ans-text"><p>Kind of Blue. Svi ga preporučuju s razlogom: ništa ne žuri i svaka pjesma ima prostora.</p></div>
+      <div class="ans-actions">
+        <div class="reacts" role="group" aria-label="Reakcije" id="hx-${v}">${hitChip(v)}</div>
+        <button class="comments-btn">${ic('comment', 'sm')}<span>2 komentara</span></button>
+      </div>
+    </article></div>`;
+  }
+  document.getElementById('g-hit').innerHTML = [
+    card('v1', 'V1. Munja, mirna', false, hitCard('v1'),
+      'Zaobljena munja u obrisu; pritisak je ispuni Coralom, uz kratki „pop”. Broj pocrveni. Najtiša varijanta, ništa ne traži pažnju.', 'ime: <code>Pogodak</code> / <code>Hit</code>'),
+    card('v2', 'V2. Munja s iskrom', true, hitCard('v2'),
+      'Oštra munja iz wordmarka (OQ-26, oblik C). Pritisak je ispuni Coral→Amber prijelazom i pusti jednu kratku Amber iskru oko nje (0,4 s). Isti jezik kao munja ispod „rift”.', 'ime: <code>Pogodak</code> / <code>Hit</code>'),
+    card('v3', 'V3. Puls', false, hitCard('v3'),
+      'Mali audio val, kao u simbolu branda i u naslovu Daily Dropa. Pritisak ga oboji prijelazom i val jednom „otkuca”. Najviše u duhu „Rift Pulse”; u 20 px se mora paziti da ostane čitljiv.', 'ime: <code>Puls</code> / <code>Pulse</code>'),
+    card('v4', 'V4. Portal', false, hitCard('v4'),
+      'Prsten s munjom unutra, kao simbol. Pritisak ispuni prsten prijelazom, a munja postane Void crna (pravilo kontrasta iz brand README-ja). Najprepoznatljivije kao brand, ali najgušće u malom.', 'ime: <code>Rift</code>')
+  ].join('');
+
+  /* ---------- 7. the name in context (icon V3) ---------- */
+  const WAVE = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg>';
+  const av = (ch, ring) => `<span class="avatar xs" style="--ring:${ring}" aria-hidden="true"><span>${ch}</span></span>`;
+  const NAMES = [
+    ['na', 'Pogodak', 'Hit', true, 'Kaže što reakcija znači: „ovo je pogodak”. Prirodno u rečenici i na hrvatskom i na engleskom. Ne ovisi o ikoni, pa radi i ako se ikona jednom promijeni.',
+      { push: 'Ivan i još 3: pogodak za tvoj odgovor', act: '<b>Ivan</b> i još 3: pogodak na tvoj odgovor', sheet: 'Pogodak', sr: 'Pogodak, 9 reakcija. Gumb.' }],
+    ['nb', 'Puls', 'Pulse', false, 'Isto ime kao ikona i kao „Rift Pulse” iz branda. Najdosljednije, ali u rečenici zvuči tehnički („Ivan je dao puls”), a „puls” na odgovoru nije odmah jasno što znači.',
+      { push: 'Ivan i još 3 dali su puls tvom odgovoru', act: '<b>Ivan</b> i još 3: puls na tvoj odgovor', sheet: 'Puls', sr: 'Puls, 9 reakcija. Gumb.' }],
+    ['nc', 'Sviđa mi se', 'Like', false, 'Najjasnije svima, bez učenja. Ali to je doslovno „lajk” i gubi glazbeni ton.',
+      { push: 'Ivanu i još 3 sviđa se tvoj odgovor', act: '<b>Ivanu</b> i još 3 sviđa se tvoj odgovor', sheet: 'Sviđa se', sr: 'Sviđa mi se, 9 reakcija. Gumb.' }]
+  ];
+  document.getElementById('g-name').innerHTML = NAMES.map(([k, hr, en, rec, d, x]) => card(k, `„${hr}” <span class="en">/ ${en}</span>`, rec, `
+    <div class="spot"><span class="spot-l">Obavijest na mobitelu</span>
+      <div class="notif" role="img" aria-label="Primjer obavijesti: ${x.push.replace(/<[^>]+>/g, '')}"><span class="notif-app" aria-hidden="true">${WAVE}</span>
+        <span class="notif-body" aria-hidden="true"><span class="notif-top"><b>grooverift</b><span>sada</span></span><span class="notif-t">${x.push}</span><span class="notif-q">„Kind of Blue. Svi ga preporučuju s razlogom…”</span></span></div></div>
+    <div class="spot"><span class="spot-l">Aktivnost</span>
+      <div class="act-row"><span class="stack">${av('I', 'conic-gradient(#3A6EA5,#C9455B,#3A6EA5)')}${av('M', 'conic-gradient(#C9A227,#2E8B57,#C9A227)')}<span class="badge">${WAVE}</span></span><span>${x.act}<span class="t">prije 5 min</span></span></div></div>
+    <div class="spot"><span class="spot-l">Tko je reagirao (dugi pritisak na ikonu)</span>
+      <div class="who-sheet"><h5>${WAVE}${x.sheet}<span style="color:var(--gr-color-text-secondary);font-weight:400">9</span></h5><ul><li>${av('I', 'conic-gradient(#3A6EA5,#C9455B,#3A6EA5)')}Ivan</li><li>${av('M', 'conic-gradient(#C9A227,#2E8B57,#C9A227)')}Mia</li><li class="t" style="color:var(--gr-color-text-secondary)">i još 7</li></ul></div></div>
+    <div class="spot"><span class="spot-l">Čitač zaslona izgovara</span>
+      <p class="sr-say">${pic('eye')}<q>${x.sr}</q></p></div>`, d)).join('');
+
+  document.addEventListener('click', e => {
+    const hb = e.target.closest('[data-hit]');
+    if (hb) {
+      const v = hb.dataset.hit, h = hits[v];
+      h.on = !h.on; h.n += h.on ? 1 : -1;
+      const wrap = document.getElementById('hx-' + v); wrap.innerHTML = hitChip(v);
+      const nb = wrap.firstElementChild; nb.focus();
+      if (h.on) { nb.classList.add('pressing'); nb.querySelector('.n').classList.add('bump'); setTimeout(() => { nb.classList.remove('pressing'); const n = nb.querySelector('.n'); if (n) n.classList.remove('bump'); }, 500); }
+      return;
+    }
+    const b = e.target.closest('[data-card]'); if (!b) return;
+    const c = cards[b.dataset.card], r = b.dataset.r;
+    if (c.my.has(r)) c.my.delete(r); else { if (c.cfg.mode === 'single') c.my.clear(); c.my.add(r); }
+    c.reacted = c.my.size > 0;
+    document.getElementById('rx-' + b.dataset.card).innerHTML = reacts(b.dataset.card);
+    const nb = document.querySelector(`[data-card="${b.dataset.card}"][data-r="${r}"]`); if (nb) nb.focus();
+  });
+})();
+</script>
+</body>
+</html>

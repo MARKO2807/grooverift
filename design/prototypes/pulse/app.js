@@ -52,7 +52,7 @@
   const OFF_ARTISTS = D.artists.map((a, i) => ({ id: 'fx' + i, name: a.name, meta: a.meta, g: a.g }));
   const fx = name => OFF_ARTISTS.find(a => a.name === name);
 
-  const cloneAnswer = a => ({ ...a, reacts: { ...a.reacts }, refs: [...a.refs], myReacts: [] });
+  const cloneAnswer = a => ({ ...a, reacts: { like: Object.values(a.reacts).reduce((s, n) => s + n, 0) }, refs: [...a.refs], myReacts: [] });
   const st = {
     screen: START_DROP ? 'home' : 'invite',
     hist: [],
@@ -267,11 +267,14 @@
     return `<p class="dd-meta"><span class="stack" aria-hidden="true">${hs.map(a => avatar(a.handle, a.who, 'xs')).join('')}</span><span>${n} ${plAns(n)}${st.mine ? ', uključujući tvoj' : ''}</span></p>`;
   }
 
+  /* D-056: one reaction, icon only (audio wave), count visible to all. Own answers show the count without a button. */
+  const WAVE = '<svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg>';
   function react(a, r) {
     const on = a.myReacts.includes(r.id);
     const n = a.reacts[r.id] + (on ? 1 : 0);
-    return `<button class="react" data-a="react" data-id="${a.id}" data-r="${r.id}" data-k="r-${a.id}-${r.id}" aria-pressed="${on}" aria-label="${r.label}, ${n} ${pl(n, 'reakcija', 'reakcije', 'reakcija')}">
-      ${on ? ic('check', 'sm') : ''}<span>${r.label}</span>${n ? `<span class="n">${n}</span>` : ''}</button>`;
+    const name = `${r.label}, ${n} ${pl(n, 'reakcija', 'reakcije', 'reakcija')}`;
+    if (a.mine) return `<span class="react react-like is-own" role="img" aria-label="${name}">${WAVE}<span class="n">${n}</span></span>`;
+    return `<button class="react react-like" data-a="react" data-id="${a.id}" data-r="${r.id}" data-k="r-${a.id}-${r.id}" aria-pressed="${on}" aria-label="${name}${on ? ', ti' : ''}" title="${r.label}">${WAVE}<span class="n">${n}</span></button>`;
   }
   function refCard(r, aid, i) {
     const t = CAT.tile(r.title);
@@ -879,7 +882,7 @@
       Object.assign(st.mine, { text: t, refs: st.draftRefs.slice(), edited: true });
       st.editing = false; msg = 'Izmjene su spremljene.';
     } else {
-      st.mine = { id: 'mine', who: st.displayName || 'Ti', handle: st.username || 'ti', time: 'upravo', min: 9999, text: t, refs: st.draftRefs.slice(), reacts: { same: 0, new: 0, good: 0 }, myReacts: [], comments: 0, mine: true };
+      st.mine = { id: 'mine', who: st.displayName || 'Ti', handle: st.username || 'ti', time: 'upravo', min: 9999, text: t, refs: st.draftRefs.slice(), reacts: { like: 0 }, myReacts: [], comments: 0, mine: true };
       msg = 'Odgovor je objavljen.';
     }
     st.draft = ''; st.draftRefs = []; st.refOpen = false; st.refQ = ''; st.err = {}; st.overlay = null;
@@ -956,7 +959,13 @@
       case 'ref-close': st.refOpen = false; st.refQ = ''; render({ keep: true }); return focusSel('[data-k="ref-open"], [data-k="f-ans"]');
       case 'ref-add': st.draftRefs.push(+b.dataset.i); if (st.draftRefs.length >= 3) { st.refOpen = false; st.refQ = ''; } render({ keep: true }); return focusSel(st.refOpen ? '#f-refq' : '[data-k="f-ans"]');
       case 'ref-remove': st.draftRefs.splice(+b.dataset.i, 1); render({ keep: true }); return focusSel('[data-k="ref-open"], #f-refq, [data-k="f-ans"]');
-      case 'react': { const x = findAnswer(b.dataset.id); const r = b.dataset.r; const i = x.myReacts.indexOf(r); i >= 0 ? x.myReacts.splice(i, 1) : x.myReacts.push(r); return render({ keep: true }); }
+      case 'react': {
+        const x = findAnswer(b.dataset.id); const r = b.dataset.r; const k = b.dataset.k; const i = x.myReacts.indexOf(r);
+        i >= 0 ? x.myReacts.splice(i, 1) : x.myReacts.push(r);
+        render({ keep: true });
+        if (i < 0) { const nb = root.querySelector(`[data-k="${k}"]`); if (nb) { nb.classList.add('pressing'); setTimeout(() => nb.classList.remove('pressing'), 500); } }
+        return;
+      }
       case 'expand': { const id = b.dataset.id; st.expanded.has(id) ? st.expanded.delete(id) : st.expanded.add(id); return render({ keep: true }); }
       case 'comments': st.ctx = b.dataset.id; st.commentDraft = ''; return go('answer');
       case 'more': return openOverlay({ type: 'menu', id: b.dataset.id }, b);

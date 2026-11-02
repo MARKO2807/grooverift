@@ -118,10 +118,10 @@ window.GR_DATA = {
     { date: '2026-10-29', q: 'Koju pjesmu najčešće šalješ prijateljima?' }
   ],
 
+  /* One reaction (D-056): icon only (a small audio wave), named "Sviđa mi se" / "Like" for notifications,
+     the who-reacted list and screen readers. The per-answer counts below are summed into it by app.js. */
   reactions: [
-    { id: 'same', label: 'Isto' },
-    { id: 'new', label: 'Novo mi je' },
-    { id: 'good', label: 'Dobar izbor' }
+    { id: 'like', label: 'Sviđa mi se' }
   ],
 
   /* Fictional members. dna = their Music DNA genres, used for the avatar ring. */

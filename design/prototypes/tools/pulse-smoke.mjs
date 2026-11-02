@@ -129,7 +129,12 @@ const FLOW = `(async () => {${HELPERS}
   await click('input[name="sort"][value="discussed"]');
   expect($('.ans-list article').getAttribute('aria-labelledby') === 'h-a3', 'most discussed first');
   expect($('.ans-list .avatar').style.getPropertyValue('--ring').includes('conic-gradient'), 'avatar DNA ring');
-  const r = $('[data-a="react"]'); const k = r.dataset.k; r.click(); await sleep(80); expect($('[data-k="' + k + '"]').getAttribute('aria-pressed') === 'true', 'reaction toggled');
+  expect($$('.ans-list article').every(a => a.querySelectorAll('.react').length === 1), 'one reaction per answer (D-056)');
+  const r = $('[data-a="react"]'); const k = r.dataset.k; const n0 = +r.querySelector('.n').textContent;
+  expect(r.querySelector('svg.wave-ic') && !r.textContent.replace(/\\d/g, '').trim() && r.getAttribute('aria-label').startsWith('Sviđa mi se'), 'icon only, named for screen readers');
+  r.click(); await sleep(80); const r2 = $('[data-k="' + k + '"]');
+  expect(r2.getAttribute('aria-pressed') === 'true' && +r2.querySelector('.n').textContent === n0 + 1, 'reaction toggled and counted');
+  { const an = getComputedStyle(r2.querySelector('.wave')).animationName; expect(document.documentElement.dataset.motion === 'reduced' ? an === 'none' : an === 'gr-beat', 'beat follows the motion setting'); }
   await click('[data-a="expand"]'); expect($('[data-a="expand"]').getAttribute('aria-expanded') === 'true', 'expanded');
   await click('[data-a="more"]'); expect($('.menu'), 'menu'); await click('[data-a="menu"]'); expect(!$('.menu'), 'menu closed');
   await click('[data-a="comments"]'); expect(scr() === 'answer', 'comments screen');
@@ -183,6 +188,24 @@ const runs = [
     $('[data-down="hb"]').checked = true; await click('[data-ex="plavi kit pjeva u kadi"]'); await click('[data-submit="hb"]'); await sleep(50); expect($('#err-hb') && $('#err-hb').textContent.includes('ne možemo'), 'fail closed blocks');
     $('[data-down="ha"]').checked = true; await click('[data-submit="ha"]'); await sleep(50); expect(!$('#err-ha') && $('#st-ha .ok'), 'fail open continues');
     await click('[data-show="la"]'); expect($('#f-la').type === 'text', 'show password');
+    return 'ok'; })()`, w: 1100, h: 900 },
+  { name: 'reactions page', url: base.replace('index.html', 'reactions.html'), test: `(async () => {${HELPERS}
+    expect($$('.card').length === 18, 'eighteen option cards');
+    expect($$('#g-name .card').length === 3 && $$('#g-name .spot').length === 12, 'three names in four places each');
+    await click('[data-card="ma"][data-r="same"]'); expect($('[data-card="ma"][data-r="same"]').getAttribute('aria-pressed') === 'true', 'single: pressed');
+    await click('[data-card="ma"][data-r="good"]'); expect($('[data-card="ma"][data-r="same"]').getAttribute('aria-pressed') === 'false' && $('[data-card="ma"][data-r="good"]').getAttribute('aria-pressed') === 'true', 'single: switches');
+    await click('[data-card="mb"][data-r="same"]'); await click('[data-card="mb"][data-r="good"]'); expect($$('[data-card="mb"][aria-pressed="true"]').length === 2, 'multi: both pressed');
+    expect(!$('#rx-cb .n'), 'counts hidden before reacting'); await click('[data-card="cb"][data-r="new"]'); expect($('#rx-cb .n'), 'counts shown after reacting');
+    expect(!$('#rx-cc .n') && $('#rx-cc').parentElement.parentElement.querySelector('.who-link'), 'no counts variant has the who link');
+    expect($$('#rx-fb .pi').length === 3 && $$('#rx-fc .pi').length === 3 && !$('#rx-fc span:not(.n)'), 'icon variants');
+    expect($$('#g-hit .card').length === 4, 'four looks for the single reaction');
+    await click('[data-hit="v2"]'); expect($('[data-hit="v2"]').getAttribute('aria-pressed') === 'true' && $('#hx-v2 .n').textContent === '10', 'hit: pressed and counted');
+    expect(getComputedStyle($('[data-hit="v2"] .bolt')).animationName === 'pop', 'hit: press feedback animates');
+    await click('[data-hit="v2"]'); expect($('[data-hit="v2"]').getAttribute('aria-pressed') === 'false' && $('#hx-v2 .n').textContent === '9', 'hit: released');
+    return 'ok'; })()`, w: 1100, h: 900 },
+  { name: 'reactions page calm', url: base.replace('index.html', 'reactions.html?calm=1'), test: `(async () => {${HELPERS}
+    await click('[data-hit="v3"]'); expect($('[data-hit="v3"]').getAttribute('aria-pressed') === 'true', 'hit pressed under reduced motion');
+    expect(getComputedStyle($('[data-hit="v3"] .wave')).animationName === 'none' && getComputedStyle($('#hx-v3 .n')).animationName === 'none', 'no press animation under reduced motion');
     return 'ok'; })()`, w: 1100, h: 900 },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }
 ];

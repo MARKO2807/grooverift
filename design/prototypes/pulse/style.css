@@ -396,6 +396,24 @@ canvas.current, canvas.dna { display: block; width: 100%; touch-action: manipula
 .react { display: inline-flex; align-items: center; gap: var(--gr-space-1); min-height: 32px; padding: 0 var(--gr-space-2); border-radius: var(--gr-radius-chip); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
 .react .n { color: var(--gr-color-text-primary); }
 .react[aria-pressed="true"] { border: var(--gr-border-width-thick) solid var(--gr-color-selected-border); background: var(--gr-color-selected-bg); color: var(--gr-color-text-primary); padding: 0 calc(var(--gr-space-2) - 1px); }
+/* D-056: the single reaction. Icon only (audio wave) plus a count. Pressed: the wave takes the Ember gradient
+   (defined once in index.html) and beats once; the count rolls up. Motion stops with "Smanji pokrete" (D-049). */
+.react-like { gap: 6px; min-width: 44px; min-height: 36px; padding: 0 10px 0 8px; justify-content: center; }
+@media (pointer: coarse) { .react-like { min-height: var(--gr-size-target-min); } }
+.react-like .wave-ic { width: 20px; height: 20px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.react-like .wave { transform-origin: 50% 50%; transform-box: fill-box; }
+.react-like .n { font: var(--gr-type-label); color: var(--gr-color-text-secondary); display: inline-block; min-width: 1ch; }
+.react-like[aria-pressed="true"] { border: var(--gr-border-width-hairline) solid var(--gr-color-ember-coral); background: none; padding: 0 10px 0 8px; }
+.react-like[aria-pressed="true"] .wave { stroke: url(#gr-ember); stroke-width: 2.2; }
+.react-like[aria-pressed="true"] .n { color: var(--gr-color-ember-coral); }
+.react-like.is-own { border-style: dashed; cursor: default; }
+.react-like.pressing .wave { animation: gr-beat 360ms ease-out; }
+.react-like.pressing .n { animation: gr-bump 240ms var(--gr-motion-easing-standard); }
+@keyframes gr-beat { 0% { transform: scaleY(1); } 40% { transform: scaleY(1.45); } 100% { transform: scaleY(1); } }
+@keyframes gr-bump { 0% { transform: translateY(45%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .react-like.pressing .wave, .react-like.pressing .n { animation: none; } }
+html[data-motion="reduced"] .react-like.pressing .wave, html[data-motion="reduced"] .react-like.pressing .n { animation: none; }
+@media (forced-colors: active) { .react-like[aria-pressed="true"] .wave { stroke: Highlight; } .react-like[aria-pressed="true"] { border-color: Highlight; } }
 .comments-btn { display: inline-flex; align-items: center; gap: var(--gr-space-2); min-height: var(--gr-size-target-min); padding: 0 var(--gr-space-2); margin-right: calc(var(--gr-space-2) * -1); border: 0; background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-label); border-radius: var(--gr-radius-control); }
 .comments-btn:hover { background: var(--gr-color-bg-high); }
 .ans-own { display: flex; gap: var(--gr-space-2); }

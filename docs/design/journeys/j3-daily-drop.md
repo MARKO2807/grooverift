@@ -50,7 +50,7 @@ flowchart TD
   rpriv -- yes --> rn["Notice: everyone who can see this answer<br/>will see your reply (D-020)"]
   rpriv -- no --> rp
   rn --> rp(["Reply posted"])
-  a --> re(["React: fixed set, toggle"])
+  a --> re(["React: one reaction, toggle (D-056)"])
   re --> who(["POST-04 Who reacted<br/>filtered by blocks"])
   a --> menu(["Overflow menu: Share, Mute, Block, Report"])
   menu --> j5(["J5 Report, mute and block"])
@@ -120,10 +120,10 @@ flowchart TD
 ## Accessibility notes
 - The question is the page's `h1`. The answer list is a list; each answer is an `article` with the author and date in its heading.
 - Sort control is a native select or radio group, not a custom dropdown.
-- Reactions are toggle buttons whose accessible name includes the reaction and count ("Fire, 3 reactions, you reacted").
+- The reaction (D-056: one, icon only) is a toggle button whose accessible name includes its name and count ("Sviđa mi se, 3 reakcije, ti").
 - The private-member notice is plain text tied to the Post button with `aria-describedby`, so screen readers hear it before posting.
 
 ## Open items
 - Resolved: one answer per question (D-035), archive open with neutral dates (D-036), suggestion notification only if published (D-037).
-- OQ-13 reaction set.
+- ~~OQ-13 reaction set~~ resolved by D-056.
 - Mute behaviour in answer lists (collapsed with "show"): RECOMMENDED.

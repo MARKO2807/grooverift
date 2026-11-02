@@ -41,18 +41,19 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
   - Docs touched: DECISIONS (D-054, R-14, OQ-25), threat model §6, J1 step 3, IA PUB-02, counsel C.10, prototype-directions §7 round 4.
   - Primary sources used: NIST SP 800-63B-4 final (pages.nist.gov/800-63-4/sp800-63b.html, §3.1.1.2: 15 characters is a SHALL for single-factor; §3.2.2: 100 consecutive failures), Better Auth email-password, HIBP plugin and rate-limit docs, the HIBP API v3 page (no key, no rate limit, `Add-Padding`).
 - **Session 10: wordmark accent (D-055, OQ-26 resolved).** A2: a bolt under "rift", a glint every 5 s and a breath 72–100 %, top bar only. `app.js` `bolt()`, `style.css` `.wm-bolt`; the SVG gradient id `wm-g` exists once per render (the smoke test checks duplicate ids). `wordmark.html` holds the three intensities as the designer's brief.
+- **Session 10: reaction (D-056, OQ-13 resolved).** One like-style reaction, icon only (audio wave, look V3), count visible to all, name "Sviđa mi se" / "Like". The owner found the three stances unclear. `reactions.html` keeps all options (sections 1–4), the four looks (6) and the name-in-context examples (7). `app.js` `react()` and `WAVE`; `style.css` `.react-like`; `data.js` sums the old per-stance counts; `index.html` defines the shared `gr-ember` gradient. Own answers show the count without a button.
 - **Open items:**
   - OQ-23: icon library. Phosphor is RECOMMENDED; `pulse/picons.js` embeds six icons as path data, with the MIT notice in `ICONS-LICENSE.md`.
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 12/12 (session 10).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 14/14 (session 10).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
 1. **Continue the owner's agenda.**
    - ~~Password rules (OQ-25)~~ done in session 10 (D-054).
    - ~~Wordmark accent (OQ-26)~~ done in session 10 (D-055).
-   - **Reaction set** (OQ-13): explain the options and ask.
+   - ~~Reaction set (OQ-13)~~ done in session 10 (D-056).
    - Round 3 feedback: the genre colours (D-052), the one-card visibility step, the Phosphor icons.
    - The owner liked: the Spirala, with genre-matched pulse speed and soft classical colours; the current under the Daily Drop name; the dock orbit; the invite current.
 2. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6:
@@ -78,7 +79,7 @@ _Session 10, 2026-11-02 (continues session 9's agenda). Next session: read `docs
   - JO2–JO6: RECOMMENDED defaults.
 - **IA leftovers:** Q4 (alpha people search) and Q5 (signed-out playlists).
 - **Pre-alpha:** OQ-05 to OQ-10. OQ-10 is now only about implementing the 18+ gate.
-- **Feature items:** OQ-11, OQ-13 (reaction set), OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news). OQ-25 and OQ-26 resolved (D-054, D-055).
+- **Feature items:** OQ-11, OQ-14 to OQ-18, OQ-23 (icons, Phosphor RECOMMENDED), OQ-24 (music news). OQ-13, OQ-25 and OQ-26 resolved (D-056, D-054, D-055).
 - **Counsel question B.5:** DSA Art. 16 notice form for non-members (PUB-11).
 
 ## Notes

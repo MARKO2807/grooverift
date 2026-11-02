@@ -244,6 +244,8 @@ Decision sketch `pulse/password.html`: twelve live copies of the account field, 
 
 **Wordmark accent (D-055, same session):** the owner chose A ("definitivno A, samo da je malo živa, jako suptilno"). `wordmark.html` gained a section with three intensities of a live bolt (a glint every 9, 5 or 3 s; the stronger two also breathe). The owner chose **A2** (glint every 5 s, breath 72–100 % over 4 s) and the bolt **only on the standalone wordmark**, not on the brand name in sentences. Applied to the top bar in `app.js` (`bolt()`) and `style.css` (`.wm-bolt`, `wm-glint`, `wm-breathe`); both stop under `html[data-motion="reduced"]` and `prefers-reduced-motion`, and the smoke test checks that in every run.
 
+**Reactions (D-056, same session):** `reactions.html` showed the set (three stances, one reaction, four), single vs. multiple, text vs. icon, and who sees counts. The owner did not find the three stances clear ("ovo ne razumijem") and chose one like-style reaction, single per member, icon only, counts visible to all, and asked that both the icon and the count look good. Section 6 then offered four looks (calm bolt, bolt with spark, wave, portal): the owner chose **V3, the audio wave**. Section 7 showed where the name appears (notification, Activity, who-reacted, screen reader) after the owner asked for an example: the owner chose **"Sviđa mi se" / "Like"**. Applied in `app.js` (`react()`, `WAVE`, a press class for the beat), `style.css` (`.react-like`, `gr-beat`, `gr-bump`), `data.js` (one reaction; the old per-stance counts are summed) and a shared `gr-ember` gradient in `index.html`.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

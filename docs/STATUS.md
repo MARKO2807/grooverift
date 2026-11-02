@@ -12,7 +12,7 @@ _Last updated: 2026-11-02 (session 10)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054) and the wordmark accent (D-055), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056), in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 10)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-055. Key ones:
+- Decisions D-001 to D-056. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -44,6 +44,7 @@ _Last updated: 2026-11-02 (session 10)_
     - 20 main genres plus a "+ Još žanrova" chip; artists show the country only; "Kako se zoveš?"; profile visibility is one card (D-053)
   - **Password rules (session 10, D-054, resolves OQ-25):** 15 characters minimum, 128 maximum, no composition rules, no expiry; a counter while typing ("Najmanje 15 znakova. Odaberi sigurnu lozinku."); Have I Been Pwned k-anonymity check with fail-open; a monthly sign-in re-check that shows a recommendation banner, not a forced change. Argon2id is R-14 (Phase 4). Counsel question C.10 added.
   - **Wordmark accent (session 10, D-055, resolves OQ-26):** a short Coral→Amber bolt under "rift", quietly alive (a glint every 5 s, a slow breath), on the standalone wordmark only; stopped by reduced-motion settings. Brief for the designer: `pulse/wordmark.html`.
+  - **Reaction (session 10, D-056, resolves OQ-13):** one like-style reaction per member per answer, icon only (a small audio wave that beats when pressed), count visible to all, named "Sviđa mi se" / "Like" in notifications and for screen readers.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -55,7 +56,6 @@ _Last updated: 2026-11-02 (session 10)_
 
 ## Next
 1. **Owner agenda, remaining from session 10:**
-   - the **reaction set** (OQ-13; "Isto / Novo mi je / Dobar izbor" are placeholders)
    - the owner's review of round 3: colours, one-card visibility, icons
 2. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text. Also the sign-in screen with the breached-password banner (D-054) and the HIBP-unreachable path.
@@ -88,10 +88,10 @@ _Last updated: 2026-11-02 (session 10)_
 No application code. No dependencies installed.
 - `design/prototypes/ia/`, `journeys/` and `tokens/` hold static decision sketches (HTML/CSS/vanilla JS, fictional data).
 - `design/prototypes/directions/` holds the step 3.5 round-1 prototypes: three directions on a shared engine, plus a comparison page (unchanged record).
-- `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (the D-055 brief, with the live-bolt intensities), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
+- `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (the D-055 brief, with the live-bolt intensities), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 12/12 (session 10: password page, counter, breach rejection, live bolt and its reduced-motion stop added).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 14/14 (session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow).
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
 - `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css`, and `contrast-check.mjs` checks 87 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.
