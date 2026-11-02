@@ -322,7 +322,8 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
   - Invite: edge-to-edge current, new lead, PWA line. Language step: globe icon. Genre search: two-column grid, new hint lines.
   - Reminder: compact time row, personal example question, "add to home screen" card. Done: "Sad si dio Rifta." Clearer glass tab bar. No current on the Hub.
   - Settings screen (gear on the profile), "Smanji pokrete" under Pristupačnost.
-  - Options waiting for the owner: `pulse/round7.html`.
+  - Options compared in `pulse/round7.html`.
+- D-064 (same session): the owner chose the "Strujica" name, Home E with one "Odgovori" button (soft invite ring), the Hub with seven days plus this week's programme, notification question 2 and the globe icon. Archive depth is OPEN (OQ-28).
 - D-062 (same session, owner review after D-061):
   - One password line under the field, red with the missing rules and green when done.
   - Terms in two centred lines. No stray line in the visibility comparison table.

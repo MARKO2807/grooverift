@@ -123,7 +123,7 @@ const FLOW = `(async () => {${HELPERS}
   expect(!$('main canvas.current') && fits(), 'how: no current, fits the screen without scrolling (session 11)');
   await click('[data-a="next"]'); expect(scr() === 'reminder', 'reminder');
   expect($('.notif') && $('.foot-row.equal'), 'notification preview and equal buttons');
-  expect($('.notif-q').textContent === 'Koja te pjesma zbližila s nekim?' && $('.rem-time') && $('.install [data-k="install"]'), 'personal example question, compact time, add to home screen (D-063)');
+  expect($('.notif-q').textContent === 'Koja pjesma najbolje govori tko si?' && $('.rem-time') && $('.install [data-k="install"]'), 'personal example question (D-064), compact time, add to home screen (D-063)');
   await click('[data-a="remind-on"]'); expect($('.perm'), 'perm dialog'); await click('[data-a="perm-block"]'); expect($('.notice'), 'denied notice');
   await click('[data-a="next"]'); expect(scr() === 'done', 'done');
   expect(document.body.textContent.includes('Privatni') && document.body.textContent.includes('Samo pratitelji'), 'done summary');
@@ -134,6 +134,7 @@ const FLOW = `(async () => {${HELPERS}
   expect($('.dd-name') && $('.dd-date time') && !$('.dd-top').textContent.includes('·'), 'name and date apart, no middle dot');
   expect(!$('.dd-teaser canvas.current') && $$('.dd-c .peeks .peek').length === 2, 'Home: no current, the first two answers (D-060)');
   expect(document.documentElement.classList.contains('nav-glass'), 'glass tab bar (D-060)');
+  expect($('.dd-e .btn-invite') && !$('.dd-e .read-link') && $('[data-k="all-ans"]') && document.documentElement.classList.contains('ddn-c'), 'Home e: one call to action, all-answers link, Strujica name (D-064)');
   expect($('.dd-actions [data-a="open-compose"]').textContent.trim() === 'Odgovori', 'button says Odgovori');
   await click('[data-a="open-compose"]'); expect(scr() === 'drop' && $('.sheet-compose'), 'answer sheet from home');
   expect($('.notice#aud'), 'private notice before posting');
@@ -170,6 +171,8 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="calm"]');
   await click('[data-a="back"]'); expect(scr() === 'profile', 'back from settings');
   await click('[data-t="activity"]'); await click('[data-t="hub"]'); expect(scr() === 'hub' && !$('main canvas.current'), 'hub, no current under the name (D-063)');
+  expect($$('.day-strip .day').length === 7 && $('.day[aria-pressed="true"]').textContent.includes('danas') && $$('.prog-card').length === 2 && $('[data-k="suggest"]'), 'hub: seven days, this week programme, suggest (D-064)');
+  await click('[data-k="day-2026-10-30"]'); expect($('#h-teaser').textContent === 'Koji koncert pamtiš do danas?', 'a day opens its question');
   const ids = $$('[id]').map(e => e.id); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
   expect(!dup.length, 'duplicate ids: ' + dup.join(','));
   return 'ok';

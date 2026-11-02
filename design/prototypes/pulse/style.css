@@ -755,3 +755,11 @@ button.set-row:hover { background: var(--gr-color-bg-raised); }
 .set-danger .set-t, .set-danger .set-ic-wrap { color: var(--gr-color-state-danger); }
 .set-out { gap: var(--gr-space-2); }
 .set-ver { justify-content: center; }
+
+/* Home e, one call to action (owner, D-064): while the member has not answered, a soft Coral ring leaves the button
+   every 3.2 s, an invitation rather than an alarm. Stops with "Smanji pokrete" or the OS setting (D-049). */
+.btn-invite { position: relative; isolation: isolate; }
+.btn-invite::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: invite-ring 3.2s ease-out infinite; }
+@keyframes invite-ring { 0% { box-shadow: 0 0 0 0 #FF586B73; } 55%, 100% { box-shadow: 0 0 0 14px #FF586B00; } }
+@media (prefers-reduced-motion: reduce) { .btn-invite::after { animation: none; } }
+html[data-motion="reduced"] .btn-invite::after { animation: none; }

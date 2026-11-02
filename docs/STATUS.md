@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-063. Key ones:
+- Decisions D-001 to D-064. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -77,7 +77,8 @@ _Last updated: 2026-11-02 (session 11)_
     - **Dark only:** no light theme (replaces D-045; step 3.4b cancelled).
     - Invite: edge-to-edge current, new lead, a PWA line. Genre search in a two-column grid. Reminder: compact time row and an "add to home screen" card. Done: "Sad si dio Rifta." Clearer glass tab bar. No current on the Hub.
     - Settings screen from a gear on the profile; "Smanji pokrete" moves into it. Research: `docs/research/2026-11-02-settings-benchmark.md`.
-    - **Pending owner choice:** living Daily Drop name, Home and Hub layouts, the notification question, the language icon (`pulse/round7.html`).
+    - **Choices (D-064):** the "Strujica" Daily Drop name; Home E with a single "Odgovori" button and a soft invite ring; the Hub with the last seven days, this week's programme (B2) and the archives; the notification question "Koja pjesma najbolje govori tko si?"; the globe icon.
+    - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts
@@ -92,7 +93,7 @@ _Last updated: 2026-11-02 (session 11)_
    - Key states: empty, loading, network error, offline, blocked, missing-question day, long text. Also the sign-in screen with the breached-password banner (D-054) and the HIBP-unreachable path.
    - 200 % zoom and the desktop adaptation.
    - Screen reader (Narrator) and high-contrast checks.
-2. **Owner choices from round 7** (`pulse/round7.html`), then apply them.
+2. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 3. Open, to raise when convenient:
    - JO1 "Remove follower" for private profiles (scope addition, needs owner approval). JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md`.
    - OQ-24: music news idea, after the alpha scope.

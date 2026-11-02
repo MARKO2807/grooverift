@@ -59,10 +59,11 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - `picons.js` gained 12 Phosphor light icons (list in `ICONS-LICENSE.md`). The language step uses `globe-hemisphere-east`.
     - Genre search: `genreChip(name, fam, tile)` renders tiles in `.g-grid`; `updateDnaStep` now updates every `[data-a="genre"]`.
     - Reminder: `NOTIF_QS` / `?nq=1..4` (the example question is separate from `D.drop.question`), `.rem-row` with `.rem-time`, and the `.install` card. Done: `.lead-done`.
-    - Round 7 URL options: `?ddn=a..e` (living name, `ddName()`), `?home=e|f|g`, `?hub=b|c|d` (`hubBody()`, `st.hubDay`). Defaults stay as before (home c, hub a, plain name) until the owner chooses.
+    - Round 7 URL options: `?ddn=none|a..e` (living name, `ddName()`), `?home=c..g`, `?hub=a..e` (`hubBody()`, `hubProgramme()`, `st.hubDay`), `?nq=1..4`.
+  - **D-064 (same session): round 7 choices, now the defaults.** `ddn=c` (Strujica), `home=e` with `teaserActions(true)` (one `.btn-invite` button with a soft ring, no read link), `hub=e` (seven-day strip plus `hubProgramme()`), `nq=2`, the globe icon. OQ-28 (archive depth) is OPEN and conflicts with the confirmed permanent archive; do not limit the archive without an owner decision.
     - Settings: screen `settings` (`?flow=drop&at=settings`), `SET_GROUPS()`, `settingsBody()`; gear in the profile top bar. The profile no longer has the motion switch.
     - `D.pastDrops` has seven days; Home shows three. Archive rows say that old questions are still open for answers (D-036).
-    - Tests: `pulse-smoke.mjs` 22/22 (adds settings, reminder, done, Hub and round 7 page checks); `smoke.mjs` 3/3.
+    - Tests: `pulse-smoke.mjs` 22/22 (adds settings, reminder, done, Hub, Home E and round 7 page checks); `smoke.mjs` 3/3.
   - **D-062 (same session): owner review after D-061.**
     - Password: `pwMeter()` now renders one line, `#pw-need` (`.pw-need`, `.ok` when all rules are met). It is in the input's `aria-describedby` via `field({ desc })`. It is hidden while `#err-pw` shows, and `clearErr` now runs before the re-render. The `.pw-rules` list is gone.
     - Terms: `.fine-terms` holds two block spans. The visibility table has no top border on `thead td`.
@@ -117,7 +118,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Apply the owner's round 7 choices** (`pulse/round7.html`): living Daily Drop name, Home and Hub layouts, notification question, language icon. Step 3.4b is cancelled (D-063, dark only).
+2. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
 3. When convenient, raise JO1 ("Remove follower" for private profiles, a scope addition).
 4. **Offer a real-phone test:** a local web server on the owner's home network (no internet exposure, no cost), so `pulse/index.html` opens on a phone. Ask before starting it.
 5. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
@@ -128,7 +129,7 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
   - Public option wording vs. the separate Music DNA choice
   - equal-weight reminder buttons (RECOMMENDED)
   - the visibility step now uses short table labels
-- **From round 7 (D-063):** the five pending choices above. From the settings research: whether Music DNA personalisation needs a consent toggle (counsel), and muted words (scope, later).
+- **From round 7:** OQ-28, archive depth. From the settings research: whether Music DNA personalisation needs a consent toggle (counsel), and muted words (scope, later).
 - **From 3.3:**
   - JO1: Remove follower (OPEN).
   - JO2–JO6: RECOMMENDED defaults.

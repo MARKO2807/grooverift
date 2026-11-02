@@ -431,7 +431,8 @@
     </form>`;
   }
 
-  function teaserActions() {
+  function teaserActions(one) {
+    if (one && !st.mine) return '<button class="btn btn-primary btn-cta btn-invite" data-a="open-compose" data-k="open-compose">Odgovori</button>';
     return st.mine
       ? '<button class="btn btn-secondary btn-cta" data-a="open-drop" data-k="open-drop">Pogledaj odgovore</button>'
       : `<button class="btn btn-primary btn-cta" data-a="open-compose" data-k="open-compose">Odgovori</button>
@@ -539,7 +540,7 @@
   const pick = (k, list, def) => list.includes(P.get(k)) ? P.get(k) : def;
   const VIS_AT = pick('vis', ['cols', 'rows', 'compact'], 'compact');
   const ART_AT = pick('art', ['country', 'smart', 'genre'], 'genre');
-  const HOME_AT = pick('home', ['a', 'b', 'c', 'd', 'e', 'f', 'g'], 'c');
+  const HOME_AT = pick('home', ['a', 'b', 'c', 'd', 'e', 'f', 'g'], 'e'); // chosen: e, one call to action (D-064)
   document.documentElement.classList.add('home-' + HOME_AT);
   const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
   const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
@@ -549,10 +550,10 @@
      question (owner: "cool i baš connecting"); ?nq=1..4 shows the candidates compared in round7.html.
      ?ddn=a..e shows the five living Daily Drop names; ?home= and ?hub= the new layouts (see round7.html). */
   const NOTIF_QS = ['Koja te pjesma zbližila s nekim?', 'Koja pjesma najbolje govori tko si?', 'Koja te pjesma uvijek vrati jednoj osobi?', 'Koju pjesmu svi u tvom društvu znaju napamet?'];
-  const NOTIF_Q = NOTIF_QS[+pick('nq', ['1', '2', '3', '4'], '1') - 1];
-  const DDN_AT = pick('ddn', ['a', 'b', 'c', 'd', 'e'], '');
+  const NOTIF_Q = NOTIF_QS[+pick('nq', ['1', '2', '3', '4'], '2') - 1]; // chosen: 2 (D-064)
+  const DDN_AT = pick('ddn', ['none', 'a', 'b', 'c', 'd', 'e'], 'c'); // chosen: c "Strujica" (D-064); none = the plain name
   if (DDN_AT) document.documentElement.classList.add('ddn-' + DDN_AT);
-  const HUB_AT = pick('hub', ['a', 'b', 'c', 'd'], 'a');
+  const HUB_AT = pick('hub', ['a', 'b', 'c', 'd', 'e'], 'e'); // chosen: e = the seven days of c with the programme of d (D-064)
 
   /* Artist result meta line. country: the country, plus a short description only for same-name artists.
      smart: nothing at all unless two results share a name. genre: main genres, plus the country for same-name artists. */
@@ -620,7 +621,7 @@
         ${ddHead('home', true)}
         <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
         ${people(n)}
-        <div class="dd-actions dd-actions-inline">${teaserActions()}</div>
+        <div class="dd-actions dd-actions-inline">${teaserActions(true)}</div>
         <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}</ul>
         ${allLink}
       </section>` + follow + past;
@@ -677,16 +678,22 @@
           <span class="past-day" aria-hidden="true">${dparts(d.date).day}.</span><span class="past-q">${esc(d.q)}</span><span class="sr-only">, ${longDate(d.date)}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul>`).join('')}
         <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Svi mjeseci</button></section>${suggestBtn()}`;
     }
-    if (HUB_AT === 'c') {
+    if (HUB_AT === 'c' || HUB_AT === 'e') {
       const days = [{ date: D.drop.date, q: D.drop.question, today: true }].concat(D.pastDrops).slice(0, 7).reverse();
       const sel = days.find(d => d.date === st.hubDay) || days[days.length - 1];
       return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${longDate(d.date)}${d.today ? ', danas' : ''}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
         ${sel.today ? hubDrop() : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
           <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2><p class="dd-meta">Još uvijek možeš odgovoriti.</p>
           <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`}
-        <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Cijela arhiva</button>${suggestBtn()}`;
+        ${HUB_AT === 'e' ? hubProgramme() : `<button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Cijela arhiva</button>${suggestBtn()}`}`;
     }
-    if (HUB_AT === 'd') return hubDrop() + `<section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
+    if (HUB_AT === 'd') return hubDrop() + hubProgramme();
+    return `${dropTeaser(true)}${pastList('Arhiva')}${suggestBtn()}`;
+  }
+  /* The programme under the Daily Drop: this week's Weekly Poll and Did You Know? (B2, sample content), the archives
+     and "Predloži pitanje". How far back the archives reach is OPEN (OQ-28). */
+  function hubProgramme() {
+    return `<section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
         <article class="prog-card" aria-labelledby="h-poll"><p class="prog-tag">${pic('chart-bar-horizontal', 'prog-ic')}<span lang="en">Weekly Poll</span></p>
           <h3 id="h-poll" class="prog-t">Koje desetljeće ima najbolje debitantske albume?</h3><p class="prog-d">Rezultate vidiš kad glasaš. Zatvara se u nedjelju.</p>
           <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Weekly Poll (HUB-05) stiže u valu B2." data-k="poll">Glasaj</button></article>
@@ -694,7 +701,6 @@
           <h3 id="h-dyk" class="prog-t">Kind of Blue Milesa Davisa snimljen je u samo dva dana snimanja, 1959.</h3><p class="prog-d">S izvorima. Provjerila redakcija.</p>
           <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Did You Know? (HUB-07) stiže u valu B2." data-k="dyk">Pročitaj</button></article></section>
       <section class="section" aria-labelledby="h-arch"><h2 id="h-arch" class="section-title">Arhive</h2><ul class="past">${[['Daily Drop', 'Svako pitanje od prvog dana'], ['Weekly Poll', 'Sve ankete i rezultati'], ['Did You Know?', 'Sve priče s izvorima']].map(([t, d], i) => `<li><button class="past-item" data-a="toast" data-msg="Arhive (HUB-04, HUB-06, HUB-08) nisu dio ove skice." data-k="arch-${i}"><span class="past-q" lang="en">${t}</span><span class="past-date">${d}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul></section>${suggestBtn()}`;
-    return `${dropTeaser(true)}${pastList('Arhiva')}${suggestBtn()}`;
   }
 
   /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
