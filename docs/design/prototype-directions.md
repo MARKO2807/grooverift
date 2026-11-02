@@ -317,6 +317,13 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
   - EN listed first, and both reading languages preselected.
   - No current on the Daily Drop page.
   - `viewer.html` updated.
+- D-062 (same session, owner review after D-061):
+  - One password line under the field, red with the missing rules and green when done.
+  - Terms in two centred lines. No stray line in the visibility comparison table.
+  - The 20 most popular genres, in order, in full-width rows. A picked genre takes its own colour, with no dot.
+  - Genre search covers the MusicBrainz list with Wikidata families and popularity ranking.
+  - The "Kako radi" cards fill the screen with larger icons.
+  - Research: `docs/research/2026-11-02-artist-search-genres-spotify.md`.
 - Verification: `pulse-smoke.mjs` 21/21; `smoke.mjs` 3/3.
 
 ### Verification (session 9)

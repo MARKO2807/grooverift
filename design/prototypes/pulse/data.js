@@ -12,14 +12,29 @@ window.GR_DATA = {
      f family (0 heavy, 1 rock, 2 pop, 3 urban, 4 electronic, 5 groove, 6 roots and classical),
      e energy, t tempo, j edge (smooth → jagged), s swing (straight → loose), w hue (0 Coral → 1 Amber),
      k behaviour of the genre's section in the Spirala, c colour (D-052: a colour with a meaning, see below).
-     Colours: heat for heavy music, Coral for rock, pink for pop, night blues for rap and R&B, cyan for
-     club music, amber for soul and funk, green for jazz and reggae, steel blue for blues, earth for
-     acoustic and ivory for classical. Similar lightness and moderate saturation keep a helix calm. */
-  /* The 20 genres shown first (D-053); the rest are found through "Još žanrova". */
-  mainGenres: ['Rock', 'Pop', 'Rap', 'Trap', 'Metal', 'Nu metal', 'Punk', 'Indie', 'Elektronika', 'Techno', 'House', 'R&B', 'Soul', 'Funk', 'Jazz', 'Blues', 'Reggae', 'Folk', 'Kantautorska', 'Klasična'],
+     Colours: heat for heavy music, Coral for rock, pink for pop, lavender for K-pop, night blues for rap and R&B,
+     cyan for club music, amber for soul and funk, hot orange for Latin, green for jazz and reggae, steel blue for
+     blues, earth for acoustic and country, ivory for classical and lilac for film music. Similar lightness and
+     moderate saturation keep a helix calm. */
+  /* The 20 genres shown first, in order of popularity (D-062, replaces the D-053 list). 1 to 10 follow IFPI
+     "Engaging with Music 2022" (global listener survey: pop, rock, hip-hop/rap, dance/electronic, Latin,
+     classical/opera, R&B, soundtracks, country, reggae). 11 to 20 are a judgement from Luminate's 2025 core genres
+     and the European club scene. The rest are found through "Još žanrova". */
+  mainGenres: ['Pop', 'Rock', 'Rap', 'Elektronika', 'Latino', 'Klasična', 'R&B', 'Filmska glazba', 'Country', 'Reggae',
+    'Metal', 'Indie', 'Jazz', 'K-pop', 'Soul', 'Blues', 'Folk', 'Punk', 'House', 'Techno'],
+  /* Other words members type for a genre (search only). */
+  genreAlias: {
+    'Rap': ['hip hop', 'hip-hop', 'hiphop'], 'Elektronika': ['electronic', 'edm', 'dance', 'elektronska'], 'Klasična': ['classical', 'klasika'],
+    'Filmska glazba': ['soundtrack', 'film', 'score', 'filmska'], 'Latino': ['latin', 'latinoamerička'], 'Kantautorska': ['singer-songwriter', 'kantautor'],
+    'Alternativa': ['alternative', 'alternativni rock'], 'Drum & bass': ['drum and bass', 'dnb'], 'Folk': ['narodna', 'etno', 'world'], 'Country': ['kantri']
+  },
+  /* Shown in "Još žanrova" before anything is typed. */
+  genreSuggest: ['Trap', 'Alternativa', 'Funk', 'Drum & bass', 'Disco', 'Grunge', 'Nu metal', 'Kantautorska', 'Afrobeats', 'Gospel', 'Hard rock', 'Lo-fi'],
   genres: [
     { n: 'Rock', f: 1, e: .75, t: .6, j: .55, s: .2, w: .18, k: 'drive', c: '#FF586B' },
     { n: 'Pop', f: 2, e: .6, t: .6, j: .12, s: .2, w: .55, k: 'sine', c: '#FF84B8' },
+    { n: 'K-pop', f: 2, e: .7, t: .68, j: .2, s: .25, w: .5, k: 'sine', c: '#C88BFF' },
+    { n: 'Latino', f: 5, e: .7, t: .62, j: .2, s: .8, w: .66, k: 'swing', c: '#FF8A3D' },
     { n: 'Rap', f: 3, e: .72, t: .5, j: .45, s: .7, w: .32, k: 'burst', c: '#4F8CFF' },
     { n: 'Trap', f: 3, e: .78, t: .35, j: .6, s: .62, w: .28, k: 'burst', c: '#6E7CFF' },
     { n: 'Metal', f: 0, e: 1, t: .85, j: 1, s: .08, w: 0, k: 'saw', c: '#E23B55' },
@@ -39,20 +54,15 @@ window.GR_DATA = {
     { n: 'Jazz', f: 5, e: .45, t: .5, j: .2, s: 1, w: .85, k: 'swing', c: '#3FC98A' },
     { n: 'Blues', f: 5, e: .45, t: .35, j: .3, s: .75, w: .8, k: 'swing', c: '#7F9DCB' },
     { n: 'Reggae', f: 6, e: .45, t: .35, j: .15, s: .8, w: .72, k: 'swing', c: '#93CF57' },
+    { n: 'Country', f: 6, e: .5, t: .5, j: .2, s: .45, w: .88, k: 'drive', c: '#D9894F' },
     { n: 'Folk', f: 6, e: .3, t: .4, j: .15, s: .35, w: .92, k: 'swell', c: '#D8B06E' },
     { n: 'Kantautorska', f: 6, e: .25, t: .3, j: .1, s: .4, w: .95, k: 'swell', c: '#E7C48D' },
-    { n: 'Klasična', f: 6, e: .4, t: .3, j: .05, s: .5, w: 1, k: 'swell', c: '#F2E5C6' }
+    { n: 'Klasična', f: 6, e: .4, t: .3, j: .05, s: .5, w: 1, k: 'swell', c: '#F2E5C6' },
+    { n: 'Filmska glazba', f: 6, e: .45, t: .35, j: .08, s: .4, w: .96, k: 'swell', c: '#C7B8E8' }
   ],
-  /* More genres through search. Each borrows the traits of a close main genre (p). */
-  moreGenres: [
-    ['Hip-hop', 'Rap'], ['Hard rock', 'Rock'], ['Heavy metal', 'Metal'], ['Death metal', 'Metal'], ['Black metal', 'Metal'], ['Metalcore', 'Nu metal'],
-    ['Hardcore punk', 'Punk'], ['Post-punk', 'Punk'], ['Emo', 'Alternativa'], ['Shoegaze', 'Indie'], ['Psihodelični rock', 'Rock'], ['Progresivni rock', 'Rock'],
-    ['New wave', 'Alternativa'], ['Synth-pop', 'Pop'], ['K-pop', 'Pop'], ['Zabavna', 'Pop'], ['Grime', 'Rap'], ['Drill', 'Trap'], ['Dancehall', 'Reggae'],
-    ['Ska', 'Reggae'], ['Ambient', 'Elektronika'], ['Trance', 'Techno'], ['Dubstep', 'Drum & bass'], ['Electro', 'Elektronika'], ['Breakbeat', 'Drum & bass'],
-    ['UK garage', 'House'], ['Lo-fi', 'Elektronika'], ['Gospel', 'Soul'], ['Swing', 'Jazz'], ['Bebop', 'Jazz'], ['Fusion', 'Jazz'], ['Afrobeat', 'Funk'],
-    ['Latino', 'Reggae'], ['Bossa nova', 'Jazz'], ['Flamenco', 'Folk'], ['Country', 'Folk'], ['Klapa', 'Kantautorska'], ['Tamburica', 'Folk'],
-    ['Etno', 'Folk'], ['Šansona', 'Kantautorska'], ['Opera', 'Klasična'], ['Filmska glazba', 'Klasična']
-  ],
+  /* More genres through search (D-062): the MusicBrainz genre list (genres-mb.js, CC0, about 2,200 genres), plus a
+     few Croatian names. Each borrows the traits and colour of its parent genre above. */
+  moreGenres: [['Zabavna', 'Pop', 20], ['Etno', 'Folk', 20], ['Tamburica', 'Folk', 20], ['Šansona', 'Kantautorska', 20]].concat(window.GR_MB_GENRES || []),
   genreMin: 2,
   genreMax: 10,
   artistMax: 10,

@@ -12,7 +12,7 @@ _Last updated: 2026-11-02 (session 11)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) and the round 6 review (D-060). All in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) and the follow-ups (D-061, D-062). All in `design/prototypes/pulse/`. States, 200 % zoom, desktop and screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | 3.4b Light theme tokens ⛳ (added by D-045) | ⏳ After the 3.5 refinement, before 3.6 |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-02 (session 11)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-061. Key ones:
+- Decisions D-001 to D-062. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -67,6 +67,12 @@ _Last updated: 2026-11-02 (session 11)_
     - Passwords need 12+ characters plus an upper-case letter, a lower-case letter and a special character. The owner chose this knowing it deviates from NIST, and it is recorded in the threat model.
     - English comes first on the language step. The reading languages are English and Hrvatski, both selected by default.
     - The Daily Drop page has no current under the question.
+  - **Owner review after D-061 (session 11, D-062):**
+    - One red-to-green line under the password says what is missing. The terms are two centred lines.
+    - The 20 main genres are the most popular, in order. A picked genre takes its own colour, with no dot.
+    - Genre search covers the MusicBrainz list (about 2,200 genres), with a parent family from Wikidata.
+    - The "Kako radi" cards fill the screen.
+    - Research on artist search and Spotify: `docs/research/2026-11-02-artist-search-genres-spotify.md`. Spotify sign-in is deferred (OQ-27).
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
   - `docs/research/`: EU infrastructure, catalog providers, legal and platform facts

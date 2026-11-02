@@ -92,7 +92,8 @@
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
   /* Password rules (D-061, amends D-054 at the owner's request): 12 code points minimum plus an upper-case letter, a
-     lower-case letter and a special character, each ticked while typing. Breached passwords are still rejected with
+     lower-case letter and a special character. One short line under the field names what is still missing (red) and
+     turns green when every rule is met (D-062, replaces the ticked list). Breached passwords are still rejected with
      the reason. PW_BREACHED is a SIMULATED stand-in for the HIBP range check (server-side in the app); it holds
      passwords that pass the composition rules, because those are the predictable ones attackers try first. */
   const PW_MIN = 12;
@@ -105,10 +106,15 @@
     ['sym', s => /[^\p{L}\p{N}\s]/u.test(s), 'Poseban znak, npr. ! ? # %', 'poseban znak']
   ];
   const pwMissing = s => PW_RULES.filter(r => !r[1](s));
+  /* "a, b i c" */
+  const andList = xs => xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' i ' + xs[xs.length - 1];
   function pwMeter() {
-    const n = pwLen(st.pw), miss = pwMissing(st.pw);
-    return `<ul class="pw-rules" aria-label="Pravila za lozinku">${PW_RULES.map(([k, f, t]) => { const ok = f(st.pw); return `<li class="${ok ? 'ok' : ''}" data-r="${k}"><span class="pw-tick" aria-hidden="true">${ok ? ic('check', 'sm') : ''}</span><span>${t}${k === 'len' && n && !ok ? ` (${n})` : ''}</span><span class="sr-only">${ok ? ', ispunjeno' : ', nije ispunjeno'}</span></li>`; }).join('')}</ul>
-      <p class="sr-only" role="status">${st.pw && !miss.length ? 'Lozinka ispunjava sva pravila.' : ''}</p>`;
+    const miss = pwMissing(st.pw), left = PW_MIN - pwLen(st.pw);
+    /* The field error after "Napravi račun" says the same, so the line waits until the member types again. */
+    const line = !st.pw || st.err.pw ? ''
+      : !miss.length ? `<p class="pw-need ok" id="pw-need">${ic('check', 'sm')}<span>Lozinka ispunjava sva pravila.</span></p>`
+      : `<p class="pw-need" id="pw-need">${ic('x', 'sm')}<span>Nedostaje: ${andList(miss.map(r => r[0] === 'len' ? `${left} ${pl(left, 'znak', 'znaka', 'znakova')}` : r[3]))}.</span></p>`;
+    return line + `<p class="sr-only" role="status">${st.pw && !miss.length ? 'Lozinka ispunjava sva pravila.' : ''}</p>`;
   }
 
   function avatar(handle, who, size) {
@@ -119,7 +125,7 @@
 
   function field(o) {
     const err = st.err[o.id];
-    const desc = [o.help ? `help-${o.id}` : '', err ? `err-${o.id}` : ''].filter(Boolean).join(' ');
+    const desc = [o.help ? `help-${o.id}` : '', o.desc || '', err ? `err-${o.id}` : ''].filter(Boolean).join(' ');
     return `<div class="field">
       <label class="label" for="f-${o.id}">${o.label}</label>
       ${o.help ? `<p class="help" id="help-${o.id}">${o.help}</p>` : ''}
@@ -166,25 +172,51 @@
   }
   /* No visible tag list under Music DNA (owner, session 9). Screen readers get the list; sighted members tap the helix. */
   const dnaText = () => st.genres.length ? `<p class="sr-only">Žanrovi: ${st.genres.map(esc).join(', ')}.${st.artists.length ? ` Izvođači: ${st.artists.map(a => esc(a.name)).join(', ')}.` : ''}</p>` : '';
-  function genreChip(name) {
+  /* A picked genre takes its own colour (D-062): border, a light fill and the tick. No coloured dot. In search
+     results the parent genre is named next to a subgenre ("Death metal · Metal"). */
+  function genreChip(name, fam) {
     const on = st.genres.includes(name);
     const full = !on && st.genres.length >= D.genreMax;
-    return `<button type="button" class="chip chip-genre" data-a="genre" data-g="${esc(name)}" data-k="g-${esc(name)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''} style="--dot:${DNA.colorOf(name)}"><span class="gdot" aria-hidden="true"></span>${esc(name)}</button>`;
+    return `<button type="button" class="chip chip-genre" data-a="genre" data-g="${esc(name)}" data-k="g-${esc(name)}" aria-pressed="${on}"${full ? ' aria-disabled="true"' : ''} style="--g:${DNA.colorOf(name)}"><span class="ck">${ic('check', 'sm')}</span>${esc(name)}${fam ? `<span class="g-fam"><span class="sr-only">, </span>${esc(fam)}</span>` : ''}</button>`;
   }
-  /* Main 20 genres (D-053), then any picked genre from search, then the "+ Još žanrova" chip. */
+  /* Main 20 genres (D-062), then any picked genre from search, then the "+ Još žanrova" chip. */
   function genreChips() {
     const extra = st.genres.filter(g => !D.mainGenres.includes(g));
-    return D.mainGenres.concat(extra).map(genreChip).join('')
+    return D.mainGenres.concat(extra).map(n => genreChip(n)).join('')
       + (st.moreOpen ? '' : `<button type="button" class="chip chip-more" data-a="more-genres" data-k="more-genres">${ic('plus', 'sm')}Još žanrova</button>`);
+  }
+  /* Genre search (D-062): every genre with traits, the MusicBrainz list and a few Croatian names. Matches the name,
+     the start of any word, other spellings (genreAlias) and the parent, so "metal" also finds "Djent" and
+     "klasična" finds "Baroque". Ranked: exact, starts with (name or alias), word starts with, contains, parent; inside each group better-known genres
+     first (genres with traits, then by Wikipedia article count from genres-mb.js). */
+  let GPOOL = null;
+  function genrePool() {
+    if (GPOOL) return GPOOL;
+    const seen = new Set(), out = [];
+    const add = (n, p, r) => {
+      const k = CAT.fold(n); if (seen.has(k)) return; seen.add(k);
+      out.push({ n, p: p && p !== n ? p : '', r, k, w: k.split(/[\s\-\/&]+/), pk: p ? CAT.fold(p) : '', pal: (D.genreAlias[p] || []).map(CAT.fold), al: (D.genreAlias[n] || []).map(CAT.fold) });
+    };
+    D.genres.forEach(g => add(g.n, '', 1000));
+    D.moreGenres.forEach(([n, p, r]) => add(n, p, r || 0));
+    return (GPOOL = out);
+  }
+  function genreHits(q) {
+    const rank = g => g.k === q ? 0 : g.k.startsWith(q) || g.al.some(a => a.startsWith(q)) ? 1 : g.w.some(w => w.startsWith(q)) ? 2
+      : g.k.includes(q) ? 3 : g.pk && (g.pk.startsWith(q) || g.pal.some(a => a.startsWith(q))) ? 4 : 9;
+    return genrePool().filter(g => !st.genres.includes(g.n)).map(g => [rank(g), g]).filter(x => x[0] < 9)
+      .sort((a, b) => a[0] - b[0] || b[1].r - a[1].r || a[1].k.localeCompare(b[1].k)).map(x => x[1]);
   }
   function moreGenres() {
     if (!st.moreOpen) return '';
     const q = CAT.fold(st.genreQ.trim());
-    const pool = D.genres.map(g => g.n).filter(n => !D.mainGenres.includes(n)).concat(D.moreGenres.map(x => x[0]));
-    const hits = pool.filter(n => !st.genres.includes(n) && (!q || CAT.fold(n).includes(q))).slice(0, q ? 12 : 10);
+    const all = q ? genreHits(q) : D.genreSuggest.map(n => genrePool().find(g => g.n === n)).filter(g => g && !st.genres.includes(g.n));
+    const hits = all.slice(0, 12), more = all.length - hits.length;
     return `<div class="more-genres"><label class="label-sm" for="f-genre">Traži žanr</label>
-        <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-genre" data-k="f-genre" type="search" autocomplete="off" value="${esc(st.genreQ)}"></div>
-        <div class="chips" id="genre-results">${hits.length ? hits.map(genreChip).join('') : '<p class="hint">Nema tog žanra na popisu. U aplikaciji bi ga mogao predložiti.</p>'}</div></div>`;
+        <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-genre" data-k="f-genre" type="search" autocomplete="off" value="${esc(st.genreQ)}" aria-describedby="genre-hint"></div>
+        <p class="help" id="genre-hint">${genrePool().length.toLocaleString('hr-HR')} žanrova iz kataloga MusicBrainz. Upiši naziv ili širi žanr, npr. „metal”.</p>
+        <div class="chips" id="genre-results">${hits.length ? hits.map(g => genreChip(g.n, g.p)).join('') : '<p class="hint">Nema tog žanra na popisu. U aplikaciji bi ga mogao predložiti.</p>'}</div>
+        ${more > 0 ? `<p class="hint">Još ${more} ${pl(more, 'žanr', 'žanra', 'žanrova')}. Upiši više slova da suziš.</p>` : ''}</div>`;
   }
   function artistTile(a, cls) {
     if (a.img) return `<span class="art${cls ? ' ' + cls : ''}"><img src="${esc(a.img)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
@@ -456,7 +488,7 @@
 
   function howStep() {
     return `<h1>Kako ${wm()} radi</h1>
-      <ol class="how">
+      <ol class="how how-fill">
         <li class="how-card how-main" style="--d:0">
           <div class="how-vis" aria-hidden="true">${pic('calendar-dots', 'how-ic')}</div>
           <div><h2 class="how-t"><span class="hv-name">Daily Drop</span></h2><p>Svaki dan u 01:00 jedno glazbeno pitanje, isto za sve.</p></div>
@@ -665,13 +697,14 @@
       kind: 'onb', back: true,
       body: `<h1>Napravi račun</h1>
         ${field({ id: 'email', label: 'E-pošta', help: 'Pozivnica je vezana uz ovu adresu.', type: 'email', value: D.email, attrs: 'readonly autocomplete="email"' })}
-        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw,
+        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: 'pw-need',
           attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"',
           after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
         <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
         <p class="or"><span>ili</span></p>
         <button class="btn btn-secondary btn-block" data-a="google" data-k="google">Nastavi s Google računom</button>
-        <p class="fine">Nastavkom prihvaćaš <button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="terms">Uvjete korištenja</button>. Kako koristimo podatke piše u <button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="privacy">Pravilima privatnosti</button>.</p>`,
+        <p class="fine fine-terms"><span>Nastavkom prihvaćaš <button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="terms">Uvjete korištenja</button>.</span>
+          <span>Kako koristimo podatke piše u <button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="privacy">Pravilima privatnosti</button>.</span></p>`,
       foot: nextBtn('Napravi račun')
     }),
     username: () => ({
@@ -1055,7 +1088,7 @@
     if (msg) msg.textContent = '';
     if (st.err.genres && st.genres.length >= D.genreMin) { delete st.err.genres; const e = root.querySelector('#err-genres'); if (e) e.remove(); const gr = root.querySelector('[aria-describedby="err-genres"]'); if (gr) gr.removeAttribute('aria-describedby'); }
     const fromSearch = !!b.closest('#genre-results');
-    if (!D.mainGenres.includes(g)) {
+    if (!D.mainGenres.includes(g) || fromSearch) {
       const c = root.querySelector('#genre-chips'); if (c) c.innerHTML = genreChips();
       const m = root.querySelector('#more-genres'); if (m) m.innerHTML = moreGenres();
       focusSel(fromSearch ? '#f-genre' : (i >= 0 ? '#f-genre, [data-k="more-genres"]' : `[data-k="g-${CSS.escape(g)}"]`));
@@ -1191,7 +1224,7 @@
   root.addEventListener('input', e => {
     const t = e.target;
     switch (t.id) {
-      case 'f-pw': { st.pw = t.value; const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return clearErr('pw', t); }
+      case 'f-pw': { st.pw = t.value; clearErr('pw', t); const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return; }
       case 'f-dname': st.displayName = t.value; return clearErr('dname', t);
       case 'f-uname': st.username = t.value.trim(); clearErr('uname', t); return checkUser();
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();

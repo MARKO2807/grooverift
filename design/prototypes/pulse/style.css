@@ -84,6 +84,8 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .meta { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); display: flex; align-items: center; gap: var(--gr-space-1); flex-wrap: wrap; }
 .fine { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); text-align: center; }
 .fine-left { text-align: left; }
+/* Two centred lines, one per document (owner, session 11). */
+.fine-terms span { display: block; text-wrap: balance; }
 .eyebrow { font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-text-secondary); }
 .section { display: flex; flex-direction: column; gap: var(--gr-space-3); }
 .section-title { font: var(--gr-type-title-3); letter-spacing: var(--gr-type-title-3-letter-spacing); }
@@ -128,14 +130,11 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .has-after .input { padding-right: 6.75rem; }
 .pw-ic { width: 20px; height: 20px; }
 .input-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: absolute; right: 2px; min-height: 40px; min-width: 6rem; border: 0; background: none; color: var(--gr-color-text-link); font: var(--gr-type-label); border-radius: var(--gr-radius-control); }
-/* D-061: one line per rule, ticked while typing. */
-.pw-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 4px var(--gr-space-3); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
-.pw-rules li { display: flex; align-items: center; gap: 6px; }
-.pw-rules li:first-child, .pw-rules li:last-child { grid-column: span 2; }
-.pw-tick { width: 16px; height: 16px; flex: none; border-radius: 50%; border: var(--gr-border-width-thick) solid var(--gr-color-border-strong); display: grid; place-items: center; }
-.pw-rules li.ok { color: var(--gr-color-state-success); }
-.pw-rules li.ok .pw-tick { border-color: var(--gr-color-state-success); }
-.pw-tick svg { width: 11px; height: 11px; stroke-width: 3; }
+/* D-062: one line under the field. Red with an x names what is missing; green with a tick when every rule is met.
+   The icon and the words carry the meaning, the colour only repeats it (WCAG 1.4.1). */
+.pw-need { display: flex; align-items: flex-start; gap: 6px; font: var(--gr-type-body-sm); color: var(--gr-color-state-danger); }
+.pw-need svg { width: 16px; height: 16px; flex: none; margin-top: 2px; stroke-width: 2.5; }
+.pw-need.ok { color: var(--gr-color-state-success); }
 .pw-meter { display: flex; flex-direction: column; gap: var(--gr-space-1); margin-top: calc(var(--gr-space-1) * -1); }
 .pw-count { display: flex; justify-content: space-between; gap: var(--gr-space-2); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
 .pw-count > span:first-child { display: inline-flex; align-items: center; gap: var(--gr-space-1); }
@@ -321,8 +320,16 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .portraits-sm li { width: 64px; }
 .portraits-sm .art { width: 48px; height: 48px; }
 .gdot { width: 9px; height: 9px; border-radius: var(--gr-radius-full); background: var(--dot); box-shadow: 0 0 6px var(--dot); flex: none; }
-.chip-genre .gdot { display: none; }
-.chip-genre[aria-pressed="true"] .gdot { display: inline-block; margin-right: 2px; }
+/* Genre chips (D-062): rows fill the width, so no genre is left alone at the end of a short row. A picked genre
+   takes its own colour: border, a light fill and a tick in that colour. */
+.chips-genres .chip { flex: 1 0 auto; justify-content: center; }
+.chip-genre:hover { border-color: color-mix(in srgb, var(--g) 55%, var(--gr-color-border-strong)); }
+.chip-genre[aria-pressed="true"] { background: color-mix(in srgb, var(--g) 15%, transparent); border-color: var(--g); }
+.chip-genre[aria-pressed="true"]:hover { background: color-mix(in srgb, var(--g) 22%, transparent); }
+.chip-genre .ck { color: var(--g); }
+.chip-genre .ck svg { stroke-width: 3; }
+.g-fam { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin-left: 2px; }
+.g-fam::before { content: "· "; }
 .dna-mini { border-radius: var(--gr-radius-sheet); background: radial-gradient(ellipse at 50% 50%, #FF586B12, transparent 70%); }
 .screen-dnavis { gap: var(--gr-space-3); padding-top: var(--gr-space-4); padding-bottom: var(--gr-space-2); }
 .screen-dnavis h1 { font: var(--gr-type-title-2); }
@@ -346,6 +353,17 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .screen-how .how-vis { width: 44px; height: 44px; border-radius: 12px; }
 .screen-how .how-ic { width: 24px; height: 24px; }
 @media (max-height: 700px) { .screen-how h1 { font-size: 1.625rem; } .screen-how .how-card p { line-height: 1.4; } }
+/* D-062: the four cards share the free height, so there is no empty band under them, with larger tiles and text.
+   Each card stops growing at 9.5rem; short screens keep the compact sizes above. */
+.screen-how .how-fill { flex: 1; }
+@media (min-height: 701px) {
+  .screen-how .how-fill .how-card { flex: 1 1 auto; max-height: 9.5rem; grid-template-columns: 60px 1fr; gap: var(--gr-space-4); padding: var(--gr-space-3) var(--gr-space-4); }
+  .screen-how .how-fill .how-vis { width: 60px; height: 60px; border-radius: 16px; }
+  .screen-how .how-fill .how-ic { width: 34px; height: 34px; }
+  .screen-how .how-fill .how-t { font-size: var(--gr-font-size-lg); margin-bottom: var(--gr-space-1); }
+  .screen-how .how-fill .how-main .hv-name { font-size: 1.25rem; }
+  .screen-how .how-fill .how-card p { font: var(--gr-type-body); font-size: 0.9375rem; line-height: 1.45; }
+}
 .how-card { display: grid; grid-template-columns: 56px 1fr; gap: var(--gr-space-3); align-items: center; padding: var(--gr-space-3); border-radius: var(--gr-radius-sheet); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); animation: gr-rise 520ms var(--gr-motion-easing-enter) both; animation-delay: calc(var(--d) * 110ms); }
 .how-card p { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
 .how-t { font: var(--gr-type-title-3); font-size: var(--gr-font-size-md); display: flex; align-items: center; gap: var(--gr-space-2); flex-wrap: wrap; margin-bottom: 2px; }
@@ -554,6 +572,7 @@ html[data-motion="reduced"] .switch span { transition: none; }
 .vrow-table th, .vrow-table td { padding: 5px 4px; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); text-align: center; }
 .vrow-table th[scope="row"] { text-align: left; color: var(--gr-color-text-secondary); font-weight: var(--gr-font-weight-medium); }
 .vrow-table thead th { font-weight: var(--gr-font-weight-semibold); border-top: 0; }
+.vrow-table thead td { border-top: 0; }
 @media (forced-colors: active) { .vrow:has(input:checked) { outline: 3px solid Highlight; } }
 
 /* Home: Daily Drop arrangements c and d. */
