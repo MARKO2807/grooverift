@@ -30,6 +30,7 @@
     return p && BY[p] ? Object.assign({}, BY[p], { n: name, parent: p }) : null;
   }
   function colorOf(name) { const g = traits(name); return g && g.c ? hex(g.c) : AMBER; }
+  const CHAR = [20, 6, 10]; // charred black for heavy music (D-067)
   const css = c => `rgb(${c[0]},${c[1]},${c[2]})`;
 
   /* Avatar ring: one arc per genre in its colour, with small gaps. */
@@ -95,7 +96,7 @@
       let ph = 2 * Math.PI * (x - pad - s.u0 * L) / s.lambda + s.ph + t * s.spin;
       if (g.k === 'swing') ph += 0.7 * g.s * Math.sin(x * 0.045 + t * 1.4);
       const edge = g.j > 0.55 ? (g.j - 0.55) / 0.45 : 0;
-      const jit = edge * h * 0.03 * (0.6 + I) * env;
+      const jit = edge * h * 0.03 * (0.6 + I) * env * (g.f === 0 ? 1.7 : 1); // heavy music crackles harder (D-067)
       const j1 = jit * m.n1(x * 0.4 + t * 11), j2 = jit * m.n2(x * 0.4 - t * 11);
       pts[i] = { x, s, ul, env, ph, y1: cy + A * Math.sin(ph) + j1, y2: cy - A * Math.sin(ph) + j2, z: Math.cos(ph) };
     }
@@ -131,6 +132,44 @@
           if (front && d > 0.5) { ctx.strokeStyle = rgba(col, (0.1 + 0.16 * I) * q.env); ctx.lineWidth = 6 + 4 * I; ctx.stroke(); }
         }
       }
+    }
+    /* Heavy music (family 0: metal, nu metal, punk, grunge and their subgenres; owner, D-067): a charred black core
+       inside the front strands and a few sparks that fly off, so these sections read darker and more alive.
+       Every other family is drawn exactly as before. */
+    if (m.segs.some(s => s.g.f === 0)) {
+      // a stronger glow first, so the black core sits inside a hot aura
+      for (let k = 0; k < 2; k++) {
+        for (let i = 1; i <= N; i++) {
+          const p = pts[i - 1], q = pts[i];
+          if (q.s.g.f !== 0) continue;
+          const z = k === 0 ? q.z : -q.z; if (z <= 0) continue;
+          const flick = 0.75 + 0.25 * Math.sin(t * 23 + i * 0.7);
+          ctx.beginPath(); ctx.moveTo(p.x, k === 0 ? p.y1 : p.y2); ctx.lineTo(q.x, k === 0 ? q.y1 : q.y2);
+          ctx.strokeStyle = rgba(mix(q.s.col, HOT, 0.2), (0.16 + 0.14 * I) * q.env * flick); ctx.lineWidth = 7 + 3 * z; ctx.stroke();
+        }
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      for (let k = 0; k < 2; k++) {
+        for (let i = 1; i <= N; i++) {
+          const p = pts[i - 1], q = pts[i];
+          if (q.s.g.f !== 0) continue;
+          const z = k === 0 ? q.z : -q.z; if (z <= 0.15) continue;
+          const d = (z + 1) / 2;
+          ctx.beginPath(); ctx.moveTo(p.x, k === 0 ? p.y1 : p.y2); ctx.lineTo(q.x, k === 0 ? q.y1 : q.y2);
+          ctx.strokeStyle = rgba(CHAR, 0.8 * q.env * Math.min(1, (z - 0.15) * 3)); ctx.lineWidth = 0.5 + 1.1 * d; ctx.stroke();
+        }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      m.segs.forEach((s, si) => {
+        if (s.g.f !== 0) return;
+        const R = rng((m.seed ^ (si * 977)) + Math.floor(t * 7)), n = R() < 0.75 ? 1 + Math.floor(R() * 3) : 0;
+        for (let k = 0; k < n; k++) {
+          const p = pts[Math.round((s.u0 + (0.15 + 0.7 * R()) * (s.u1 - s.u0)) * N)], y = R() < 0.5 ? p.y1 : p.y2;
+          const ang = R() * Math.PI * 2, len = 6 + R() * 9;
+          ctx.beginPath(); ctx.moveTo(p.x, y); ctx.lineTo(p.x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+          ctx.strokeStyle = rgba(mix(s.col, HOT, 0.6), 0.95 * p.env); ctx.lineWidth = 1.3; ctx.stroke();
+        }
+      });
     }
     // knots that join the genres, and the two ends
     const knots = [0].concat(m.segs.map(s => s.u1));

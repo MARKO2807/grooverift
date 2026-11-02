@@ -76,6 +76,7 @@ const FLOW = `(async () => {${HELPERS}
   await type('#f-pw', 'Ovo je duga lozinka, 7 nota!'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
   expect($('main h1').textContent === 'Kako se zoveš?', 'name question');
   await click('[data-a="next"]'); expect($('#err-dname') && $('#err-uname'), 'username errors');
+  await type('#f-dname', 'ana mari horvat kovač'); expect($('#f-dname').value === 'Ana Mari Horvat ', 'name: three words, each capitalised (D-067)');
   await type('#f-dname', 'Ana'); await type('#f-uname', 'ana'); await sleep(600);
   expect($('[data-a="pickuser"]'), 'username suggestions');
   await click('[data-a="pickuser"]'); await click('[data-a="next"]'); expect(scr() === 'language', 'language');
@@ -160,7 +161,9 @@ const FLOW = `(async () => {${HELPERS}
   { const an = getComputedStyle(r2.querySelector('.wave')).animationName; expect(document.documentElement.dataset.motion === 'reduced' ? an === 'none' : an === 'gr-beat', 'beat follows the motion setting'); }
   await click('[data-a="expand"]'); expect($('[data-a="expand"]').getAttribute('aria-expanded') === 'true', 'expanded');
   await click('[data-a="more"]'); expect($('.menu'), 'menu'); await click('[data-a="menu"]'); expect(!$('.menu'), 'menu closed');
-  await click('[data-a="comments"]'); expect(scr() === 'answer', 'comments screen');
+  await click('[data-a="comments"]'); expect(scr() === 'answer' && $('.live-field #f-com') && $('[data-a="com-cancel"]'), 'comments screen with Odustani and a living field (D-067)');
+  await type('#f-com', 'nešto'); await click('[data-a="com-cancel"]'); expect(scr() === 'drop', 'Odustani goes back');
+  await click('[data-a="comments"]');
   await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
   await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
   expect(!$('[data-a="calm"]'), 'motion setting moved off the profile (D-063)');
@@ -169,8 +172,12 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="calm"]'); expect($('[data-a="calm"]').getAttribute('aria-checked') !== calmBefore, 'motion setting toggles');
   expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');
   await click('[data-a="calm"]');
+  await click('[data-k="set-1-0"]'); expect(scr() === 'setsub' && $('h1').textContent === 'Privatnost' && $$('input[name="vis2"]').length === 2, 'settings row opens its sub-screen (D-067)');
+  await click('[data-a="back"]'); await click('[data-k="set-delete"]'); expect(scr() === 'setsub' && $('[data-k="d-copy"]') && $('#f-delpw'), 'delete flow offers the data copy first (D-066)');
+  await click('[data-a="back"]');
   await click('[data-a="back"]'); expect(scr() === 'profile', 'back from settings');
-  await click('[data-t="activity"]'); await click('[data-t="hub"]'); expect(scr() === 'hub' && !$('main canvas.current'), 'hub, no current under the name (D-063)');
+  await click('[data-t="activity"]'); expect($$('.act').length === 7 && $('.act-new') && $('.act-btns'), 'activity with sample items (D-067)');
+  await click('[data-t="hub"]'); expect(scr() === 'hub' && !$('main canvas.current'), 'hub, no current under the name (D-063)');
   expect($$('.day-strip .day').length === 7 && $('.day[aria-pressed="true"]').textContent.includes('danas') && $$('.prog-card').length === 2 && $('[data-k="suggest"]'), 'hub: seven days, this week programme, suggest (D-064)');
   await click('[data-k="day-2026-10-30"]'); expect($('#h-teaser').textContent === 'Koji koncert pamtiš do danas?', 'a day opens its question');
   const ids = $$('[id]').map(e => e.id); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
@@ -220,6 +227,7 @@ const runs = [
   { name: 'round 6 page', url: base.replace('index.html', 'round6.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 17) throw new Error('17 option frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 7 page', url: base.replace('index.html', 'round7.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 15) throw new Error('15 option frames, got ' + n); if ($('.notif').length !== 4 || $('.icon-tile svg path').length !== 3) throw new Error('static options'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 8 page', url: base.replace('index.html', 'round8.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 4) throw new Error('4 settings frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'round 9 page', url: base.replace('index.html', 'round9.html'), test: `(async () => { const $ = s => [...document.querySelectorAll(s)]; const n = $('iframe').length; if (n !== 31) throw new Error('31 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'password page', url: base.replace('index.html', 'password.html'), test: `(async () => {${HELPERS}
     expect($$('.card').length === 12, 'twelve option cards');
     expect(!$('#live').checked, 'live HIBP check is off by default');

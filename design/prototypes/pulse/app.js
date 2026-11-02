@@ -622,8 +622,8 @@
         <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2>
         ${people(n)}
         <div class="dd-actions dd-actions-inline">${teaserActions(true)}</div>
-        <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}</ul>
-        ${allLink}
+        <ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}${allPeekCard(n, peeks)}</ul>
+        ${allAnswersLink(n, peeks)}
       </section>` + follow + past;
     if (HOME_AT === 'f') return `<section class="dd-card dd-live" aria-labelledby="h-teaser">
         <p class="dd-eyebrow">${ddName('dd-name-sm', 'span')}<time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>
@@ -683,7 +683,7 @@
       const sel = days.find(d => d.date === st.hubDay) || days[days.length - 1];
       return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${longDate(d.date)}${d.today ? ', danas' : ''}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
         ${sel.today ? hubDrop() : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
-          <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2><p class="dd-meta">Još uvijek možeš odgovoriti.</p>
+          <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2>${pastMeta(sel)}<p class="dd-still">Još uvijek možeš odgovoriti.</p>
           <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`}
         ${HUB_AT === 'e' ? hubProgramme() : `<button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Cijela arhiva</button>${suggestBtn()}`}`;
     }
@@ -735,19 +735,20 @@
   const setIcon = n => ['user', 'lock', 'x', 'check', 'bell', 'trash', 'users', 'info', 'pulse'].includes(n) ? ic(n, 'set-ic') : pic(n, 'set-ic');
   const STATUS_MSG = 'Status računa (SAFE-04, SAFE-05): ovdje bi pisala upozorenja i odluke moderacije s obrazloženjem i mogućnošću žalbe. Sad nema ničega.';
   const DELETE_MSG = 'Deaktivacija ili brisanje (SET-09): ponovna prijava, točan datum brisanja i 30 dana da se predomisliš. Prije brisanja nudi i kopiju tvojih podataka (D-066).';
-  const setStatus = cls => `<button class="set-status${cls ? ' ' + cls : ''}" data-a="toast" data-msg="${STATUS_MSG}" data-k="set-status">${ic('check', 'sm')}<span>Račun je u redu</span><span class="sr-only">, status računa</span></button>`;
+  const setStatus = cls => `<button class="set-status${cls ? ' ' + cls : ''}" data-a="setsub" data-s="status" data-k="set-status">${ic('check', 'sm')}<span>Račun je u redu</span><span class="sr-only">, status računa</span></button>`;
+  const SUBKEY = { 'Uredi profil': 'profile', 'Račun': 'account', 'Sigurnost': 'security', 'Privatnost': 'privacy', 'Blokirani i utišani': 'blocked', 'Obavijesti': 'notifications', 'Jezik i regija': 'language', 'Pomoć i povratne informacije': 'help', 'Pravila zajednice': 'rules', 'Uvjeti, privatnost i kolačići': 'terms', 'O GrooveRiftu': 'about' };
   function setRow(r, k) {
     const [i, t, d, id] = r;
     if (i === 'motion') return `<li class="set-row set-row-switch"><span class="set-ic-wrap" aria-hidden="true">${pic('sliders-horizontal', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="calm-l">Smanji pokrete</span><span class="set-d" id="calm-d">Pristupačnost. Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</span></span>
         <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></li>`;
-    return `<li><button class="set-row" data-a="toast" data-msg="${esc(t)}${id ? ` (${id})` : ''} nije dio ove skice." data-k="set-${k}"><span class="set-ic-wrap" aria-hidden="true">${setIcon(i)}</span><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
+    return `<li><button class="set-row" data-a="setsub" data-s="${SUBKEY[t]}" data-k="set-${k}"><span class="set-ic-wrap" aria-hidden="true">${setIcon(i)}</span><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
   }
   function settingsBody() {
     const groups = SET_GROUPS();
     const q = SET_AT === 'd' ? CAT.fold((st.setQ || '').trim()) : '';
     const list = (rows, k) => rows.map((r, ri) => setRow(r, k + '-' + ri)).join('');
     let top = '', body;
-    if (SET_AT === 'b') top = `<button class="set-me" data-a="toast" data-msg="Uredi profil (PROF-08) nije dio ove skice." data-k="set-me">${avatar(st.username, st.displayName || 'T', 'sm')}<span class="set-txt"><span class="set-t">${esc(st.displayName || 'Ti')}</span><span class="set-d">@${esc(st.username || 'ti')} · Uredi profil</span></span>${ic('chevron', 'sm set-go')}</button>${setStatus('set-status-in')}`;
+    if (SET_AT === 'b') top = `<button class="set-me" data-a="setsub" data-s="profile" data-k="set-me">${avatar(st.username, st.displayName || 'T', 'sm')}<span class="set-txt"><span class="set-t">${esc(st.displayName || 'Ti')}</span><span class="set-d">@${esc(st.username || 'ti')} · Uredi profil</span></span>${ic('chevron', 'sm set-go')}</button>${setStatus('set-status-in')}`;
     else if (SET_AT === 'd') top = `<div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><label class="sr-only" for="f-setq">Traži u postavkama</label><input class="input" id="f-setq" data-k="f-setq" type="search" autocomplete="off" placeholder="Traži u postavkama" value="${esc(st.setQ || '')}"></div>${setStatus()}`;
     else top = setStatus();
     if (SET_AT === 'c') body = `<ul class="set-list set-flat">${groups.map(([, rows], gi) => list(rows, gi)).join('<li class="set-gap" aria-hidden="true"></li>')}</ul>`;
@@ -757,7 +758,7 @@
     } else body = groups.map(([g, rows], gi) => `<section class="set-group" aria-labelledby="sg-${gi}"><h2 class="set-gt" id="sg-${gi}">${g}</h2><ul class="set-list">${list(rows, gi)}</ul></section>`).join('');
     return `${top}<div id="set-body" class="set-body">${body}</div>
       <button class="btn btn-secondary btn-block set-out" data-a="toast" data-msg="Odjava (simulacija): u aplikaciji bi te vratila na prijavu." data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
-      <button class="set-delete" data-a="toast" data-msg="${DELETE_MSG}" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili obriši račun</button>
+      <button class="set-delete" data-a="setsub" data-s="delete" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili obriši račun</button>
       <p class="meta set-ver">${wm()} alfa · skica 3.5</p>`;
   }
   const profAnswers = () => `<section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
@@ -780,7 +781,7 @@
         ${st.genres.length ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}</figcaption></figure>` : ''}
         <div class="pf-c-id">${avatar(st.username, st.displayName || 'T', 'lg')}<div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div></div>
       <p class="pf-bio">${BIO}</p>
-      <p class="pf-c-stats"><span><b>12</b> pratitelja</span><span>prati <b>18</b></span><span><b>${st.mine ? 1 : 0}</b> ${plAns(st.mine ? 1 : 0)}</span></p>
+      ${profRow()}
       ${profVis()}${profBtns()}
       ${st.artists.length ? `<section class="section" aria-labelledby="h-part"><h2 id="h-part" class="section-title">Izvođači</h2>${profArtists()}</section>` : ''}
       ${profAnswers()}
@@ -796,6 +797,126 @@
       <p class="meta">Ostatak profila (J4) nije dio ove skice.</p>`;
   }
 
+  /* ---------- Round 9 (owner, session 11; D-067). Options compared in round9.html. ----------
+     ?age18=a|b|c   a confirmation after "Da, imam 18 ili više" (default: none until the owner chooses)
+     ?all=a|b|c|d   how Home shows "Pogledaj sve odgovore"
+     ?past=a|b|c    a past day on the Hub: what is shown above "Još uvijek možeš odgovoriti"
+     ?act=a|b|c     the Activity screen with sample items
+     ?prow=a|b|c|d  the counts row on the profile
+     Settings rows open real sub-screens (screen "setsub", ?flow=drop&at=setsub&s=<key>). */
+  const AGE18_AT = pick('age18', ['a', 'b', 'c'], '');
+  const ALL_AT = pick('all', ['a', 'b', 'c', 'd'], 'a');
+  const PAST_AT = pick('past', ['a', 'b', 'c'], 'a');
+  const ACT_AT = pick('act', ['a', 'b', 'c'], 'a');
+  const PROW_AT = pick('prow', ['a', 'b', 'c', 'd'], 'a');
+
+  /* Home: the link to all answers, four ways. */
+  function allAnswersLink(n, peeks) {
+    const rest = Math.max(0, n - peeks.length);
+    if (ALL_AT === 'b') return `<button class="btn btn-secondary btn-block all-b" data-a="open-drop" data-k="all-ans">Svi odgovori <span class="all-n">${n}</span>${ic('chevron', 'sm')}</button>`;
+    if (ALL_AT === 'c') return `<button class="all-c" data-a="open-drop" data-k="all-ans"><span class="stack" aria-hidden="true">${allAnswers().slice(peeks.length, peeks.length + 3).map(a => avatar(a.handle, a.who, 'xs')).join('')}</span><span>Pročitaj još ${rest} ${plAns(rest)}</span>${ic('chevron', 'sm')}</button>`;
+    if (ALL_AT === 'd') return '';
+    return `<button class="link" data-a="open-drop" data-k="all-ans">Pogledaj sve odgovore (${n})</button>`;
+  }
+  /* d: the link becomes the last item of the answer list, a small "+5" card. */
+  const allPeekCard = (n, peeks) => ALL_AT === 'd' ? `<li><button class="peek peek-more" data-a="open-drop" data-k="all-ans"><span class="peek-plus">+${n - peeks.length}</span><span class="peek-body"><span class="peek-who">Još ${n - peeks.length} ${plAns(n - peeks.length)}</span><span class="peek-text">Pročitaj sve odgovore na današnje pitanje</span></span>${ic('chevron', 'sm')}</button></li>` : '';
+
+  /* Hub: a past day. Counts are fictional (data.js pastDrops). */
+  function pastMeta(d) {
+    const who = Object.keys(D.members).slice(0, 3);
+    const stack = `<span class="stack" aria-hidden="true">${who.map(h => avatar(h, D.members[h].who, 'xs')).join('')}</span>`;
+    if (PAST_AT === 'b') return `<p class="dd-meta">${stack}<span>${d.n} ${plAns(d.n)} · ${d.c} ${pl(d.c, 'komentar', 'komentara', 'komentara')}</span></p>`;
+    if (PAST_AT === 'c') return `<dl class="past-stats"><div><dt>Odgovori</dt><dd>${d.n}</dd></div><div><dt>Komentari</dt><dd>${d.c}</dd></div><div><dt>Reakcije</dt><dd>${d.r}</dd></div></dl>`;
+    return `<p class="dd-meta">${stack}<span>${d.n} ${plAns(d.n)}</span></p>`;
+  }
+
+  /* Activity (ACT-01) with sample items. Unread items have a soft tint, not a dot. Texts use the present tense, which
+     is the same for every gender in Croatian (the app does not know a member's gender). */
+  const ACT_ITEMS = [
+    { t: 'com', when: 'Danas', time: 'prije 5 min', who: 'lukabass', txt: '<b>Luka</b> komentira tvoj odgovor: „Slažem se, Blue in Green mi je bio ulaz.”', unread: true },
+    { t: 'react', when: 'Danas', time: 'prije 1 h', who: 'petra.zvuk', txt: 'Reakcije na tvoj odgovor: <b>Petra</b>, <b>Tin</b> i još 3.', unread: true },
+    { t: 'req', when: 'Danas', time: 'prije 2 h', who: 'mia_vinyl', txt: '<b>Mia</b> želi te pratiti.' },
+    { t: 'drop', when: 'Danas', time: '01:00', txt: '<b>Daily Drop je stigao:</b> „Koji album bi dao nekome tko misli da ne voli jazz?”' },
+    { t: 'follow', when: 'Ovaj tjedan', time: 'pet', who: 'tinkovac', txt: '<b>Tin</b> te sada prati.' },
+    { t: 'sugg', when: 'Ovaj tjedan', time: 'sri', txt: 'Tvoj prijedlog pitanja je objavljen: „Koju pjesmu najčešće šalješ prijateljima?”' },
+    { t: 'com', when: 'Ovaj tjedan', time: 'uto', who: 'mia_vinyl', txt: '<b>Mia</b> odgovara na tvoj komentar.' }
+  ];
+  const ACT_KIND = { com: 'Komentari', react: 'Reakcije', req: 'Praćenja', follow: 'Praćenja', drop: 'Daily Drop', sugg: 'Daily Drop' };
+  function actRow(x, i) {
+    const lead = x.who ? avatar(x.who, (D.members[x.who] || { who: x.who }).who, 'sm') : `<span class="act-ic" aria-hidden="true">${x.t === 'drop' ? pic('calendar-dots') : ic('check', 'sm')}</span>`;
+    const tail = x.t === 'react' ? `<span class="act-wave" aria-hidden="true">${WAVE}</span>` : '';
+    const btns = x.t === 'req' ? `<span class="act-btns"><button class="btn btn-primary btn-sm" data-a="toast" data-msg="Zahtjev prihvaćen (simulacija)." data-k="act-ok-${i}">Prihvati</button><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Zahtjev odbijen (simulacija). Mia to ne vidi." data-k="act-no-${i}">Odbij</button></span>` : '';
+    return `<li class="act${x.unread ? ' act-new' : ''}">${lead}<div class="act-body"><p class="act-txt">${x.txt}${x.unread ? '<span class="sr-only">, novo</span>' : ''}</p><p class="act-time">${x.time}</p>${btns}</div>${tail}</li>`;
+  }
+  function activityBody() {
+    let items = ACT_ITEMS.map((x, i) => [x, i]);
+    let head = '';
+    if (ACT_AT === 'b') {
+      const reqs = items.filter(([x]) => x.t === 'req');
+      items = items.filter(([x]) => x.t !== 'req');
+      head = `<section class="act-req" aria-labelledby="h-req"><h2 id="h-req" class="set-gt">Zahtjevi za praćenje <span class="count">${reqs.length}</span></h2><ul class="act-list">${reqs.map(([x, i]) => actRow(x, i)).join('')}</ul></section>`;
+    }
+    if (ACT_AT === 'c') {
+      const f = st.actF || 'Sve';
+      head = `<fieldset class="sort act-filter"><legend class="sr-only">Prikaži</legend>${['Sve', 'Komentari', 'Reakcije', 'Praćenja', 'Daily Drop'].map(v => `<label><input type="radio" name="actf" value="${v}" data-k="actf-${v}"${f === v ? ' checked' : ''}><span>${v}</span></label>`).join('')}</fieldset>`;
+      if (f !== 'Sve') items = items.filter(([x]) => ACT_KIND[x.t] === f);
+    }
+    const groups = [];
+    items.forEach(([x, i]) => { let g = groups.find(y => y.k === x.when); if (!g) groups.push(g = { k: x.when, rows: [] }); g.rows.push(actRow(x, i)); });
+    return head + (groups.length ? groups.map((g, j) => `<section aria-labelledby="h-act-${j}"><h2 class="set-gt" id="h-act-${j}">${g.k}</h2><ul class="act-list">${g.rows.join('')}</ul></section>`).join('') : '<p class="empty">Ovdje još nema ničega.</p>')
+      + '<p class="meta">Primjeri su izmišljeni. Zahtjevi za praćenje stižu samo ako je profil privatan.</p>';
+  }
+
+  /* Profile counts row, four ways. P1: no follower-count heroics, so the numbers stay small. */
+  function profRow() {
+    const a = st.mine ? 1 : 0;
+    if (PROW_AT === 'b') return `<dl class="prow-b"><div><dd>12</dd><dt>pratitelja</dt></div><div><dd>18</dd><dt>prati</dt></div><div><dd>${a}</dd><dt>${plAns(a)}</dt></div></dl>`;
+    if (PROW_AT === 'c') return `<p class="prow-c"><button class="prow-chip" data-a="toast" data-msg="Popis pratitelja (PROF-07) nije dio skice." data-k="prow-1"><b>12</b> pratitelja</button><button class="prow-chip" data-a="toast" data-msg="Popis praćenih (PROF-07) nije dio skice." data-k="prow-2"><b>18</b> prati</button><span class="prow-chip prow-dd">${ic('pulse', 'sm')}<b>${a}</b> ${plAns(a)}</span></p>`;
+    if (PROW_AT === 'd') return `<p class="prow-d"><button class="link-quiet" data-a="toast" data-msg="Popis pratitelja (PROF-07) nije dio skice." data-k="prow-1"><b>12</b> pratitelja</button><span aria-hidden="true">·</span><button class="link-quiet" data-a="toast" data-msg="Popis praćenih (PROF-07) nije dio skice." data-k="prow-2">prati <b>18</b></button><span aria-hidden="true">·</span><span>član od listopada 2026.</span></p>`;
+    return `<p class="pf-c-stats"><span><b>12</b> pratitelja</span><span>prati <b>18</b></span><span><b>${a}</b> ${plAns(a)}</span></p>`;
+  }
+
+  /* ---------- Settings sub-screens (SET-02 to SET-12, D-067). One layout for all: short groups of rows. ---------- */
+  const swRow = (id, t, d, on) => `<li class="set-row set-row-switch"><span class="set-txt"><span class="set-t" id="${id}-l">${t}</span>${d ? `<span class="set-d" id="${id}-d">${d}</span>` : ''}</span><button type="button" class="switch" role="switch" aria-checked="${!!on}" aria-labelledby="${id}-l"${d ? ` aria-describedby="${id}-d"` : ''} data-a="sw" data-k="${id}"><span></span></button></li>`;
+  const row = (k, t, d, msg) => `<li><button class="set-row set-row-plain" data-a="toast" data-msg="${esc(msg || t + ': ovaj korak nije dio skice.')}" data-k="${k}"><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
+  const grp = (title, inner, note) => `<section class="set-group">${title ? `<h2 class="set-gt">${title}</h2>` : ''}<ul class="set-list">${inner}</ul>${note ? `<p class="set-note">${note}</p>` : ''}</section>`;
+  const SUB = {
+    profile: ['Uredi profil', () => `<div class="sub-avatar">${avatar(st.username, st.displayName || 'T', 'lg')}<button class="link" data-a="toast" data-msg="Učitavanje slike (PROF-08) nije dio skice. Slika nije obavezna." data-k="sub-photo">Promijeni sliku</button></div>
+        ${field({ id: 'dname2', label: 'Ime za prikaz', help: 'Do tri riječi. Svaka počinje velikim slovom.', value: st.displayName, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
+        <div class="field"><label class="label" for="f-bio">Bio</label><textarea class="textarea" id="f-bio" data-k="f-bio" rows="3" maxlength="160">${esc(BIO)}</textarea><p class="help">Do 160 znakova.</p></div>
+        ${grp('', row('sub-dna', 'Uredi Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'Uređivanje Music DNA (PROF-09) nije dio skice.'))}
+        <button class="btn btn-primary btn-block" data-a="toast" data-msg="Spremljeno (simulacija)." data-k="sub-save">Spremi</button>`],
+    account: ['Račun', () => grp('Prijava', row('a-mail', 'E-pošta', esc(D.email)) + row('a-pw', 'Lozinka', 'Promijenjena prije 2 dana') + row('a-g', 'Google', 'Nije povezano'))
+      + grp('Korisničko ime', row('a-user', `@${esc(st.username || 'ti')}`, 'Promijeni'), 'Možeš ga promijeniti jednom u 30 dana. Staro ime neko vrijeme ostaje rezervirano, da te nitko ne može glumiti (OQ-15).')],
+    security: ['Sigurnost', () => grp('Dvostruka provjera', swRow('s-2fa', 'Kod iz aplikacije pri prijavi', 'Preporučeno. Uz to dobiješ kodove za oporavak.', false))
+      + grp('Uređaji', `<li class="set-row set-row-dev"><span class="set-txt"><span class="set-t">Chrome na Androidu</span><span class="set-d">Ovaj uređaj · Zagreb</span></span></li><li class="set-row set-row-dev"><span class="set-txt"><span class="set-t">Safari na iPhoneu</span><span class="set-d">Prije 3 dana · Zagreb</span></span><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Uređaj je odjavljen (simulacija)." data-k="s-out-1">Odjavi</button></li>`)
+      + '<button class="btn btn-secondary btn-block" data-a="toast" data-msg="Odjavljen si sa svih drugih uređaja (simulacija)." data-k="s-out-all">Odjavi se sa svih drugih uređaja</button>'],
+    privacy: ['Privatnost', () => `${choices('vis2', 'Tko vidi tvoj profil, Music DNA i povijest odgovora?', [{ v: 'public', icon: 'globe', t: 'Javno', d: 'Svi članovi. Pojavljuješ se u Otkrivanju.' }, { v: 'private', icon: 'lock', t: 'Privatno', d: 'Samo pratitelji koje odobriš.' }], st.vis, 'choices-compact')}
+        ${choices('dnaVis2', 'Tko vidi tvoj Music DNA?', [{ v: 'all', icon: 'users', t: 'Svi članovi' }, { v: 'followers', icon: 'user', t: 'Samo pratitelji' }, { v: 'me', icon: 'lock', t: 'Samo ja' }], st.dnaVis, 'choices-compact')}
+        <p class="vrow-same">${ic('users', 'sm')}<span>Odgovore na Daily Drop i komentare uvijek vide svi članovi, i kad je profil privatan.</span></p>`],
+    blocked: ['Blokirani i utišani', () => grp('Blokirani', '<li class="set-empty">Nema blokiranih računa.</li>', 'Blokirani ne vide tvoj profil ni odgovore, a ti ne vidiš njihove. Ne dobiju obavijest o tome.')
+      + grp('Utišani', '<li class="set-empty">Nema utišanih računa.</li>', 'Utišane i dalje možeš posjetiti, samo ih ne vidiš u popisima. Oni to ne znaju.')],
+    notifications: ['Obavijesti', () => grp('Daily Drop', swRow('n-dd', 'Podsjetnik za novo pitanje', st.reminder === 'on' ? `Svaki dan u ${st.remTime} · Zagreb` : 'Jedna obavijest dnevno', st.reminder === 'on'))
+      + grp('Na ovom uređaju', swRow('n-com', 'Komentari na moje odgovore', '', true) + swRow('n-react', 'Reakcije', 'Skupljene, najviše jedna na sat.', false) + swRow('n-fol', 'Novi pratitelji i zahtjevi', '', true))
+      + grp('E-pošta', swRow('n-mail', 'Sažetak tjedna', 'Najbolji odgovori i tvoja aktivnost, nedjeljom.', false), 'Važne obavijesti o računu i sigurnosti uvijek stižu e-poštom.')],
+    language: ['Jezik i regija', () => `${choices('lang2', 'Jezik sučelja', [{ v: 'en', t: 'English', lang: 'en' }, { v: 'hr', t: 'Hrvatski' }], st.lang, 'choices-compact')}
+        <div class="group"><p class="label">Jezici čitanja</p><p class="help">Takve odgovore češće vidiš u poretku „Za tebe”.</p><div class="chips">${READ_LANGS.map(l => `<button class="chip" data-a="readlang" data-l="${l}" data-k="rl2-${l}" aria-pressed="${st.readLangs.has(l)}"><span class="ck">${ic('check', 'sm')}</span>${l}</button>`).join('')}</div></div>
+        <div class="field"><label class="label" for="f-tz">Vremenska zona</label><select class="select" id="f-tz" data-k="f-tz"><option>Europa/Zagreb</option><option>Europa/London</option><option>Amerika/New York</option></select><p class="help">Za vrijeme podsjetnika. Daily Drop izlazi za sve u isto vrijeme.</p></div>`],
+    status: ['Status računa', () => `<div class="sub-hero">${ic('check')}<p class="sub-hero-t">Račun je u redu</p><p class="help">Nema upozorenja ni ograničenja.</p></div>
+        ${grp('Što bi ovdje pisalo', '<li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">Odluke moderacije</span><span class="set-d">Svaka s obrazloženjem: što je uklonjeno, zašto i do kada.</span></span></li><li class="set-row set-row-plain"><span class="set-txt"><span class="set-t">Žalba</span><span class="set-d">Na svaku odluku možeš se žaliti, a odgovor stiže ovdje.</span></span></li>')}`],
+    help: ['Pomoć', () => grp('', row('h-bug', 'Prijavi grešku', 'Uz opis i, ako želiš, snimku zaslona') + row('h-idea', 'Pošalji prijedlog') + row('h-faq', 'Česta pitanja'))
+      + grp('', row('h-priv', 'Kontakt za privatnost', 'Pitanja o podacima, kopija podataka')) + '<p class="meta">Prijave neprimjerenog sadržaja idu preko ⋯ na samom odgovoru, ne ovdje.</p>'],
+    rules: ['Pravila zajednice', () => `<div class="sub-doc"><p class="lead">Ukratko, dok pravnik ne napiše pravi tekst:</p><ul><li>Pričaj o glazbi i ljudima s poštovanjem, i kad se ne slažeš.</li><li>Bez mržnje, uznemiravanja i otkrivanja tuđih podataka.</li><li>Bez spama i lažnog predstavljanja.</li><li>Dijeli poveznice, ne piratske snimke.</li></ul><p class="meta">Nacrt za skicu, nije pravni tekst (PUB-11).</p></div>`],
+    terms: ['Uvjeti i privatnost', () => grp('', row('t-terms', 'Uvjeti korištenja') + row('t-priv', 'Pravila privatnosti') + row('t-cook', 'Kolačići', 'Koje koristimo i zašto')) + '<p class="meta">Tekstove piše pravnik prije alfe (PUB-10).</p>'],
+    about: ['O GrooveRiftu', () => `<div class="sub-hero"><span class="wordmark">groove<span class="wm-rift">rift</span></span><p class="tagline" lang="en">Where musical worlds collide.</p><p class="help">Alfa · skica 3.5</p></div>
+        ${grp('', row('ab-contact', 'Kontakt') + row('ab-imp', 'Impresum', 'Tko stoji iza GrooveRifta (OQ-05)') + row('ab-lic', 'Licence', 'MusicBrainz (CC0), ikone Phosphor (MIT), fontovi Sora i Inter (OFL)'))}`],
+    delete: ['Brisanje računa', () => `<div class="sub-copy">${pic('database', 'set-ic')}<div><p class="set-t">Prije toga: kopija tvojih podataka</p><p class="set-d">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci.</p></div><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Pripremamo kopiju. Javit ćemo e-poštom kad bude spremna (simulacija)." data-k="d-copy">Preuzmi</button></div>
+        ${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Vratiš se kad se opet prijaviš.' }, { v: 'del', t: 'Obriši trajno', d: `Račun se skriva odmah, a briše se ${(p => p.day + '. ' + p.mg)(dparts(addDays(D.drop.date, 30)))}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
+        ${field({ id: 'delpw', label: 'Za potvrdu upiši lozinku', type: 'password', attrs: 'autocomplete="current-password"' })}
+        <button class="btn btn-danger btn-block" data-a="toast" data-msg="Ovo je skica: ništa nije obrisano. U aplikaciji bi stigla potvrda e-poštom." data-k="d-go">${ic('trash', 'sm')}Nastavi</button>`]
+  };
+  function addDays(iso, n) { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+
   const S = {
     invite: () => ({
       kind: 'bare',
@@ -810,7 +931,7 @@
       <div class="info info-stack">
         <p>${ic('info')}<span>Zatvorena alfa: neke stvari još nedostaju i mogu se promijeniti. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></span></p>
         <p>${pic('device-mobile', 'pwa-ic')}<span>${wm(true)} je web-aplikacija (PWA). Verzije za iOS i Android možda stignu kasnije.</span></p>
-        <p>${pic('plus-square', 'pwa-ic')}<span>Dodaj ga na početni zaslon: otvara se kao aplikacija, uz podsjetnike. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorile kratke upute za iPhone i Android (Dodaj na početni zaslon)." data-k="pwa-how">Kako?</button></span></p>
+        <p>${pic('plus-square', 'pwa-ic')}<span>Dodaj app na početni zaslon: otvara se kao aplikacija, uz podsjetnike. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorile kratke upute za iPhone i Android (Dodaj na početni zaslon)." data-k="pwa-how">Kako?</button></span></p>
       </div>`,
       foot: `${INV_AT === 'd' ? invCur(48, 'inv-foot') : ''}<button class="btn btn-primary btn-block" data-a="next" data-k="next">Prihvati pozivnicu</button><p class="fine">Pozivnica vrijedi za ${esc(D.email)}.</p>`
     }),
@@ -861,7 +982,7 @@
     username: () => ({
       kind: 'onb',
       body: `<h1>Kako se zoveš?</h1>
-        ${field({ id: 'dname', label: 'Ime za prikaz', help: 'Tako te drugi vide. Pravo ime ili nadimak, kako ti odgovara.', value: st.displayName, attrs: 'autocomplete="nickname" maxlength="40"' })}
+        ${field({ id: 'dname', label: 'Ime za prikaz', help: 'Tako te drugi vide. Do tri riječi, svaka počinje velikim slovom.', value: st.displayName, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
         ${field({ id: 'uname', label: 'Korisničko ime', help: '3 do 20 znakova: mala slova, brojke, točka i donja crta.', value: st.username, prefix: '@', attrs: 'autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"' })}
         <div id="uname-status" class="status" aria-live="polite">${userStatusHtml()}</div>`,
       foot: nextBtn()
@@ -1001,22 +1122,26 @@
           </section>
           <form class="composer composer-comment" data-form="comment" novalidate>
             <label class="composer-label" for="f-com">Tvoj komentar</label>
-            <textarea class="textarea" id="f-com" data-k="f-com" rows="2"${st.err.com ? ' aria-invalid="true" aria-describedby="err-com"' : ''}>${esc(st.commentDraft)}</textarea>
+            <div class="live-field"><textarea class="textarea" id="f-com" data-k="f-com" rows="2"${st.err.com ? ' aria-invalid="true" aria-describedby="err-com"' : ''}>${esc(st.commentDraft)}</textarea></div>
             ${st.err.com ? fieldErr('com', st.err.com) : ''}
             ${audience('comment')}
-            <div class="composer-actions"><button type="submit" class="btn btn-primary" data-k="com-post" aria-describedby="aud-c">Komentiraj</button></div>
+            <div class="composer-actions composer-split"><button type="button" class="btn btn-secondary" data-a="com-cancel" data-k="com-cancel">Odustani</button><button type="submit" class="btn btn-primary" data-k="com-post" aria-describedby="aud-c">Komentiraj</button></div>
           </form>`
       };
     },
     activity: () => ({
       kind: 'app', tab: 'activity', topTitle: 'Aktivnost', topH1: true,
-      body: `<div class="empty"><p>Još ništa novo. Ovdje stižu komentari na tvoje odgovore i zahtjevi za praćenje.</p><p class="meta">Ekran nije dio ove skice.</p></div>`
+      body: activityBody()
     }),
     profile: () => ({
       kind: 'app', tab: 'profile', topTitle: 'Profil',
       topActions: `<button class="iconbtn" data-a="settings" data-k="settings" aria-label="Postavke">${pic('gear-six', 'top-ic')}</button>`,
       body: profileBody()
     }),
+    setsub: () => {
+      const sub = SUB[st.sub] || SUB.account;
+      return { kind: 'app', tab: 'profile', back: true, topTitle: sub[0], topH1: true, body: `<div class="sub">${sub[1]()}</div>` };
+    },
     settings: () => ({
       kind: 'app', tab: 'profile', back: true, topTitle: 'Postavke', topH1: true,
       body: settingsBody()
@@ -1065,6 +1190,23 @@
         <div class="sheet-head"><h2 id="ov-title" class="sheet-title">${st.editing ? 'Uredi odgovor' : 'Tvoj odgovor'}</h2><button class="iconbtn" data-a="cancel-compose" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
         <p class="sheet-q">${esc(D.drop.question)}</p>
         ${composerForm()}</div>`;
+    }
+    if (o.type === 'age18') {
+      if (AGE18_AT === 'c') return `<div class="scrim"></div><div class="sheet age18" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <div class="sheet-head"><h2 id="ov-title" class="sheet-title">Još jedna potvrda</h2></div>
+        <label class="age-check"><input type="checkbox" id="f-age18" data-k="f-age18"${st.err.age18 ? ' aria-invalid="true" aria-describedby="err-age18"' : ''}><span>Potvrđujem da imam 18 ili više godina i da je moj odgovor istinit.</span></label>
+        ${st.err.age18 ? fieldErr('age18', st.err.age18) : ''}
+        <p class="help">${wm()} je zajednica punoljetnih. Pravila zajednice to traže od svih članova.</p>
+        <button class="btn btn-primary btn-block" data-a="age18-ok" data-k="ov-ok">Nastavi</button></div>`;
+      if (AGE18_AT === 'b') return `<div class="scrim"></div><div class="dialog age18" role="alertdialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">
+        <span class="step-ic" aria-hidden="true">${pic('users-three')}</span>
+        <h2 id="ov-title" class="dialog-title">Samo za punoljetne</h2>
+        <p id="ov-desc">Ako se pokaže da imaš manje od 18 godina, račun zatvaramo i brišemo tvoje podatke.</p>
+        <div class="dialog-stack"><button class="btn btn-primary btn-block" data-a="age18-ok" data-k="ov-ok">Imam 18 ili više, nastavi</button><button class="btn btn-secondary btn-block" data-a="age18-minor" data-k="ov-minor">Imam manje od 18</button></div></div>`;
+      return `<div class="scrim"></div><div class="dialog age18" role="alertdialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">
+        <h2 id="ov-title" class="dialog-title">Potvrdi da imaš 18 ili više godina</h2>
+        <p id="ov-desc">${wm()} je samo za punoljetne. Ako to nije točno, vrati se i promijeni odgovor.</p>
+        <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Natrag</button><button class="btn btn-primary" data-a="age18-ok" data-k="ov-ok">Potvrđujem</button></div></div>`;
     }
     if (o.type === 'perm') {
       return `<div class="scrim"></div><div class="dialog perm" role="dialog" aria-modal="true" aria-labelledby="ov-title">
@@ -1115,7 +1257,7 @@
     afterRender();
     if (keep) return restore(keep);
     if (st.overlay) {
-      for (const sel of ['.sheet [data-k="f-ans"]', '.sheet .menu-item', '.dialog .btn', '.sheet .iconbtn']) {
+      for (const sel of ['.age18 input', '.age18 .btn', '.sheet [data-k="f-ans"]', '.sheet .menu-item', '.dialog .btn', '.sheet .iconbtn']) {
         const f = root.querySelector(sel);
         if (f) { f.focus(); break; }
       }
@@ -1176,6 +1318,7 @@
       case 'invite': return go('age');
       case 'age':
         if (!st.age) { err.age = 'Odaberi jedan odgovor.'; break; }
+        if (st.age === 'adult' && AGE18_AT) return openOverlay({ type: 'age18' }, root.querySelector('[data-k="next"]'));
         return go(st.age === 'adult' ? 'uilang' : 'minor');
       case 'uilang': return go('account');
       case 'account':
@@ -1185,7 +1328,8 @@
         go('username', { reset: true }); toast('Račun je napravljen.'); return;
       case 'username':
         if (st.userState === 'checking') checkUser(true);
-        if (!st.displayName.trim()) err.dname = 'Upiši ime za prikaz.';
+        st.displayName = st.displayName.trim();
+        if (!st.displayName) err.dname = 'Upiši ime za prikaz.';
         if (!st.username) err.uname = 'Upiši korisničko ime.';
         else if (st.userState === 'invalid') err.uname = 'Koristi samo mala slova, brojke, točku i donju crtu.';
         else if (st.userState === 'short') err.uname = 'Korisničko ime treba imati barem 3 znaka.';
@@ -1317,6 +1461,13 @@
       case 'remind-off': st.reminder = 'off'; return go('done', { reset: true });
       case 'remind-on': return openOverlay({ type: 'perm' }, b);
       case 'perm-allow': st.reminder = 'on'; st.overlay = null; return go('done', { reset: true });
+      case 'age18-ok':
+        if (AGE18_AT === 'c' && !(root.querySelector('#f-age18') || {}).checked) { st.err.age18 = 'Označi potvrdu za nastavak.'; render(); return focusSel('#f-age18'); }
+        delete st.err.age18; st.overlay = null; return go('uilang');
+      case 'age18-minor': st.age = 'minor'; st.overlay = null; return go('minor');
+      case 'com-cancel': st.commentDraft = ''; delete st.err.com; return back();
+      case 'setsub': st.sub = b.dataset.s; return go('setsub');
+      case 'sw': return b.setAttribute('aria-checked', b.getAttribute('aria-checked') !== 'true');
       case 'perm-block': st.reminder = 'denied'; st.overlay = null; render(); return focusSel('.notice');
       case 'finish': return go('home', { reset: true });
       case 'calm': MOT.setCalm(!MOT.calm()); return render({ keep: true });
@@ -1372,6 +1523,20 @@
     }
   });
 
+  /* Display name (owner, D-067): at most three words, and every word (also after a hyphen) starts with a capital
+     letter, so "ana mari horvat" becomes "Ana Mari Horvat". Spaces collapse to one; a fourth word is not accepted (a short message says why).
+     The rest of each word is left as typed (McCartney, DJ). */
+  function nameFix(el) {
+    const v = el.value, pos = el.selectionStart;
+    let w = v.replace(/^\s+/, '').replace(/\s+/g, ' ').split(' ');
+    const cut = w.length > 4 || (w.length === 4 && w[3] !== '');
+    if (cut) { w = w.slice(0, 3).concat(''); toast('Ime za prikaz može imati najviše tri riječi.'); }
+    const out = w.map(x => x.replace(/(^|-)(\p{Ll})/gu, (m, a, c) => a + c.toLocaleUpperCase('hr'))).join(' ');
+    if (out === v) return;
+    el.value = out;
+    const p = Math.max(0, Math.min(out.length, pos - (v.length - out.length)));
+    try { el.setSelectionRange(p, p); } catch (e) { /* not focused */ }
+  }
   function clearErr(k, input) {
     if (!st.err[k]) return;
     delete st.err[k];
@@ -1387,7 +1552,7 @@
     const t = e.target;
     switch (t.id) {
       case 'f-pw': { st.pw = t.value; clearErr('pw', t); const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return; }
-      case 'f-dname': st.displayName = t.value; return clearErr('dname', t);
+      case 'f-dname': case 'f-dname2': { nameFix(t); st.displayName = t.value; return clearErr(t.id.slice(2), t); }
       case 'f-uname': st.username = t.value.trim(); clearErr('uname', t); return checkUser();
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();
       case 'f-genre': { st.genreQ = t.value; const m = root.querySelector('#more-genres'); if (m) { m.innerHTML = moreGenres(); const f = root.querySelector('#f-genre'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
@@ -1403,6 +1568,8 @@
     if (t.type === 'radio') {
       const n = t.name;
       if (n === 'sort') { st.sort = t.value; return render({ keep: true }); }
+      if (n === 'actf') { st.actF = t.value; return render({ keep: true }); }
+      if (n === 'vis2') st.vis = t.value; else if (n === 'dnaVis2') st.dnaVis = t.value; else if (n === 'lang2') st.lang = t.value; else if (n === 'del') st.del = t.value;
       if (n === 'age') st.age = t.value;
       else if (n === 'vis') st.vis = t.value;
       else if (n === 'dnaVis') st.dnaVis = t.value;
@@ -1426,6 +1593,7 @@
     if (before('account')) st.pw = 'primjer lozinke za skicu';
     if (before('username')) { st.displayName = 'Ana'; st.username = 'ana.slusa'; st.userState = 'ok'; }
     if (before('visibility')) st.vis = PRIV ? 'private' : 'public';
+    if (AT === 'age' && P.get('show') === 'age18' && AGE18_AT) { st.age = 'adult'; st.overlay = { type: 'age18' }; }
     if (before('dna') || (AT === 'dna' && P.get('picks') === '1')) { st.genres = ['Metal', 'Jazz', 'Techno', 'Kantautorska', 'Funk']; st.artists = [fx('Metallica'), fx('Nina Simone'), fx('Arsen Dedić'), fx('Charlotte de Witte')]; }
     if (AT === 'dna' && P.get('q')) st.artistQ = P.get('q');
     if (before('dnavis')) st.dnaVis = 'all';
@@ -1433,10 +1601,12 @@
     st.screen = AT;
     const from = k < 3 ? 0 : 3;
     st.hist = AT === 'username' || AT === 'done' ? [] : ORDER.slice(from, k).map(s => ({ screen: s, y: 0 }));
-  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings'].includes(AT)) {
+  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub'].includes(AT)) {
     st.screen = AT;
     if (AT === 'drop') st.hist = [{ screen: 'home', y: 0 }];
     if (AT === 'settings') st.hist = [{ screen: 'profile', y: 0 }];
+    if (AT === 'setsub') { st.sub = P.get('s') || 'account'; st.hist = [{ screen: 'profile', y: 0 }, { screen: 'settings', y: 0 }]; }
+    if (AT === 'hub' && P.get('day')) st.hubDay = P.get('day');
     if (AT === 'answer') { st.ctx = 'a1'; st.hist = [{ screen: 'home', y: 0 }, { screen: 'drop', y: 0 }]; }
     if (AT === 'drop' && P.get('open') === 'compose') st.overlay = { type: 'sheet', ret: 'dock-field' };
   }

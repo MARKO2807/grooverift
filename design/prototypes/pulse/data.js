@@ -4,7 +4,7 @@
    here (D-017). In live mode (?live=1) artist search queries MusicBrainz and shows free-licence photos
    from Wikimedia Commons with credit; see catalog.js. Reactions are placeholders until OQ-13. Nothing is stored. */
 window.GR_DATA = {
-  email: 'netko@primjer.hr',
+  email: 'you@therift.com', // sample address (owner, D-067)
   takenUsernames: ['ana', 'marko', 'tin', 'petra', 'luka', 'mia', 'admin', 'grooverift', 'moderator', 'podrska', 'support'],
 
   /* Genres with design-placeholder traits.
@@ -123,12 +123,12 @@ window.GR_DATA = {
   },
 
   pastDrops: [
-    { date: '2026-10-31', q: 'Koja pjesma je najbolje otvaranje albuma?' },
-    { date: '2026-10-30', q: 'Koji koncert pamtiš do danas?' },
-    { date: '2026-10-29', q: 'Koju pjesmu najčešće šalješ prijateljima?' },
-    { date: '2026-10-28', q: 'Koji album prvi spašavaš iz poplave?' },
-    { date: '2026-10-27', q: 'Koja pjesma te uvijek digne iz loše volje?' },
-    { date: '2026-10-26', q: 'Koji izvođač zaslužuje puno više slušatelja?' }
+    { date: '2026-10-31', q: 'Koja pjesma je najbolje otvaranje albuma?', n: 23, c: 41, r: 96 },
+    { date: '2026-10-30', q: 'Koji koncert pamtiš do danas?', n: 31, c: 58, r: 140 },
+    { date: '2026-10-29', q: 'Koju pjesmu najčešće šalješ prijateljima?', n: 18, c: 22, r: 64 },
+    { date: '2026-10-28', q: 'Koji album prvi spašavaš iz poplave?', n: 27, c: 49, r: 102 },
+    { date: '2026-10-27', q: 'Koja pjesma te uvijek digne iz loše volje?', n: 15, c: 19, r: 51 },
+    { date: '2026-10-26', q: 'Koji izvođač zaslužuje puno više slušatelja?', n: 21, c: 33, r: 77 }
   ],
 
   /* One reaction (D-056): icon only (a small audio wave), named "Sviđa mi se" / "Like" for notifications,

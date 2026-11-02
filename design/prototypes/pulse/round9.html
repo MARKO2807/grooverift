@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 9: prijedlozi</title>
+<!-- Owner decision sketch (session 11, round 9, D-067): 18+ confirmation, the all-answers link on Home, a past day on
+     the Hub, the Activity screen, the profile counts row, and every Settings sub-screen. Every frame is the real
+     prototype (index.html) with a URL option. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 0 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+  ul.done { padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 9: prijedlozi</h1>
+  <p>Okviri su prava aplikacija: klikaj, skrolaj, upisuj. „Danas” je trenutno stanje, a „preporuka” je moj prijedlog.</p>
+  <p><b>Već napravljeno, bez izbora:</b></p>
+  <ul class="done">
+    <li>Pozivnica: „Dodaj app na početni zaslon…”. Primjer adrese je <b>you@therift.com</b> (pozivnica i korak 3).</li>
+    <li>Ime za prikaz: najviše tri riječi, svaka počinje velikim slovom („ana mari horvat” postaje „Ana Mari Horvat”). <a href="index.html?at=username">Probaj →</a></li>
+    <li>Music DNA: metal, nu metal, punk, grunge i njihovi podžanrovi imaju crnu jezgru u jačem crvenom sjaju i iskrice. Ostali žanrovi su isti. <a href="index.html?at=dna&picks=1">Pogledaj →</a></li>
+    <li>Komentari: „Odustani” lijevo, a rubom polja tiho kruži struja. <a href="index.html?flow=drop&at=answer">Pogledaj →</a></li>
+  </ul>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-age">1. Potvrda 18+</a><a href="#t-all">2. Svi odgovori</a><a href="#t-past">3. Prethodni dani</a><a href="#t-act">4. Aktivnost</a><a href="#t-prow">5. Red na profilu</a><a href="#t-set">6. Podstranice postavki</a><a href="#t-img">7. Slike u komentarima</a>
+  </nav>
+  <div id="sections"></div>
+
+  <section aria-labelledby="t-img">
+    <h2 class="sec" id="t-img">7. Slike u komentarima?</h2>
+    <div class="note">
+      <p><b>Što je odlučeno:</b> odgovori na Daily Drop su tekst uz kartice albuma, pjesama i izvođača iz kataloga. Za komentare nigdje nije odlučeno smiju li slike. Slike i kratki video su u planu tek za objave u feedu (val B1 i B6).</p>
+      <p><b>Moja preporuka:</b> u alfi komentari ostaju tekst, uz iste kartice iz kataloga kao u odgovorima. Slike tek kad stigne sustav za slike (B1).</p>
+      <ul>
+        <li>Svaka slika treba provjeru i moderaciju, a moderatora u alfi nema puno.</li>
+        <li>Slike traže obradu, spremište i brisanje metapodataka (npr. lokacije), a to dolazi s valom B1.</li>
+        <li>Kartica albuma već pokaže o čemu pričaš, bez problema s pravima na slike.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-age', '1. Potvrda 18+', 'Nakon „Da, imam 18 ili više” iskoči kratka potvrda. Nema datuma rođenja ni dokumenata. Je li ovo pravno dovoljno, odlučuje pravnik (OQ-10).', 'at=age&show=age18', 'age18', [
+      ['', 'Bez potvrde', 'Kao dosad: odabir i „Nastavi”.', 'now'],
+      ['a', 'A. Kratka potvrda', 'Jedno pitanje, „Natrag” ili „Potvrđujem”. Najjednostavnije.', 'rec'],
+      ['b', 'B. S posljedicom', 'Kaže što se događa ako netko laže, a tko je kliknuo krivo može odmah reći da ima manje od 18.', ''],
+      ['c', 'C. Kvačica', 'Donji list s kvačicom „Potvrđujem…”. Bez kvačice se ne može dalje. Najformalnije.', '']
+    ]],
+    ['t-all', '2. „Pogledaj sve odgovore” na Početnoj', 'Ispod prva dva odgovora. Gumb „Odgovori” ostaje jedini glavni gumb.', 'flow=drop', 'all', [
+      ['a', 'A. Poveznica', 'Podcrtana poveznica s brojem, kao dosad.', 'now'],
+      ['b', 'B. Gumb', 'Široki tihi gumb „Svi odgovori” s brojem desno.', ''],
+      ['c', 'C. Lica', 'Avatari onih čiji se odgovori još ne vide i „Pročitaj još 5 odgovora”. Pokazuje da iza stoje ljudi.', 'rec'],
+      ['d', 'D. Treća kartica', 'Mala kartica „+5” na kraju popisa odgovora, kao da se popis nastavlja.', '']
+    ]],
+    ['t-past', '3. Prethodni dani u Hubu', 'Odabran je petak, 30. listopada. Brojke su izmišljene. Pazi: naše načelo P1 kaže „brojke nikad u prvom planu”, zato preporučujem samo broj odgovora.', 'flow=drop&at=hub&day=2026-10-30', 'past', [
+      ['a', 'A. Odgovori', 'Lica i broj odgovora, isto kao za današnje pitanje.', 'rec'],
+      ['b', 'B. Odgovori i komentari', 'Isti red, uz broj komentara.', ''],
+      ['c', 'C. Tri broja', 'Odgovori, komentari i reakcije u tri pločice. Najviše podataka, ali najviše „brojanja”.', '']
+    ]],
+    ['t-act', '4. Aktivnost', 'Primjeri obavijesti: komentar, reakcije, zahtjev za praćenje, novi pratitelj, novo pitanje i objavljen prijedlog. Nepročitane imaju blagu pozadinu, bez točkica.', 'flow=drop&at=activity', 'act', [
+      ['a', 'A. Po danima', 'Jedan popis, grupiran na „Danas” i „Ovaj tjedan”.', 'rec'],
+      ['b', 'B. Zahtjevi na vrhu', 'Zahtjevi za praćenje u posebnoj kartici na vrhu, ostalo ispod.', ''],
+      ['c', 'C. Filtri', 'Gumbi Sve, Komentari, Reakcije, Praćenja i Daily Drop iznad popisa. Klikni ih.', '']
+    ]],
+    ['t-prow', '5. Red na profilu', 'Pretpostavio sam da misliš na red s brojevima (pratitelji, prati, odgovori). Ako si mislio na neki drugi red, javi.', 'flow=drop&at=profile', 'prow', [
+      ['a', 'A. Danas', 'Brojevi u rečenici.', 'now'],
+      ['b', 'B. Tri stupca', 'Broj iznad riječi, tanke crte između. Uredno, kao na većini mreža.', ''],
+      ['c', 'C. Oznake', 'Tri male oznake; prve dvije otvaraju popise.', ''],
+      ['d', 'D. Jedan tihi red', 'Brojevi i „član od” u jednom redu s točkama. Najmanje „brojanja”.', 'rec']
+    ]]
+  ];
+  const SUB = [['profile', 'Uredi profil'], ['account', 'Račun'], ['security', 'Sigurnost'], ['privacy', 'Privatnost'], ['blocked', 'Blokirani i utišani'], ['notifications', 'Obavijesti'], ['language', 'Jezik i regija'], ['status', 'Status računa'], ['help', 'Pomoć'], ['rules', 'Pravila zajednice'], ['terms', 'Uvjeti i privatnost'], ['about', 'O GrooveRiftu'], ['delete', 'Brisanje računa']];
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : tag === 'now' ? ' <span class="now">danas</span>' : ''}</h3>
+      <div class="phone"><iframe title="${title}: ${t}" loading="lazy" src="index.html?${base}${v ? `&${key}=${v}` : ''}"></iframe></div>
+      <p>${d}</p></div>`).join('')}</div></section>`).join('')
+    + `<section aria-labelledby="t-set"><h2 class="sec" id="t-set">6. Podstranice postavki</h2>
+      <p>Svaki red u Postavkama sad otvara svoju stranicu. Isti izgled za sve: kratke grupe redova. Prekidači se mogu paliti, a „Brisanje računa” prvo nudi kopiju podataka (D-066).</p>
+      <div class="grid">${SUB.map(([k, t]) => `<div class="opt"><h3>${t}</h3><div class="phone"><iframe title="Postavke: ${t}" loading="lazy" src="index.html?flow=drop&at=setsub&s=${k}"></iframe></div></div>`).join('')}</div></section>`;
+})();
+</script>
+</body>
+</html>
