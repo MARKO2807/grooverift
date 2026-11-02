@@ -323,11 +323,17 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 /* how it works */
 .screen-how { gap: var(--gr-space-4); }
 .how { display: flex; flex-direction: column; gap: var(--gr-space-2); }
+/* "Kako radi" fits one screen (owner, session 11): compact rows, smaller tiles. */
+.screen-how { gap: var(--gr-space-3); padding-bottom: var(--gr-space-3); }
+.screen-how .how-card { grid-template-columns: 44px 1fr; padding: 10px var(--gr-space-3); }
+.screen-how .how-vis { width: 44px; height: 44px; border-radius: 12px; }
+.screen-how .how-ic { width: 24px; height: 24px; }
+@media (max-height: 700px) { .screen-how h1 { font-size: 1.625rem; } .screen-how .how-card p { line-height: 1.4; } }
 .how-card { display: grid; grid-template-columns: 56px 1fr; gap: var(--gr-space-3); align-items: center; padding: var(--gr-space-3); border-radius: var(--gr-radius-sheet); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); animation: gr-rise 520ms var(--gr-motion-easing-enter) both; animation-delay: calc(var(--d) * 110ms); }
 .how-card p { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
 .how-t { font: var(--gr-type-title-3); font-size: var(--gr-font-size-md); display: flex; align-items: center; gap: var(--gr-space-2); flex-wrap: wrap; margin-bottom: 2px; }
-.how-main { grid-template-columns: 1fr; gap: var(--gr-space-2); border-color: #FF586B55; background: linear-gradient(160deg, #FF586B1F, #FFCB690D 55%, transparent 80%), var(--gr-color-bg-surface); }
-.how-main .how-t { font-size: var(--gr-font-size-xl); }
+.how-main { border-color: #FF586B55; background: linear-gradient(160deg, #FF586B1F, #FFCB690D 55%, transparent 80%), var(--gr-color-bg-surface); }
+.how-main .hv-name { font-size: var(--gr-font-size-lg); }
 .how-vis { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(160deg, #FF586B14, #FFCB690A), var(--gr-color-bg-canvas); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); display: grid; place-items: center; }
 .how-ic { width: 30px; height: 30px; color: var(--gr-color-highlight-text); }
 .pi { flex: none; }

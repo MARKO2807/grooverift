@@ -107,7 +107,8 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="back"]'); expect(scr() === 'dna' && $('[data-g="Jazz"]').getAttribute('aria-pressed') === 'true', 'back keeps picks');
   await click('[data-a="next"]');
   await click('input[name="dnaVis"][value="followers"]'); await click('[data-a="next"]'); expect(scr() === 'how', 'how');
-  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm') && $$('.how-vis svg.pi').length === 3, 'four how cards, library icons, wordmark');
+  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm') && $$('.how-vis svg.pi').length === 4, 'four how cards, library icons, wordmark');
+  expect(!$('main canvas.current') && fits(), 'how: no current, fits the screen without scrolling (session 11)');
   await click('[data-a="next"]'); expect(scr() === 'reminder', 'reminder');
   expect($('.notif') && $('.foot-row.equal'), 'notification preview and equal buttons');
   await click('[data-a="remind-on"]'); expect($('.perm'), 'perm dialog'); await click('[data-a="perm-block"]'); expect($('.notice'), 'denied notice');
@@ -171,7 +172,7 @@ const VARIANTS = `(async () => {${HELPERS}
 
 const runs = [
   { name: 'flow 360x640', url: `${base}`, test: FLOW },
-  { name: 'flow 320x568', url: `${base}`, test: FLOW.replace("expect(fits(), 'visibility fits the 360x640 screen without scrolling');", '').replace("expect(fits(), 'dnavis fits the 360x640 screen without scrolling');", '').replace("expect(document.documentElement.scrollHeight <= innerHeight + 1, 'invite fits the screen without scrolling');", ''), w: 320, h: 568 },
+  { name: 'flow 320x568', url: `${base}`, test: FLOW.replace("expect(fits(), 'visibility fits the 360x640 screen without scrolling');", '').replace("expect(fits(), 'dnavis fits the 360x640 screen without scrolling');", '').replace("expect(document.documentElement.scrollHeight <= innerHeight + 1, 'invite fits the screen without scrolling');", '').replace("expect(!$('main canvas.current') && fits(), 'how: no current, fits the screen without scrolling (session 11)');", "expect(!$('main canvas.current'), 'how: no current');"), w: 320, h: 568 },
   { name: 'flow reduced motion (OS)', url: `${base}`, test: FLOW, reduce: true },
   { name: 'flow calm setting', url: `${base}?calm=1`, test: FLOW.replace("expect(document.documentElement.dataset.motion === 'reduced', 'motion reduced after setting');", '') },
   { name: 'catalog failure', url: `${base}?at=dna&catalog=fail`, test: CATALOG_FAIL },

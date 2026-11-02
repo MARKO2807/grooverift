@@ -448,17 +448,12 @@
     return `<h1>Kako ${wm()} radi</h1>
       <ol class="how">
         <li class="how-card how-main" style="--d:0">
-          <div class="how-vis how-vis-drop" aria-hidden="true">
-            <span class="hv-name">Daily Drop</span>${current('how-drop', 'sm')}
-            <span class="hv-q">Koja pjesma je najbolje otvaranje albuma?</span>
-            <span class="stack">${['petra.zvuk', 'tinkovac', 'mia_vinyl'].map(h => avatar(h, D.members[h].who, 'xxs')).join('')}</span>
-          </div>
-          <h2 class="how-t">Daily Drop</h2>
-          <p>U 01:00 po našem vremenu stiže jedno pitanje o glazbi, isto za sve. Odgovori ili samo čitaj, stara pitanja ostaju otvorena.</p>
+          <div class="how-vis" aria-hidden="true">${pic('calendar-dots', 'how-ic')}</div>
+          <div><h2 class="how-t"><span class="hv-name">Daily Drop</span></h2><p>Svaki dan u 01:00 jedno glazbeno pitanje, isto za sve.</p></div>
         </li>
         <li class="how-card" style="--d:1">
           <div class="how-vis" aria-hidden="true">${pic('chart-bar-horizontal', 'how-ic')}</div>
-          <div><h2 class="how-t" lang="en">Weekly Poll</h2><p>Jednom tjedno anketa za cijelu zajednicu. Rezultate vidiš kad glasaš.</p></div>
+          <div><h2 class="how-t" lang="en">Weekly Poll</h2><p>Tjedna anketa za sve. Rezultate vidiš kad glasaš.</p></div>
         </li>
         <li class="how-card" style="--d:2">
           <div class="how-vis" aria-hidden="true">${pic('lightbulb-filament', 'how-ic')}</div>
@@ -466,7 +461,7 @@
         </li>
         <li class="how-card" style="--d:3">
           <div class="how-vis" aria-hidden="true">${pic('users-three', 'how-ic')}</div>
-          <div><h2 class="how-t">Ljudi po ukusu</h2><p>Music DNA pokazuje s kim dijeliš ukus i s kim možeš otkriti nešto novo. Uvijek riječima, bez postotaka.</p></div>
+          <div><h2 class="how-t">Ljudi po ukusu</h2><p>Music DNA pokazuje s kim dijeliš ukus. Bez postotaka.</p></div>
         </li>
       </ol>`;
   }
@@ -616,7 +611,6 @@
     done: () => ({
       kind: 'bare',
       body: `<div class="hero hero-done">
-        ${current('done', 'lg', 'hero-current')}
         <h1 class="h-hero">Spremno.</h1>
         <p class="lead">Današnje pitanje te čeka.</p>
         <figure class="dna-card">${dnaCanvas('done', 200)}
