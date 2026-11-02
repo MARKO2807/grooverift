@@ -472,8 +472,9 @@
   }
 
   /* Invite layout (owner, session 11): the whole invite fits the viewport with no scrolling, and the current is
-     smaller. ?inv=a|b|c|d picks one of the layouts compared in invite-layout.html (PENDING owner choice). */
-  const INV_AT = ['a', 'b', 'c', 'd'].includes(P.get('inv')) ? P.get('inv') : 'a';
+     smaller. The owner chose B (D-059): a 56 px current under the tagline. ?inv=a|c|d still shows the other layouts
+     compared in invite-layout.html. */
+  const INV_AT = ['a', 'b', 'c', 'd'].includes(P.get('inv')) ? P.get('inv') : 'b';
   const invCur = (h, cls) => `<canvas class="ic inv-cur${cls ? ' ' + cls : ''}" data-v="branch" data-key="invite" data-h="${h}" aria-hidden="true"></canvas>`;
 
   const S = {

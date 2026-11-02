@@ -51,14 +51,20 @@ _Session 11, 2026-11-02. Next session: read `docs/STATUS.md`, then this file._
     - `invite-current.js` (`GR_INVITE`) holds all four variants, chosen with `data-v`. The app uses `<canvas class="ic" data-v="branch" data-key="invite">`.
     - Height 112 px. Charges travel in for 760 ms, then a branching tree flashes twice (0–90 ms, a gap, then 130–330 ms).
     - `app.js` `afterRender()` calls `INV.scan`, and navigation calls `INV.reset()`.
-  - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived) and `pulse/invite-current.html`. Both mark the choice as "odabrano".
+  - Review pages: `pulse/wordmark.html` (round 2 at the top, earlier rounds archived), `pulse/invite-current.html` and `pulse/invite-layout.html`. Both mark the choice as "odabrano".
   - The owner did not take the recommendations (N3, I1); the choices were N2 and I4.
+  - **D-059 (same session):**
+    - The invite fits one screen. The current is `data-h="56"` under the tagline: layout B, `INV_AT` in `app.js`; `?inv=a|c|d` shows the rejected layouts.
+    - Branch packets are taller zigzags, and the halos are smaller.
+    - Spacing uses `.screen-invite`, with a `max-height: 600px` rule.
+    - In an iframe, `app.js` posts `{ gr: "fit", over }` to the parent; `invite-layout.html` uses it.
+    - In standalone mode at 320×568 the two-line prototype note leaves only about 2 px to spare. Keep that in mind if the invite grows.
   - Still open from D-058: should the Daily Drop current also get the taller, spiked look? It currently keeps the low one. Ask during the states round if relevant.
 - **Session 10: round 3 review (D-057).** Genre colours stay; the one-card visibility stays; Phosphor light is the icon library (OQ-23 resolved, install approval in 3.6). The wordmark bolt was reopened and new invite-current designs were requested; both were answered in session 11 (D-058).
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 17/17 (session 11).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 19/19 (session 11).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks

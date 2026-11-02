@@ -270,7 +270,15 @@ The owner's D-057 requests, answered with clickable options first.
 - The engine reuses the helpers and `GR_MOTION` from `current.js`. A tap triggers a meeting, and "Ponovi dolazak" replays the arrival. Under reduced motion each variant draws one still frame that already shows the joined state.
 - The owner chose **I4**. The invite screen now uses `<canvas class="ic" data-v="branch" data-key="invite">`. `app.js` calls `GR_INVITE.scan()` after each render and `GR_INVITE.reset()` on navigation, like the other motifs, so the arrival plays once per visit. The engine also drops canvases that were removed from the page. The other three variants stay in the file as the decision record.
 
-**Verification:** `pulse-smoke.mjs` passes 17/17 (new runs: wordmark round 2, the invite page, the invite page under reduced motion; the flow now checks the I4 canvas, the three sparks and that the flicker follows the motion setting). `smoke.mjs` passes 3/3. Real-time CDP frames at 390 px confirm the invite discharge and the top-bar bolt, with no JS errors.
+**Invite on one screen (D-059, same session).**
+- The owner reviewed I4 in the app. The 112 px canvas took almost a quarter of the screen. The impulses should be taller while they travel, the collision halo smaller, and the whole invite should fit the viewport.
+- The changes:
+  - `invite-current.js` takes a per-canvas height (`data-h`). Branch packets are sharp zigzags (17 points, alternating signs, up to 0.3 h), and the halos are smaller.
+  - `style.css` has `.screen-invite` spacing and a `max-height: 600px` rule.
+  - `app.js` has `INV_AT` (`?inv=a|b|c|d`). In an iframe it posts `{ gr: "fit", over }` to the parent page after each render.
+- `invite-layout.html` shows four layouts in phone frames at three sizes, with a fit check under each. The owner chose **B**: 56 px under the tagline, now the default.
+
+**Verification:** `pulse-smoke.mjs` passes 19/19 after D-059 (17/17 after D-058; new runs: wordmark round 2, the invite page, the invite page under reduced motion; the flow now checks the I4 canvas, the three sparks and that the flicker follows the motion setting; after D-059 the flow also checks that the invite fits, and two runs check all four layouts at 360×640 and 320×568). `smoke.mjs` passes 3/3. Real-time CDP frames at 390 px confirm the invite discharge and the top-bar bolt, with no JS errors.
 
 ### Verification (session 9)
 
