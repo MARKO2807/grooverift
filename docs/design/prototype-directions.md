@@ -354,6 +354,14 @@ Recorded in `DECISIONS.md` (D-070 to D-073) and `HANDOFF.md`; sketches `pulse/ro
 - Owner choices (session 15, D-075 CONFIRMED): the recommendations everywhere except mute, which asks first (`mute=b`: a short "Utišati @ime?" dialog, then the toast with Undo; the same when mute is offered at the end of a report). Owner addition: a dashed "Utišano" chip by the handle on a muted member's profile, visible to the viewer only (`.rel-chip.is-muted`, screen readers hear "Utišano, vidiš samo ti"). Defaults in `app.js`: `rep=a`, `blk=a`, `mute=b`, `sor=a`, `rst=a`.
 - Verification: `pulse-smoke.mjs` 82/82 (18 round 12b runs), `zoom-check.mjs` 75/75 at 200 % (15 round 12b screens), `smoke.mjs` 3/3.
 
+### Round 12c: signed-out visitors and sign-in (2026-11-03, session 15; decisions PENDING, D-076)
+
+- Scope: PUB-01 landing, PUB-02 sign-in states (wrong password, lockout, return to shared content), PUB-03 second factor, PUB-04 password reset (request, sent, new password, expired link), PUB-06 email verification, PUB-07 the Daily Drop share view, PUB-08 the minimal public profile, SYS-01 for a visitor, and the invite that cannot be used (J1 E1). Sketch `pulse/round12c.html`: five choice sections and a "Napravljeno bez izbora" part (19 frames). Note: the STATUS list for this group used the IA numbers loosely; the IA numbers above are the right ones.
+- Rules applied without a choice (D-022, IA8, U-05, U-08, R-08, Master Prompt §3): a visitor sees the question and the invitation only, with no answers, names or counts, and an answer link shows the same view; the public profile is name, handle, avatar and bio with no hint of hidden parts; private, blocked, unknown and unpublished all show one "nije dostupno" page; no waitlist and no open registration; reset, verification and invite links are single-use and short-lived, and the "cannot be used" page never says why; the reset "sent" page reads the same whether the account exists; a new password signs out other devices; the DSA Art. 16 notice form is linked from every signed-out page.
+- Prototype notes: screens use `kind: 'pub'` (wordmark, Alfa tag, language button, no tabs). `st.pubRet` is where the visitor came from and `st.ret` is applied by `signedIn()`. Option a of the shell shrinks the top-bar button at 200 % text and hides the Alfa tag there (`:has`), which is one argument for option b.
+- Options for the owner (D-076): landing quiet, with the current or with today's question; sign-in in the top bar or the foot; share view with or without an introduction; after a new password, signed in or back to sign-in; second factor with or without "remember this device".
+- Verification: `pulse-smoke.mjs` 103/103 (21 round 12c runs), `zoom-check.mjs` 91/91 at 200 % (16 round 12c screens), `smoke.mjs` 3/3.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

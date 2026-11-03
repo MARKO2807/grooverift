@@ -1521,6 +1521,113 @@
   const restrictBar = () => st.restricted && RST_AT === 'b' && !['restricted', 'suspended', 'signin', 'pending'].includes(st.screen) ? `<p class="net-bar rst-bar" role="status">${ic('lock', 'sm')}<span>Objavljivanje je ograničeno do ${dayMonth(st.restricted.until)}.</span><button class="link" data-a="open-notice" data-n="${st.restricted.id}" data-k="bar-why">Zašto?</button></p>` : '';
   const restrictHint = () => `<p class="net-hint">${ic('lock', 'sm')}<span>Objavljivanje je ograničeno do ${dayMonth(st.restricted.until)}. <button class="link" data-a="open-notice" data-n="${st.restricted.id}" data-k="com-why">Zašto?</button></span></p>`;
 
+  /* ---------- Round 12c (session 15): signed-out visitors and sign-in. PUB-01 landing, PUB-03 second factor,
+     PUB-04 password reset, PUB-06 email verification, PUB-07 the Daily Drop share view (D-022), PUB-08 the minimal
+     public profile, SYS-01 for everything a visitor may not see (IA8), the invite that cannot be used (J1 E1) and the
+     sign-in lockout. Options compared in round12c.html. All addresses and codes are fictional. ---------- */
+  const LAND_AT = pick('land', ['a', 'b', 'c'], 'a');     // landing: a quiet, b with the invite current, c with today's question
+  const PUB_AT = pick('pub', ['a', 'b'], 'b');            // signed-out shell: a "Prijavi se" in the top bar, b a sticky foot
+  const SHARE_AT = pick('share', ['a', 'b'], 'a');        // PUB-07: a the question only, b plus a short introduction
+  const RESET_AT = pick('reset', ['a', 'b'], 'b');        // after a new password: a signed in at once, b back to sign-in
+  const TFA_AT = pick('tfa', ['a', 'b'], 'a');            // PUB-03: a code only, b plus "remember this device"
+  const RESET_MIN = 30;                                   // minutes a reset link stays valid (RECOMMENDED; R-08: single-use, expiring)
+  const inviteLine = () => `<p class="fine">Nemaš račun? ${wm()} je zasad samo uz pozivnicu.</p>`;
+  const pubTop = () => PUB_AT === 'a' ? '<button class="btn btn-secondary btn-sm top-signin" data-a="pub-signin" data-k="top-signin">Prijavi se</button>' : '';
+  const pubFoot = () => PUB_AT === 'b' ? '<button class="btn btn-primary btn-block" data-a="pub-signin" data-k="pub-signin">Prijavi se</button>' : '';
+  /* Legal links (PUB-10) and the DSA Art. 16 notice form (PUB-11), which must be reachable without an account. */
+  const legalRow = () => `<p class="pub-legal"><button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="l-terms">Uvjeti</button><button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="l-priv">Privatnost</button><button class="link" data-a="toast" data-msg="Obrazac za prijavu nezakonitog sadržaja (PUB-11, DSA čl. 16) nije dio skice. Dostupan je i bez računa." data-k="l-notice">Prijavi sadržaj</button></p>`;
+  const howRows = () => `<ul class="how-rows">
+      <li>${ic('pulse')}<span><b>Daily Drop.</b> Svaki dan jedno pitanje o glazbi, za sve.</span></li>
+      <li>${pic('lightning')}<span><b>Music DNA.</b> Spirala tvog ukusa, iz žanrova i izvođača koje biraš.</span></li>
+      <li>${pic('users-three')}<span><b>Ljudi.</b> Rasprave i veze s ljudima drugačijeg ukusa.</span></li></ul>`;
+  function landingBody() {
+    const teaser = LAND_AT === 'c' ? `<section class="pub-dd-card" aria-labelledby="h-pubq"><p class="dd-eyebrow"><span class="dd-name dd-name-sm">Daily Drop</span><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p><h2 id="h-pubq" class="dd-q dd-q-sm">${esc(D.drop.question)}</h2><p class="meta">Odgovore vide članovi.</p></section>` : '';
+    return `<div class="hero hero-land">
+        <h1 class="h-hero">Svaki dan jedno pitanje za sve.</h1>
+        <p class="tagline" lang="en">Where musical worlds collide.</p>
+        ${LAND_AT === 'b' ? invCur(56, 'inv-wide') : ''}
+        <p class="lead">Otkrij svoj Music DNA, raspravljaj o glazbi i poveži se s ljudima različitih ukusa.</p>
+      </div>
+      ${teaser}
+      ${howRows()}
+      <div class="info info-stack">
+        <p>${ic('lock')}<span><b>Samo uz pozivnicu.</b> ${wm(true)} je u zatvorenoj alfi: članovi pozivaju ljude koje znaju. Nema liste čekanja. <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila stranica o alfi (PUB-12)." data-k="alpha-more">Više o alfi</button></span></p>
+        <p>${ic('send')}<span>Imaš pozivnicu? Otvori poveznicu iz e-pošte s pozivnicom.</span></p>
+      </div>
+      ${PUB_AT === 'a' ? '<button class="btn btn-primary btn-block" data-a="pub-signin" data-k="land-signin">Prijavi se</button>' : ''}
+      ${legalRow()}`;
+  }
+  /* PUB-07 (D-022, U-08): the question and the invitation to join. No answers, names or counts; an answer link shows
+     the very same view. The current stays, because the Daily Drop question is a motif placement (D-042). */
+  function shareBody() {
+    const day = st.shareDay || D.drop.date, q = st.shareQ || D.drop.question;
+    const intro = SHARE_AT === 'b' ? `<section class="pub-intro" aria-labelledby="h-pubwhat"><h2 id="h-pubwhat" class="section-title">Što je ${wm()}?</h2><p class="lead">Zajednica ljubitelja glazbe: svaki dan jedno pitanje, Music DNA i ljudi različitih ukusa.</p>${howRows()}</section>` : '';
+    return `<div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${day}">${longDate(day)}</time></p>${current('dd-share', 'md', 'dd-current')}</div>
+      <h1 class="dd-q pub-q">${esc(q)}</h1>
+      <p class="lead pub-lead">Odgovore članova vidiš kad se prijaviš.</p>
+      ${intro}
+      <div class="pub-join">${inviteLine()}${SHARE_AT === 'a' ? `<button class="link" data-a="to-landing" data-k="what">Što je ${wm()}?</button>` : ''}</div>
+      ${legalRow()}`;
+  }
+  /* PUB-08: username, display name, avatar and bio of a public profile. Nothing else, and no hint of what is hidden. */
+  function pubProfileBody(h) {
+    const m = D.members[h];
+    return `<div class="pm-head">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>
+        <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}</p></div></div>
+      ${m.bio ? `<p class="pf-bio">${esc(m.bio)}</p>` : ''}
+      <p class="pub-more">${ic('lock', 'sm')}<span>Kao član vidiš više, ovisno o postavkama te osobe.</span></p>
+      ${inviteLine()}${legalRow()}
+      <p class="meta">Izmišljeni podaci. Odjavljeni posjetitelj vidi samo ime, @ime, sliku i opis javnog profila (PUB-08). Privatni i nepostojeći profil izgledaju isto: „nije dostupno” (IA8).</p>`;
+  }
+  const naBody = () => `<div class="sys-na"><h1>Ova stranica nije dostupna</h1><p class="lead lead-sm">Možda je poveznica pogrešna ili sadržaj više ne postoji.</p><button class="btn btn-secondary" data-a="to-landing" data-k="na-home">Na početnu</button></div>`;
+  const pwEye = () => `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>`;
+  /* PUB-03: the second factor after a correct password. A recovery code replaces the app code (Master Prompt §3). */
+  function tfaBody() {
+    const rec = st.tfaRec;
+    return `<div class="center-block"><span class="step-ic" aria-hidden="true">${pic('shield-check')}</span><h1>Još jedan korak</h1>
+        <p class="lead">${rec ? 'Upiši jedan od kodova za oporavak. Svaki vrijedi jednom.' : 'Upiši kod iz aplikacije za autentifikaciju.'}</p></div>
+      <div class="tfa-field">${rec
+        ? field({ id: 'rcode', label: 'Kod za oporavak', attrs: 'autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="11"' })
+        : field({ id: 'code', label: 'Kod (6 znamenki)', attrs: 'inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6"' })}</div>
+      ${TFA_AT === 'b' && !rec ? '<label class="age-check tfa-rem"><input type="checkbox" id="f-tfarem" data-k="f-tfarem"><span>Zapamti ovaj uređaj 30 dana</span></label>' : ''}
+      <button class="link signin-forgot" data-a="tfa-toggle" data-k="tfa-toggle">${rec ? 'Natrag na kod iz aplikacije' : 'Nemaš pristup aplikaciji? Upotrijebi kod za oporavak'}</button>
+      <p class="meta">Skica: prolazi svaki kod osim 000000.</p>`;
+  }
+  /* PUB-04: the request, the neutral "sent" page (the same whether the account exists or not) and the new password. */
+  const resetBody = () => `<h1>Nova lozinka</h1><p class="lead">Upiši adresu e-pošte svog računa. Poslat ćemo ti poveznicu za novu lozinku.</p>
+      ${field({ id: 'remail', label: 'E-pošta', type: 'email', value: st.remail || '', attrs: 'autocomplete="email" inputmode="email"' })}
+      <button class="link signin-forgot" data-a="to-signin2" data-k="back-signin">Natrag na prijavu</button>`;
+  const resetSentBody = () => `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic('send')}</span><h1>Provjeri e-poštu</h1>
+      <p class="lead">Ako račun s adresom <b>${esc(st.remail || D.email)}</b> postoji, poslali smo poveznicu. Vrijedi ${RESET_MIN} minuta i koristi se jednom.</p>
+      <p class="fine">Nije stigla? Pogledaj neželjenu poštu. <button class="link" data-a="reset-again" data-k="reset-again">Pošalji ponovno</button></p></div>
+      <p class="meta">Poruka je ista bez obzira postoji li račun, da nitko ne može provjeravati tuđe adrese.</p>`;
+  const resetNewBody = () => `<h1>Postavi novu lozinku</h1>
+      ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: 'pw-need', attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"', after: pwEye() })}
+      <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
+      <p class="help ret-line">${ic('info', 'sm')}<span>Nakon promjene ostali uređaji bit će odjavljeni.</span></p>`;
+  function resetSave() {
+    st.err = {};
+    const miss = pwMissing(st.pw);
+    if (!st.pw) st.err.pw = 'Upiši novu lozinku.';
+    else if (miss.length) st.err.pw = `Lozinci još treba: ${miss.map(r => r[3]).join(', ')}.`;
+    else if (PW_BREACHED.has(st.pw)) st.err.pw = 'Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.';
+    if (st.err.pw) { render(); return focusSel('#f-pw'); }
+    st.pw = ''; st.showPw = false;
+    if (RESET_AT === 'a') { signedIn(); return toast('Lozinka je promijenjena.'); }
+    go('signin', { reset: true }); toast('Lozinka je promijenjena. Prijavi se novom lozinkom.');
+  }
+  /* One neutral page for a link that cannot be used (U-05, R-08). The invite version never says why (J1 E1). */
+  const LINKBAD = {
+    reset: { t: 'Ova poveznica više ne vrijedi', d: `Poveznice za novu lozinku vrijede ${RESET_MIN} minuta i koriste se jednom.`, btn: 'Zatraži novu', a: 'to-reset' },
+    verify: { t: 'Ova poveznica više ne vrijedi', d: 'Poveznice za potvrdu adrese vrijede 24 sata. Novu možeš poslati iz postavki računa.', btn: 'Na prijavu', a: 'to-signin2' },
+    invite: { t: 'Pozivnica se ne može iskoristiti', d: 'Zatraži novu od osobe koja te pozvala.', btn: 'Na početnu', a: 'to-landing' }
+  };
+  const linkKind = () => LINKBAD[st.linkKind] ? st.linkKind : 'reset';
+  const linkBadBody = () => { const k = LINKBAD[linkKind()]; return `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic('alert')}</span><h1>${k.t}</h1><p class="lead">${k.d}</p></div>${linkKind() === 'invite' ? '<p class="meta">Ista stranica za nepoznatu, iskorištenu, isteklu i povučenu pozivnicu, bez razloga (J1 E1): iskorištena pozivnica u tuđim rukama ne smije potvrditi da račun postoji.</p>' : ''}`; };
+  const verifiedBody = () => `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic('check')}</span><h1>Adresa je potvrđena</h1>
+      <p class="lead"><b>${esc(D.email)}</b> je sad adresa tvog računa.</p></div>
+      <p class="meta">Prihvaćanje pozivnice već potvrđuje adresu (JO6), pa se ovaj ekran vidi uglavnom nakon promjene e-pošte (D-072).</p>`;
+
   const S = {
     invite: () => ({
       kind: 'bare',
@@ -1757,17 +1864,19 @@
     signin: () => ({
       kind: 'onb', noProgress: true,
       body: `<h1>Prijava</h1>
+        ${st.ret ? `<p class="help ret-line">${ic('info', 'sm')}<span>Nakon prijave vraćamo te na ${st.ret.screen === 'answer' ? 'odgovor' : st.ret.screen === 'member' ? 'profil' : 'pitanje'}.</span></p>` : ''}
+        ${st.lock ? `<div class="notice" role="alert" id="err-lock" tabindex="-1">${ic('alert')}<p>Previše pokušaja prijave. Pričekaj 15 minuta ili postavi novu lozinku.</p></div>` : ''}
         ${st.err.signin ? `<div class="notice" role="alert" id="err-signin" tabindex="-1">${ic('alert')}<p>E-pošta ili lozinka nisu točni. Provjeri pa pokušaj ponovno.</p></div>` : ''}
         ${field({ id: 'email', label: 'E-pošta', type: 'email', value: D.email, attrs: 'autocomplete="email"' })}
         ${field({ id: 'pwin', label: 'Lozinka', type: st.showPw ? 'text' : 'password', value: st.pwIn || '',
           attrs: 'autocomplete="current-password" autocapitalize="none" spellcheck="false"',
           after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
-        <button class="link signin-forgot" data-a="toast" data-msg="Ponovno postavljanje lozinke (PUB-04): poveznica stiže e-poštom i kratko vrijedi." data-k="forgot">Zaboravljena lozinka?</button>
+        <button class="link signin-forgot" data-a="to-reset" data-k="forgot">Zaboravljena lozinka?</button>
         <p class="or"><span>ili</span></p>
-        <button class="btn btn-secondary btn-block" data-a="signin-ok" data-k="google">Nastavi s Google računom</button>
-        <p class="fine">Nemaš račun? ${wm()} je zasad samo uz pozivnicu.</p>
+        <button class="btn btn-secondary btn-block" data-a="signin-ok" data-k="google"${st.lock ? ' disabled' : ''}>Nastavi s Google računom</button>
+        ${inviteLine()}
         <p class="meta">Skica: prolazi bilo koja lozinka, a „kriva” pokazuje grešku.</p>`,
-      foot: '<button class="btn btn-primary btn-block" data-a="signin" data-k="signin">Prijavi se</button>'
+      foot: `<button class="btn btn-primary btn-block" data-a="signin" data-k="signin"${st.lock ? ' disabled' : ''}>Prijavi se</button>`
     }),
     /* Sign-in during the 30-day grace period (SET-09). The two choices carry equal weight. */
     pending: () => ({
@@ -1816,7 +1925,18 @@
         <p class="lead">Do tada ne možeš koristiti ${wm()}. Profil i odgovori skriveni su drugima. Ovdje je obrazloženje i žalba.</p></div>
         ${noticeBody(D.suspension.id, true)}${st.susAppeal ? `<section class="section" aria-labelledby="h-sapp"><h2 id="h-sapp" class="section-title">Žalba</h2>${appealBody(D.suspension.id)}</section>` : ''}`,
       foot: '<button class="btn btn-secondary btn-block" data-a="to-signin" data-k="sus-out">Odjavi se</button>'
-    })
+    }),
+    /* Round 12c: signed-out screens (kind "pub": wordmark, no tabs) and the sign-in side screens. */
+    landing: () => ({ kind: 'pub', topActions: pubTop(), body: landingBody(), foot: pubFoot() }),
+    share: () => ({ kind: 'pub', topActions: pubTop(), body: shareBody(), foot: pubFoot() }),
+    pubprofile: () => { const m = D.members[st.who]; return { kind: 'pub', topActions: pubTop(), body: m && m.vis !== 'private' ? pubProfileBody(st.who) : naBody(), foot: pubFoot() }; },
+    na: () => ({ kind: 'pub', topActions: pubTop(), body: naBody(), foot: pubFoot() }),
+    twofa: () => ({ kind: 'onb', noProgress: true, back: true, body: tfaBody(), foot: '<button class="btn btn-primary btn-block" data-a="tfa-ok" data-k="tfa-ok">Potvrdi</button>' }),
+    reset: () => ({ kind: 'onb', noProgress: true, back: true, body: resetBody(), foot: '<button class="btn btn-primary btn-block" data-a="reset-send" data-k="reset-send">Pošalji poveznicu</button>' }),
+    resetsent: () => ({ kind: 'onb', noProgress: true, body: resetSentBody(), foot: '<button class="btn btn-secondary btn-block" data-a="to-signin2" data-k="sent-signin">Natrag na prijavu</button>' }),
+    resetnew: () => ({ kind: 'onb', noProgress: true, body: resetNewBody(), foot: '<button class="btn btn-primary btn-block" data-a="reset-save" data-k="reset-save">Spremi lozinku</button>' }),
+    linkbad: () => { const k = LINKBAD[linkKind()]; return { kind: 'onb', noProgress: true, body: linkBadBody(), foot: `<button class="btn btn-primary btn-block" data-a="${k.a}" data-k="lb-go">${k.btn}</button>` }; },
+    verified: () => ({ kind: 'onb', noProgress: true, body: verifiedBody(), foot: '<button class="btn btn-primary btn-block" data-a="to-signin2" data-k="ver-go">Nastavi na prijavu</button>' })
   };
 
   /* ---------- shell ---------- */
@@ -1827,7 +1947,7 @@
     if (s.topBlank) mid = '<span class="top-title"></span>';
     else if (s.topTitle) mid = s.topH1 ? `<h1 class="top-title">${esc(s.topTitle)}</h1>` : `<span class="top-title">${esc(s.topTitle)}</span>`;
     else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>`;
-    const onb = s.kind === 'onb' || s.kind === 'bare';
+    const onb = s.kind === 'onb' || s.kind === 'bare' || s.kind === 'pub';
     return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}${netChip()}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
   }
   function tabbar(active) {
@@ -2023,6 +2143,8 @@
     if (ACCT === 'suspended') { st.suspended = true; return go('suspended', { reset: true }); }
     if (ACCT === 'restricted') { st.restricted = D.restriction; return go('restricted', { reset: true }); }
     st.pwBanner = P.get('pw') === 'breached';
+    /* Round 12c: a visitor who signed in from a share link goes back to that question, answer or profile (J3). */
+    if (st.ret) { const r = st.ret; st.ret = null; st.hist = []; st.screen = 'home'; if (r.ctx) st.ctx = r.ctx; return go(r.screen, r); }
     go('home', { reset: true });
   }
   function signOut() {
@@ -2281,9 +2403,29 @@
         if (!st.pwIn) st.err.pwin = 'Upiši lozinku.';
         else if (st.pwIn === 'kriva') st.err.signin = true;
         if (Object.keys(st.err).length) { render(); return focusSel(st.err.signin ? '#err-signin' : '#f-pwin'); }
+        if (st.tfaNeeded) return go('twofa');
         return signedIn();
       }
-      case 'signin-ok': return signedIn();
+      case 'signin-ok': if (st.tfaNeeded) return go('twofa'); return signedIn();
+      /* Round 12c: signed-out screens, the second factor and the password reset. */
+      case 'pub-signin': st.ret = st.pubRet || null; return go('signin');
+      case 'to-landing': st.ret = null; return go('landing', { reset: true });
+      case 'to-signin2': st.pwIn = ''; st.showPw = false; return go('signin', { reset: true });
+      case 'to-reset': return go('reset');
+      case 'reset-send': { st.err = {}; const v = (st.remail || '').trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { st.err.remail = 'Upiši adresu e-pošte.'; render(); return focusSel('#f-remail'); } st.remail = v; return go('resetsent'); }
+      case 'reset-again': return toast('Poslano ponovno. Sljedeće slanje moguće je za minutu.');
+      case 'reset-save': return resetSave();
+      case 'tfa-toggle': st.tfaRec = !st.tfaRec; st.err = {}; render(); return focusSel(st.tfaRec ? '#f-rcode' : '#f-code');
+      case 'tfa-ok': {
+        st.err = {};
+        const id = st.tfaRec ? 'rcode' : 'code', el = root.querySelector('#f-' + id), v = el ? el.value.trim() : '';
+        if (st.tfaRec ? v.length < 8 : !/^\d{6}$/.test(v)) st.err[id] = st.tfaRec ? 'Upiši cijeli kod za oporavak.' : 'Upiši 6 znamenki.';
+        else if (v === '000000') st.err[id] = 'Kod nije točan. Provjeri vrijeme na telefonu i pokušaj ponovno.';
+        if (st.err[id]) { render(); return focusSel('#f-' + id); }
+        const rec = st.tfaRec; st.tfaNeeded = false; st.tfaRec = false; signedIn();
+        if (rec) toast('Kod za oporavak je iskorišten. Preostalih kodova: 7.');
+        return;
+      }
       case 'to-signin': signOut(); return;
       case 'pend-restore': st.acctPending = false; go('home', { reset: true }); return toast('Račun je vraćen. Brisanje je otkazano.');
       case 'pw-change': st.pwBanner = false; st.pw = ''; return go('setsub', { sub: 'password' });
@@ -2411,7 +2553,8 @@
       case 'f-appeal': st.appealText = t.value; return clearErr('appeal', t);
       case 'f-com': st.commentDraft = t.value; return clearErr('com', t);
       case 'f-pwin': st.pwIn = t.value; clearErr('pwin', t); return;
-      case 'f-pwold': case 'f-delpw': case 'f-otp': return clearErr(t.id.slice(2), t);
+      case 'f-pwold': case 'f-delpw': case 'f-otp': case 'f-code': case 'f-rcode': return clearErr(t.id.slice(2), t);
+      case 'f-remail': st.remail = t.value; return clearErr('remail', t);
       case 'f-uname2': { st.newUser = t.value.trim(); clearErr('uname2', t); const s2 = root.querySelector('#uname2-status'); if (s2) s2.innerHTML = u2Status(); return; }
       case 'f-deltype': { st.delType = t.value; const ok = root.querySelector('.dialog [data-k="ov-ok"]'); if (ok) ok.disabled = t.value.trim() !== 'OBRIŠI'; return; }
     }
@@ -2463,8 +2606,24 @@
     st.screen = AT;
     const from = k < 3 ? 0 : 3;
     st.hist = AT === 'username' || AT === 'done' ? [] : ORDER.slice(from, k).map(s => ({ screen: s, y: 0 }));
+  } else if (AT && !START_DROP && ['landing', 'share', 'pubprofile', 'na', 'twofa', 'reset', 'resetsent', 'resetnew', 'linkbad', 'verified'].includes(AT)) {
+    /* Round 12c: signed-out screens and the sign-in side screens. */
+    st.screen = AT;
+    if (AT === 'share') {
+      const pd = P.get('day') && D.pastDrops.find(x => x.date === P.get('day'));
+      if (pd) { st.shareDay = pd.date; st.shareQ = pd.q; }
+      st.pubRet = P.get('a') ? { screen: 'answer', ctx: 'a3' } : { screen: 'drop' };
+    }
+    if (AT === 'pubprofile') { st.who = P.get('who') || 'petra.zvuk'; st.pubRet = { screen: 'member', who: st.who }; }
+    if (AT === 'linkbad') st.linkKind = P.get('kind') || 'reset';
+    if (AT === 'twofa' || AT === 'reset' || AT === 'resetnew') st.hist = [{ screen: 'signin', y: 0 }];
+    if (AT === 'resetsent') { st.remail = D.email; st.hist = [{ screen: 'signin', y: 0 }, { screen: 'reset', y: 0 }]; }
+    if (AT === 'twofa') { st.tfaNeeded = true; if (P.get('rec') === '1') st.tfaRec = true; if (P.get('show') === 'err') st.err.code = 'Kod nije točan. Provjeri vrijeme na telefonu i pokušaj ponovno.'; }
+    if (AT === 'resetnew' && P.get('done') === '1') { st.pw = 'Primjer!Lozinka9'; st.resetDone = true; }
+    if (P.get('show') === 'signin' && ['landing', 'share', 'pubprofile', 'na'].includes(AT)) { st.ret = st.pubRet || null; st.screen = 'signin'; st.hist = [{ screen: AT, y: 0 }]; }
   } else if ((AT === 'signin' || AT === 'pending' || AT === 'restricted' || AT === 'suspended') && !START_DROP) {
     st.screen = AT; st.acctPending = ACCT === 'pending';
+    if (AT === 'signin') { st.lock = P.get('lock') === '1'; st.tfaNeeded = P.get('twofa') === '1'; if (P.get('show') === 'err') st.err.signin = true; }
     if (AT === 'restricted') st.restricted = D.restriction;
     if (AT === 'suspended') { st.suspended = true; if (P.get('sent') === '1') st.appealed[D.suspension.id] = TODAY; if (P.get('show') === 'appeal') st.susAppeal = true; }
   } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member', 'follows', 'requests', 'mdrops'].includes(AT)) {
@@ -2518,5 +2677,6 @@
   if (START_DROP && P.get('pw') === 'breached') st.pwBanner = true; // ?flow=drop&pw=breached: Home right after sign-in, for the review page
   render();
   if (st.muteOnLoad) { const h = st.muteOnLoad; st.muteOnLoad = null; doMute(h); }
+  if (st.resetDone) { st.resetDone = false; resetSave(); } // ?at=resetnew&done=1: the frame after a saved password (round 12c)
   if (st.screen === 'dna' && st.artistQ) { runArtistSearch(); setTimeout(() => { const f = root.querySelector('#f-artist'); if (f) f.scrollIntoView({ block: 'start' }); }, 450); }
 })();

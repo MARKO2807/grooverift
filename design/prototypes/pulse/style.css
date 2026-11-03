@@ -1181,3 +1181,36 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 }
 /* D-075: the viewer's own mute mark on a member's profile (dashed, like the collapsed rows). */
 .rel-chip.is-muted { border-style: dashed; }
+/* ---------- Round 12c (owner, session 15): signed-out visitors and sign-in. Options compared in round12c.html. ---------- */
+.hero-land { padding-top: var(--gr-space-4); gap: var(--gr-space-3); }
+.hero-land .lead { max-width: 24rem; }
+.top-signin { white-space: nowrap; }
+.how-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--gr-space-3); }
+.how-rows li { display: flex; gap: var(--gr-space-3); align-items: flex-start; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.how-rows li > svg { flex: none; width: var(--gr-size-icon-md); height: var(--gr-size-icon-md); color: var(--gr-color-highlight-text); margin-top: 2px; }
+.how-rows b { color: var(--gr-color-text-primary); }
+.pub-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 var(--gr-space-4); margin: 0; }
+.pub-legal .link { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); min-height: 32px; }
+.pub-dd-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--gr-space-2); padding: var(--gr-space-4); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.pub-dd-card .dd-q-sm { align-self: center; }
+.pub-q { align-self: center; text-align: center; }
+.pub-lead { text-align: center; align-self: center; max-width: 22rem; margin-top: calc(var(--gr-space-3) * -1); }
+.pub-join { display: flex; flex-direction: column; align-items: center; gap: var(--gr-space-1); }
+.pub-join .link { min-height: 32px; }
+.pub-intro { display: flex; flex-direction: column; gap: var(--gr-space-3); padding-top: var(--gr-space-4); border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.pub-intro .lead { font: var(--gr-type-body-sm); }
+.pub-more { display: flex; gap: var(--gr-space-2); align-items: flex-start; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.pub-more svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+.tfa-field .input { font-size: 1.5rem; letter-spacing: 0.25em; text-align: center; font-variant-numeric: tabular-nums; }
+.tfa-rem { margin-top: calc(var(--gr-space-2) * -1); }
+.ret-line { display: flex; gap: var(--gr-space-2); align-items: flex-start; }
+.ret-line svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--gr-color-highlight-text); }
+@media (max-width: 17.5em) {
+  .tfa-field .input { font-size: 1.25rem; letter-spacing: 0.15em; }
+}
+@media (max-width: 17.5em) {
+  /* Option a (sign-in in the top bar) at 200 % text: the bar would overflow, so the button shrinks and the row may wrap. */
+  .topbar .top-right { gap: var(--gr-space-1); }
+  .top-signin { min-height: 32px; padding: 0 8px; font-size: 0.8125rem; }
+  .topbar:has(.top-signin) .alpha-tag { display: none; }
+}

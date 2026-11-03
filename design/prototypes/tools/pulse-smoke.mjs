@@ -443,6 +443,60 @@ const runs = [
     await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'suspended' && $('.sor-list') && !$('.tabbar'), 'suspended: statement of reasons, no app');
     await click('[data-k="appeal-n4"]'); expect($('#f-appeal'), 'appeal inline'); await type('#f-appeal', 'To nije bila prijetnja nego dogovor za koncert.'); await click('[data-a="appeal-send"]'); expect($('.sor-appeal'), 'appeal sent');
     await click('[data-k="sus-out"]'); expect(scr() === 'signin', 'signed out'); return 'ok'; })()` },
+  /* Round 12c (session 15): signed-out visitors and sign-in. */
+  { name: 'r12c landing', url: `${base}?at=landing`, test: `(async () => {${HELPERS}
+    expect(scr() === 'landing' && $('.h-hero') && !$('.tabbar') && !$('canvas.ic'), 'quiet landing, no tabs, no current (a)');
+    expect(document.body.textContent.includes('Nema liste čekanja') && $('[data-k="l-notice"]'), 'no waitlist; the DSA notice form is reachable');
+    expect($('.foot [data-a="pub-signin"]') && !$('.top-signin'), 'sign-in in the foot (pub=b)');
+    await click('[data-a="pub-signin"]'); expect(scr() === 'signin' && !$('.ret-line'), 'to sign-in, no return line'); return 'ok'; })()` },
+  { name: 'r12c landing b and c', url: `${base}?at=landing&land=b`, test: `(async () => {${HELPERS} expect($('canvas.ic.inv-wide'), 'b: the invite current'); return 'ok'; })()` },
+  { name: 'r12c landing c', url: `${base}?at=landing&land=c`, test: `(async () => {${HELPERS} expect($('.pub-dd-card .dd-q-sm') && !$('.ans') && !$('.dd-meta'), 'c: today\\'s question, no answers or counts'); return 'ok'; })()` },
+  { name: 'r12c share view returns to the question', url: `${base}?at=share`, test: `(async () => {${HELPERS}
+    expect(scr() === 'share' && $('h1.dd-q') && $('canvas.current') && !$('.ans') && !$('.dd-meta') && !$('.stack'), 'question only: no answers, counts or faces (D-022)');
+    expect(!document.body.textContent.includes('Mia') && !document.body.textContent.includes('Petra'), 'no member names');
+    expect($('[data-k="what"]') && !$('.pub-intro'), 'a: the link to the landing, no intro block');
+    await click('[data-a="pub-signin"]'); expect(scr() === 'signin' && $('.ret-line').textContent.includes('pitanje'), 'sign-in says it returns to the question');
+    await type('#f-pwin', 'bilo koja'); await click('[data-a="signin"]'); expect(scr() === 'drop' && $('.ans'), 'back on the question, answers visible as a member');
+    await click('[data-a="back"]'); expect(scr() === 'home', 'Back leads Home, not to the signed-out view'); return 'ok'; })()` },
+  { name: 'r12c share b and the answer link', url: `${base}?at=share&share=b&a=1`, test: `(async () => {${HELPERS}
+    expect($('.pub-intro .how-rows') && !$('[data-k="what"]'), 'b: intro block'); expect(!document.body.textContent.includes('Mia'), 'an answer link never hints at the author');
+    await click('[data-a="pub-signin"]'); expect($('.ret-line').textContent.includes('odgovor'), 'returns to the answer');
+    await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'answer', 'the answer thread after sign-in'); return 'ok'; })()` },
+  { name: 'r12c older question', url: `${base}?at=share&day=2026-10-30`, test: `(async () => {${HELPERS} expect($('h1.dd-q').textContent.includes('koncert') && $('time[datetime="2026-10-30"]'), 'an older question by date'); return 'ok'; })()` },
+  { name: 'r12c top-bar sign-in (pub=a)', url: `${base}?at=share&pub=a`, test: `(async () => {${HELPERS} expect($('.topbar .top-signin') && !$('.foot'), 'a: top-bar button, no foot'); await click('.top-signin'); expect(scr() === 'signin', 'to sign-in'); return 'ok'; })()` },
+  { name: 'r12c public profile', url: `${base}?at=pubprofile&who=petra.zvuk`, test: `(async () => {${HELPERS}
+    expect($('.pm-name').textContent.includes('Petra') && $('.pf-bio') && !$('.cnt') && !$('.dna-card') && !$('.hist') && !$('.rel-chip') && !$('[data-k="pmenu"]'), 'name, handle, bio only (PUB-08)');
+    await click('[data-a="pub-signin"]'); expect($('.ret-line').textContent.includes('profil'), 'returns to the profile'); await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'member' && $('.cnt'), 'the full profile as a member'); return 'ok'; })()` },
+  { name: 'r12c verified public profile', url: `${base}?at=pubprofile&who=nika.rework`, test: `(async () => {${HELPERS} expect($('.pm-name .vbadge, .pm-name svg') && document.body.textContent.includes('Verificirano'), 'verified mark'); return 'ok'; })()` },
+  { name: 'r12c private and unknown profiles are not available', url: `${base}?at=pubprofile&who=mia_vinyl`, test: `(async () => {${HELPERS}
+    expect($('.sys-na') && !document.body.textContent.includes('Mia'), 'private profile: not available, no name (IA8)'); return 'ok'; })()` },
+  { name: 'r12c unknown profile', url: `${base}?at=pubprofile&who=nobody`, test: `(async () => {${HELPERS} expect($('.sys-na'), 'unknown profile: the same page'); await click('[data-k="na-home"]'); expect(scr() === 'landing', 'to the landing'); return 'ok'; })()` },
+  { name: 'r12c sign-in states', url: `${base}?at=signin&lock=1`, test: `(async () => {${HELPERS}
+    expect($('#err-lock') && $('[data-k="signin"]').disabled && $('[data-k="google"]').disabled && $('[data-k="forgot"]'), 'lockout: both ways disabled, reset offered');
+    await click('[data-k="forgot"]'); expect(scr() === 'reset', 'forgot leads to the reset request'); return 'ok'; })()` },
+  { name: 'r12c reset request', url: `${base}?at=signin`, test: `(async () => {${HELPERS}
+    await click('[data-k="forgot"]'); expect(scr() === 'reset', 'reset screen'); await click('[data-a="reset-send"]'); expect($('#err-remail'), 'address required');
+    await type('#f-remail', 'ana@therift.com'); await click('[data-a="reset-send"]'); expect(scr() === 'resetsent' && document.body.textContent.includes('ana@therift.com') && document.body.textContent.includes('30 minuta'), 'neutral sent page with the address and the validity');
+    await click('[data-k="sent-signin"]'); expect(scr() === 'signin', 'back to sign-in'); return 'ok'; })()` },
+  { name: 'r12c new password (D-061 rules, b)', url: `${base}?at=resetnew`, test: `(async () => {${HELPERS}
+    await click('[data-a="reset-save"]'); expect($('#err-pw'), 'password required');
+    await type('#f-pw', 'kratka'); await click('[data-a="reset-save"]'); expect($('#err-pw').textContent.includes('još treba'), 'missing rules named');
+    await type('#f-pw', 'Lozinka2024!'); await click('[data-a="reset-save"]'); expect($('#err-pw').textContent.includes('curenjima'), 'breached password rejected');
+    await type('#f-pw', 'Primjer!Lozinka9'); expect($('#pw-need.ok'), 'rules met'); await click('[data-a="reset-save"]'); await sleep(150);
+    expect(scr() === 'signin' && $('.toast-in').textContent.includes('Prijavi se novom'), 'b: back to sign-in with the toast'); return 'ok'; })()` },
+  { name: 'r12c new password a (signed in at once)', url: `${base}?at=resetnew&done=1&reset=a`, test: `(async () => {${HELPERS} await sleep(150); expect(scr() === 'home' && $('.toast-in').textContent.includes('promijenjena'), 'a: Home with the toast'); return 'ok'; })()` },
+  { name: 'r12c second factor', url: `${base}?at=signin&twofa=1`, test: `(async () => {${HELPERS}
+    await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'twofa' && $('#f-code') && !$('#f-tfarem'), 'code step after the password (a: no remember box)');
+    await click('[data-a="tfa-ok"]'); expect($('#err-code'), 'six digits required'); await type('#f-code', '000000'); await click('[data-a="tfa-ok"]'); expect($('#err-code').textContent.includes('nije točan'), 'wrong code');
+    await click('[data-a="tfa-toggle"]'); expect($('#f-rcode') && !$('#f-code'), 'recovery code instead'); await type('#f-rcode', 'ABCD-EFGH-12'); await click('[data-a="tfa-ok"]'); await sleep(150);
+    expect(scr() === 'home' && $('.toast-in').textContent.includes('oporavak'), 'signed in with a recovery code'); return 'ok'; })()` },
+  { name: 'r12c second factor b', url: `${base}?at=twofa&tfa=b`, test: `(async () => {${HELPERS} expect($('#f-tfarem'), 'b: remember this device'); await type('#f-code', '123456'); await click('[data-a="tfa-ok"]'); expect(scr() === 'home', 'signed in'); return 'ok'; })()` },
+  { name: 'r12c links that cannot be used', url: `${base}?at=linkbad&kind=invite`, test: `(async () => {${HELPERS}
+    const t = document.body.textContent; expect($('main h1').textContent === 'Pozivnica se ne može iskoristiti' && !/iskorištena|istekla|povučena/.test($('main .lead').textContent), 'invite: no reason given (J1 E1)');
+    await click('[data-k="lb-go"]'); expect(scr() === 'landing', 'to the landing'); return 'ok'; })()` },
+  { name: 'r12c reset link expired', url: `${base}?at=linkbad&kind=reset`, test: `(async () => {${HELPERS} expect(document.body.textContent.includes('30 minuta')); await click('[data-k="lb-go"]'); expect(scr() === 'reset', 'request a new one'); return 'ok'; })()` },
+  { name: 'r12c verified', url: `${base}?at=verified`, test: `(async () => {${HELPERS} expect($('main h1').textContent === 'Adresa je potvrđena'); await click('[data-k="ver-go"]'); expect(scr() === 'signin'); return 'ok'; })()` },
+  { name: 'round 12c page', url: base.replace('index.html', 'round12c.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 30) throw new Error('30 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12b page', url: base.replace('index.html', 'round12b.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 34) throw new Error('34 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12a page', url: base.replace('index.html', 'round12a.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 35) throw new Error('35 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 11 page', url: base.replace('index.html', 'round11.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 4) throw new Error('4 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
