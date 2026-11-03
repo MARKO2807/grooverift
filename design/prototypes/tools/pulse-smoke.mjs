@@ -319,6 +319,8 @@ const runs = [
     await click('[data-k="pick-lists2"]'); await click('input[name="lists2"][value="all"]'); expect($('input[name="lists2"][value="followers"]').checked, 'private caps lists at followers (D-033)'); return 'ok'; })()` },
   { name: 'r10 notifications push only', url: `${base}?flow=drop&at=setsub&s=notifications`, test: `(async () => {${HELPERS}
     expect(!document.body.textContent.includes('Sažetak') && !$('.ntf-table') && $('.ntf-dev'), 'push only, this device on top (D-070, D-071)');
+    await click('[data-k="pause-3h"]'); expect($('#n-dev-d').textContent.includes('21:40') && $('fieldset.ntf-types').disabled && document.activeElement.dataset.k === 'pause-end', 'pause for 3 hours (D-072)');
+    await click('[data-a="pause-end"]'); expect(!$('fieldset.ntf-types').disabled, 'resume');
     await click('[data-a="push-dev"]'); expect($('fieldset.ntf-types').disabled && $('.ntf-dev.is-off'), 'device switch quiets the types'); return 'ok'; })()` },
   { name: 'round 11 page', url: base.replace('index.html', 'round11.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 4) throw new Error('4 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 43) throw new Error(43 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },

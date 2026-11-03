@@ -28,6 +28,7 @@ Labels: **DEFERRED** (owner wants it later), **IDEA** (proposed, not yet discuss
 | Member-authorised import from ListenBrainz | IDEA | D-062 research | Check its licence and terms first. |
 | "Remove follower" for private profiles | **Approved (D-069)** | JO1 (step 3.3) | Moves into the confirmed scope (J4, PROF-07). |
 | Opt-in social emails (follow requests, DMs) | DEFERRED | Owner, session 12 (OQ-32) | Confirmed scope in the Master Prompt §8; the alpha sends only security and account emails (D-070). |
+| Pause notifications for a while | **Approved (D-072)** | Owner, session 12 | Moves into the alpha scope: 1 hour, 3 hours or until 08:00 tomorrow. |
 
 ## Settings (from the settings benchmark)
 | Idea | Status | Source | Notes |

@@ -968,3 +968,6 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 .ntf-prev-t { font: var(--gr-type-caption); font-weight: var(--gr-font-weight-semibold); color: var(--gr-color-text-primary); }
 .ntf-prev-q { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ntf-types { border: 0; margin: 0; padding: 0; min-width: 0; }
+.ntf-pause { display: flex; flex-direction: column; gap: 6px; margin-top: var(--gr-space-3); padding-top: var(--gr-space-3); border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.ntf-pause .chips { gap: var(--gr-space-2); }
+.ntf-resume { margin-top: var(--gr-space-3); }

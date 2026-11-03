@@ -10,7 +10,8 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
 - **Session 12: round 10, key states and settings flows (D-070, OQ-32).**
-  - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so the notifications are push only and "Sažetak tjedna" is gone. Round 11 (`pulse/round11.html`, D-071) chose the look: `ntf=d`, one "this phone" switch on top (`st.pushDev`, action `push-dev`) over the types in `fieldset.ntf-types`. `?ntf=c|e|f` show the other looks.
+  - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so the notifications are push only and "Sažetak tjedna" is gone. Round 11 (`pulse/round11.html`, D-071) chose the look: `ntf=d`, one "this phone" switch on top (`st.pushDev`, action `push-dev`) over the types in `fieldset.ntf-types`. `?ntf=c|e|f` show the other looks. D-072 added the pause (`st.pause`, actions `pause` and `pause-end`, `&pause=1h|3h|am` in the URL; the sketch clock is a fixed 18:40) and confirmed R-15 to R-18.
+  - **Owner rule (session 12):** every open point goes to the owner as a survey (AskUserQuestion) with the example and the reason inside the question.
   - URL options in `app.js` (Round 10 block after `addDays`): `?state=loading|error|empty|nodrop|blocked|long`, `?net=off`, `?ld`, `?off`, `?emp`, `?nd`, `?prv`, `?ntf`, `?del`, `?out`, `?bl=1`, `?uc=locked`, `?at=signin` (`&pw=breached`, `&acct=pending`), `?at=pending`, `?flow=drop&at=member&as=blocker|blocked`, `?flow=drop&pw=breached`, `&step=copy|confirm|done` on the delete sub-screen, `&show=logout`, `&show=posterr`.
   - New screens: `signin`, `pending`, `member`. New sub-screens: `email`, `password`, `username`, `twofa`; `privacy`, `notifications` and `delete` are now functions (`privacyBody`, `notifBody`, `deleteBody`; the old one-page delete is `SUB.deleteA`).
   - `st.histVis` holds the answer-history setting (`st.hist` is the navigation history; do not reuse it).
@@ -130,7 +131,7 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Settings:** done in round 10 (D-070). Left: confirm R-15 to R-18 with the owner; the catalogue-card picker in the comment form (D-068).
+2. **Round 12: all remaining alpha screens (owner chose "sve").** Go group by group, each with a `pulse/round12*.html` page and a survey: (a) other profiles and lists, (b) member safety, (c) signed-out and sign-in, (d) the rest and system screens. The exact screen IDs are in STATUS "Next". Settings are done (D-070 to D-072); the catalogue-card picker in the comment form (D-068) is still open.
 3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
 4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
 5. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.

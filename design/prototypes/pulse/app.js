@@ -1094,7 +1094,7 @@
   ];
   function privacyBody() {
     const same = `<p class="vrow-same">${ic('users', 'sm')}<span>Odgovore na Daily Drop i komentare uvijek vide svi članovi, i kad je profil privatan.</span></p>`;
-    const note = st.vis === 'private' ? '<p class="set-note">Novi pratitelji šalju zahtjev. Postojeći pratitelji ostaju.</p>' : '';
+    const note = st.vis === 'private' ? '<p class="set-note">Postojeći pratitelji ostaju, a možeš ih ukloniti na popisu pratitelja. Novi šalju zahtjev.</p>' : '';
     if (PRV_AT === 'b') return grp('', PRIV_ITEMS().map(([n, t, , , v, L]) => `<li><button class="set-row set-row-plain" data-a="pick" data-p="${n}" data-k="pick-${n}"><span class="set-txt"><span class="set-t">${t}</span><span class="set-d">${(L[v] || '')}</span></span>${ic('chevron', 'sm set-go')}</button></li>`).join(''), '') + note + same;
     return PRIV_ITEMS().map(([n, , q, opts, v]) => choices(n, q, opts, v, 'choices-compact')).join('') + note + same;
   }
@@ -1133,9 +1133,17 @@
     const ex = { dd: 'Jednom dnevno, kad izađe pitanje', com: 'Npr. „Luka komentira tvoj odgovor”', react: 'Skupljene, najviše jednom na sat', fol: 'Novi pratitelji i zahtjevi za praćenje', sugg: 'Kad urednici objave tvoje pitanje' };
     const NAMES = { com: 'Komentari na moje odgovore', react: 'Reakcije', fol: 'Pratitelji i zahtjevi', sugg: 'Objavljen moj prijedlog pitanja' };
     if (NTF_AT === 'd') {
-      const on = st.pushDev !== false;
-      return `<section class="ntf-dev${on ? '' : ' is-off'}"><div class="ntf-dev-top"><span class="set-ic-wrap" aria-hidden="true">${pic('device-mobile', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="n-dev-l">Obavijesti na ovom mobitelu</span><span class="set-d" id="n-dev-d">${on ? 'Uključene. Odaberi koje ispod.' : 'Isključene. Ništa ne stiže na ovaj mobitel; Aktivnost i dalje sve pokazuje.'}</span></span><button type="button" class="switch" role="switch" aria-checked="${on}" aria-labelledby="n-dev-l" aria-describedby="n-dev-d" data-a="push-dev" data-k="n-dev"><span></span></button></div></section>
-        <fieldset class="ntf-types"${on ? '' : ' disabled'}><legend class="sr-only">Vrste obavijesti</legend>
+      const on = st.pushDev !== false, paused = on && st.pause;
+      /* Pause for a while (owner, D-072, a scope addition): 1 hour, 3 hours or until 08:00 tomorrow; then it turns
+         itself back on. The sketch's clock is a fixed 18:40. Activity keeps collecting everything meanwhile. */
+      const PAUSE = [['1h', '1 sat', 'do 19:40'], ['3h', '3 sata', 'do 21:40'], ['am', 'Do sutra u 8:00', 'do sutra u 8:00']];
+      const desc = !on ? 'Isključene. Ništa ne stiže na ovaj mobitel; Aktivnost i dalje sve pokazuje.'
+        : paused ? `Pauzirano ${PAUSE.find(p => p[0] === st.pause)[2]}. Onda se same uključe. Aktivnost u međuvremenu sve skuplja.` : 'Uključene. Odaberi koje ispod.';
+      const pauseRow = !on ? '' : paused
+        ? `<button class="btn btn-secondary btn-sm ntf-resume" data-a="pause-end" data-k="pause-end">Uključi odmah</button>`
+        : `<div class="ntf-pause" role="group" aria-labelledby="n-pause-l"><span class="set-d" id="n-pause-l">Pauziraj na</span><div class="chips">${PAUSE.map(([k, l]) => `<button type="button" class="chip" data-a="pause" data-p="${k}" data-k="pause-${k}">${l}</button>`).join('')}</div></div>`;
+      return `<section class="ntf-dev${on && !paused ? '' : ' is-off'}"><div class="ntf-dev-top"><span class="set-ic-wrap" aria-hidden="true">${pic('device-mobile', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="n-dev-l">Obavijesti na ovom mobitelu</span><span class="set-d" id="n-dev-d" aria-live="polite">${desc}</span></span><button type="button" class="switch" role="switch" aria-checked="${on}" aria-labelledby="n-dev-l" aria-describedby="n-dev-d" data-a="push-dev" data-k="n-dev"><span></span></button></div>${pauseRow}</section>
+        <fieldset class="ntf-types"${on && !paused ? '' : ' disabled'}><legend class="sr-only">Vrste obavijesti</legend>
         ${grp('Daily Drop', swRow('n-dd', 'Podsjetnik za novo pitanje', 'Jedna obavijest dnevno', st.reminder === 'on') + time)}
         ${grp('Ljudi i razgovori', NTF.map(([k, t, d, p]) => swRow('n-' + k, NAMES[k], d, p)).join(''))}</fieldset>
         <p class="set-note">${mailNote}</p>`;
@@ -1798,7 +1806,9 @@
       case 'age18-minor': st.age = 'minor'; st.overlay = null; return go('minor');
       case 'com-cancel': st.commentDraft = ''; delete st.err.com; return back();
       case 'setsub': st.sub = b.dataset.s; return go('setsub');
-      case 'push-dev': st.pushDev = st.pushDev === false; return render({ keep: true });
+      case 'push-dev': st.pushDev = st.pushDev === false; st.pause = null; return render({ keep: true });
+      case 'pause': st.pause = b.dataset.p; render(); focusSel('[data-k="pause-end"]'); return toast('Obavijesti su pauzirane.');
+      case 'pause-end': st.pause = null; render(); focusSel('[data-k="pause-1h"]'); return toast('Obavijesti su opet uključene.');
       case 'sw': return b.setAttribute('aria-checked', b.getAttribute('aria-checked') !== 'true');
       case 'perm-block': st.reminder = 'denied'; st.overlay = null; render(); return focusSel('.notice');
       case 'finish': return go('home', { reset: true });
@@ -2007,6 +2017,7 @@
     if (AT === 'drop' && STATE === 'error' && P.get('open') === 'compose') { st.draft = 'Kind of Blue. Počinje mirno, nitko ne viče, a na kraju shvatiš da je cijeli sat bio jazz.'; if (P.get('show') === 'posterr') { st.postFailed = true; st.postErr = true; } }
     if (AT === 'setsub' && P.get('s') === 'delete' && P.get('step')) { st.del = P.get('step') === 'off' ? 'off' : 'del'; st.delStep = { copy: 'copy', confirm: 'confirm', off: 'confirm', done: 'done' }[P.get('step')]; }
     if (AT === 'setsub' && P.get('s') === 'twofa' && P.get('on') === '1') st.twofa = true;
+    if (AT === 'setsub' && P.get('pause')) st.pause = P.get('pause');
     if (AT === 'setsub' && P.get('s') === 'privacy' && P.get('pick')) st.overlay = { type: 'pick', p: P.get('pick') };
     if (AT === 'drop') st.hist = [{ screen: 'home', y: 0 }];
     if (AT === 'settings') st.hist = [{ screen: 'profile', y: 0 }];

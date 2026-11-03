@@ -21,7 +21,7 @@ _Last updated: 2026-11-03 (session 12)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-071. Key ones:
+- Decisions D-001 to D-072. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -82,7 +82,7 @@ _Last updated: 2026-11-03 (session 12)_
     - **Ideas backlog:** `docs/product/backlog.md` lists every idea outside the confirmed scope.
     - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Chosen (D-068): a short 18+ confirmation, faces for "all answers", answers only on past days, Activity by day, three-column profile counts, comments as text plus catalogue cards (images from B1).
     - **D-069:** @username changes once every 30 days, old name reserved 30 days; "Ukloni pratitelja" for private profiles (JO1, approved); naming odgovor / komentar / reakcija.
-    - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`. **D-071:** the notifications screen has one switch for this phone on top, the types below (`pulse/round11.html`).
+    - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`. **D-071:** the notifications screen has one switch for this phone on top, the types below (`pulse/round11.html`). **D-072:** reactions off by default, a pause (1 h, 3 h, until 08:00) added to the alpha, R-15 to R-18 confirmed (followers stay when going private, notice to the old email, password change signs out other devices, silent unblock).
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -98,7 +98,7 @@ _Last updated: 2026-11-03 (session 12)_
    - 200 % zoom and the desktop adaptation.
    - Screen reader (Narrator) and high-contrast checks.
    - The catalogue-card picker in the comment form (D-068).
-2. RECOMMENDED R-15 to R-18 from round 10 (private switch keeps followers, email change notice, password change signs out other devices, quiet unblock): confirm with the owner.
+2. **Round 12, all remaining alpha screens (owner: "sve"),** one group at a time, each as a round page and a survey: (a) other members' profiles and lists (PROF-01 public and private, PROF-03, PROF-07 with "Ukloni pratitelja", ACT-02); (b) member safety (SAFE-01 to SAFE-05, SAFE-07); (c) signed-out and sign-in (PUB-01, PUB-03, PUB-04, PUB-06, PUB-07, PUB-08); (d) the rest (PROF-09 DNA editor, PROF-08 photo, SET-12 feedback form, SYS-02, SYS-04, the Hub before the first Drop).
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
    - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).
