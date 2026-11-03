@@ -39,12 +39,12 @@
 <body>
 <div class="page">
   <h1>Runda 12d: ostatak alfa ekrana</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> Preporuke su označene; odabrano se bilježi kao D-078.</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-078, sesija 16).</b> Popis s gore/dolje, najmanje 2 žanra, list za sliku i korak za namještanje, jedan obrazac za povratne informacije, „Nešto je pošlo po zlu” unutar aplikacije, pitanje čitljivo i na pauzi, odbrojavanje sa sekundama prije prvog pitanja. Uz to: „Katalog trenutačno ne radi.”, slika do 5 MB, obavijest s gumbom 5 s, bez gumba 2 s.</p>
   <p>Okviri su prava aplikacija; sve u njima radi (dodavanje, micanje, poništavanje, spremanje) i ništa se ne sprema. U uredniku Music DNA svaka promjena odmah mijenja Spiralu. Sliku profila možeš izabrati i sa svog telefona: ostaje u pregledniku i nigdje se ne šalje. Podaci su izmišljeni.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (J2, D-017, D-024, D-046, D-052, IA §6, Master Prompt §4 i §13, nisu izbor):</p>
     <ul>
       <li>Music DNA mijenja samo član: nijedan sustav ne dodaje, ne briše i ne mijenja redoslijed bez potvrde. Svaka promjena se sprema odmah i izgovara čitaču zaslona; „Ukloni” ima „Poništi”. Isti žanr ili izvođač ne može dvaput; najviše 10 žanrova i 10 izvođača. Tko vidi Music DNA piše riječima, uz „Promijeni”.</li>
-      <li>Slika profila nije obavezna. Vide je svi koji vide profil, i bez prijave ako je profil javan. Podaci o lokaciji iz fotografije se brišu; prima se JPG, PNG ili WebP do 8 MB.</li>
+      <li>Slika profila nije obavezna. Vide je svi koji vide profil, i bez prijave ako je profil javan. Podaci o lokaciji iz fotografije se brišu; prima se JPG, PNG ili WebP do 5 MB.</li>
       <li>Povratne informacije i prijave grešaka su odvojene od prijava neprimjerenog sadržaja. Snimka zaslona je neobavezna, vidi je samo tim i briše se nakon obrade. Što se šalje uz poruku, piše prije slanja.</li>
       <li>„Nešto je pošlo po zlu” nudi Pokušaj ponovno i put do pomoći, bez tehničkih detalja i oznaka koje otkrivaju podatke. Pauzirana značajka kratko kaže što ne radi, bez krivca, i vodi na Početnu; podsjetnik tada ne stiže.</li>
       <li>Prije prvog Daily Dropa Hub i Početna kažu kad stiže prvo pitanje (00:00 UTC, u lokalnom vremenu) i što se može dotad. Arhiva počinje s prvim pitanjem.</li>
@@ -93,7 +93,7 @@
     ]],
     ['t-first', '8. Prije prvog pitanja (HUB-01, HOME-01)', 'Alfa počinje prije prvog Daily Dropa. Na Hubu nema dana ni arhive; Početna i Hub kažu kad stiže prvo pitanje i što se može dotad. Ovdje Hub.', 'flow=drop&at=hub&state=first', 'first', [
       ['a', 'A. Mirna kartica s vremenom', 'Dan i datum, vrijeme u lokalnoj zoni (00:00 UTC je 01:00 u Zagrebu) i tri stvari dok čekaš: dopuni Music DNA, podsjetnik, kako radi. Bez pritiska (P2).', 'rec'],
-      ['b', 'B. S odbrojavanjem', 'Isto plus „6 h 20 min” koje odbrojava. Živahnije, ali stvara žurbu i pokret na ekranu koji ništa ne traži.', ''],
+      ['b', 'B. S odbrojavanjem', 'Isto plus „6 h 20 min” koje odbrojava, sa sekundama (vlasnik). Uz „Smanji pokrete” samo minute, jednom u minuti. Živahnije, ali stvara žurbu i pokret na ekranu koji ništa ne traži.', ''],
       ['c', 'C. Sa strujom', 'Kao A, a ispod imena Daily Drop struja (motiv pitanja, D-042). Više brenda na prvom ekranu alfe, još jedno mjesto za motiv.', '']
     ]]
   ];
@@ -113,7 +113,7 @@
     ['Pozivnica dok si prijavljena (J1 E3, E4)', 'Poveznica pozivnice otvorena dok je netko prijavljen: ista adresa (već imaš račun) ili drugi račun (odjavi se da prihvatiš). Google račun s drugom adresom od pozivnice.', [
       ['Ista adresa', 'flow=drop&at=invsigned&same=1'], ['Drugi račun', 'flow=drop&at=invsigned'], ['Google s drugom adresom', 'at=invmail']]]
   ];
-  const CHOSEN = {};
+  const CHOSEN = { dnae: 'a', dnamin: 'a', photo: 'a', crop: 'a', fb: 'a', fail: 'a', paused: 'a', first: 'b' };
   const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>

@@ -245,7 +245,7 @@
     const sel = new Set(st.artists.map(a => a.id));
     if (r.state === 'idle') return `<li class="hint">Upiši barem dva slova.</li>`;
     if (r.state === 'loading') return [0, 1, 2].map(() => '<li class="result-skel" aria-hidden="true"><span></span><span></span></li>').join('') + '<li class="sr-only">Tražim u katalogu…</li>';
-    if (r.state === 'error') return `<li class="cat-err">${ic('alert')}<div><p><b>Katalog trenutačno ne odgovara.</b> Tvoji odabiri su sačuvani.</p>
+    if (r.state === 'error') return `<li class="cat-err">${ic('alert')}<div><p><b>Katalog trenutačno ne radi.</b> Tvoji odabiri su sačuvani.</p>
       <button type="button" class="btn btn-secondary btn-sm" data-a="artist-retry" data-k="artist-retry">Pokušaj ponovno</button></div></li>`;
     if (r.state === 'empty') return `<li class="hint">Nema rezultata za „${esc(st.artistQ.trim())}”. Provjeri pisanje ili dodaj izvođača kasnije.</li>`;
     return r.items.map(a => {
@@ -270,7 +270,7 @@
       const el = root.querySelector('#artist-results');
       if (el) { el.innerHTML = artistResults(); el.setAttribute('aria-busy', res.state === 'loading'); }
       const live = root.querySelector('#artist-live');
-      if (live) live.textContent = res.state === 'ok' ? `${res.items.length} ${pl(res.items.length, 'rezultat', 'rezultata', 'rezultata')}` : res.state === 'empty' ? 'Nema rezultata' : res.state === 'error' ? 'Katalog ne odgovara' : '';
+      if (live) live.textContent = res.state === 'ok' ? `${res.items.length} ${pl(res.items.length, 'rezultat', 'rezultata', 'rezultata')}` : res.state === 'empty' ? 'Nema rezultata' : res.state === 'error' ? 'Katalog ne radi' : '';
     });
   }
   function updateDnaStep() {
@@ -1685,7 +1685,7 @@
   const FB_AT = pick('fb', ['a', 'b', 'c'], 'a');
   const FAIL_AT = pick('fail', ['a', 'b', 'c'], 'a');
   const PAUSE_AT = pick('paused', ['a', 'b'], 'a');
-  const FIRST_AT = pick('first', ['a', 'b', 'c'], 'a');
+  const FIRST_AT = pick('first', ['a', 'b', 'c'], 'b'); // chosen: b, a countdown with seconds (owner, D-078)
   const FIRST = STATE === 'first', PAUSED = STATE === 'paused';
 
   /* PROF-09 (J2): every change saves at once and is announced; Remove has Undo in the toast; Move up / Move down are
@@ -1784,7 +1784,7 @@
   /* PROF-08: display name and bio with one Save and an unsaved-changes dialog; the photo saves on its own (a sheet
      or the picker, then a crop step). A photo is never required (D-017). The sketch reads the chosen file into
      memory only; the app strips EXIF, re-encodes and stores it (threat model). */
-  const BADFILE = 'Ta datoteka nije slika koju možemo primiti. JPG, PNG ili WebP do 8 MB.';
+  const BADFILE = 'Ta datoteka nije slika koju možemo primiti. JPG, PNG ili WebP do 5 MB.';
   function profileEditBody() {
     const has = !!st.photo, cam = pic('camera', 'btn-pi');
     const act = PHOTO_AT === 'a'
@@ -1805,7 +1805,7 @@
   }
   function fileChosen(file) {
     if (!file) return;
-    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 8 * 1024 * 1024;
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 5 * 1024 * 1024;
     if (!ok) {
       if (st.filePurpose === 'photo') { st.photoErr = BADFILE; st.overlay = null; render(); return focusSel('#photo-err'); }
       st.err.shot = BADFILE; render({ keep: true }); return focusSel('#err-shot');
@@ -1882,12 +1882,28 @@
   const dockPaused = () => `<div class="dock dock-locked"><p class="dock-done">${pic('pause-circle', 'dock-pi')}<span>Daily Drop je na pauzi. Tvoj odgovor može pričekati.</span></p></div>`;
 
   /* HUB-01 and HOME-01 before the first Daily Drop: the date and the local time (00:00 UTC is 01:00 in Zagreb in
-     November), and what the member can do meanwhile. No countdown pressure in a (P2); b shows the time left; c adds
-     the current, the motif of the question (D-042). */
+     November), and what the member can do meanwhile. a is the calm card (P2); b, chosen by the owner (D-078), counts
+     down with seconds (the sketch clock is 18:40, so 6 h 20 min to go); c adds the current, the motif of the question
+     (D-042). The countdown is aria-hidden and a fixed sentence serves screen readers; with "Smanji pokrete" or the OS
+     setting it shows minutes only and updates once a minute (WCAG 2.2.2, a way to control the frequency). The owner
+     noted that the launch must be timed with care so the countdown is right. */
   const WDU = ['u nedjelju', 'u ponedjeljak', 'u utorak', 'u srijedu', 'u četvrtak', 'u petak', 'u subotu'];
+  const FIRST_LEFT = 6 * 3600 + 20 * 60, FIRST_T0 = performance.now();
+  const firstLeft = () => Math.max(0, FIRST_LEFT - Math.floor((performance.now() - FIRST_T0) / 1000));
+  function firstCount() {
+    const left = firstLeft(), calm = document.documentElement.dataset.motion === 'reduced';
+    const h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), s = left % 60, two = n => String(n).padStart(2, '0');
+    return `<span class="first-n">${h}</span><span class="first-u">h</span><span class="first-n">${two(m)}</span><span class="first-u">min</span>${calm ? '' : `<span class="first-n">${two(s)}</span><span class="first-u">s</span>`}`;
+  }
+  function firstTick() {
+    clearInterval(st.firstTimer);
+    const el = root.querySelector('.first-count'); if (!el) return;
+    const calm = document.documentElement.dataset.motion === 'reduced';
+    st.firstTimer = setInterval(() => { const e = root.querySelector('.first-count'); if (!e) return clearInterval(st.firstTimer); e.innerHTML = firstCount(); }, calm ? 60000 : 1000);
+  }
   function firstBlock(where) {
     const p = dparts(D.drop.date), d = new Date(D.drop.date + 'T12:00:00Z');
-    const count = FIRST_AT === 'b' ? '<p class="first-count"><span class="first-n">6</span><span class="first-u">h</span><span class="first-n">20</span><span class="first-u">min</span><span class="sr-only">do prvog pitanja</span></p>' : '';
+    const count = FIRST_AT === 'b' ? `<p class="first-count" aria-hidden="true">${firstCount()}</p><p class="sr-only">Još oko ${Math.floor(firstLeft() / 3600)} sati i ${Math.floor(firstLeft() % 3600 / 60)} minuta do prvog pitanja.</p>` : '';
     const rows = `<section class="section" aria-labelledby="h-while"><h2 id="h-while" class="section-title">Dok čekaš</h2><ul class="set-list">
         ${subRow('fw-dna', 'Dopuni Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'dna')}
         ${subRow('fw-rem', 'Podsjetnik za novo pitanje', st.reminder === 'on' ? `Uključen, u ${st.remTime}` : 'Isključen', 'notifications')}
@@ -2350,7 +2366,7 @@
           <li><button class="menu-item" data-a="photo-sample" data-k="ph-sample">${pic('lightning', 'menu-pi')}Primjer slike <span class="menu-note">(skica)</span></button></li>
           ${st.photo ? `<li><button class="menu-item" data-a="photo-remove" data-k="ph-rm">${ic('trash')}Ukloni sliku</button></li>` : ''}
         </ul>
-        <p class="meta">JPG, PNG ili WebP do 8 MB. Podaci o lokaciji iz fotografije (EXIF) brišu se pri slanju. Vide je svi, i bez prijave ako je profil javan.</p></div>`;
+        <p class="meta">JPG, PNG ili WebP do 5 MB. Podaci o lokaciji iz fotografije (EXIF) brišu se pri slanju. Vide je svi, i bez prijave ako je profil javan.</p></div>`;
     if (o.type === 'crop') {
       const d = st.photoDraft;
       return `<div class="scrim"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title">
@@ -2392,7 +2408,7 @@
   /* Motifs after each render: mount the current, the dock orbit and the Music DNA canvases. */
   function afterRender() {
     CUR.scan(root); INV.scan(root); DNA.scan(root);
-    scheduleWall();
+    scheduleWall(); firstTick();
     // review pages in iframes (invite-layout.html) ask whether the screen fits without scrolling
     if (window.parent !== window) setTimeout(() => parent.postMessage({ gr: 'fit', screen: st.screen, over: document.documentElement.scrollHeight - window.innerHeight }, '*'), 250);
   }
@@ -2479,7 +2495,8 @@
       toastEl.innerHTML = `<div class="toast-in${act ? ' has-act' : ''}"><span>${esc(m)}</span>${act ? `<button type="button" class="toast-btn" data-k="toast-act">${esc(act.label)}</button>` : ''}</div>`;
       if (act) toastEl.querySelector('.toast-btn').onclick = () => { clearTimeout(toastTimer); toastEl.innerHTML = ''; act.fn(); };
     }, 40);
-    toastTimer = setTimeout(() => { toastEl.innerHTML = ''; }, act ? 7000 : 5000);
+    /* D-078 (owner): a toast with a button stays 5 s (WCAG 2.2.1, J2), one without a button 2 s. */
+    toastTimer = setTimeout(() => { toastEl.innerHTML = ''; }, act ? 5000 : 2000);
   }
 
   function openOverlay(o, opener) { st.overlay = Object.assign({ ret: opener && opener.dataset.k }, o); render(); }

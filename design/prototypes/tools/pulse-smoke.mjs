@@ -523,6 +523,7 @@ const runs = [
     await click('[data-k="dna-add-close"]'); expect(!$('#dna-add') && document.activeElement.dataset.k === 'dna-add-genre', 'closed, focus back on the button'); return 'ok'; })()` },
   { name: 'r12d add an artist, no duplicates', url: `${base}?flow=drop&at=setsub&s=dna&q=nin`, test: `(async () => {${HELPERS}
     await sleep(900); const res = $$('#artist-results [data-a="artist-add"]'); expect(res.length >= 2 && res.some(r => r.getAttribute('aria-disabled') === 'true'), 'results, and the one already in the DNA is marked');
+    expect(!document.body.textContent.includes('ne odgovara'), 'catalog wording per D-078 ("ne radi")');
     const add = res.find(r => r.getAttribute('aria-disabled') !== 'true'); add.click(); await sleep(150); expect($$('.dna-rows-artist .dna-row').length === 4 && $('#dna-msg').textContent.startsWith('Dodano'), 'added as a fourth artist');
     await click('[data-k="rm-artist-' + add.dataset.id + '"]'); await sleep(120); expect($$('.dna-rows-artist .dna-row').length === 3 && $('.toast-btn'), 'artist removed with Undo'); return 'ok'; })()` },
   { name: 'r12d at least two genres (a, default)', url: `${base}?flow=drop&at=setsub&s=dna&picks=min`, test: `(async () => {${HELPERS}
@@ -549,7 +550,7 @@ const runs = [
     await click('[data-k="ov-ok"]'); await sleep(120); expect($('.avatar.has-photo .av-sample') && $('.toast-in').textContent.includes('postavljena'), 'photo set inside the ring');
     await click('[data-k="sub-photo"]'); await click('[data-k="ph-rm"]'); await sleep(120); expect(!$('.avatar.has-photo') && $('.toast-in').textContent.includes('uklonjena'), 'removed'); return 'ok'; })()` },
   { name: 'r12d photo direct (b) and a bad file', url: `${base}?flow=drop&at=setsub&s=profile&pic=sample&photo=b&show=badfile`, test: `(async () => {${HELPERS}
-    expect($('#photo-err') && $('[data-k="sub-photo-rm"]') && $('.avatar.has-photo'), 'b: remove as a second button; the rejected file is explained'); await click('[data-k="sub-photo-rm"]'); expect(!$('.avatar.has-photo') && !$('#photo-err'), 'removed'); return 'ok'; })()` },
+    expect($('#photo-err') && $('#photo-err').textContent.includes('5 MB') && $('[data-k="sub-photo-rm"]') && $('.avatar.has-photo'), 'b: remove as a second button; the rejected file is explained (5 MB, D-078)'); await click('[data-k="sub-photo-rm"]'); expect(!$('.avatar.has-photo') && !$('#photo-err'), 'removed'); return 'ok'; })()` },
   { name: 'r12d feedback form (a)', url: `${base}?flow=drop&at=setsub&s=help`, test: `(async () => {${HELPERS}
     expect($$('input[name="fbtype"]').length === 3 && $('#f-fb') && $('[data-k="fb-shot"]') && $('.fb-info') && $('#f-fbinfo').checked && $('#f-fbmail').checked, 'one form: type, text, screenshot, the listed details');
     await click('[data-k="fb-send"]'); expect($('#err-fbtype') && $('#err-fb'), 'type and text are required');
@@ -570,10 +571,13 @@ const runs = [
     expect($('.dd-paused') && !$('.dd-q') && !$('.dock'), 'b: the card alone'); await click('[data-k="paused-home"]'); expect(scr() === 'home' && $('.dd-paused') && !$('.dd-paused-q'), 'to Home, the card alone there too'); return 'ok'; })()` },
   { name: 'r12d feature paused page', url: `${base}?flow=drop&at=featoff&f=comments`, test: `(async () => {${HELPERS} expect($('main h1').textContent.includes('Komentari') && !document.body.textContent.includes('greška'), 'brief, no blame'); await click('[data-k="fo-home"]'); expect(scr() === 'home', 'points to Home'); return 'ok'; })()` },
   { name: 'r12d before the first Drop', url: `${base}?flow=drop&at=hub&state=first`, test: `(async () => {${HELPERS}
-    expect(!$('.day-strip') && $('#h-first').textContent.includes('u nedjelju, 1. studenoga') && document.body.textContent.includes('01:00 po tvom vremenu') && !$('.first-count') && !$('canvas.current') && $('[data-k="suggest"]'), 'a: the date, the local time, no countdown, no current, suggesting a question still possible');
+    expect(!$('.day-strip') && $('#h-first').textContent.includes('u nedjelju, 1. studenoga') && document.body.textContent.includes('01:00 po tvom vremenu') && !$('canvas.current') && $('[data-k="suggest"]'), 'the date, the local time, no current, suggesting a question still possible');
+    expect($('.first-count[aria-hidden="true"]') && $$('.first-n').length === 3 && $$('.first-n')[0].textContent === '6', 'b (chosen, D-078): the countdown with seconds, hidden from screen readers');
+    { const s0 = $$('.first-n')[2].textContent; await sleep(1100); expect($$('.first-n')[2].textContent !== s0, 'the seconds tick'); }
     await click('[data-k="fw-dna"]'); expect(scr() === 'setsub' && $('.dna-rows-genre'), 'leads to the editor'); await click('[data-k="top-back"]'); expect(scr() === 'hub', 'and back');
     await click('[data-k="tab-home"]'); expect($('.dd-first') && !$('.past') && $('.empty-b'), 'Home: the same card, no archive yet'); return 'ok'; })()` },
-  { name: 'r12d first b and c', url: `${base}?flow=drop&at=hub&state=first&first=b`, test: `(async () => {${HELPERS} expect($('.first-count') && $('.first-n').textContent === '6', 'b: the countdown'); return 'ok'; })()` },
+  { name: 'r12d first a (rejected) and the calm countdown', url: `${base}?flow=drop&at=hub&state=first&first=a`, test: `(async () => {${HELPERS} expect(!$('.first-count'), 'a: no countdown'); return 'ok'; })()` },
+  { name: 'r12d countdown under reduced motion', url: `${base}?flow=drop&at=home&state=first&calm=1`, test: `(async () => {${HELPERS} expect($$('.first-n').length === 2, 'minutes only, no seconds, when motion is reduced'); return 'ok'; })()` },
   { name: 'r12d first c', url: `${base}?flow=drop&at=drop&state=first&first=c`, test: `(async () => {${HELPERS} expect($('.dd-first canvas.current') && $('h1#h-first') && !$('.dock'), 'c: the current under the name; no dock before the first question'); return 'ok'; })()` },
   { name: 'r12d invite opened while signed in (J1 E3, E4)', url: `${base}?flow=drop&at=invsigned`, test: `(async () => {${HELPERS}
     expect($('main h1').textContent.includes('novu osobu') && $('[data-k="inv-out"]') && $('[data-k="inv-stay"]'), 'another account: sign out or stay'); await click('[data-k="inv-out"]'); await sleep(120); expect(scr() === 'signin' && $('.toast-in').textContent.includes('pozivnice'), 'signed out with the hint'); return 'ok'; })()` },

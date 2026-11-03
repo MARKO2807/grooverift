@@ -1298,7 +1298,8 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 .first-time { align-items: flex-start; text-align: left; align-self: center; max-width: 22rem; }
 .first-time svg { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--gr-color-highlight-text); }
 .first-count { display: flex; align-items: baseline; justify-content: center; gap: 0 4px; margin: var(--gr-space-2) 0 0; }
-.first-n { font: var(--gr-type-title-1); font-variant-numeric: tabular-nums; color: var(--gr-color-text-primary); }
+.first-n { font: var(--gr-type-title-1); font-variant-numeric: tabular-nums; color: var(--gr-color-text-primary); min-width: 1.3em; text-align: right; }
+.first-n:first-child { min-width: 0; }
 .first-u { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); margin-right: var(--gr-space-2); }
 .hub-first-hint { text-align: center; }
 @media (max-width: 17.5em) {
