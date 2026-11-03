@@ -22,7 +22,8 @@ svg.i.sm { width: var(--gr-size-icon-sm); height: var(--gr-size-icon-sm); }
 
 /* ---------- shell ---------- */
 #app { max-width: 30rem; margin: 0 auto; }
-.shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.shell { min-height: 100vh; min-height: 100dvh; display: flex; } /* the rail (desktop) beside the page */
+.page { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .proto-note { font: var(--gr-type-caption); font-size: 0.75rem; color: var(--gr-color-text-secondary); text-align: center; padding: 2px var(--gr-space-2); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
 .topbar { position: sticky; top: 0; z-index: var(--gr-z-sticky); display: flex; align-items: center; gap: var(--gr-space-1); min-height: 56px; padding: 0 var(--gr-space-2); background: var(--gr-color-bg-canvas); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
 .topbar > .wordmark, .topbar > .top-title { margin-left: var(--gr-space-2); }
@@ -1314,3 +1315,71 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
   .first-time { max-width: none; }
 }
 .screen-invmail .lead, .screen-invsigned .lead { overflow-wrap: anywhere; }
+
+/* ---------- Desktop (session 17): the rail, the reading column, sheets as dialogs ----------
+   Breakpoints follow tokens.md §7: medium 600 px (a collapsed rail replaces the bottom bar), expanded 1024 px (the rail
+   gets labels beside the icons), wide 1280 px (an optional context column). app.js mirrors them as classes on <html>
+   (rail-on, rail-wide, side-on) so the three rail options can share these rules; in the app they are media queries.
+   Signed-in screens (html[data-kind="app"]) get the rail; onboarding, sign-in and the visitor pages keep one column.
+   The reading column is size.content-max, 40 rem: each bar and the page keep their phone padding and add the free
+   space on both sides, so the geometry inside the column stays exactly the phone's. */
+:root { --rail-w: 0px; }
+.skip { position: absolute; left: var(--gr-space-2); top: var(--gr-space-2); z-index: calc(var(--gr-z-toast) + 1); padding: var(--gr-space-2) var(--gr-space-3); background: var(--gr-color-bg-raised); color: var(--gr-color-text-primary); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: var(--gr-radius-control); font: var(--gr-type-label); text-decoration: none; transform: translateY(-300%); }
+.skip:focus { transform: none; }
+main:focus { outline: none; box-shadow: none; }
+.rail, .top-home { display: none; }
+.rail-on[data-kind="app"] #app { max-width: none; }
+.rail-on[data-kind="app"] .tabbar { display: none; }
+.rail-on[data-kind="app"] .bottom { position: sticky; }
+.rail-on[data-kind="app"] { --rail-w: 80px; }
+.rail-on.rail-wide[data-kind="app"] { --rail-w: clamp(12rem, 15rem, 22vw); }
+.rail-on[data-kind="app"] .rail { display: flex; flex-direction: column; flex: none; width: var(--rail-w); position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; padding: var(--gr-space-3) var(--gr-space-2) var(--gr-space-4); gap: var(--gr-space-2); border-right: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: var(--gr-color-bg-canvas); }
+.rail-list { display: flex; flex-direction: column; gap: 2px; }
+.rail-item { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; padding: var(--gr-space-2) 2px; border: 0; background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); border-radius: var(--gr-radius-control); text-align: center; }
+.rail-item span { overflow-wrap: anywhere; }
+.rail-item:hover { background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); }
+.rail-item[aria-current="page"] { color: var(--gr-color-text-accent); }
+.rail-item[aria-current="page"]::before { content: ""; position: absolute; left: calc(var(--gr-space-2) * -1); top: 25%; bottom: 25%; width: var(--gr-border-width-thick); background: var(--gr-color-text-accent); border-radius: 2px; }
+.rail-item .pi { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); flex: none; }
+.rail-brand { display: none; padding: var(--gr-space-2) var(--gr-space-3) var(--gr-space-4); }
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--gr-space-3); align-items: center; }
+.rail-foot .rail-list { width: 100%; }
+.rail-on[data-kind="app"] .topbar .alpha-tag { display: none; } /* the rail footer carries the alpha mark (SYS-05) */
+/* The rail with labels (1024 px and wider, or from 600 px with ?rail=b). */
+.rail-wide .rail-item { flex-direction: row; justify-content: flex-start; gap: var(--gr-space-3); min-height: 48px; padding: 0 var(--gr-space-3); font: var(--gr-type-body); text-align: left; }
+.rail-wide .rail-item span { overflow-wrap: normal; }
+.rail-wide .rail-foot { align-items: flex-start; }
+.rail-wide .rail-foot .alpha-tag { margin-left: var(--gr-space-3); }
+.rail-wide.brand-rail .rail-brand { display: block; }
+.rail-wide.brand-rail[data-kind="app"] .topbar > .wordmark { display: none; }
+.rail-wide.brand-rail[data-kind="app"] .topbar .top-home { display: block; }
+/* The reading column. --col is the free space on one side of the column inside .page: 40 rem of content plus the phone's
+   16 px padding on each side (42 rem), so the content is exactly 40 rem and every bar keeps its phone geometry. */
+.page { --col: max(0px, calc((100% - 42rem) / 2)); }
+.rail-on[data-kind="app"] .page > .topbar { padding-inline: calc(var(--col) + var(--gr-space-2)); }
+.rail-on[data-kind="app"] .page > .screen { padding-inline: calc(var(--col) + var(--gr-space-4)); padding-top: var(--gr-space-6); }
+.rail-on[data-kind="app"] .page > .foot { padding-inline: calc(var(--col) + var(--gr-space-4)); }
+.rail-on[data-kind="app"] .page > .net-bar { padding-inline: calc(var(--col) + var(--gr-space-4)); }
+.rail-on[data-kind="app"] .page > .bottom { padding-inline: var(--col); }
+.rail-on[data-kind="app"] .nav-glass .bottom, .nav-glass.rail-on[data-kind="app"] .bottom { background: var(--gr-color-bg-canvas); -webkit-backdrop-filter: none; backdrop-filter: none; } /* nothing passes under the dock on desktop */
+.rail-on[data-kind="app"] .dock { border-top: 0; background: none; padding-bottom: var(--gr-space-3); }
+.rail-on[data-kind="app"] .dock-field { background: var(--gr-color-bg-surface); }
+/* Visitor pages (landing, share view, public profile) and the account pages keep one column; the visitor pages may be a little wider. */
+@media (min-width: 600px) {
+  html[data-kind="pub"] #app { max-width: var(--gr-size-content-max); }
+  /* Sheets open as centred dialogs (prototype-directions §6). They keep their markup, order and focus handling;
+     only the placement changes: centred over the content area (to the right of the rail), all corners rounded,
+     a hairline edge, and a fade-and-rise instead of the slide from the bottom. */
+  .sheet { left: var(--rail-w); right: 0; top: 50%; bottom: auto; transform: translateY(-50%); max-width: min(30rem, calc(100% - var(--rail-w) - 2 * var(--gr-space-6))); max-height: min(85vh, calc(100vh - 2 * var(--gr-space-6))); border-radius: var(--gr-radius-sheet); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); padding-bottom: var(--gr-space-5); animation-name: gr-in; }
+  .sheet-report { max-height: min(85vh, calc(100vh - 2 * var(--gr-space-6))); }
+  .dialog { left: calc(var(--rail-w) + var(--gr-space-4)); }
+  #toast { left: var(--rail-w); bottom: 96px; }
+  .rail-on[data-kind="app"] .proto-note { text-align: left; padding-inline: calc(var(--col) + var(--gr-space-4)); }
+}
+@keyframes gr-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+/* Context column (1280 px and wider, ?side=hub): the Hub's week and archives sit beside the day and its question. */
+.hub-side { display: flex; flex-direction: column; gap: var(--gr-space-5); }
+.side-on .page > .screen-hub { --col: max(0px, calc((100% - 64rem) / 2)); display: grid; grid-template-columns: minmax(0, 40rem) minmax(0, 20rem); column-gap: var(--gr-space-8); align-items: start; }
+.side-on .screen-hub > * { grid-column: 1; }
+.side-on .screen-hub > .hub-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(56px + var(--gr-space-6)); }
+@media (forced-colors: active) { .rail-item[aria-current="page"]::before { background: Highlight; } .rail-item[aria-current="page"] { color: Highlight; } .skip { border-color: CanvasText; } }

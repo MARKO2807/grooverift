@@ -98,7 +98,8 @@
      "Smanji pokrete" or the OS setting (style.css). */
   const BOLT_PTS = '0,3.2 22,3 27,1.6 31,3.4 36,0 41,9.5 46,1.2 50,6.5 54,3 72,3 76,1.8 79,3.6 82,3 100,3';
   const BOLT_SPARKS = ['36,0 38.5,-2.4 40,-2', '41,9.5 39,13 40.5,14.5', '50,6.5 53,10 55,9.6 57,12.5'];
-  const bolt = () => `<svg class="wm-bolt" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="wm-g" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs><g class="bolt"><polyline class="bolt-line" points="${BOLT_PTS}" stroke="url(#wm-g)"/><polyline class="bolt-core" points="${BOLT_PTS}"/>${BOLT_SPARKS.map(p => `<polyline class="spark" points="${p}"/>`).join('')}</g></svg>`;
+  /* The gradient id must be unique per document: the desktop rail (session 17) renders a second wordmark with its own id. */
+  const bolt = (g = 'wm-g') => `<svg class="wm-bolt" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="${g}" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs><g class="bolt"><polyline class="bolt-line" points="${BOLT_PTS}" stroke="url(#${g})"/><polyline class="bolt-core" points="${BOLT_PTS}"/>${BOLT_SPARKS.map(p => `<polyline class="spark" points="${p}"/>`).join('')}</g></svg>`;
   const fieldErr = (id, msg) => `<p class="field-err" id="err-${id}">${ic('alert')}<span>${msg}</span></p>`;
 
   /* Password rules (D-061, amends D-054 at the owner's request): 12 code points minimum plus an upper-case letter, a
@@ -581,6 +582,30 @@
   const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
   const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
   if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
+  /* Desktop (session 17, prototype-directions §6; breakpoints from tokens.md §7, the rail from IA §4 and D-031).
+     Signed-in screens get a left rail instead of the bottom tab bar, the content sits in a 40 rem reading column and
+     sheets open as centred dialogs. The CSS lives in the "Desktop" block of style.css; the breakpoints are applied
+     here as classes on <html> so one set of rules can serve the three rail options (in the app this is plain CSS).
+       ?rail=a  collapsed rail (icon over label) from 600 px, rail with labels beside the icons from 1024 px  (RECOMMENDED)
+       ?rail=b  rail with labels from 600 px
+       ?rail=c  the bottom tab bar stays until 1024 px, then the rail with labels
+       ?brand=rail|top  with the wide rail, the wordmark moves into the rail and the top bar shows the page title (rail,
+                        RECOMMENDED), or it stays in the top bar (top)
+       ?side=none|hub   on 1280 px and wider: no context column (none, RECOMMENDED), or the Hub's week and archive move
+                        into a right-hand column (hub) */
+  const RAIL_AT = pick('rail', ['a', 'b', 'c'], 'a');
+  const BRAND_AT = pick('brand', ['rail', 'top'], 'rail');
+  const SIDE_AT = pick('side', ['none', 'hub'], 'none');
+  document.documentElement.classList.add('brand-' + BRAND_AT, 'side-' + SIDE_AT);
+  {
+    const medium = matchMedia('(min-width: 600px)'), expanded = matchMedia('(min-width: 1024px)'), wide = matchMedia('(min-width: 1280px)');
+    const apply = () => {
+      const on = RAIL_AT === 'c' ? expanded.matches : medium.matches, labels = RAIL_AT === 'b' ? medium.matches : expanded.matches;
+      const c = document.documentElement.classList;
+      c.toggle('rail-on', on); c.toggle('rail-wide', on && labels); c.toggle('side-on', on && wide.matches && SIDE_AT !== 'none');
+    };
+    apply(); [medium, expanded, wide].forEach(m => m.addEventListener('change', apply));
+  }
   /* Large text (D-073): the tab bar shows only the open tab's label (lt=a, chosen); ?lt=b|c show the rejected options and ?lth=full the rejected full-size headings. CSS: the large-text block in style.css. */
   const LT_AT = pick('lt', ['a', 'b', 'c'], 'a');
   document.documentElement.classList.add('lt-' + LT_AT);
@@ -745,14 +770,15 @@
   /* The programme under the Daily Drop: this week's Weekly Poll and Did You Know? (B2, sample content), the archives
      and "Predloži pitanje". How far back the archives reach is OPEN (OQ-28). */
   function hubProgramme() {
-    return `<section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
+    /* The .hub-side wrapper is for the desktop option ?side=hub (session 17): on 1280 px and wider it becomes a right-hand column. */
+    return `<div class="hub-side"><section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
         <article class="prog-card" aria-labelledby="h-poll"><p class="prog-tag">${pic('chart-bar-horizontal', 'prog-ic')}<span lang="en">Weekly Poll</span></p>
           <h3 id="h-poll" class="prog-t">Koje desetljeće ima najbolje debitantske albume?</h3><p class="prog-d">Rezultate vidiš kad glasaš. Zatvara se u nedjelju.</p>
           <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Weekly Poll (HUB-05) stiže u valu B2." data-k="poll">Glasaj</button></article>
         <article class="prog-card" aria-labelledby="h-dyk"><p class="prog-tag">${pic('lightbulb-filament', 'prog-ic')}<span lang="en">Did You Know?</span></p>
           <h3 id="h-dyk" class="prog-t">Kind of Blue Milesa Davisa snimljen je u samo dva dana snimanja, 1959.</h3><p class="prog-d">S izvorima. Provjerila redakcija.</p>
           <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Did You Know? (HUB-07) stiže u valu B2." data-k="dyk">Pročitaj</button></article></section>
-      <section class="section" aria-labelledby="h-arch"><h2 id="h-arch" class="section-title">Arhive</h2><ul class="past">${[['Daily Drop', 'Svako pitanje od prvog dana'], ['Weekly Poll', 'Sve ankete i rezultati'], ['Did You Know?', 'Sve priče s izvorima']].map(([t, d], i) => `<li><button class="past-item" data-a="toast" data-msg="Arhive (HUB-04, HUB-06, HUB-08) nisu dio ove skice." data-k="arch-${i}"><span class="past-q" lang="en">${t}</span><span class="past-date">${d}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul></section>${suggestBtn()}`;
+      <section class="section" aria-labelledby="h-arch"><h2 id="h-arch" class="section-title">Arhive</h2><ul class="past">${[['Daily Drop', 'Svako pitanje od prvog dana'], ['Weekly Poll', 'Sve ankete i rezultati'], ['Did You Know?', 'Sve priče s izvorima']].map(([t, d], i) => `<li><button class="past-item" data-a="toast" data-msg="Arhive (HUB-04, HUB-06, HUB-08) nisu dio ove skice." data-k="arch-${i}"><span class="past-q" lang="en">${t}</span><span class="past-date">${d}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul></section>${suggestBtn()}</div>`;
   }
 
   /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
@@ -2253,7 +2279,7 @@
     let mid;
     if (s.topBlank) mid = '<span class="top-title"></span>';
     else if (s.topTitle) mid = s.topH1 ? `<h1 class="top-title">${esc(s.topTitle)}</h1>` : `<span class="top-title">${esc(s.topTitle)}</span>`;
-    else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>`;
+    else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>${s.kind === 'app' ? '<span class="top-title top-home" aria-hidden="true">Početna</span>' : ''}`; // the desktop rail carries the wordmark, so Home's top bar shows its name (aria-hidden: the sr-only h1 already names it)
     const onb = s.kind === 'onb' || s.kind === 'bare' || s.kind === 'pub';
     return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}${netChip()}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
   }
@@ -2261,6 +2287,19 @@
     const T = [['home', 'Početna', 'home'], ['hub', 'Hub', 'hub'], ['activity', 'Aktivnost', 'bell'], ['profile', 'Profil', 'user']];
     return `<nav class="tabbar" aria-label="Glavna navigacija">${T.map(([id, l, i]) =>
       `<button class="tab" data-a="tab" data-t="${id}" data-k="tab-${id}"${active === id ? ' aria-current="page"' : ''}>${ic(i)}<span>${l}</span></button>`).join('')}</nav>`;
+  }
+  /* Desktop (session 17): the left rail. The same four destinations in the same order as the tab bar (WCAG 3.2.3), then
+     the items that live in the mobile top bar or the Profile: Settings, Help and feedback and the Alpha mark (IA9, SYS-05).
+     Only one of the rail and the tab bar is displayed at a time, so a screen reader hears one main navigation. Settings
+     and Help are marked current on their own screens, where the tab bar would mark Profile. */
+  function rail(s) {
+    const T = [['home', 'Početna', ic('home')], ['hub', 'Hub', ic('hub')], ['activity', 'Aktivnost', ic('bell')], ['profile', 'Profil', ic('user')]];
+    const help = st.screen === 'setsub' && ['help', 'fbform'].includes(st.sub);
+    const cur = help ? 'help' : st.screen === 'settings' || st.screen === 'setsub' ? 'settings' : s.tab;
+    const item = (id, l, svg, attrs) => `<li><button class="rail-item" ${attrs} data-k="rail-${id}"${cur === id ? ' aria-current="page"' : ''}>${svg}<span>${l}</span></button></li>`;
+    return `<nav class="rail" aria-label="Glavna navigacija"><span class="rail-brand wordmark">groove<span class="wm-rift">rift${bolt('wm-g-rail')}</span></span>
+      <ul class="rail-list">${T.map(([id, l, svg]) => item(id, l, svg, `data-a="tab" data-t="${id}"`)).join('')}</ul>
+      <div class="rail-foot"><ul class="rail-list">${item('settings', 'Postavke', pic('gear-six', 'rail-pi'), 'data-a="settings"')}${item('help', 'Pomoć', pic('question', 'rail-pi'), 'data-a="setsub" data-s="help"')}</ul><span class="alpha-tag">Alfa</span></div></nav>`;
   }
   function overlayHtml() {
     const o = st.overlay;
@@ -2424,13 +2463,17 @@
     if (standalone) shell += `<p class="proto-note">Skica 3.5: izmišljeni podaci, privremeni wordmark.</p>`;
     shell += topbar(s) + loadLine() + netBanner() + restrictBar();
     if (s.kind === 'onb' && !s.noProgress) shell += progress();
-    shell += `<main id="main" class="screen screen-${st.screen} kind-${s.kind}">${s.body}</main>`;
+    shell += `<main id="main" class="screen screen-${st.screen} kind-${s.kind}" tabindex="-1">${s.body}</main>`;
     if (s.foot) shell += `<div class="foot">${s.foot}</div>`;
     if (s.kind === 'app') shell += `<div class="bottom">${netPill()}${s.dock || ''}${tabbar(s.tab)}</div>`;
-    /* The file input for the profile photo and the feedback screenshot lives outside the shell, so it still opens
-       while a sheet is up (the shell is inert then). Nothing leaves the browser: the file is read into memory only. */
-    root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${shell}</div>${overlayHtml()}<input type="file" id="f-file" hidden accept="image/jpeg,image/png,image/webp">`;
+    /* Desktop (session 17): a skip link first (WCAG 2.4.1), the rail beside the page on signed-in screens (CSS decides
+       which of the rail and the tab bar shows), and the page column. The file input for the profile photo and the
+       feedback screenshot lives outside the shell, so it still opens while a sheet is up (the shell is inert then).
+       Nothing leaves the browser: the file is read into memory only. */
+    const skip = '<a class="skip" href="#main" data-a="skip-main">Preskoči na sadržaj</a>';
+    root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${skip}${s.kind === 'app' ? rail(s) : ''}<div class="page">${shell}</div></div>${overlayHtml()}<input type="file" id="f-file" hidden accept="image/jpeg,image/png,image/webp">`;
     root.dataset.screen = st.screen;
+    document.documentElement.dataset.kind = s.kind;
     if (st.swipeDir) { const m = root.querySelector('main'); if (m) m.classList.add('swipe-' + st.swipeDir); st.swipeDir = null; }
     if (s.kind === 'onb' && !s.noProgress) { const h = root.querySelector('main h1'); if (h) h.setAttribute('aria-describedby', 'prog-text'); }
     afterRender();
@@ -2621,6 +2664,7 @@
   const swMain = () => root.querySelector('main');
   root.addEventListener('pointerdown', e => {
     if (st.overlay || !TABS.includes(st.screen) || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.pointerType === 'mouse' && document.documentElement.classList.contains('rail-on')) return; // desktop: a mouse drag selects text, it does not switch tabs
     if (e.target.closest('input, textarea, select, canvas, .chips, [data-noswipe]')) return;
     sw = { x: e.clientX, y: e.clientY, t: performance.now(), h: null, id: e.pointerId };
   });
@@ -2649,6 +2693,7 @@
     if (!b || !root.contains(b)) return;
     const a = b.dataset.a;
     switch (a) {
+      case 'skip-main': e.preventDefault(); return focusSel('#main');
       case 'next': return next();
       case 'back': if (st.profDirty && st.screen === 'setsub' && st.sub === 'profile') return openOverlay({ type: 'discard' }, b); return back();
       case 'lang': return toast('U skici je samo hrvatski tekst. U aplikaciji se jezik mijenja ovdje na svakom koraku.');

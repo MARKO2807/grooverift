@@ -2,7 +2,8 @@
 // Smoke test for the refined prototype (design/prototypes/pulse) via the Chrome DevTools Protocol.
 // Node 22, no dependencies, offline (the live catalog is not used). Runs the whole flow at 360 px,
 // then checks the catalog-failure state, reduced motion (OS and the in-app setting), the Music DNA helix,
-// the review pages, and that the decided Daily Drop heading has no middle dot.
+// the review pages, and that the decided Daily Drop heading has no middle dot. Desktop runs (session 17) check the rail,
+// the 40 rem reading column, sheets as centred dialogs and the three rail options at 1366, 800, 599, 1024 and 1440 px.
 import { spawn } from 'node:child_process';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -583,6 +584,73 @@ const runs = [
     expect($('main h1').textContent.includes('novu osobu') && $('[data-k="inv-out"]') && $('[data-k="inv-stay"]'), 'another account: sign out or stay'); await click('[data-k="inv-out"]'); await sleep(120); expect(scr() === 'signin' && $('.toast-in').textContent.includes('pozivnice'), 'signed out with the hint'); return 'ok'; })()` },
   { name: 'r12d invite same email', url: `${base}?flow=drop&at=invsigned&same=1`, test: `(async () => {${HELPERS} expect($('main h1').textContent === 'Već imaš račun'); await click('[data-k="inv-home"]'); expect(scr() === 'home'); return 'ok'; })()` },
   { name: 'r12d Google address differs', url: `${base}?at=invmail`, test: `(async () => {${HELPERS} expect($('main h1').textContent.includes('jednu adresu') && document.body.textContent.includes('you@therift.com'), 'E4: the invite address is named'); await click('[data-k="inv-email"]'); expect(scr() === 'account', 'back to the account step'); return 'ok'; })()` },
+  /* Desktop (session 17): the rail, the reading column, sheets as dialogs. Sizes: 1366×800 (the rail with labels),
+     800×800 (the collapsed rail), 599 px (the phone layout stays), 1440×900 (the context column option). */
+  { name: 'desktop rail with labels 1366', url: `${base}?flow=drop`, w: 1366, h: 800, test: `(async () => {${HELPERS}
+    const h = document.documentElement, cs = el => getComputedStyle(el);
+    expect(h.classList.contains('rail-on') && h.classList.contains('rail-wide') && h.dataset.kind === 'app', 'rail on, with labels, app kind');
+    expect(cs($('.rail')).display === 'flex' && cs($('.tabbar')).display === 'none', 'the rail shows, the tab bar is hidden');
+    expect($$('.rail > .rail-list .rail-item').length === 4 && $$('.rail-foot .rail-item').length === 2 && $('.rail-foot .alpha-tag'), 'four destinations, settings, help and the alpha mark');
+    expect($$('.rail-item').map(b => b.textContent.trim()).join() === 'Početna,Hub,Aktivnost,Profil,Postavke,Pomoć', 'same order as the tab bar (WCAG 3.2.3)');
+    expect(Math.round($('.rail').getBoundingClientRect().width) === 240 && $('.rail').getBoundingClientRect().height >= innerHeight - 1, 'rail 15 rem wide and full height');
+    expect(cs($('.rail-brand')).display !== 'none' && cs($('.topbar > .wordmark')).display === 'none' && $('.topbar .top-home').offsetParent && cs($('.topbar .alpha-tag')).display === 'none', 'wordmark and alpha in the rail, the Home title in the top bar');
+    { const m = $('main'), r = m.getBoundingClientRect(); const inner = r.width - parseFloat(cs(m).paddingLeft) - parseFloat(cs(m).paddingRight); expect(Math.abs(inner - 640) < 1, 'reading column 40 rem, got ' + inner); expect(Math.abs((r.left + r.right) / 2 - (240 + (innerWidth - 240) / 2)) < 1, 'column centred beside the rail'); }
+    { const t = $('.topbar'), r = t.getBoundingClientRect(); expect(Math.abs(r.width - parseFloat(cs(t).paddingLeft) - parseFloat(cs(t).paddingRight) - 656) < 1, 'top bar keeps the phone geometry round the column'); }
+    const ids = $$('[id]').map(e => e.id); const dup = ids.filter((x, i) => ids.indexOf(x) !== i); expect(!dup.length, 'duplicate ids with the rail wordmark: ' + dup.join(','));
+    expect($('.skip') && $('.skip').getAttribute('href') === '#main' && ($('.skip').compareDocumentPosition($('.rail')) & Node.DOCUMENT_POSITION_FOLLOWING), 'skip link comes first');
+    $('.skip').click(); await sleep(50); expect(document.activeElement === $('#main'), 'skip link focuses the content');
+    await click('[data-k="rail-hub"]'); expect(scr() === 'hub' && $('[data-k="rail-hub"]').getAttribute('aria-current') === 'page', 'rail opens the Hub and marks it');
+    expect($('.hub-side') && cs($('.hub-side')).gridColumnStart !== '2', 'no context column by default (side=none)');
+    await click('[data-k="rail-settings"]'); expect(scr() === 'settings' && $('[data-k="rail-settings"]').getAttribute('aria-current') === 'page' && !$('[data-k="rail-profile"]').hasAttribute('aria-current'), 'settings marked in the rail, not Profile');
+    await click('[data-k="rail-help"]'); expect(scr() === 'setsub' && $('[data-k="rail-help"]').getAttribute('aria-current') === 'page' && !$('[data-k="rail-settings"]').hasAttribute('aria-current'), 'help marked in the rail');
+    await click('[data-k="rail-home"]'); expect(scr() === 'home', 'back Home from the rail');
+    /* A mouse drag selects text; a finger still swipes between tabs (tablet). */
+    const drag = async type => { const m = $('main'), o = { bubbles: true, pointerType: type, pointerId: 7, button: 0, isPrimary: true }; m.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ clientX: 400, clientY: 300 }, o))); await sleep(30); m.dispatchEvent(new PointerEvent('pointermove', Object.assign({ clientX: 300, clientY: 302 }, o))); await sleep(30); m.dispatchEvent(new PointerEvent('pointerup', Object.assign({ clientX: 300, clientY: 302 }, o))); await sleep(120); };
+    await drag('mouse'); expect(scr() === 'home', 'a mouse drag does not switch tabs on desktop');
+    await drag('touch'); expect(scr() === 'hub', 'a touch swipe still switches tabs');
+    return 'ok';
+  })()` },
+  { name: 'desktop sheet as a dialog', url: `${base}?flow=drop&at=drop`, w: 1366, h: 800, test: `(async () => {${HELPERS}
+    await click('[data-k="dock-field"]'); const s = $('.sheet'); expect(s && $('.shell[inert]'), 'compose sheet open');
+    const r = s.getBoundingClientRect(); expect(r.top > 24 && r.bottom < innerHeight - 24 && r.left > 240 && Math.abs((r.left + r.right) / 2 - (240 + (innerWidth - 240) / 2)) < 1 && r.width <= 480, 'sheet centred over the content as a dialog: ' + [r.top, r.bottom, r.left, r.right].map(Math.round).join());
+    expect(parseFloat(getComputedStyle(s).borderBottomLeftRadius) > 0, 'all corners rounded');
+    expect(document.activeElement === $('[data-k="f-ans"]'), 'focus in the field as on the phone');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await sleep(100); expect(!$('.sheet') && document.activeElement === $('[data-k="dock-field"]'), 'Escape closes and focus returns');
+    await click('[data-k="more-a3"]'); const m = $('.sheet'); expect(m, 'answer menu open');
+    const q = m.getBoundingClientRect(); expect(q.top > 24 && q.left > 240, 'menu sheet centred too');
+    await click('[data-k="m-mute"]'); const d = $('.dialog'); expect(d, 'mute dialog');
+    const e = d.getBoundingClientRect(); expect(Math.abs((e.left + e.right) / 2 - (240 + (innerWidth - 240) / 2)) < 1, 'dialog centred over the content');
+    return 'ok';
+  })()` },
+  { name: 'desktop collapsed rail 800', url: `${base}?flow=drop`, w: 800, h: 800, test: `(async () => {${HELPERS}
+    const h = document.documentElement, cs = el => getComputedStyle(el);
+    expect(h.classList.contains('rail-on') && !h.classList.contains('rail-wide'), 'rail on, collapsed');
+    expect(Math.round($('.rail').getBoundingClientRect().width) === 80 && cs($('.rail-item')).flexDirection === 'column', 'rail 80 px, icon over label');
+    expect(cs($('.rail-brand')).display === 'none' && cs($('.topbar > .wordmark')).display !== 'none' && !$('.topbar .top-home').offsetParent, 'wordmark stays in the top bar');
+    expect(cs($('.topbar .alpha-tag')).display === 'none' && $('.rail-foot .alpha-tag').offsetParent, 'alpha mark in the rail footer');
+    { const m = $('main'), r = m.getBoundingClientRect(); const inner = r.width - parseFloat(cs(m).paddingLeft) - parseFloat(cs(m).paddingRight); expect(Math.abs(inner - 640) < 1, 'reading column 40 rem at 800 px, got ' + inner); }
+    await click('[data-a="open-drop"]'); expect(scr() === 'drop', 'drop page'); await click('[data-k="dock-field"]'); const s = $('.sheet'); const r = s.getBoundingClientRect(); expect(r.left > 80 && r.top > 24 && r.width <= 480, 'dialog beside the collapsed rail');
+    return 'ok';
+  })()` },
+  { name: 'desktop keeps the phone layout at 599', url: `${base}?flow=drop`, w: 599, h: 800, test: `(async () => {${HELPERS}
+    const h = document.documentElement, cs = el => getComputedStyle(el);
+    expect(!h.classList.contains('rail-on') && cs($('.rail')).display === 'none' && cs($('.tabbar')).display === 'flex', 'tab bar, no rail');
+    expect(Math.round($('#app').getBoundingClientRect().width) === 480 && $('.topbar .alpha-tag').offsetParent, '30 rem column, alpha in the top bar');
+    await click('[data-a="open-drop"]'); expect(scr() === 'drop', 'drop page'); await click('[data-k="dock-field"]'); await sleep(300); const r = $('.sheet').getBoundingClientRect(); expect(Math.abs(r.bottom - innerHeight) < 1 && parseFloat(getComputedStyle($('.sheet')).borderBottomLeftRadius) === 0, 'bottom sheet at 599 px: ' + Math.round(r.bottom) + '/' + innerHeight);
+    return 'ok';
+  })()` },
+  { name: 'desktop rail b (wide from 600)', url: `${base}?flow=drop&rail=b`, w: 800, h: 800, test: `(async () => {${HELPERS} const h = document.documentElement; expect(h.classList.contains('rail-on') && h.classList.contains('rail-wide') && Math.round($('.rail').getBoundingClientRect().width) === 192, 'labels beside icons at 800 px, rail clamped to 12 rem'); return 'ok'; })()` },
+  { name: 'desktop rail c (tab bar to 1024) at 800', url: `${base}?flow=drop&rail=c`, w: 800, h: 800, test: `(async () => {${HELPERS} const h = document.documentElement; expect(!h.classList.contains('rail-on') && getComputedStyle($('.tabbar')).display === 'flex', 'tab bar stays at 800 px'); return 'ok'; })()` },
+  { name: 'desktop rail c at 1024', url: `${base}?flow=drop&rail=c`, w: 1024, h: 768, test: `(async () => {${HELPERS} const h = document.documentElement; expect(h.classList.contains('rail-on') && h.classList.contains('rail-wide'), 'rail with labels from 1024 px'); return 'ok'; })()` },
+  { name: 'desktop brand in the top bar', url: `${base}?flow=drop&brand=top`, w: 1366, h: 800, test: `(async () => {${HELPERS} const cs = el => getComputedStyle(el); expect(cs($('.rail-brand')).display === 'none' && cs($('.topbar > .wordmark')).display !== 'none' && !$('.topbar .top-home').offsetParent, 'wordmark in the top bar, none in the rail'); return 'ok'; })()` },
+  { name: 'desktop context column (side=hub) 1440', url: `${base}?flow=drop&at=hub&side=hub`, w: 1440, h: 900, test: `(async () => {${HELPERS}
+    const h = document.documentElement, cs = el => getComputedStyle(el);
+    expect(h.classList.contains('side-on') && cs($('.hub-side')).gridColumnStart === '2', 'the week and archives in the right column');
+    expect($('.hub-side').getBoundingClientRect().left > $('#h-teaser').getBoundingClientRect().right && $('.hub-side').getBoundingClientRect().top < 200, 'beside the question, from the top');
+    await click('[data-k="day-2026-10-30"]'); expect($('#h-teaser').textContent === 'Koji koncert pamtiš do danas?' && cs($('.hub-side')).gridColumnStart === '2', 'a past day keeps the column');
+    return 'ok';
+  })()` },
+  { name: 'desktop page', url: base.replace('index.html', 'desktop.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 29) throw new Error('29 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12d page', url: base.replace('index.html', 'round12d.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 47) throw new Error('47 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12c page', url: base.replace('index.html', 'round12c.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 33) throw new Error('33 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12b page', url: base.replace('index.html', 'round12b.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 34) throw new Error('34 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
