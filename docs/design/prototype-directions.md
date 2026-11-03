@@ -113,10 +113,11 @@ These items should be settled in the chosen direction or in step 3.8.
   - blocked placeholders (D-019)
   - the missing-question day (J3 E2)
   - long text and long Croatian names
-- 200 % text zoom (320 px reflow is done).
+- ~~200 % text zoom (320 px reflow is done).~~ Done in session 13 (D-073): a large-text mode, review page `pulse/large-text.html`, check `tools/zoom-check.mjs` (49 screens pass at 100, 150 and 200 %, and at 320 px).
 - Desktop adaptation: rail (D-031) at 600 px and 1024 px, a reading column of 40 rem, and the sheet as a centered dialog on wide screens.
 - Screen reader pass (Narrator is built into Windows; NVDA would need installing, which needs owner approval) and a Windows high-contrast check.
-- "Smanji pokrete" in the real settings structure (it lives on the Profile screen in the prototype).
+- ~~"Smanji pokrete" in the real settings structure~~ Done by D-063 (Settings screen).
+- ~~Catalogue cards in the comment form (D-068)~~ Done in session 13.
 
 ## 7. Refinement of C (session 9)
 

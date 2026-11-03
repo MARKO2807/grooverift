@@ -558,7 +558,7 @@
   const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
   const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
   if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
-  /* Large text (200 % zoom pass, session 13): how the tab bar copes when the labels no longer fit. ?lt=a|b|c, see the large-text block in style.css. */
+  /* Large text (D-073): the tab bar shows only the open tab's label (lt=a, chosen); ?lt=b|c show the rejected options and ?lth=full the rejected full-size headings. CSS: the large-text block in style.css. */
   const LT_AT = pick('lt', ['a', 'b', 'c'], 'a');
   document.documentElement.classList.add('lt-' + LT_AT);
   if (pick('lth', ['step', 'full'], 'step') === 'full') document.documentElement.classList.add('lth-full');

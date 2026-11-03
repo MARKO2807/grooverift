@@ -1,6 +1,6 @@
 # Session handoff
 
-_Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
+_Session 13, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
@@ -9,6 +9,11 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
+- **Session 13: comment cards and 200 % text (D-073).**
+  - Comments take catalogue cards (D-068). `refsEditor(k)` and `refResults(k)` serve both slots through `RS` (`ans`: `draftRefs`/`refQ`/`refOpen`; `com`: `comRefs`/`comRefQ`/`comRefOpen`, ids with the `-com` suffix). Buttons carry `data-s`. `clearRefs(k)`; `REF_MAX = 3`. Comments store `refs`; Luka's seeded comment on a1 has a card.
+  - Large-text mode: the `@media (max-width: 17.5em)` blocks at the end of `style.css`. Em media queries follow the browser text size (and Chrome page zoom), so it runs on a 360 px phone from about 130 % text. Spacing tokens become px; heading tokens become `max(<normal px>, 1rem + step)`. `?lt=a|b|c` (tab bar, a chosen) and `?lth=full` (rejected full-size headings) are classes on `<html>`. The visibility comparison table has explicit ARIA roles so it can stack.
+  - `tools/zoom-check.mjs [--scale=2] [--w=360] [--h=740] [--shots=<dir outside the repo>] [query ...]` uses CDP `Page.setFontSizes`; shots are the first screen and the bottom. Exit code 1 on findings.
+  - `pulse/large-text.html` frames are 180×370 iframes at CSS `zoom: 2` (page zoom), which also triggers the mode; `viewer.html` links rounds 10, 11 and this page.
 - **Session 12: round 10, key states and settings flows (D-070, OQ-32).**
   - Review page: `pulse/round10.html` (8 choice sections, then "Napravljeno bez izbora"; 43 frames). The owner took every recommendation except notifications: no social emails in the alpha (OQ-32), so the notifications are push only and "Sažetak tjedna" is gone. Round 11 (`pulse/round11.html`, D-071) chose the look: `ntf=d`, one "this phone" switch on top (`st.pushDev`, action `push-dev`) over the types in `fieldset.ntf-types`. `?ntf=c|e|f` show the other looks. D-072 added the pause (`st.pause`, actions `pause` and `pause-end`, `&pause=1h|3h|am` in the URL; the sketch clock is a fixed 18:40) and confirmed R-15 to R-18.
   - **Owner rule (session 12):** every open point goes to the owner as a survey (AskUserQuestion) with the example and the reason inside the question.
@@ -122,21 +127,21 @@ _Session 12, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 46/46 (session 12).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 46/46 (session 13).
+  - `node design/prototypes/tools/zoom-check.mjs` passes 49/49 at 200 % (also `--scale=1.5`, `--scale=1`, `--w=320 --h=568`).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
 1. **Rest of the 3.5 refinement** (effort: High), per `prototype-directions.md` §6. The owner liked the Spirala (genre-matched pulse speed, soft classical colours), the current under the Daily Drop name and the dock orbit; keep them. The key states are done (D-070).
-   - 200 % zoom
    - desktop: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
-2. **Round 12: all remaining alpha screens (owner chose "sve").** Go group by group, each with a `pulse/round12*.html` page and a survey: (a) other profiles and lists, (b) member safety, (c) signed-out and sign-in, (d) the rest and system screens. The exact screen IDs are in STATUS "Next". Settings are done (D-070 to D-072); the catalogue-card picker in the comment form (D-068) is still open.
-3. **200 % zoom pass** on every screen (owner asked for it explicitly; also part of item 1).
-4. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
-5. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.
-6. **Real-phone test:** `design/prototypes/tools/serve.mjs` serves the prototypes read-only on the home network. Start it only when the owner asks, and follow the port rule.
-7. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
+   - 200 % text and the comment cards are done (session 13, D-073); re-run `zoom-check.mjs` after layout changes.
+2. **Round 12: all remaining alpha screens (owner chose "sve").** Go group by group, each with a `pulse/round12*.html` page and a survey: (a) other profiles and lists, (b) member safety, (c) signed-out and sign-in, (d) the rest and system screens. The exact screen IDs are in STATUS "Next". Settings are done (D-070 to D-072). New screens must pass `zoom-check.mjs`.
+3. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
+4. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.
+5. **Real-phone test:** `design/prototypes/tools/serve.mjs` serves the prototypes read-only on the home network. Start it only when the owner asks, and follow the port rule.
+6. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
 
 ## Open owner questions
 - **From 3.5 (copy, for 3.8):**

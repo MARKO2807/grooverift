@@ -33,6 +33,7 @@
 <body>
 <div class="page">
   <h1>Velika slova: tekst na 200 %</h1>
+  <p style="color:var(--gr-color-text-primary)"><b>Odabrano (D-073):</b> kartice A (natpis samo na otvorenoj kartici) i naslovi A (rastu manje od teksta). To je sad zadano u skici.</p>
   <p>Ovako aplikacija izgleda kad netko na mobitelu postavi najveća slova. Okviri su prava skica i sve se može klikati. Prikazani su kao zoom stranice od 200 %, pa su ikone i razmaci malo veći nego kad se povećaju samo slova.</p>
   <p>Što se mijenja kad su slova velika: razmaci više ne rastu, logo u gornjoj traci ostaje iste veličine, a stvari koje stoje jedna do druge slažu se jedna ispod druge. Tekst nigdje nije odrezan i stranica se ne pomiče lijevo-desno. To je provjereno na 49 ekrana, na 100 %, 150 % i 200 %, i na 320 px širine.</p>
 
@@ -51,7 +52,7 @@
 <script>
 (function () {
   const frame = (q, t) => `<div class="phone"><iframe title="${t}" loading="lazy" src="index.html?${q}"></iframe><small>${t}</small></div>`;
-  const opt = (t, tag, d, frames) => `<div class="opt"><h3>${t}${tag ? ' <span class="rec">preporuka</span>' : ''}</h3><div class="frames">${frames}</div><p>${d}</p></div>`;
+  const opt = (t, tag, d, frames) => `<div class="opt"><h3>${t}${tag ? ' <span class="rec">odabrano</span>' : ''}</h3><div class="frames">${frames}</div><p>${d}</p></div>`;
   document.getElementById('tabs').innerHTML = [
     ['a', 'A. Natpis samo na otvorenoj kartici', 1, 'Otvorena kartica ima ikonu i ime, ostale samo ikonu. Ovako radi Android (Material). Uvijek znaš gdje si, a ikone su poznate.'],
     ['b', 'B. Svi natpisi, ali manji', 0, 'Svi natpisi ostaju, ali samo oni narastu tek malo (najviše 15 px). Sve je vidljivo, ali ti natpisi nisu na 200 %. Uz zoom stranice (kao u ovim okvirima) i dalje se preklapaju.'],

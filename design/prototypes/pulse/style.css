@@ -1023,7 +1023,7 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
   .portraits li { width: 6.5em; }
   .set-row-switch, .set-row-dev { grid-template-columns: 1fr; row-gap: var(--gr-space-2); }
   .set-row-switch > .switch, .set-row-dev > .switch { justify-self: start; }
-  /* Tab bar: ?lt=a shows the label of the open tab only, b keeps every label at a capped size, c shows icons only.
+  /* Tab bar (D-073): a, chosen, shows the label of the open tab only; b (capped labels) and c (icons only) were rejected.
      Hidden labels stay in the accessibility tree, so screen readers still hear every tab name. */
   .lt-a .tab:not([aria-current]) span, .lt-c .tab span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .lt-a .tab[aria-current="page"] { flex: 2.2; }

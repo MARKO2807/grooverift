@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-03 (session 12)_
+_Last updated: 2026-11-03 (session 13)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -21,7 +21,7 @@ _Last updated: 2026-11-03 (session 12)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-072. Key ones:
+- Decisions D-001 to D-073. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -83,6 +83,7 @@ _Last updated: 2026-11-03 (session 12)_
     - **Round 9 (D-067):** "Dodaj app", the sample address you@therift.com, a three-word capitalised display name, darker and livelier heavy genres in the Spirala, "Odustani" and a living field for comments, all Settings sub-screens. Chosen (D-068): a short 18+ confirmation, faces for "all answers", answers only on past days, Activity by day, three-column profile counts, comments as text plus catalogue cards (images from B1).
     - **D-069:** @username changes once every 30 days, old name reserved 30 days; "Ukloni pratitelja" for private profiles (JO1, approved); naming odgovor / komentar / reakcija.
     - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`. **D-071:** the notifications screen has one switch for this phone on top, the types below (`pulse/round11.html`). **D-072:** reactions off by default, a pause (1 h, 3 h, until 08:00) added to the alpha, R-15 to R-18 confirmed (followers stay when going private, notice to the old email, password change signs out other devices, silent unblock).
+    - **Large text (session 13, D-073):** a large-text mode for 200 % text: spacing stops growing, layouts stack, the tab bar shows only the open tab's label, and headings grow by a step over body text (the owner accepted the strict WCAG 1.4.4 reading as a risk). Comments now take catalogue cards (D-068). Review page `pulse/large-text.html`.
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -95,9 +96,8 @@ _Last updated: 2026-11-03 (session 12)_
 
 ## Next
 1. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
-   - 200 % zoom and the desktop adaptation.
+   - The desktop adaptation: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog. (200 % text and the comment cards are done, session 13.)
    - Screen reader (Narrator) and high-contrast checks.
-   - The catalogue-card picker in the comment form (D-068).
 2. **Round 12, all remaining alpha screens (owner: "sve"),** one group at a time, each as a round page and a survey: (a) other members' profiles and lists (PROF-01 public and private, PROF-03, PROF-07 with "Ukloni pratitelja", ACT-02); (b) member safety (SAFE-01 to SAFE-05, SAFE-07); (c) signed-out and sign-in (PUB-01, PUB-03, PUB-04, PUB-06, PUB-07, PUB-08); (d) the rest (PROF-09 DNA editor, PROF-08 photo, SET-12 feedback form, SYS-02, SYS-04, the Hub before the first Drop).
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
@@ -123,6 +123,7 @@ _Last updated: 2026-11-03 (session 12)_
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.
 5. Missing production wordmark and vector logo (B-01, D-011). The wordmark accent brief is settled again (D-058, bolt N2).
 6. Trademark: "RIFT" marks in classes 9/41 (gamigo EU, Meta, LOST RIFT); attorney assessment needed before filing or brand spend.
+7. Accessibility interpretation: large-text headings grow by a step, not to 200 % (D-073, owner-accepted). Confirm in the 3.9 accessibility review.
 
 ## Code
 No application code. No dependencies installed.
@@ -131,7 +132,8 @@ No application code. No dependencies installed.
 - `design/prototypes/pulse/` holds the refined direction C. It includes `wordmark.html` (the D-058 bolt options, with the D-055 rounds archived), `invite-current.html` and `invite-current.js` (the D-058 invite current; the app uses variant I4 "branch"), `invite-layout.html` (the D-059 layouts in phone frames), `round6.html` (the D-060 options in phone frames), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 46/46 (session 12).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 46/46 (session 13; the flow check now covers the comment cards).
+  - `zoom-check.mjs` checks 49 screens at a raised browser text size (`--scale=2` by default) for sideways scrolling, clipped text and oversized bars; all pass at 100, 150 and 200 %, and at 320 px.
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
