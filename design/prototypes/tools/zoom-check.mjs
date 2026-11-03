@@ -26,7 +26,11 @@ const DEFAULT = [
   ...SUBS.map(s => `flow=drop&at=setsub&s=${s}`),
   'flow=drop&at=setsub&s=delete&step=confirm', 'flow=drop&at=settings&show=logout',
   'at=signin', 'at=pending', 'flow=drop&at=member&as=blocker',
-  'flow=drop&at=home&state=loading', 'flow=drop&at=drop&state=error', 'flow=drop&at=drop&state=empty', 'flow=drop&at=home&state=nodrop', 'flow=drop&at=drop&state=long', 'flow=drop&at=home&net=off'
+  'flow=drop&at=home&state=loading', 'flow=drop&at=drop&state=error', 'flow=drop&at=drop&state=empty', 'flow=drop&at=home&state=nodrop', 'flow=drop&at=drop&state=long', 'flow=drop&at=home&net=off',
+  // round 12a: other members' profiles, lists and requests
+  'flow=drop&at=member&who=petra.zvuk&rel=none', 'flow=drop&at=member&who=petra.zvuk&rel=mut', 'flow=drop&at=member&who=mia_vinyl&rel=none', 'flow=drop&at=member&who=nika.rework&rel=none&rbtn=b',
+  'flow=drop&at=member&who=petra.zvuk&rel=mut&show=unfollow', 'flow=drop&at=mdrops&who=petra.zvuk&rel=fol', 'flow=drop&at=activity&private=1', 'flow=drop&at=follows&list=followers&private=1',
+  'flow=drop&at=follows&list=following', 'flow=drop&at=requests&private=1', 'flow=drop&at=follows&list=followers&private=1&show=remove&h=lukabass'
 ];
 const queries = args.filter(a => !a.startsWith('--'));
 const list = queries.length ? queries : DEFAULT;

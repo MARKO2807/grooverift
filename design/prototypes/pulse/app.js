@@ -73,7 +73,10 @@
     sort: 'foryou', mine: null, draft: '', draftRefs: [], refQ: '', refOpen: false, editing: false,
     expanded: new Set(), pending: null, newTimer: null,
     ctx: null, commentDraft: '', comRefs: [], comRefQ: '', comRefOpen: false,
-    overlay: null
+    overlay: null,
+    /* Round 12a: the member whose profile or answer history is open, the open follower list, pending requests the
+       viewer sent, and what the viewer did with requests received (handle → 'ok' | 'no'). */
+    who: null, listOf: null, list: 'followers', req: new Set(), reqDone: {}
   };
   DNA.setSource(() => ({ genres: st.genres.slice(), artists: st.artists.map(a => ({ name: a.name, g: a.g || [] })) }));
 
@@ -357,7 +360,7 @@
       ${a.mine && !o.full ? '<p class="ans-label">Tvoj odgovor</p>' : ''}
       <header class="ans-head">
         ${avatar(a.handle, a.who)}
-        <h${hl} class="ans-who" id="h-${a.id}" tabindex="-1"><span class="name">${esc(a.who)}</span><span class="sr-only">, </span><span class="handle">@${esc(a.handle)}</span></h${hl}>
+        <h${hl} class="ans-who" id="h-${a.id}" tabindex="-1">${whoLink(a, 'who-' + a.id)}<span class="sr-only">, </span><span class="handle">@${esc(a.handle)}</span></h${hl}>
         <span class="ans-time"><time>${a.time}</time>${a.edited ? '<span class="edited">uređeno</span>' : ''}</span>
         ${a.mine ? '' : `<button class="iconbtn ans-more" data-a="more" data-id="${a.id}" data-k="more-${a.id}" aria-label="Više opcija: odgovor korisnika ${esc(a.who)}">${ic('more')}</button>`}
       </header>
@@ -871,7 +874,7 @@
   function actRow(x, i) {
     const lead = x.who ? avatar(x.who, (D.members[x.who] || { who: x.who }).who, 'sm') : `<span class="act-ic" aria-hidden="true">${x.t === 'drop' ? pic('calendar-dots') : ic('check', 'sm')}</span>`;
     const tail = x.t === 'react' ? `<span class="act-wave" aria-hidden="true">${WAVE}</span>` : '';
-    const btns = x.t === 'req' ? `<span class="act-btns"><button class="btn btn-primary btn-sm" data-a="toast" data-msg="Zahtjev prihvaćen (simulacija)." data-k="act-ok-${i}">Prihvati</button><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Zahtjev odbijen (simulacija). Mia to ne vidi." data-k="act-no-${i}">Odbij</button></span>` : '';
+    const btns = x.t === 'req' ? `<span class="act-btns"><button class="btn btn-primary btn-sm" data-a="req-ok" data-h="${x.who}" data-k="act-ok-${i}">Prihvati</button><button class="btn btn-secondary btn-sm" data-a="req-no" data-h="${x.who}" data-k="act-no-${i}">Odbij</button></span>` : '';
     return `<li class="act${x.unread ? ' act-new' : ''}">${lead}<div class="act-body"><p class="act-txt">${x.txt}${x.unread ? '<span class="sr-only">, novo</span>' : ''}</p><p class="act-time">${x.time}</p>${btns}</div>${tail}</li>`;
   }
   function activityBody() {
@@ -880,16 +883,19 @@
     if (STATE === 'loading') return skel(5, 'act');
     if (STATE === 'error' && !st.loadOk) return loadErr('Obavijesti se nisu učitale.', 'retry-act');
     if (STATE === 'empty') return emptyBox(ic('bell', 'empty-ic'), 'Još nema obavijesti.', 'Ovdje stižu komentari, reakcije i novi pratitelji.');
-    let items = ACT_ITEMS.map((x, i) => [x, i]);
-    let head = '';
+    /* Round 12a: follow requests exist only while the profile is private (J4). Option a (and c) puts one row on top
+       that opens ACT-02; b (and c) keeps them inline as in D-068. */
+    const pend = pendingReqs();
+    let items = ACT_ITEMS.filter(x => x.t !== 'req' || (REQ_AT !== 'a' && pend.includes(x.who))).map((x, i) => [x, i]);
+    let head = pend.length && REQ_AT !== 'b' ? `<button class="all-c req-entry" data-a="open-requests" data-k="open-requests"><span class="stack" aria-hidden="true">${pend.slice(0, 3).map(h => avatar(h, member(h).who, 'xs')).join('')}</span><span>Zahtjevi za praćenje<b class="req-n">${pend.length}</b></span>${ic('chevron', 'sm')}</button>` : '';
     if (ACT_AT === 'b') {
       const reqs = items.filter(([x]) => x.t === 'req');
       items = items.filter(([x]) => x.t !== 'req');
-      head = `<section class="act-req" aria-labelledby="h-req"><h2 id="h-req" class="set-gt">Zahtjevi za praćenje <span class="count">${reqs.length}</span></h2><ul class="act-list">${reqs.map(([x, i]) => actRow(x, i)).join('')}</ul></section>`;
+      head += `<section class="act-req" aria-labelledby="h-req"><h2 id="h-req" class="set-gt">Zahtjevi za praćenje <span class="count">${reqs.length}</span></h2><ul class="act-list">${reqs.map(([x, i]) => actRow(x, i)).join('')}</ul></section>`;
     }
     if (ACT_AT === 'c') {
       const f = st.actF || 'Sve';
-      head = `<fieldset class="sort act-filter"><legend class="sr-only">Prikaži</legend>${['Sve', 'Komentari', 'Reakcije', 'Praćenja', 'Daily Drop'].map(v => `<label><input type="radio" name="actf" value="${v}" data-k="actf-${v}"${f === v ? ' checked' : ''}><span>${v}</span></label>`).join('')}</fieldset>`;
+      head += `<fieldset class="sort act-filter"><legend class="sr-only">Prikaži</legend>${['Sve', 'Komentari', 'Reakcije', 'Praćenja', 'Daily Drop'].map(v => `<label><input type="radio" name="actf" value="${v}" data-k="actf-${v}"${f === v ? ' checked' : ''}><span>${v}</span></label>`).join('')}</fieldset>`;
       if (f !== 'Sve') items = items.filter(([x]) => ACT_KIND[x.t] === f);
     }
     const groups = [];
@@ -898,10 +904,11 @@
       + '<p class="meta">Primjeri su izmišljeni. Zahtjevi za praćenje stižu samo ako je profil privatan.</p>';
   }
 
-  /* Profile counts row, four ways. P1: no follower-count heroics, so the numbers stay small. */
+  /* Profile counts row, four ways. P1: no follower-count heroics, so the numbers stay small. Since round 12a the
+     chosen row (b) counts the real fictional lists (data.js follows) and each number opens its list. */
   function profRow() {
     const a = st.mine ? 1 : 0;
-    if (PROW_AT === 'b') return `<dl class="prow-b"><div><dd>12</dd><dt>pratitelja</dt></div><div><dd>18</dd><dt>prati</dt></div><div><dd>${a}</dd><dt>${plAns(a)}</dt></div></dl>`;
+    if (PROW_AT === 'b') return countsRow(ME_H, true);
     if (PROW_AT === 'c') return `<p class="prow-c"><button class="prow-chip" data-a="toast" data-msg="Popis pratitelja (PROF-07) nije dio skice." data-k="prow-1"><b>12</b> pratitelja</button><button class="prow-chip" data-a="toast" data-msg="Popis praćenih (PROF-07) nije dio skice." data-k="prow-2"><b>18</b> prati</button><span class="prow-chip prow-dd">${ic('pulse', 'sm')}<b>${a}</b> ${plAns(a)}</span></p>`;
     if (PROW_AT === 'd') return `<p class="prow-d"><button class="link-quiet" data-a="toast" data-msg="Popis pratitelja (PROF-07) nije dio skice." data-k="prow-1"><b>12</b> pratitelja</button><span aria-hidden="true">·</span><button class="link-quiet" data-a="toast" data-msg="Popis praćenih (PROF-07) nije dio skice." data-k="prow-2">prati <b>18</b></button><span aria-hidden="true">·</span><span>član od listopada 2026.</span></p>`;
     return `<p class="pf-c-stats"><span><b>12</b> pratitelja</span><span>prati <b>18</b></span><span><b>${a}</b> ${plAns(a)}</span></p>`;
@@ -1200,6 +1207,156 @@
     return '';
   }
 
+  /* ---------- Round 12a (owner, session 14): other members' profiles (PROF-01, PROF-03), the follower lists (PROF-07,
+     with "Ukloni pratitelja", D-069) and follow requests (ACT-02). Options compared in round12a.html. ----------
+     ?flow=drop&at=member&who=<handle>   another member's profile (default petra.zvuk; as=blocker|blocked use mia_vinyl)
+     &rel=none|req|fol|mut|fy            the viewer's side: nothing, requested, following, Mutual, "follows you" only
+     ?at=follows&list=followers|following&who=<handle>   a follower list (default: the viewer's own); &private=1 enables "Ukloni"
+     ?at=requests&private=1              follow requests (ACT-02)      ?at=mdrops&who=<handle>   the answer history (PROF-03)
+     &show=unfollow|cancel|remove|menu   opens that sheet or dialog on load (&h=<handle> for remove)
+     ?rbtn=a|b    the relationship button: a wide row under the header, or b next to the name with ⋯ in the top bar
+     ?mutual=a|b  a: the button itself says "Uzajamni"; b: the button stays "Pratiš" and a chip by the name says "Uzajamni"
+     ?pst=a|b|c   the private profile: a quiet block, b one line under the bio, c a card that holds the request button
+     ?hist=a|b|c  answer history rows: a date and question only, b answer cards, c question plus the first lines
+     ?req=a|b|c   follow requests: a one row on top of Activity that opens ACT-02, b inline in Activity (D-068), c both
+     ?fl=a|b      the lists: a one screen with two tabs, b two screens      ?rm=a|b   remove a follower: a button, b ⋯ per row
+     Who sees what follows J4: hidden sections are omitted, never shown locked; counts show only to viewers who may see
+     the list (D-033, U-13); a private profile shows the header and the request button only (P state). */
+  const RBTN_AT = pick('rbtn', ['a', 'b'], 'a');
+  const MUT_AT = pick('mutual', ['a', 'b'], 'b');
+  const PST_AT = pick('pst', ['a', 'b', 'c'], 'a');
+  const HIST_AT = pick('hist', ['a', 'b', 'c'], 'c');
+  const REQ_AT = pick('req', ['a', 'b', 'c'], 'a');
+  const FL_AT = pick('fl', ['a', 'b'], 'a');
+  const RM_AT = pick('rm', ['a', 'b'], 'a');
+  const ME_H = 'ana.slusa'; // the signed-in member in the follow graph (data.js)
+  const isMe = h => h === ME_H || (st.username && h === st.username);
+  const FOLLOWS = D.follows.map(p => p.slice());
+  const follows = (a, b) => FOLLOWS.some(p => p[0] === a && p[1] === b);
+  function setFollow(a, b, on) { const i = FOLLOWS.findIndex(p => p[0] === a && p[1] === b); if (i >= 0) FOLLOWS.splice(i, 1); if (on) FOLLOWS.push([a, b]); }
+  const followersOf = h => FOLLOWS.filter(p => p[1] === h).map(p => p[0]);
+  const followingOf = h => FOLLOWS.filter(p => p[0] === h).map(p => p[1]);
+  const member = h => isMe(h)
+    ? { who: st.displayName || 'Ana', dna: st.genres, artists: st.artists.map(a => a.name), bio: BIO, vis: st.vis || 'public', dnaVis: st.dnaVis || 'all', hist: st.histVis || 'same', lists: st.lists || 'followers', me: true }
+    : (D.members[h] || { who: h, dna: [], vis: 'public' });
+  /* The viewer's relationship with h: fol = I follow h, fy = h follows me, req = my request to h is pending. */
+  const rel = h => ({ fol: follows(ME_H, h), fy: follows(h, ME_H), req: st.req.has(h) });
+  /* What the viewer may see of h, from h's own settings. */
+  const canSee = h => { const m = member(h); return !!m.me || m.vis !== 'private' || rel(h).fol; };
+  const seeDna = h => { const m = member(h), v = m.dnaVis || 'all'; return !!m.me || (canSee(h) && (v === 'all' || (v === 'followers' && rel(h).fol))); };
+  const seeHist = h => { const m = member(h), v = m.hist || 'same'; return !!m.me || (canSee(h) && (v === 'same' || (v === 'followers' && rel(h).fol))); };
+  const seeLists = h => { const m = member(h), v = m.lists || 'followers'; return !!m.me || (canSee(h) && (v === 'all' || (v === 'followers' && rel(h).fol))); };
+  /* Requests to the viewer exist only while the viewer's profile is private. */
+  const pendingReqs = () => st.vis === 'private' ? D.requests.filter(h => !st.reqDone[h]) : [];
+  /* A member's Daily Drop answers: today's from the question page, then the fictional earlier ones. */
+  function dropsOf(h) {
+    const m = member(h), out = [];
+    const today = m.me ? st.mine : allAnswers().find(a => a.handle === h);
+    if (today) out.push({ date: D.drop.date, q: D.drop.question, text: today.text, lang: today.lang, today: true });
+    (m.drops || []).forEach(x => { const p = D.pastDrops[x.d]; if (p) out.push({ date: p.date, q: p.q, text: x.text, lang: m.lang }); });
+    return out;
+  }
+  /* A name that opens the member's profile (answers, comments). Own answers keep the plain name. */
+  const whoLink = (a, k) => a.mine || isMe(a.handle) ? `<span class="name">${esc(a.who)}</span>` : `<button class="who-link" data-a="open-member" data-h="${esc(a.handle)}" data-k="${k}"><span class="name">${esc(a.who)}</span></button>`;
+  const dnaFixed = (key, m, h) => `<canvas class="dna" data-dna="${key}" data-genres="${esc((m.dna || []).join('|'))}" data-artists="${esc((m.artists || []).join('|'))}" data-h="${h}" aria-hidden="true"></canvas>`;
+  const artistsOf = m => (m.artists || []).length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${m.artists.map(n => `<li>${artistTile(fx(n) || { name: n })}<span class="p-name">${esc(n)}</span></li>`).join('')}</ul>` : '';
+  const vbadge = () => `<button class="vbadge" data-a="toast" data-msg="Verificirano: administratori su ručno potvrdili da je ovo pravi izvođač ili glazbeni profesionalac. Nije plaćeni status ni rang." data-k="vbadge" aria-label="Verificirani račun, što to znači?">${ic('check')}</button>`;
+  /* The relationship button names its state; unfollow and cancel are separate, confirmed actions (J4). */
+  function relBtn(h, cls) {
+    const m = member(h), r = rel(h), c = `btn${cls ? ' ' + cls : ''}`;
+    if (r.req) return `<button class="${c} btn-secondary" data-a="req-cancel" data-h="${h}" data-k="rel-${h}" aria-label="Zatraženo. Povuci zahtjev za praćenje">${ic('clock', 'sm')}Zatraženo</button>`;
+    if (r.fol) {
+      const mut = r.fy && MUT_AT === 'a';
+      return `<button class="${c} btn-secondary${mut ? ' btn-mut' : ''}" data-a="unfollow" data-h="${h}" data-k="rel-${h}" aria-label="${mut ? 'Uzajamni' : r.fy ? 'Pratiš, uzajamno' : 'Pratiš'}. Prestani pratiti">${ic(mut ? 'mutual' : 'check', 'sm')}${mut ? 'Uzajamni' : 'Pratiš'}</button>`;
+    }
+    return `<button class="${c} btn-primary" data-a="follow" data-h="${h}" data-k="rel-${h}">${ic('userplus', 'sm')}${m.vis === 'private' ? 'Zatraži praćenje' : 'Prati'}</button>`;
+  }
+  function relChip(h) {
+    const r = rel(h);
+    if (r.fol && r.fy && MUT_AT === 'b') return `<span class="rel-chip is-mut">${ic('mutual', 'sm')}Uzajamni</span>`;
+    if (r.fy && !r.fol) return '<span class="rel-chip">Prati te</span>';
+    return '';
+  }
+  /* Counts, number over label (D-068). Each opens its list. A viewer who may not see a list sees no number (U-13). */
+  function countsRow(h, own) {
+    const n = dropsOf(h).length, fo = followersOf(h).length, fi = followingOf(h).length;
+    const btn = (k, num, label, a, extra) => `<button class="cnt" data-a="${a}" data-h="${h}"${extra ? ' ' + extra : ''} data-k="cnt-${k}"><b>${num}</b><span>${label}</span></button>`;
+    const parts = [];
+    if (own || seeLists(h)) parts.push(btn('fo', fo, pl(fo, 'pratitelj', 'pratitelja', 'pratitelja'), 'open-follows', 'data-l="followers"'), btn('fi', fi, 'prati', 'open-follows', 'data-l="following"'));
+    if (own || seeHist(h)) parts.push(btn('ans', n, plAns(n), 'open-mdrops'));
+    return parts.length ? `<div class="prow-b">${parts.join('')}</div>` : '';
+  }
+  const HIST_MSG = 'Ovdje bi se otvorilo to pitanje, s odgovorom te osobe na vrhu.';
+  function histRow(x, i) {
+    const attrs = x.today ? 'data-a="open-drop"' : `data-a="toast" data-msg="${HIST_MSG}"`;
+    const lang = x.lang ? ` lang="${x.lang}"` : '';
+    if (HIST_AT === 'a') return `<li><button class="past-item" ${attrs} data-k="hist-${i}"><span class="past-date"><time datetime="${x.date}">${longDate(x.date)}</time></span><span class="past-q">${esc(x.q)}</span>${ic('chevron', 'past-ic')}</button></li>`;
+    if (HIST_AT === 'b') return `<li><article class="hcard"><p class="ctx">${esc(x.q)}</p><p class="hcard-t"${lang}>${esc(x.text)}</p><p class="hcard-meta"><time datetime="${x.date}">${longDate(x.date)}</time><button class="link" ${attrs} data-k="hist-${i}">Otvori pitanje</button></p></article></li>`;
+    return `<li><button class="hrow" ${attrs} data-k="hist-${i}"><span class="hrow-q"><time datetime="${x.date}">${longDate(x.date)}</time><span aria-hidden="true"> · </span><span class="sr-only">, </span>${esc(x.q)}</span><span class="hrow-t"${lang}>${esc(x.text)}</span>${ic('chevron', 'past-ic')}</button></li>`;
+  }
+  const histEmpty = own => emptyBox(pic('calendar-dots', 'empty-ic'), 'Još nema odgovora.', own ? 'Tvoji odgovori na Daily Drop skupljaju se ovdje.' : 'Odgovori na Daily Drop skupljaju se ovdje.');
+  function privBlock(h) {
+    const t = 'Ovaj profil je privatan', d = 'Zatraži praćenje da vidiš Music DNA i povijest odgovora. Odgovore na Daily Drop ionako vidiš uz svako pitanje.';
+    if (PST_AT === 'b') return `<p class="pf-vis priv-line">${ic('lock', 'sm')}<span>Privatan profil. Zatraži praćenje da vidiš Music DNA i povijest odgovora.</span></p>`;
+    if (PST_AT === 'c') return `<div class="blk-card priv-card">${ic('lock')}<p class="set-t">${t}.</p><p class="set-d">${d}</p>${relBtn(h, 'btn-sm')}</div>`;
+    return emptyBox(ic('lock', 'empty-ic'), t + '.', d);
+  }
+  const pmenuBtn = h => `<button class="iconbtn" data-a="pmenu" data-h="${h}" data-k="pmenu" aria-label="Više opcija: profil ${esc(member(h).who)}">${ic('more')}</button>`;
+  function memberBody(h) {
+    const m = member(h), see = canSee(h);
+    const chip = relChip(h);
+    const withBtn = see || PST_AT !== 'c';
+    const head = `<div class="pm-head${RBTN_AT === 'b' ? ' pm-head-b' : ''}">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>
+      <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}${chip ? `<span aria-hidden="true">·</span>${chip}` : ''}</p></div>${RBTN_AT === 'b' && withBtn ? relBtn(h, 'btn-sm') : ''}</div>`;
+    const bio = m.bio ? `<p class="pf-bio">${esc(m.bio)}</p>` : '';
+    const relRow = RBTN_AT === 'a' && withBtn ? `<div class="rel-row">${relBtn(h)}${pmenuBtn(h)}</div>` : '';
+    let body = '';
+    if (!see) body = privBlock(h);
+    else {
+      if (seeDna(h)) body += `<section class="section" aria-labelledby="h-mdna"><h2 id="h-mdna" class="section-title">Music DNA</h2><figure class="dna-card">${dnaFixed('m-' + h, m, 170)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span><p class="sr-only">Žanrovi: ${(m.dna || []).map(esc).join(', ')}.</p></figcaption></figure>${artistsOf(m)}</section>`;
+      if (seeHist(h)) { const ds = dropsOf(h); body += `<section class="section" aria-labelledby="h-mdd"><h2 id="h-mdd" class="section-title">Daily Drop odgovori${ds.length ? ` <span class="count">${ds.length}</span>` : ''}</h2>${ds.length ? `<ul class="hist hist-${HIST_AT}">${ds.slice(0, 3).map(histRow).join('')}</ul>${ds.length > 3 ? `<button class="link" data-a="open-mdrops" data-h="${h}" data-k="all-hist">Svi odgovori (${ds.length})</button>` : ''}` : histEmpty(false)}</section>`; }
+    }
+    return `${head}${bio}${relRow}${countsRow(h)}${body}<p class="meta">Izmišljeni podaci. Vidiš samo ono što je ta osoba dopustila; skriveni dijelovi se ne prikazuju ni kao zaključani (J4).</p>`;
+  }
+  function mdropsBody(h) {
+    const m = member(h), ds = dropsOf(h);
+    const person = `<button class="fl-person mdrops-head" data-a="open-member" data-h="${h}" data-k="md-who">${avatar(h, m.who, 'sm')}<span class="set-txt"><span class="set-t">${esc(m.who)}</span><span class="set-d">@${esc(h)}</span></span></button>`;
+    return `${person}${ds.length ? `<ul class="hist hist-${HIST_AT}">${ds.map(histRow).join('')}</ul>` : histEmpty(!!m.me)}<p class="meta">${m.me ? 'Tko vidi ovaj popis biraš u Postavkama, pod Privatnost (D-032).' : 'Pojedinačni odgovori uz pitanje vide se svima; ovaj popis vidiš jer je ta osoba to dopustila.'}</p>`;
+  }
+  /* Lists (PROF-07): one row per person, the name opens the profile, the right side acts. */
+  function personRow(h, right, k) {
+    const m = member(h);
+    return `<li class="fl-row"><button class="fl-person" data-a="open-member" data-h="${h}" data-k="${k}-${h}">${avatar(h, m.who, 'sm')}<span class="set-txt"><span class="set-t">${esc(m.who)}</span><span class="set-d">@${esc(h)}${m.me ? ' · ti' : m.verified ? ' · Verificirano' : ''}</span></span></button>${right || ''}</li>`;
+  }
+  function listRight(h, own, which) {
+    if (isMe(h)) return '';
+    if (own && which === 'followers' && st.vis === 'private') {
+      if (RM_AT === 'b') return `<button class="iconbtn" data-a="rm-menu" data-h="${h}" data-k="rmm-${h}" aria-label="Više opcija: ${esc(member(h).who)}">${ic('more')}</button>`;
+      return `<button class="btn btn-secondary btn-sm" data-a="rm-follower" data-h="${h}" data-k="rm-${h}">Ukloni</button>`;
+    }
+    return relBtn(h, 'btn-sm fl-btn');
+  }
+  function followsBody() {
+    const h = st.listOf || ME_H, own = isMe(h), which = st.list || 'followers';
+    const fo = followersOf(h), fi = followingOf(h), list = which === 'followers' ? fo : fi;
+    const tabs = FL_AT === 'a' ? `<fieldset class="sort fl-tabs"><legend class="sr-only">Popis</legend>${[['followers', 'Pratitelji', fo.length], ['following', 'Prati', fi.length]].map(([v, l, n]) => `<label><input type="radio" name="fl" value="${v}" data-k="fl-${v}"${which === v ? ' checked' : ''}><span>${l}<b>${n}</b></span></label>`).join('')}</fieldset>` : '';
+    const note = own && which === 'followers' ? (st.vis === 'private' ? '<p class="set-note">Privatan profil: pratitelja možeš ukloniti bez blokiranja. Ta osoba ne dobije obavijest i može opet poslati zahtjev.</p>' : '<p class="set-note">Tko vidi ovaj popis biraš u Postavkama, pod Privatnost.</p>') : '';
+    const empty = which === 'followers' ? emptyBox(pic('users-three', 'empty-ic'), 'Još nema pratitelja.', own ? 'Ljudi te nađu kroz odgovore na Daily Drop.' : '') : emptyBox(pic('users-three', 'empty-ic'), own ? 'Još nikoga ne pratiš.' : 'Još nikoga ne prati.', own ? 'Ljude možeš pronaći kroz odgovore na Daily Drop.' : '');
+    return `${tabs}${list.length ? `<ul class="fl-list">${list.map(x => personRow(x, listRight(x, own, which), 'fl')).join('')}</ul>` : empty}${note}`;
+  }
+  /* Follow requests (ACT-02). Accepting follows at once; declining is silent and allows a later request (J4). */
+  function requestsBody() {
+    if (st.vis !== 'private') return emptyBox(ic('lock', 'empty-ic'), 'Nema zahtjeva.', 'Zahtjevi za praćenje stižu samo dok je profil privatan.');
+    const rows = D.requests.map(h => {
+      const d = st.reqDone[h];
+      if (d === 'no') return '';
+      const right = d === 'ok' ? `<span class="req-done">${ic('check', 'sm')}<span>Prihvaćeno. ${esc(member(h).who)} te sada prati.</span></span>`
+        : `<span class="act-btns"><button class="btn btn-primary btn-sm" data-a="req-ok" data-h="${h}" data-k="req-ok-${h}">Prihvati</button><button class="btn btn-secondary btn-sm" data-a="req-no" data-h="${h}" data-k="req-no-${h}">Odbij</button></span>`;
+      return personRow(h, right, 'req');
+    }).join('');
+    return `${rows ? `<ul class="fl-list req-list">${rows}</ul>` : emptyBox(ic('users', 'empty-ic'), 'Nema novih zahtjeva.', 'Kad netko zatraži praćenje, vidiš to ovdje i u Aktivnosti.')}<p class="set-note">Tko je prihvaćen, odmah te prati. Odbijanje ne šalje obavijest, a ta osoba može poslati novi zahtjev kasnije.</p>`;
+  }
+
   const S = {
     invite: () => ({
       kind: 'bare',
@@ -1397,7 +1554,7 @@
             <h2 id="h-com" class="section-title">Komentari</h2>
             ${cs.length ? `<ul class="com-list">${cs.map((c, i) => `<li><article class="com" aria-labelledby="hc-${i}">
               <header class="ans-head">${avatar(c.handle, c.who, 'sm')}
-              <h3 class="ans-who" id="hc-${i}" tabindex="-1"><span class="name">${esc(c.who)}</span><span class="sr-only">, </span><span class="handle">@${esc(c.handle)}</span></h3><span class="ans-time"><time>${c.time}</time></span></header>
+              <h3 class="ans-who" id="hc-${i}" tabindex="-1">${whoLink(c, 'who-c' + i)}<span class="sr-only">, </span><span class="handle">@${esc(c.handle)}</span></h3><span class="ans-time"><time>${c.time}</time></span></header>
               <p${c.lang ? ` lang="${c.lang}"` : ''}>${esc(c.text)}</p>${c.refs && c.refs.length ? `<ul class="refs com-refs">${c.refs.map((r, j) => refCard(D.refs[r], 'c' + a.id + i, j)).join('')}</ul>` : ''}</article></li>${STATE === 'blocked' && i === 0 ? '<li><p class="com-gone">Ovaj komentar nije dostupan.</p></li>' : ''}`).join('')}</ul>`
               : emptyBox(pic('chats-circle', 'empty-ic'), 'Još nema komentara.', 'Započni razgovor.')}
           </section>
@@ -1456,15 +1613,25 @@
     /* Another member's profile after a block (D-019, IA §6.1 B). as=blocker: the member who blocked sees the header
        and Unblock. as=blocked: the blocked member gets the neutral "not available" page, the same as a missing one. */
     member: () => {
-      const h = 'mia_vinyl', m = D.members[h] || { who: 'Mia' };
+      const h = st.who || 'petra.zvuk', m = member(h);
       if (P.get('as') === 'blocked') return { kind: 'app', tab: 'home', back: true, topBlank: true,
         body: `<div class="sys-na"><h1>Ova stranica nije dostupna</h1><p class="lead lead-sm">Možda je poveznica pogrešna ili profil više ne postoji.</p><button class="btn btn-secondary" data-a="tab" data-t="home" data-k="na-home">Na početnu</button></div>` };
-      return { kind: 'app', tab: 'home', back: true, topTitle: '@' + h,
+      if (P.get('as') === 'blocker') return { kind: 'app', tab: 'home', back: true, topTitle: '@' + h,
         body: `<div class="prof-head">${avatar(h, m.who, 'lg')}<div><h1 class="prof-name">${esc(m.who)}</h1><p class="meta">@${h}</p></div></div>
           ${st.unblocked
-            ? `<div class="blk-card"><p class="set-t">Odblokirano.</p><p class="set-d">Ako želiš, možeš opet pratiti @${h}.</p><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Praćenje (PROF-01) nije dio skice." data-k="blk-follow">Prati</button></div>`
+            ? `<div class="blk-card"><p class="set-t">Odblokirano.</p><p class="set-d">Ako želiš, možeš opet pratiti @${h}. Blokada je prekinula praćenje u oba smjera (D-072).</p>${relBtn(h, 'btn-sm')}</div>`
             : `<div class="blk-card"><p class="set-t">Ovaj račun je blokiran.</p><p class="set-d">Ne vidite profile ni odgovore jedno drugoga. Ta osoba ne dobije obavijest o tome.</p><button class="btn btn-secondary btn-sm" data-a="unblock" data-k="unblock">Odblokiraj</button></div>`}` };
-    }
+      /* Round 12a: the full profile of another member (PROF-01). */
+      return { kind: 'app', tab: 'home', back: true, topTitle: '@' + h, topActions: RBTN_AT === 'b' ? pmenuBtn(h) : '', body: memberBody(h) };
+    },
+    /* Round 12a: follower lists (PROF-07), follow requests (ACT-02) and the answer history (PROF-03). */
+    follows: () => {
+      const h = st.listOf || ME_H, which = st.list || 'followers';
+      return { kind: 'app', tab: isMe(h) ? 'profile' : 'home', back: true, topTitle: FL_AT === 'b' ? (which === 'followers' ? 'Pratitelji' : 'Prati') : '@' + h, topH1: FL_AT === 'b',
+        body: `${FL_AT === 'b' ? '' : `<h1 class="sr-only">Pratitelji i praćeni: @${esc(h)}</h1>`}${followsBody()}` };
+    },
+    requests: () => ({ kind: 'app', tab: 'activity', back: true, topTitle: 'Zahtjevi za praćenje', topH1: true, body: requestsBody() }),
+    mdrops: () => { const h = st.who || ME_H; return { kind: 'app', tab: isMe(h) ? 'profile' : 'home', back: true, topTitle: 'Daily Drop odgovori', topH1: true, body: mdropsBody(h) }; }
   };
 
   /* ---------- shell ---------- */
@@ -1538,6 +1705,24 @@
     const dlg = (title, desc, cancel, okA, okLabel, danger, extra) => `<div class="scrim" data-a="overlay-close"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">
         <h2 id="ov-title" class="dialog-title">${title}</h2><p id="ov-desc">${desc}</p>${extra || ''}
         <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">${cancel}</button><button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-a="${okA}" data-k="ov-ok"${o.disabled ? ' disabled' : ''}>${okLabel}</button></div></div>`;
+    /* Round 12a overlays: the profile menu (same items as on an answer, J4 IA10), unfollow and cancel as confirmed
+       actions, and removing a follower (D-069). */
+    if (o.type === 'pmenu' || o.type === 'rmmenu') {
+      const h = o.h, m = member(h), j5 = 'Utišavanje, blokiranje i prijava s potvrdom (SAFE-01 do SAFE-03) dolaze u rundi 12b.';
+      const items = o.type === 'rmmenu'
+        ? `<li><button class="menu-item" data-a="rm-from-menu" data-k="m-remove">${ic('userminus')}Ukloni pratitelja</button></li>
+           <li><button class="menu-item" data-a="menu" data-msg="${j5}" data-k="m-block">${ic('x')}Blokiraj @${esc(h)}</button></li>`
+        : `${m.vis !== 'private' ? `<li><button class="menu-item" data-a="menu" data-msg="Poveznica na profil kopirana (simulacija). Neprijavljeni vide ime, avatar i bio (PUB-08)." data-k="m-share">${ic('share')}Podijeli profil</button></li>` : ''}
+           <li><button class="menu-item" data-a="menu" data-msg="${j5}" data-k="m-mute">${ic('bell')}Utišaj @${esc(h)}</button></li>
+           <li><button class="menu-item" data-a="menu" data-msg="${j5}" data-k="m-block">${ic('x')}Blokiraj @${esc(h)}</button></li>
+           <li><button class="menu-item" data-a="menu" data-msg="${j5}" data-k="m-report">${ic('alert')}Prijavi profil</button></li>`;
+      return `<div class="scrim" data-a="overlay-close"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <div class="sheet-head"><h2 id="ov-title" class="sheet-title">${esc(m.who)} <span class="handle">@${esc(h)}</span></h2><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
+        <ul class="menu">${items}</ul></div>`;
+    }
+    if (o.type === 'unfollow') { const priv = member(o.h).vis === 'private'; return dlg(`Prestati pratiti @${esc(o.h)}?`, priv ? 'Profil je privatan: za ponovno praćenje trebat će novi zahtjev, koji ta osoba mora odobriti. Ne dobije obavijest o ovome.' : 'Možeš opet zapratiti bilo kad. Ta osoba ne dobije obavijest.', 'Odustani', 'unfollow-confirm', 'Prestani pratiti'); }
+    if (o.type === 'cancelreq') return dlg(`Povući zahtjev za @${esc(o.h)}?`, 'Ta osoba ne dobije obavijest. Novi zahtjev možeš poslati kasnije.', 'Odustani', 'req-cancel-confirm', 'Povuci zahtjev');
+    if (o.type === 'remove') return dlg(`Ukloniti @${esc(o.h)} iz pratitelja?`, 'Ta osoba više ne vidi tvoj profil, Music DNA ni povijest odgovora. Ne dobije obavijest i može opet poslati zahtjev. Blokiranje je jači korak.', 'Odustani', 'rm-confirm', 'Ukloni', true);
     if (o.type === 'uname') return dlg(`Promijeniti u @${esc(st.newUser)}?`, `Sljedeća promjena moguća je tek od ${dayMonth(addDays(D.drop.date, 30))}. @${esc(st.username)} ostaje rezervirano za tebe 30 dana.`, 'Odustani', 'uname-confirm', 'Promijeni');
     if (o.type === 'unblock') return dlg('Odblokirati @mia_vinyl?', 'Opet ćete vidjeti profile i odgovore jedno drugoga. Ta osoba ne dobije obavijest.', 'Odustani', 'unblock-confirm', 'Odblokiraj');
     if (o.type === 'logout') return dlg('Odjaviti se?', 'Samo na ovom uređaju. Za povratak trebaš e-poštu i lozinku ili Google.', 'Odustani', 'logout-confirm', 'Odjavi se');
@@ -1890,6 +2075,23 @@
         if (!f || !/^\d{6}$/.test(f.value)) { st.err.otp = 'Upiši 6 znamenki iz aplikacije.'; render(); return focusSel('#f-otp'); }
         st.twofa = true; delete st.err.otp; render(); focusH1(); return toast('Dvostruka provjera je uključena.');
       }
+      /* Round 12a: following, lists and requests. */
+      case 'follow': { const h = b.dataset.h; if (member(h).vis === 'private') { st.req.add(h); render({ keep: true }); return toast('Zahtjev je poslan. Vidjet ćeš kad ga ta osoba odobri.'); } setFollow(ME_H, h, true); render({ keep: true }); return toast(`Pratiš @${h}.`); }
+      case 'unfollow': return openOverlay({ type: 'unfollow', h: b.dataset.h }, b);
+      case 'unfollow-confirm': { const h = st.overlay.h; setFollow(ME_H, h, false); closeOverlay(); return toast(`Više ne pratiš @${h}.`); }
+      case 'req-cancel': return openOverlay({ type: 'cancelreq', h: b.dataset.h }, b);
+      case 'req-cancel-confirm': { const h = st.overlay.h; st.req.delete(h); closeOverlay(); return toast('Zahtjev je povučen.'); }
+      case 'rm-follower': return openOverlay({ type: 'remove', h: b.dataset.h }, b);
+      case 'rm-menu': return openOverlay({ type: 'rmmenu', h: b.dataset.h }, b);
+      case 'rm-from-menu': st.overlay = { type: 'remove', h: st.overlay.h, ret: st.overlay.ret }; return render();
+      case 'rm-confirm': { const h = st.overlay.h; setFollow(h, ME_H, false); st.overlay = null; render(); focusSel('.fl-tabs input:checked, main h1'); return toast(`@${h} više te ne prati. Ta osoba ne dobije obavijest.`); }
+      case 'req-ok': { const h = b.dataset.h; st.reqDone[h] = 'ok'; setFollow(h, ME_H, true); render(); focusSel(`[data-k="req-${h}"], .req-list button, main h1`); return toast(`${member(h).who} te sada prati.`); }
+      case 'req-no': { const h = b.dataset.h; st.reqDone[h] = 'no'; render(); focusSel('.req-list button, .act-btns button, main h1'); return toast('Zahtjev je odbijen. Ta osoba to ne vidi.'); }
+      case 'pmenu': return openOverlay({ type: 'pmenu', h: b.dataset.h }, b);
+      case 'open-member': { const h = b.dataset.h; if (isMe(h)) return go('profile'); st.who = h; return go('member'); }
+      case 'open-follows': st.listOf = b.dataset.h; st.list = b.dataset.l || 'followers'; return go('follows');
+      case 'open-requests': return go('requests');
+      case 'open-mdrops': st.who = b.dataset.h; return go('mdrops');
       case 'unblock': return openOverlay({ type: 'unblock' }, b);
       case 'unblock-confirm': st.unblocked = true; st.overlay = null; render(); focusSel('.blk-card .set-t'); return toast('Odblokirano.');
       case 'pick': return openOverlay({ type: 'pick', p: b.dataset.p }, b);
@@ -1985,6 +2187,7 @@
       const n = t.name;
       if (n === 'sort') { st.sort = t.value; return render({ keep: true }); }
       if (n === 'actf') { st.actF = t.value; return render({ keep: true }); }
+      if (n === 'fl') { st.list = t.value; return render({ keep: true }); }
       if (n === 'vis2') st.vis = t.value; else if (n === 'dnaVis2') st.dnaVis = t.value; else if (n === 'lang2') st.lang = t.value; else if (n === 'del') st.del = t.value;
       else if (n === 'hist2') st.histVis = t.value; else if (n === 'lists2') st.lists = t.value;
       /* D-033: a private profile caps the follower lists at followers. */
@@ -2024,9 +2227,23 @@
     st.hist = AT === 'username' || AT === 'done' ? [] : ORDER.slice(from, k).map(s => ({ screen: s, y: 0 }));
   } else if ((AT === 'signin' || AT === 'pending') && !START_DROP) {
     st.screen = AT; st.acctPending = P.get('acct') === 'pending';
-  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member'].includes(AT)) {
+  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member', 'follows', 'requests', 'mdrops'].includes(AT)) {
     st.screen = AT;
     if (AT === 'member') st.hist = [{ screen: 'home', y: 0 }];
+    /* Round 12a: which member, the viewer's side of the relationship, which list, and a sheet or dialog to open. */
+    if (AT === 'member' || AT === 'mdrops' || AT === 'follows') {
+      const w = P.get('who');
+      const h = D.members[w] ? w : w && isMe(w) ? ME_H : AT === 'follows' ? ME_H : P.get('as') ? 'mia_vinyl' : 'petra.zvuk';
+      if (AT === 'follows') { st.listOf = h; st.list = P.get('list') === 'following' ? 'following' : 'followers'; } else st.who = h;
+      const R = P.get('rel');
+      if (R && !isMe(h)) { setFollow(ME_H, h, R === 'fol' || R === 'mut'); setFollow(h, ME_H, R === 'mut' || R === 'fy'); if (R === 'req') st.req.add(h); }
+      const show = P.get('show');
+      if (show === 'unfollow' || show === 'cancel' || show === 'menu') st.overlay = { type: { unfollow: 'unfollow', cancel: 'cancelreq', menu: 'pmenu' }[show], h, ret: show === 'menu' ? 'pmenu' : 'rel-' + h };
+      if (show === 'remove') st.overlay = { type: RM_AT === 'b' ? 'rmmenu' : 'remove', h: P.get('h') || 'lukabass' };
+      if (AT === 'mdrops') st.hist = isMe(h) ? [{ screen: 'home', y: 0 }, { screen: 'profile', y: 0 }] : [{ screen: 'home', y: 0 }, { screen: 'member', y: 0 }];
+      if (AT === 'follows') st.hist = isMe(h) ? [{ screen: 'home', y: 0 }, { screen: 'profile', y: 0 }] : [{ screen: 'home', y: 0 }, { screen: 'member', y: 0 }];
+    }
+    if (AT === 'requests') st.hist = [{ screen: 'home', y: 0 }, { screen: 'activity', y: 0 }];
     if (AT === 'settings' && P.get('show') === 'logout' && OUT_AT === 'b') st.overlay = { type: 'logout', ret: 'logout' };
     if (P.get('uc') === 'locked') { st.oldUser = st.username; st.username = 'ana.zvuk'; st.userChanged = true; }
     if (AT === 'drop' && STATE === 'error' && P.get('open') === 'compose') { st.draft = 'Kind of Blue. Počinje mirno, nitko ne viče, a na kraju shvatiš da je cijeli sat bio jazz.'; if (P.get('show') === 'posterr') { st.postFailed = true; st.postErr = true; } }

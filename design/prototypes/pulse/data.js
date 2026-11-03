@@ -137,18 +137,58 @@ window.GR_DATA = {
     { id: 'like', label: 'Sviđa mi se' }
   ],
 
-  /* Fictional members. dna = their Music DNA genres, used for the avatar ring. */
+  /* Fictional members. dna = their Music DNA genres (avatar ring, and the Spirala on their profile), artists = picks
+     from the offline catalogue. Round 12a (session 14): vis = profile visibility, dnaVis / hist / lists = their own
+     privacy settings (defaults all / same as profile / followers, D-024, D-032, D-033), bio, verified (manual
+     verification of artists, Master Prompt §3), drops = earlier Daily Drop answers (d = index into pastDrops). */
   members: {
-    'petra.zvuk': { who: 'Petra', dna: ['Jazz', 'Soul', 'Indie'] },
-    tinkovac: { who: 'Tin', dna: ['Rock', 'Jazz', 'Funk'] },
-    mia_vinyl: { who: 'Mia', dna: ['Jazz', 'Metal', 'Klasična'] },
-    lukabass: { who: 'Luka', dna: ['Funk', 'Soul', 'Rap'] },
-    'hana.fm': { who: 'Hana', dna: ['Soul', 'R&B', 'Folk'] },
-    'sara.notes': { who: 'Sara', dna: ['Kantautorska', 'Folk', 'Indie'] },
-    dino_dub: { who: 'Dino', dna: ['Drum & bass', 'Jazz', 'Rock'] },
-    'ivo.ploce': { who: 'Ivo', dna: ['Rock', 'Blues'] },
-    lea_loops: { who: 'Lea', dna: ['Rap', 'Jazz', 'House'] }
+    'petra.zvuk': { who: 'Petra', dna: ['Jazz', 'Soul', 'Indie'], artists: ['Nina Simone', 'Amy Winehouse', 'Arctic Monkeys'], bio: 'Vinil nedjeljom, jazz radnim danom. Zagreb.', vis: 'public',
+      drops: [{ d: 0, text: '„So What”. Prvih deset sekundi i već znaš da nikamo ne žuriš.' }, { d: 1, text: 'Nina Simone u Montreuxu, iz kuta na snimci koju su mi roditelji pustili s VHS-a. Ne, nisam bila tamo, ali pamtim kao da jesam.' }, { d: 3, text: 'Kind of Blue, naravno. I nije mi neugodno.' }, { d: 5, text: 'Esperanza Spalding. Ljudi je znaju po Grammyju, a ne po albumima.' }] },
+    tinkovac: { who: 'Tin', dna: ['Rock', 'Jazz', 'Funk'], artists: ['Led Zeppelin', 'James Brown'], bio: 'Bubnjar u pokušaju.', vis: 'public',
+      drops: [{ d: 0, text: '„Good Times Bad Times”. Bonham u prvih pet sekundi.' }, { d: 2, text: 'Sex Machine, uvijek i svima.' }] },
+    mia_vinyl: { who: 'Mia', dna: ['Jazz', 'Metal', 'Klasična'], artists: ['Kamasi Washington', 'Metallica', 'Johann Sebastian Bach'], bio: 'Od Bacha do Slayera, bez prijelaza.', vis: 'private',
+      drops: [{ d: 1, text: 'Metallica u Areni 2018. Ne zbog njih nego zbog deset tisuća ljudi koji pjevaju „Nothing Else Matters”.' }, { d: 3, text: 'Goldberg varijacije, Gould 1981. Ne pitaj.' }] },
+    lukabass: { who: 'Luka', dna: ['Funk', 'Soul', 'Rap'], artists: ['Parliament', 'Kendrick Lamar'], bio: 'Bas, bas i malo basa.', vis: 'public', dnaVis: 'followers',
+      drops: [{ d: 2, text: '„Flashlight”. Ako se ne pomakneš, nisi živ.' }] },
+    'hana.fm': { who: 'Hana', dna: ['Soul', 'R&B', 'Folk'], artists: ['SZA', 'Joni Mitchell'], bio: 'Late-night radio voice. Writes in English, reads everything.', vis: 'public',
+      drops: [{ d: 0, text: 'Blue by Joni Mitchell. Side A, song one, done.' }, { d: 4, text: 'SZA, „Good Days”. Works every single time.' }] },
+    'sara.notes': { who: 'Sara', dna: ['Kantautorska', 'Folk', 'Indie'], artists: ['Arsen Dedić', 'Leonard Cohen'], bio: 'Tekstovi prije melodije.', vis: 'public',
+      drops: [{ d: 2, text: 'Arsen, „Ne daj se, Ines”. Šaljem je kad netko treba zagrljaj, a nisam blizu.' }] },
+    dino_dub: { who: 'Dino', dna: ['Drum & bass', 'Jazz', 'Rock'], artists: ['Pendulum', 'Chase & Status'], bio: '174 BPM.', vis: 'public', drops: [] },
+    'ivo.ploce': { who: 'Ivo', dna: ['Rock', 'Blues'], artists: ['B.B. King', 'Pink Floyd'], bio: 'Kupujem ploče koje već imam.', vis: 'public',
+      drops: [{ d: 3, text: 'Wish You Were Here. Ostalo neka pliva.' }] },
+    lea_loops: { who: 'Lea', dna: ['Rap', 'Jazz', 'House'], artists: ['Robert Glasper Experiment', 'Peggy Gou'], bio: 'Loopam sve što stane u 8 taktova.', vis: 'private', drops: [] },
+    'nika.rework': { who: 'Nika Rework', dna: ['Techno', 'House', 'Elektronika'], artists: ['Charlotte de Witte', 'Kraftwerk'], bio: 'Producentica i DJ. Nova stvar svaki prvi petak.', vis: 'public', verified: true,
+      drops: [{ d: 1, text: 'Charlotte de Witte u Puli, 2023. Amfiteatar i kick bubanj se jako dobro slažu.' }, { d: 5, text: 'Sve iz zagrebačkog podzemlja koje nije na Spotifyju.' }] },
+    'ema.beat': { who: 'Ema', dna: ['Pop', 'K-pop', 'Disco'], artists: ['Dua Lipa', 'ABBA'], bio: 'Plesni podij je moj drugi dom.', vis: 'public', drops: [] },
+    toma_vinil: { who: 'Toma', dna: ['Indie', 'Alternativa', 'Grunge'], artists: ['Radiohead', 'Nirvana'], bio: 'Devedesete nisu završile.', vis: 'public', drops: [] },
+    'filip.fm': { who: 'Filip', dna: ['Klasična', 'Filmska glazba'], artists: ['Ludwig van Beethoven'], bio: '', vis: 'public', drops: [] },
+    lana_wave: { who: 'Lana', dna: ['R&B', 'Soul', 'Pop'], artists: ['Frank Ocean', 'The Weeknd'], bio: 'Blonde na ponavljanju od 2016.', vis: 'public', drops: [] },
+    'roko.riff': { who: 'Roko', dna: ['Metal', 'Hard rock', 'Punk'], artists: ['Iron Maiden', 'Hladno pivo'], bio: 'Glasnije.', vis: 'public', drops: [] }
   },
+
+  /* Who follows whom, from → to. The signed-in member is ana.slusa (app.js). A pair in both directions is a Mutual
+     (D-013). Lists and counts are derived from this, so the numbers on the profile match the lists. */
+  follows: [
+    ['ana.slusa', 'petra.zvuk'], ['petra.zvuk', 'ana.slusa'],
+    ['ana.slusa', 'tinkovac'],
+    ['ana.slusa', 'hana.fm'], ['hana.fm', 'ana.slusa'],
+    ['ana.slusa', 'sara.notes'], ['sara.notes', 'ana.slusa'],
+    ['ana.slusa', 'dino_dub'],
+    ['ana.slusa', 'ivo.ploce'], ['ivo.ploce', 'ana.slusa'],
+    ['ana.slusa', 'nika.rework'],
+    ['ana.slusa', 'ema.beat'],
+    ['ana.slusa', 'toma_vinil'],
+    ['ana.slusa', 'lea_loops'],
+    ['lukabass', 'ana.slusa'],
+    ['filip.fm', 'ana.slusa'],
+    ['lana_wave', 'ana.slusa'],
+    ['tinkovac', 'petra.zvuk'], ['petra.zvuk', 'tinkovac'], ['mia_vinyl', 'petra.zvuk'], ['petra.zvuk', 'mia_vinyl'], ['lukabass', 'petra.zvuk'], ['hana.fm', 'petra.zvuk'], ['petra.zvuk', 'sara.notes'], ['dino_dub', 'petra.zvuk'], ['petra.zvuk', 'nika.rework'], ['ema.beat', 'petra.zvuk'],
+    ['tinkovac', 'mia_vinyl'], ['mia_vinyl', 'dino_dub'], ['mia_vinyl', 'nika.rework'], ['roko.riff', 'mia_vinyl'], ['mia_vinyl', 'roko.riff'],
+    ['lukabass', 'tinkovac'], ['tinkovac', 'lukabass'], ['hana.fm', 'lukabass'], ['sara.notes', 'hana.fm'], ['hana.fm', 'sara.notes'], ['ivo.ploce', 'tinkovac'], ['toma_vinil', 'ivo.ploce'], ['ema.beat', 'nika.rework'], ['lana_wave', 'nika.rework'], ['roko.riff', 'nika.rework'], ['filip.fm', 'nika.rework'], ['tinkovac', 'nika.rework'], ['nika.rework', 'dino_dub']
+  ],
+  /* Pending follow requests to ana.slusa. They exist only while her profile is private (J4). */
+  requests: ['mia_vinyl', 'roko.riff'],
 
   /* min = minutes since 00:00 UTC publication, used by the Recent sort. comments = number of comments. */
   answers: [

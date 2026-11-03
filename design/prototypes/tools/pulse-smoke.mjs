@@ -186,7 +186,7 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="back"]'); await click('[data-k="set-delete"]'); expect(scr() === 'setsub' && !$('input[name="del"]:checked'), 'delete flow, nothing pre-selected'); await click('input[name="del"][value="del"]'); await click('[data-a="del-next"]'); expect($('[data-k="del-copy"]'), 'delete steps offer the data copy first (D-066, D-070)');
   await click('[data-a="back"]');
   await click('[data-a="back"]'); expect(scr() === 'profile', 'back from settings');
-  await click('[data-t="activity"]'); expect($$('.act').length === 7 && $('.act-new') && $('.act-btns'), 'activity with sample items (D-067)');
+  await click('[data-t="activity"]'); expect($$('.act').length === 6 && $('.act-new') && !$('.act-btns') && $('.req-entry .req-n').textContent === '2', 'activity with sample items (D-067); the private profile of this flow gets a requests row on top (round 12a)');
   await click('[data-t="hub"]'); expect(scr() === 'hub' && !$('main canvas.current'), 'hub, no current under the name (D-063)');
   expect($$('.day-strip .day').length === 7 && $('.day[aria-pressed="true"]').textContent.includes('danas') && $$('.prog-card').length === 2 && $('[data-k="suggest"]'), 'hub: seven days, this week programme, suggest (D-064)');
   await click('[data-k="day-2026-10-30"]'); expect($('#h-teaser').textContent === 'Koji koncert pamtiš do danas?', 'a day opens its question');
@@ -329,6 +329,60 @@ const runs = [
     await click('[data-k="pause-3h"]'); expect($('#n-dev-d').textContent.includes('21:40') && $('fieldset.ntf-types').disabled && document.activeElement.dataset.k === 'pause-end', 'pause for 3 hours (D-072)');
     await click('[data-a="pause-end"]'); expect(!$('fieldset.ntf-types').disabled, 'resume');
     await click('[data-a="push-dev"]'); expect($('fieldset.ntf-types').disabled && $('.ntf-dev.is-off'), 'device switch quiets the types'); return 'ok'; })()` },
+  /* Round 12a (session 14): other members' profiles, lists and follow requests. */
+  { name: 'r12 follow public', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=none`, test: `(async () => {${HELPERS}
+    expect($('.pm-head') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Prati' && $('[data-k="cnt-ans"]') && !$('[data-k="cnt-fo"]'), 'public profile: Prati, answers count, no list counts for a non-follower (D-033)');
+    expect($('canvas.dna[data-genres]') && $('#h-mdd'), 'DNA and answer history visible on a public profile');
+    await click('[data-k="rel-petra.zvuk"]'); expect($('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Pratiš' && $('[data-k="cnt-fo"]'), 'one tap follows, list counts appear');
+    await click('[data-k="rel-petra.zvuk"]'); expect($('.dialog') && document.activeElement.closest('.dialog'), 'unfollow is a confirmed action (J4)');
+    await click('[data-k="ov-cancel"]'); expect(!$('.dialog') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Pratiš', 'cancel keeps the follow');
+    await click('[data-k="rel-petra.zvuk"]'); await click('[data-a="unfollow-confirm"]'); expect($('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Prati', 'unfollowed'); return 'ok'; })()` },
+  { name: 'r12 mutual chip', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=mut`, test: `(async () => {${HELPERS}
+    expect($('.rel-chip.is-mut') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Pratiš', 'default b: Pratiš plus an Uzajamni chip'); return 'ok'; })()` },
+  { name: 'r12 mutual button', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=mut&mutual=a`, test: `(async () => {${HELPERS}
+    expect(!$('.rel-chip') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Uzajamni', 'option a: the button says Uzajamni'); return 'ok'; })()` },
+  { name: 'r12 follows you', url: `${base}?flow=drop&at=member&who=lukabass&rel=fy`, test: `(async () => {${HELPERS}
+    expect($('.rel-chip').textContent === 'Prati te' && !$('#h-mdna'), 'Prati te chip; DNA for followers only is omitted, not locked'); return 'ok'; })()` },
+  { name: 'r12 private request', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none`, test: `(async () => {${HELPERS}
+    expect($('.empty-b .empty-t').textContent === 'Ovaj profil je privatan.' && !$('#h-mdna') && !$('#h-mdd') && !$('.prow-b'), 'P state: header only, no sections, no counts');
+    expect($('[data-k="rel-mia_vinyl"]').textContent.trim() === 'Zatraži praćenje', 'private asks for a request');
+    await click('[data-k="rel-mia_vinyl"]'); expect($('[data-k="rel-mia_vinyl"]').textContent.trim() === 'Zatraženo', 'requested');
+    await click('[data-k="rel-mia_vinyl"]'); expect($('.dialog'), 'cancel is confirmed'); await click('[data-a="req-cancel-confirm"]'); expect($('[data-k="rel-mia_vinyl"]').textContent.trim() === 'Zatraži praćenje', 'request withdrawn'); return 'ok'; })()` },
+  { name: 'r12 private follower', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=fol`, test: `(async () => {${HELPERS}
+    expect($('#h-mdna') && $('#h-mdd') && $('[data-k="cnt-fo"]'), 'an approved follower sees the private profile in full'); return 'ok'; })()` },
+  { name: 'r12 verified', url: `${base}?flow=drop&at=member&who=nika.rework&rel=none&rbtn=b`, test: `(async () => {${HELPERS}
+    expect($('.vbadge') && $('.pm-head .meta').textContent.includes('Verificirano') && $('.pm-head-b > .btn') && $('.topbar [data-a="pmenu"]'), 'verified badge named in text; option b puts the button by the name and the menu in the top bar'); return 'ok'; })()` },
+  { name: 'r12 profile menu', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=mut&show=menu`, test: `(async () => {${HELPERS}
+    expect($('.sheet .menu') && $$('.sheet .menu-item').length === 4 && $('[data-k="m-share"]'), 'profile menu: share, mute, block, report'); return 'ok'; })()` },
+  { name: 'r12 history', url: `${base}?flow=drop&at=mdrops&who=petra.zvuk&rel=fol`, test: `(async () => {${HELPERS}
+    expect($$('.hist-c .hrow').length === 5 && $('.hrow-q time').getAttribute('datetime') === '2026-11-01', 'five answers, today first (PROF-03)');
+    await click('[data-k="hist-0"]'); expect(scr() === 'drop', "today's answer opens the question page"); return 'ok'; })()` },
+  { name: 'r12 own counts and lists', url: `${base}?flow=drop&at=profile`, test: `(async () => {${HELPERS}
+    expect($('[data-k="cnt-fo"] b').textContent === '7' && $('[data-k="cnt-fi"] b').textContent === '10', 'counts come from the follow graph');
+    await click('[data-k="cnt-fo"]'); expect(scr() === 'follows' && $('input[name="fl"][value="followers"]').checked && $$('.fl-row').length === 7 && !$('[data-a="rm-follower"]'), 'followers list, no Ukloni on a public profile');
+    await click('input[name="fl"][value="following"]'); expect($$('.fl-row').length === 10 && $$('[data-a="unfollow"]').length === 10, 'following tab, each row can unfollow');
+    await click('[data-k="fl-petra.zvuk"]'); expect(scr() === 'member' && $('.pm-name').textContent.includes('Petra'), 'a row opens the profile'); return 'ok'; })()` },
+  { name: 'r12 remove follower', url: `${base}?flow=drop&at=follows&list=followers&private=1`, test: `(async () => {${HELPERS}
+    expect($$('[data-a="rm-follower"]').length === 7, 'Ukloni on every row of a private profile (D-069)');
+    await click('[data-k="rm-lukabass"]'); expect($('.dialog [data-a="rm-confirm"]'), 'removal is confirmed'); await click('[data-a="rm-confirm"]');
+    expect($$('.fl-row').length === 6 && !$('[data-k="fl-lukabass"]') && $('.fl-tabs input:checked + span b').textContent === '6', 'removed, count updated'); return 'ok'; })()` },
+  { name: 'r12 remove via menu', url: `${base}?flow=drop&at=follows&list=followers&private=1&rm=b`, test: `(async () => {${HELPERS}
+    await click('[data-k="rmm-lukabass"]'); expect($('.sheet [data-a="rm-from-menu"]'), 'menu per row'); await click('[data-a="rm-from-menu"]'); expect($('.dialog [data-a="rm-confirm"]'), 'then the dialog'); return 'ok'; })()` },
+  { name: 'r12 requests', url: `${base}?flow=drop&at=activity&private=1`, test: `(async () => {${HELPERS}
+    expect($('.req-entry .req-n').textContent === '2' && !$('.act-btns'), 'default a: one row on top, no inline requests');
+    await click('[data-a="open-requests"]'); expect(scr() === 'requests' && $$('.req-list .fl-row').length === 2, 'ACT-02 lists the requests');
+    await click('[data-k="req-ok-mia_vinyl"]'); expect($('.req-done') && $('.req-done').textContent.includes('Mia'), 'accepted');
+    await click('[data-k="req-no-roko.riff"]'); expect(!$('[data-k="req-roko.riff"]'), 'declined row disappears, silently');
+    await click('[data-a="back"]'); expect(scr() === 'activity' && !$('.req-entry'), 'no pending requests left, the row is gone'); return 'ok'; })()` },
+  { name: 'r12 requests inline', url: `${base}?flow=drop&at=activity&private=1&req=b`, test: `(async () => {${HELPERS}
+    expect(!$('.req-entry') && $('.act-btns'), 'option b: inline only'); await click('[data-k="act-ok-2"]'); expect(!$('.act-btns'), 'accepted inline'); return 'ok'; })()` },
+  { name: 'r12 requests public', url: `${base}?flow=drop&at=requests`, test: `(async () => {${HELPERS}
+    expect($('.empty-b') && !$('.req-list'), 'a public profile has no requests'); return 'ok'; })()` },
+  { name: 'r12 name opens profile', url: `${base}?flow=drop&at=drop`, test: `(async () => {${HELPERS}
+    await click('[data-k="who-a1"]'); expect(scr() === 'member' && $('.pm-name').textContent.includes('Petra'), 'the name in an answer opens the profile'); await click('[data-a="back"]'); expect(scr() === 'drop', 'back'); return 'ok'; })()` },
+  { name: 'r12 blocked keeps relation button', url: `${base}?flow=drop&at=member&as=blocker`, test: `(async () => {${HELPERS}
+    await click('[data-a="unblock"]'); await click('[data-a="unblock-confirm"]'); expect($('.blk-card [data-a="follow"]'), 'after unblocking, the real follow button'); return 'ok'; })()` },
+  { name: 'round 12a page', url: base.replace('index.html', 'round12a.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 35) throw new Error('35 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 11 page', url: base.replace('index.html', 'round11.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 4) throw new Error('4 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 43) throw new Error(43 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'viewer page', url: base.replace('index.html', 'viewer.html'), test: `(async () => {${HELPERS} expect($('#f') && $('#f').getAttribute('src'), 'viewer frame'); return 'ok'; })()` }

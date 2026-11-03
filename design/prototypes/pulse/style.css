@@ -1046,3 +1046,70 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
   .has-after .input-btn { position: static; transform: none; margin-top: var(--gr-space-1); }
   .set-row-plain:has(> .rem-time) { grid-template-columns: 1fr; justify-items: start; row-gap: var(--gr-space-2); }
 }
+
+/* ---------- Round 12a (owner, session 14): other members' profiles, follower lists and follow requests.
+   Options compared in round12a.html. ---------- */
+.pm-head { display: grid; grid-template-columns: auto 1fr; gap: var(--gr-space-2) var(--gr-space-4); align-items: center; }
+.pm-head-b { grid-template-columns: auto 1fr auto; }
+.pm-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pm-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* Verified artists and professionals (Master Prompt §3): a small Ember tick by the name, named in text ("Verificirano"). */
+.vbadge { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--gr-gradient-brand); color: var(--gr-color-text-on-accent); flex: none; cursor: pointer; }
+.vbadge svg { width: 13px; height: 13px; stroke-width: 3; }
+@media (forced-colors: active) { .vbadge { background: CanvasText; color: Canvas; } }
+.rel-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 22px; padding: 0 8px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); white-space: nowrap; }
+.rel-chip svg { width: 14px; height: 14px; }
+.rel-chip.is-mut { border-color: var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); color: var(--gr-color-highlight-text); }
+.rel-row { display: flex; gap: var(--gr-space-2); align-items: center; }
+.rel-row > .btn { flex: 1; }
+.btn-mut { border-color: var(--gr-color-highlight-border); color: var(--gr-color-highlight-text); }
+.pm-head-b > .btn { align-self: center; white-space: nowrap; }
+/* The counts row (D-068, b) now holds buttons: number over label, each opens its list. */
+.prow-b > * { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; padding: 2px 0; border: 0; border-radius: var(--gr-radius-control); background: none; color: var(--gr-color-text-primary); min-width: 0; }
+.prow-b > * + * { border-left: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: 0; }
+.prow-b b { font: var(--gr-type-title-3); font-variant-numeric: tabular-nums; }
+.prow-b span { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); overflow-wrap: anywhere; }
+.prow-b button:hover { background: var(--gr-color-bg-high); }
+/* Private profile (J4 P state). */
+.priv-card { gap: var(--gr-space-2); }
+.priv-card > svg { color: var(--gr-color-highlight-text); }
+.priv-card .set-d { margin-bottom: var(--gr-space-1); }
+.priv-line { margin-top: 0; }
+/* Answer history (PROF-03): rows (c), archive rows (a) or cards (b). */
+.hist { display: flex; flex-direction: column; }
+.hist-b { gap: var(--gr-space-2); }
+.hrow { width: 100%; display: grid; grid-template-columns: 1fr auto; column-gap: var(--gr-space-3); align-items: center; text-align: left; padding: var(--gr-space-3) 0; min-height: var(--gr-size-target-min); border: 0; border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: none; color: var(--gr-color-text-primary); }
+.hrow-q { grid-column: 1; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.hrow-t { grid-column: 1; margin-top: 3px; font: var(--gr-type-body); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.hrow .past-ic { grid-column: 2; grid-row: 1 / span 2; }
+.hcard { display: flex; flex-direction: column; gap: var(--gr-space-1); padding: var(--gr-space-3) var(--gr-space-4); border-radius: 18px; background: var(--gr-color-bg-surface); }
+.hcard-t { font: var(--gr-type-body); overflow-wrap: anywhere; }
+.hcard-meta { display: flex; justify-content: space-between; gap: var(--gr-space-3); flex-wrap: wrap; align-items: center; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+.hcard-meta .link { font: var(--gr-type-label); min-height: 32px; }
+.mdrops-head { padding-bottom: var(--gr-space-2); }
+/* Lists (PROF-07) and requests (ACT-02). */
+.fl-tabs { margin-top: calc(var(--gr-space-2) * -1); }
+.fl-tabs span b { margin-left: 5px; color: var(--gr-color-text-primary); font-weight: var(--gr-font-weight-semibold); }
+.fl-list { display: flex; flex-direction: column; }
+.fl-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--gr-space-2); border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+.fl-person { display: flex; align-items: center; gap: var(--gr-space-3); min-width: 0; min-height: 60px; padding: var(--gr-space-1) 0; border: 0; background: none; color: inherit; text-align: left; border-radius: var(--gr-radius-control); }
+.fl-person:hover .set-t { text-decoration: underline; }
+.fl-btn { min-width: 6.5rem; white-space: nowrap; }
+.req-list .fl-row { grid-template-columns: 1fr; }
+.req-list .act-btns, .req-done { margin: 0 0 var(--gr-space-3) calc(32px + var(--gr-space-3)); }
+.req-done { display: inline-flex; align-items: center; gap: 6px; font: var(--gr-type-body-sm); color: var(--gr-color-state-success); }
+.req-entry .req-n { margin-left: 8px; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--gr-radius-full); background: var(--gr-color-action-primary); color: var(--gr-color-text-on-accent); font: var(--gr-type-caption); font-weight: var(--gr-font-weight-semibold); }
+/* A name in an answer or comment opens the profile (own answers keep the plain name). */
+.who-link { border: 0; background: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: 2px; min-height: 24px; }
+.who-link:hover .name { text-decoration: underline; }
+.sheet-title .handle { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin-left: 4px; }
+@media (max-width: 17.5em) {
+  .pm-head, .pm-head-b { grid-template-columns: 1fr; }
+  .rel-row { flex-wrap: wrap; }
+  .prow-b { grid-template-columns: 1fr; }
+  .prow-b > * + * { border-left: 0; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+  .fl-row { grid-template-columns: 1fr; }
+  .fl-row > .btn, .fl-row > .iconbtn { justify-self: start; margin-bottom: var(--gr-space-2); }
+  .req-list .act-btns, .req-done { margin-left: 0; }
+  .fl-btn { white-space: normal; }
+}

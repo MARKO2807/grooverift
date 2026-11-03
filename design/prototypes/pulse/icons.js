@@ -27,7 +27,11 @@
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
     send: '<path d="M4 12l16-7-6 16-3-6.5z"/>',
     pulse: '<path d="M3 12h4l2-5 3 10 3-8 2 3h4"/>',
-    offline: '<path d="M3.5 9a12.5 12.5 0 0 1 17 0M6.5 12.3a8 8 0 0 1 11 0M9.6 15.5a3.6 3.6 0 0 1 4.8 0"/><path d="M12 19v.2"/><path d="M4 4l16 16"/>'
+    offline: '<path d="M3.5 9a12.5 12.5 0 0 1 17 0M6.5 12.3a8 8 0 0 1 11 0M9.6 15.5a3.6 3.6 0 0 1 4.8 0"/><path d="M12 19v.2"/><path d="M4 4l16 16"/>',
+    /* Round 12a (session 14): following. */
+    mutual: '<path d="M4 8.5h14M14.5 5l3.5 3.5-3.5 3.5"/><path d="M20 15.5H6M9.5 12L6 15.5 9.5 19"/>',
+    userplus: '<circle cx="10" cy="8.5" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 8v6M15.5 11h6"/>',
+    userminus: '<circle cx="10" cy="8.5" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M15.5 11h6"/>'
   };
   window.GR_ICON = (name, cls) =>
     `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[name] || ''}</svg>`;
