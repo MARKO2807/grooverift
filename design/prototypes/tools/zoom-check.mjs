@@ -106,7 +106,8 @@ try {
     const r = await send('Runtime.evaluate', { expression: PROBE, returnByValue: true });
     const v = r.result.result.value;
     if (!v) { console.log(`${q || 'invite'}: probe failed`); bad++; continue; }
-    if (Math.abs(v.fs - 16 * scale) > 0.5) { console.log(`${q || 'invite'}: body font is ${v.fs}px, expected ${16 * scale}px (text does not follow the browser setting)`); bad++; }
+    const want = (W >= 1600 ? 17 : 16) * scale; // the Full HD layout sets a 17 px root (D-080)
+    if (Math.abs(v.fs - want) > 0.5) { console.log(`${q || 'invite'}: body font is ${v.fs}px, expected ${want}px (text does not follow the browser setting)`); bad++; }
     if (v.out.length) { bad++; console.log(`${q || 'invite'}: ${v.out.length} finding(s)`); v.out.slice(0, 12).forEach(o => console.log('   - ' + o)); }
     else console.log(`${q || 'invite'}: ok`);
     if (shots) {

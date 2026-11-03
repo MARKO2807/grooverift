@@ -1429,9 +1429,9 @@ main:focus { outline: none; box-shadow: none; }
 
 /* ===== 1280 px and up: two columns where the content has two parts, the settings list beside the detail ===== */
 @media (min-width: 1280px) {
-  #app[data-screen="home"] .page, #app[data-screen="hub"] .page, #app[data-screen="drop"] .page { --col-main: calc(var(--main) + var(--gap) + var(--side) + 2rem); }
+  #app[data-screen="home"] .page, #app[data-screen="hub"] .page { --col-main: calc(var(--main) + var(--gap) + var(--side) + 2rem); }
   #app[data-screen="profile"] .page, #app[data-screen="member"] .page { --col-main: calc(24rem + var(--gap) + var(--main) + 2rem); }
-  #app[data-screen="setsub"] .page { --col-main: calc(20rem + var(--gap) + var(--main) + 2rem); }
+  #app[data-screen="setsub"] .page { --col-main: calc(18rem + var(--gap) + var(--main) + 2rem); }
   .home-side, .hub-side, .pf-main, .pf-side, .pm-main, .pm-side { display: flex; flex-direction: column; gap: var(--gr-space-6); min-width: 0; }
   /* Home: the Daily Drop on the left, "from people you follow" and the past days on the right. */
   html[data-kind="app"] .screen-home { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
@@ -1442,43 +1442,44 @@ main:focus { outline: none; box-shadow: none; }
   html[data-kind="app"] .screen-hub { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
   .screen-hub > * { grid-column: 1; }
   .screen-hub > .hub-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(64px + var(--gr-space-8)); }
-  /* The question page: answers on the left, the composer dock as a card on the right, in view while reading. */
-  #app[data-screen="drop"] .page { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; padding-inline: max(var(--gr-space-4), calc((100% - var(--rail-w) - var(--col-main)) / 2)); --pad: 0px; } /* the page's own % is the shell, so the rail is taken off */
-  #app[data-screen="drop"] .page > * { grid-column: 1 / -1; }
-  #app[data-screen="drop"] .page > .screen { grid-column: 1; max-width: calc(var(--main) + 2rem); }
-  #app[data-screen="drop"] .page > .bottom { grid-column: 2; position: sticky; top: calc(64px + var(--gr-space-8)); align-self: start; width: var(--side); margin-left: var(--gap); margin-top: var(--gr-space-8); background: none; z-index: 1; }
-  #app[data-screen="drop"] .page > .bottom:not(:has(.dock)) { display: none; }
-  #app[data-screen="drop"] .dock { flex-direction: column; align-items: stretch; gap: var(--gr-space-3); padding: var(--gr-space-4); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: 18px; background: var(--gr-color-bg-surface); }
-  #app[data-screen="drop"] .dock-field { min-height: 52px; background: var(--gr-color-bg-raised); }
-  #app[data-screen="drop"] .dock-done { padding: var(--gr-space-2) 0; }
+  /* The question page keeps the dock at the foot of the column, as on the phone (owner, session 17). */
   /* Profiles: the Spirala across the top, identity on the left, artists and answers on the right. */
   html[data-kind="app"] .screen-profile, html[data-kind="app"] .screen-member { display: grid; grid-template-columns: 24rem minmax(0, 1fr); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
   .screen-profile > *, .screen-member > * { grid-column: 1 / -1; }
   .screen-profile > .pf-main, .screen-member > .pm-main { grid-column: 1; position: sticky; top: calc(64px + var(--gr-space-8)); }
   .screen-profile > .pf-side, .screen-member > .pm-side { grid-column: 2; grid-row: span 6; }
-  .screen-profile > .pf-c { grid-column: 1 / -1; }
-  .screen-profile .pf-c { margin-top: calc(-1 * var(--gr-space-8)); }
+  .screen-profile > .pf-c { grid-column: 1 / -1; justify-self: start; width: 100%; max-width: 60rem; margin: 0; }
+  .screen-profile .pf-c-hero { border-radius: var(--gr-radius-card); overflow: hidden; }
   .screen-profile .pf-c-hero canvas, .screen-profile .pf-c-hero { height: auto; }
   .screen-member .pm-head { grid-template-columns: auto 1fr; }
-  .screen-member .pm-side .dna-card canvas { height: 220px; }
+  .screen-member .pm-side .dna-card, .set-detail .dna-card, .set-detail .dna-hero { max-width: 40rem; }
   /* Settings sub-screens: the settings list on the left, the open row marked, the detail on the right. */
-  .set-split { display: grid; grid-template-columns: 20rem minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
-  .set-nav { display: block; position: sticky; top: calc(64px + var(--gr-space-8)); max-height: calc(100vh - 64px - 2 * var(--gr-space-8)); overflow-y: auto; padding-right: var(--gr-space-2); scrollbar-width: thin; }
+  .set-split { display: grid; grid-template-columns: 18rem minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
+  .set-nav { display: block; position: sticky; top: calc(64px + var(--gr-space-8)); }
   .set-nav .set-row[aria-current="page"], .set-nav .set-me[aria-current="page"] { background: var(--gr-color-bg-raised); box-shadow: inset var(--gr-border-width-thick) 0 0 var(--gr-color-text-accent); }
   .set-nav .set-row[aria-current="page"] .set-t { color: var(--gr-color-text-accent); }
   .set-detail { display: flex; flex-direction: column; gap: var(--gr-space-5); min-width: 0; }
   #app[data-screen="setsub"] .topbar .iconbtn[data-a="back"] { display: none; } /* the list on the left is the way back */
-  /* Lists that read better in two columns of cards on a wide screen. */
-  .screen-activity .act-list, .screen-follows .fl-list { max-width: none; }
+  /* System pages (something went wrong, a paused feature) sit in the middle of the window, whatever the screen's grid. */
+  html[data-kind="app"] main.screen:has(> .sys-na), html[data-kind="app"] main.screen:has(> .sys-pause) { display: flex; flex-direction: column; justify-content: center; align-items: stretch; padding-bottom: var(--gr-space-16); }
+  html[data-kind="app"] main.screen > .sys-na { padding-top: 0; }
 }
 
 /* ===== 1600 px and up (Full HD): wider columns and rail ===== */
 @media (min-width: 1600px) {
-  :root { --col-main: 48rem; --main: 48rem; --side: 24rem; --gap: 3rem; }
+  /* Full HD (owner, session 17): everything a little larger (every rem follows the root), wider columns and card, so
+     the screen is used without anything looking like a phone column. 106.25 % root = 17 px at the default setting, about 6 % larger type and spacing, and the browser text-size setting still applies. */
+  html { font-size: 106.25%; } /* 17 px at the default setting; a percentage keeps following the browser text size (WCAG 1.4.4) */
+  :root { --col-main: 52rem; --main: 50rem; --side: 26rem; --gap: 3.5rem; }
   html[data-kind="app"] { --rail-w: 16rem; }
-  html[data-kind="app"] .page > .screen { padding-top: var(--gr-space-10); }
+  html[data-kind="app"] .page > .screen { padding-top: var(--gr-space-10); gap: var(--gr-space-8); }
   .dd-page .dd-q { font-size: 2.625rem; }
+  .dd-q { font-size: 2.125rem; }
+  .first-count { font-size: 1.2em; }
   .screen-landing .h-hero { font-size: 3.5rem; }
   html[data-kind="pub"] #app { max-width: 64rem; }
-  html[data-kind="onb"] .page, html[data-kind="bare"] .page { max-width: 36rem; }
+  html[data-kind="onb"] .page, html[data-kind="bare"] .page { max-width: 38rem; }
+  html[data-kind="onb"] .screen, html[data-kind="bare"] .screen { padding-inline: var(--gr-space-8); }
+  .ans-list .ans, .ans-solo .ans { padding: var(--gr-space-6) var(--gr-space-6) var(--gr-space-4); }
+  .act { padding: var(--gr-space-4) var(--gr-space-3); }
 }

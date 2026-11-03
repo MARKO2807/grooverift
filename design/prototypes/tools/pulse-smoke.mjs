@@ -592,10 +592,10 @@ const runs = [
     expect(h.dataset.kind === 'app' && cs($('.rail')).display === 'flex' && cs($('.tabbar')).display === 'none', 'the rail shows, the tab bar is hidden');
     expect($$('.rail > .rail-list .rail-item').length === 4 && $$('.rail-foot .rail-item').length === 2 && $('.rail-foot .alpha-tag'), 'four destinations, settings, help and the alpha mark');
     expect($$('.rail-item').map(b => b.textContent.trim()).join() === 'Početna,Hub,Aktivnost,Profil,Postavke,Pomoć', 'same order as the tab bar (WCAG 3.2.3)');
-    expect(Math.round($('.rail').getBoundingClientRect().width) === 256 && $('.rail').getBoundingClientRect().height >= innerHeight - 1, 'rail 16 rem wide and full height at 1920');
+    expect(Math.round($('.rail').getBoundingClientRect().width) === 272 && $('.rail').getBoundingClientRect().height >= innerHeight - 1, 'rail 16 rem (17 px root) wide and full height at 1920');
     expect(cs($('.rail-brand')).display !== 'none' && cs($('.topbar > .wordmark')).display === 'none' && $('.topbar .top-home').offsetParent && cs($('.topbar .alpha-tag')).display === 'none', 'wordmark and alpha in the rail, the Home title in the top bar');
     expect(cs($('.home-side')).display === 'flex' && cs($('.home-side')).gridColumnStart === '2' && $('.home-side').getBoundingClientRect().left > $('.dd-teaser').getBoundingClientRect().right, 'Home: people and past days in the right column');
-    { const m = $('main'), r = m.getBoundingClientRect(); const inner = r.width - parseFloat(cs(m).paddingLeft) - parseFloat(cs(m).paddingRight); expect(Math.abs(inner - 1200) < 1, 'two columns 48 + 3 + 24 rem, got ' + inner); expect(Math.abs((r.left + r.right) / 2 - (256 + (innerWidth - 256) / 2)) < 1, 'columns centred beside the rail'); }
+    { const m = $('main'), r = m.getBoundingClientRect(); const inner = r.width - parseFloat(cs(m).paddingLeft) - parseFloat(cs(m).paddingRight); expect(Math.abs(inner - 79.5 * 17) < 1, 'two columns 50 + 3.5 + 26 rem at 17 px, got ' + inner); expect(Math.abs((r.left + r.right) / 2 - (272 + (innerWidth - 272) / 2)) < 1, 'columns centred beside the rail'); }
     const ids = $$('[id]').map(e => e.id); const dup = ids.filter((x, i) => ids.indexOf(x) !== i); expect(!dup.length, 'duplicate ids with the rail wordmark: ' + dup.join(','));
     expect($('.skip') && $('.skip').getAttribute('href') === '#main' && ($('.skip').compareDocumentPosition($('.rail')) & Node.DOCUMENT_POSITION_FOLLOWING), 'skip link comes first');
     $('.skip').click(); await sleep(50); expect(document.activeElement === $('#main'), 'skip link focuses the content');
@@ -609,19 +609,19 @@ const runs = [
     await drag('touch'); expect(scr() === 'hub', 'a touch swipe still switches tabs');
     return 'ok';
   })()` },
-  { name: 'desktop 1920 question page, dock beside, sheet as a dialog', url: `${base}?flow=drop&at=drop`, w: 1920, h: 1080, test: `(async () => {${HELPERS}
+  { name: 'desktop 1920 question page, dock at the foot, sheet as a dialog', url: `${base}?flow=drop&at=drop`, w: 1920, h: 1080, test: `(async () => {${HELPERS}
     const cs = el => getComputedStyle(el), m = $('main').getBoundingClientRect(), b = $('.bottom').getBoundingClientRect();
-    expect(b.left >= m.right - 1 && b.top < 300 && Math.round(b.width) === 384 && cs($('.bottom')).position === 'sticky', 'the dock stands beside the answers as a sticky card: ' + [b.left, m.right, b.top, b.width].map(Math.round).join());
-    expect(cs($('.dock')).flexDirection === 'column' && $('canvas.orbit'), 'dock card with the orbit');
-    expect(m.right <= innerWidth - 16 && b.right <= innerWidth - 16, 'nothing touches the right edge');
+    expect(Math.abs(b.bottom - innerHeight) < 1 && cs($('.bottom')).position === 'sticky' && Math.abs(b.width - m.width) < 1, 'the dock stays at the foot of the column as on the phone (owner): ' + [b.bottom, b.width, m.width].map(Math.round).join());
+    expect(cs($('.dock')).flexDirection === 'row' && $('canvas.orbit'), 'dock with the orbit');
+    { const inner = m.width - parseFloat(cs($('main')).paddingLeft) - parseFloat(cs($('main')).paddingRight); expect(Math.abs(inner - 50 * 17) < 1, 'one 50 rem column at 17 px, got ' + inner); }
     await click('[data-k="dock-field"]'); const s = $('.sheet'); expect(s && $('.shell[inert]'), 'compose sheet open');
-    const r = s.getBoundingClientRect(); expect(r.top > 24 && r.bottom < innerHeight - 24 && r.left > 256 && Math.abs((r.left + r.right) / 2 - (256 + (innerWidth - 256) / 2)) < 1 && r.width <= 576, 'sheet centred over the content as a dialog: ' + [r.top, r.bottom, r.left, r.right].map(Math.round).join());
+    const r = s.getBoundingClientRect(); expect(r.top > 24 && r.bottom < innerHeight - 24 && r.left > 272 && Math.abs((r.left + r.right) / 2 - (272 + (innerWidth - 272) / 2)) < 1 && r.width <= 36 * 17, 'sheet centred over the content as a dialog: ' + [r.top, r.bottom, r.left, r.right].map(Math.round).join());
     expect(parseFloat(cs(s).borderBottomLeftRadius) > 0, 'all corners rounded');
     expect(document.activeElement === $('[data-k="f-ans"]'), 'focus in the field as on the phone');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await sleep(100); expect(!$('.sheet') && document.activeElement === $('[data-k="dock-field"]'), 'Escape closes and focus returns');
-    await click('[data-k="more-a3"]'); const mn = $('.sheet'); expect(mn && mn.getBoundingClientRect().top > 24 && mn.getBoundingClientRect().left > 256, 'answer menu as a dialog');
+    await click('[data-k="more-a3"]'); const mn = $('.sheet'); expect(mn && mn.getBoundingClientRect().top > 24 && mn.getBoundingClientRect().left > 272, 'answer menu as a dialog');
     await click('[data-k="m-mute"]'); const d = $('.dialog'); expect(d, 'mute dialog');
-    const e = d.getBoundingClientRect(); expect(Math.abs((e.left + e.right) / 2 - (256 + (innerWidth - 256) / 2)) < 1, 'dialog centred over the content');
+    const e = d.getBoundingClientRect(); expect(Math.abs((e.left + e.right) / 2 - (272 + (innerWidth - 272) / 2)) < 1, 'dialog centred over the content');
     return 'ok';
   })()` },
   { name: 'desktop 1920 Hub and profiles in two columns', url: `${base}?flow=drop&at=hub`, w: 1920, h: 1080, test: `(async () => {${HELPERS}
@@ -629,7 +629,7 @@ const runs = [
     expect(cs($('.hub-side')).gridColumnStart === '2' && $('.hub-side').getBoundingClientRect().left > $('#h-teaser').getBoundingClientRect().right && $('.hub-side').getBoundingClientRect().top < 200, 'the week and archives in the right column');
     await click('[data-k="day-2026-10-30"]'); expect($('#h-teaser').textContent === 'Koji koncert pamtiš do danas?' && cs($('.hub-side')).gridColumnStart === '2', 'a past day keeps the column');
     await click('[data-k="rail-profile"]'); expect(scr() === 'profile', 'profile');
-    expect(cs($('.pf-side')).gridColumnStart === '2' && $('.pf-side').getBoundingClientRect().left > $('.pf-main').getBoundingClientRect().right && $('.pf-c').getBoundingClientRect().width > $('.pf-main').getBoundingClientRect().width + $('.pf-side').getBoundingClientRect().width, 'profile: Spirala across, identity left, artists and answers right');
+    { const c = $('.pf-c').getBoundingClientRect(), a = $('.pf-main').getBoundingClientRect(), b = $('.pf-side').getBoundingClientRect(); expect(cs($('.pf-side')).gridColumnStart === '2' && b.left > a.right && c.left < b.left && c.right > a.right && c.width <= 60 * 17 + 1, 'profile: Spirala across the top but capped at 60 rem, identity left, artists and answers right'); }
     await click('[data-k="rail-home"]'); await click('[data-a="open-drop"]'); await click('[data-a="open-member"]'); expect(scr() === 'member', 'another member');
     expect(cs($('.pm-side')).gridColumnStart === '2' && $('.pm-side').getBoundingClientRect().left > $('.pm-main').getBoundingClientRect().right, 'member profile in two columns');
     return 'ok';
@@ -684,8 +684,8 @@ const runs = [
   { name: 'desktop 1920 visitor landing', url: `${base}?at=landing`, w: 1920, h: 1080, test: `(async () => {${HELPERS}
     const cs = el => getComputedStyle(el);
     expect($('.top-signin-desk').offsetParent && cs($('.foot')).display === 'none', 'sign-in in the top bar, no sticky foot');
-    expect(cs($('.how-rows')).gridTemplateColumns.split(' ').length === 3 && Math.round($('#app').getBoundingClientRect().width) === 1024, 'three feature cards in a 64 rem page');
-    await click('[data-k="top-signin"]'); expect(scr() === 'signin' && Math.round($('.page').getBoundingClientRect().width) === 576, 'sign-in opens as a 36 rem card');
+    expect(cs($('.how-rows')).gridTemplateColumns.split(' ').length === 3 && Math.round($('#app').getBoundingClientRect().width) === 64 * 17, 'three feature cards in a 64 rem page (17 px root)');
+    await click('[data-k="top-signin"]'); expect(scr() === 'signin' && Math.round($('.page').getBoundingClientRect().width) === 38 * 17, 'sign-in opens as a 38 rem card');
     return 'ok';
   })()` },
   { name: 'desktop page', url: base.replace('index.html', 'desktop.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 51) throw new Error('51 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
