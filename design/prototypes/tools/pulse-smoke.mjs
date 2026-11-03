@@ -167,7 +167,14 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="comments"]'); expect(scr() === 'answer' && $('.live-field #f-com') && $('[data-a="com-cancel"]'), 'comments screen with Odustani and a living field (D-067)');
   await type('#f-com', 'nešto'); await click('[data-a="com-cancel"]'); expect(scr() === 'drop', 'Odustani goes back');
   await click('[data-a="comments"]');
-  await type('#f-com', 'Testni komentar'); await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
+  await type('#f-com', 'Testni komentar');
+  await click('[data-k="ref-open-com"]'); expect(document.activeElement && document.activeElement.id === 'f-refq-com', 'comment card search opens with focus (D-068)');
+  await type('#f-refq-com', 'take'); await click('#ref-results-com [data-a="ref-add"]');
+  expect($('form[data-form="comment"] .ref-draft') && $('#f-com').value === 'Testni komentar', 'card added to the comment draft, text kept');
+  expect(!$('form[data-form="answer"]') || !$('form[data-form="answer"] .ref-draft'), 'answer draft untouched by the comment picker');
+  await submit('form[data-form="comment"]'); expect(document.body.textContent.includes('Testni komentar'), 'comment posted');
+  { const last = $$('.com-list > li').pop(); expect(last && last.querySelector('.com-refs .ref-title') && last.querySelector('.com-refs .ref-title').textContent === 'Take Five', 'posted comment shows its catalogue card (D-068)'); }
+  expect(!$('form[data-form="comment"] .ref-draft'), 'comment picker cleared after posting');
   await click('[data-t="profile"]'); expect(scr() === 'profile' && $('.pf-c-hero canvas.dna'), 'profile with the Music DNA on top (D-060)');
   expect(!$('[data-a="calm"]'), 'motion setting moved off the profile (D-063)');
   await click('[data-a="settings"]'); expect(scr() === 'settings' && $('.set-me') && $$('.set-group').length === 4 && $('[data-k="logout"]') && $('.set-status') && $('.set-body ~ .set-delete') && !document.body.textContent.includes('Preuzmi svoje podatke'), 'settings: status on top, four groups, log out, delete at the bottom (D-065)');

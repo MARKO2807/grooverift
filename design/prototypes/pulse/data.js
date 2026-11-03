@@ -169,7 +169,7 @@ window.GR_DATA = {
 
   comments: {
     a1: [
-      { who: 'Luka', handle: 'lukabass', time: '08:40', text: 'Slažem se. „Blue in Green” mi je bio ulaz.' },
+      { who: 'Luka', handle: 'lukabass', time: '08:40', text: 'Slažem se. „Blue in Green” mi je bio ulaz.', refs: [1] },
       { who: 'Hana', handle: 'hana.fm', time: '09:02', lang: 'en', text: 'The safe pick, but it works every time.' }
     ],
     a2: [

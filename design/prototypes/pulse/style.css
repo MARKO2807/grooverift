@@ -511,6 +511,7 @@ html[data-motion="reduced"] .react-like.pressing .wave, html[data-motion="reduce
 .com { display: flex; flex-direction: column; gap: var(--gr-space-1); }
 .com .ans-head { grid-template-columns: auto 1fr auto; }
 .com p { font: var(--gr-type-body-sm); padding-left: calc(32px + var(--gr-space-3)); }
+.com-refs { padding-left: calc(32px + var(--gr-space-3)); margin-top: var(--gr-space-1); }
 .prof-head { display: flex; align-items: center; gap: var(--gr-space-4); }
 .prof-name { font: var(--gr-type-title-2); }
 .tags { display: flex; flex-wrap: wrap; gap: var(--gr-space-2); }

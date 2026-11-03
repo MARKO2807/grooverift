@@ -72,7 +72,7 @@
     comments: JSON.parse(JSON.stringify(D.comments)),
     sort: 'foryou', mine: null, draft: '', draftRefs: [], refQ: '', refOpen: false, editing: false,
     expanded: new Set(), pending: null, newTimer: null,
-    ctx: null, commentDraft: '',
+    ctx: null, commentDraft: '', comRefs: [], comRefQ: '', comRefOpen: false,
     overlay: null
   };
   DNA.setSource(() => ({ genres: st.genres.slice(), artists: st.artists.map(a => ({ name: a.name, g: a.g || [] })) }));
@@ -395,26 +395,34 @@
     return `<p class="aud" id="${id}">${ic('users', 'sm')}<span>${kind === 'answer' ? 'Vidljivo svim članovima.' : 'Vidljivo svima koji vide ovaj odgovor.'}</span></p>`;
   }
 
-  function refResults() {
-    const q = CAT.fold(st.refQ.trim());
+  /* Catalogue cards in the composer. Answers and comments (D-068) share one editor; RS maps each slot to its state keys and ids. */
+  const RS = {
+    ans: { refs: 'draftRefs', q: 'refQ', open: 'refOpen', field: 'f-ans', sfx: '' },
+    com: { refs: 'comRefs', q: 'comRefQ', open: 'comRefOpen', field: 'f-com', sfx: '-com' }
+  };
+  const REF_MAX = 3;
+  function refResults(k) {
+    const S = RS[k || 'ans'], sel = st[S.refs];
+    const q = CAT.fold(st[S.q].trim());
     if (q.length < 2) return '<li class="hint">Upiši barem dva slova.</li>';
-    const hits = D.refs.map((r, i) => ({ r, i })).filter(x => !st.draftRefs.includes(x.i) && (CAT.fold(x.r.title).includes(q) || CAT.fold(x.r.by).includes(q))).slice(0, 5);
+    const hits = D.refs.map((r, i) => ({ r, i })).filter(x => !sel.includes(x.i) && (CAT.fold(x.r.title).includes(q) || CAT.fold(x.r.by).includes(q))).slice(0, 5);
     if (!hits.length) return '<li class="hint">Nema rezultata u katalogu.</li>';
-    return hits.map(x => { const t = CAT.tile(x.r.title); return `<li><button type="button" class="result" data-a="ref-add" data-i="${x.i}" data-k="ref-${x.i}">
+    return hits.map(x => { const t = CAT.tile(x.r.title); return `<li><button type="button" class="result" data-a="ref-add" data-s="${k || 'ans'}" data-i="${x.i}" data-k="ref${S.sfx}-${x.i}">
       <span class="art art-gen" style="background:${t.bg}" aria-hidden="true">${esc(t.ini)}</span>
       <span class="r-body"><span class="r-title">${esc(x.r.title)}</span><span class="r-meta">${x.r.type}, ${esc(x.r.by)}</span></span><span class="r-add">${ic('plus', 'sm')}<span class="sr-only">Dodaj</span></span></button></li>`; }).join('');
   }
-  function refsEditor() {
-    const chips = st.draftRefs.map((ri, j) => { const r = D.refs[ri]; const t = CAT.tile(r.title); return `<li class="ref-draft"><span class="ref ref-static"><span class="ref-art" style="background:${t.bg}" aria-hidden="true">${esc(t.ini)}</span><span class="ref-body"><span class="ref-title">${esc(r.title)}</span><span class="ref-by">${r.type}, ${esc(r.by)}</span></span></span>
-      <button type="button" class="iconbtn sm" data-a="ref-remove" data-i="${j}" data-k="refrm-${j}" aria-label="Ukloni ${esc(r.title)}">${ic('x', 'sm')}</button></li>`; }).join('');
+  function refsEditor(k) {
+    const S = RS[k], sel = st[S.refs];
+    const chips = sel.map((ri, j) => { const r = D.refs[ri]; const t = CAT.tile(r.title); return `<li class="ref-draft"><span class="ref ref-static"><span class="ref-art" style="background:${t.bg}" aria-hidden="true">${esc(t.ini)}</span><span class="ref-body"><span class="ref-title">${esc(r.title)}</span><span class="ref-by">${r.type}, ${esc(r.by)}</span></span></span>
+      <button type="button" class="iconbtn sm" data-a="ref-remove" data-s="${k}" data-i="${j}" data-k="refrm${S.sfx}-${j}" aria-label="Ukloni ${esc(r.title)}">${ic('x', 'sm')}</button></li>`; }).join('');
     let more = '';
-    if (st.refOpen) {
-      more = `<div class="ref-search"><label class="label-sm" for="f-refq">Traži album, pjesmu ili izvođača</label>
-        <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-refq" data-k="f-refq" type="search" autocomplete="off" value="${esc(st.refQ)}"></div>
-        <ul class="results" id="ref-results">${refResults()}</ul>
-        <button type="button" class="link" data-a="ref-close" data-k="ref-close">Gotovo</button></div>`;
-    } else if (st.draftRefs.length < 3) {
-      more = `<button type="button" class="add-ref" data-a="ref-open" data-k="ref-open">${ic('plus', 'sm')}<span>Dodaj album, pjesmu ili izvođača</span></button>`;
+    if (st[S.open]) {
+      more = `<div class="ref-search"><label class="label-sm" for="f-refq${S.sfx}">Traži album, pjesmu ili izvođača</label>
+        <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-refq${S.sfx}" data-k="f-refq${S.sfx}" type="search" autocomplete="off" value="${esc(st[S.q])}"></div>
+        <ul class="results" id="ref-results${S.sfx}">${refResults(k)}</ul>
+        <button type="button" class="link" data-a="ref-close" data-s="${k}" data-k="ref-close${S.sfx}">Gotovo</button></div>`;
+    } else if (sel.length < REF_MAX) {
+      more = `<button type="button" class="add-ref" data-a="ref-open" data-s="${k}" data-k="ref-open${S.sfx}">${ic('plus', 'sm')}<span>Dodaj album, pjesmu ili izvođača</span></button>`;
     }
     return `${chips ? `<ul class="refs refs-draft">${chips}</ul>` : ''}${more}`;
   }
@@ -424,7 +432,7 @@
       <label class="composer-label sr-only" for="f-ans">${st.editing ? 'Uredi svoj odgovor' : 'Tvoj odgovor'}</label>
       <textarea class="textarea" id="f-ans" data-k="f-ans" rows="6" placeholder="Napiši odgovor…"${err ? ' aria-invalid="true" aria-describedby="err-ans"' : ''}>${esc(st.draft)}</textarea>
       ${err ? fieldErr('ans', err) : ''}
-      ${refsEditor()}
+      ${refsEditor('ans')}
       ${audience('answer')}
       ${st.postErr ? `<div class="post-err" role="alert">${ic('alert')}<p><b>Odgovor nije objavljen.</b> Veza je pukla. Tekst je ostao ovdje, pokušaj ponovno.</p></div>` : ''}
       ${NET_OFF ? `<p class="post-off" id="post-off">${ic('offline', 'sm')}<span>Objava treba mrežu. Tekst ostaje ovdje dok je stranica otvorena.</span></p>` : ''}
@@ -1386,13 +1394,14 @@
             ${cs.length ? `<ul class="com-list">${cs.map((c, i) => `<li><article class="com" aria-labelledby="hc-${i}">
               <header class="ans-head">${avatar(c.handle, c.who, 'sm')}
               <h3 class="ans-who" id="hc-${i}" tabindex="-1"><span class="name">${esc(c.who)}</span><span class="sr-only">, </span><span class="handle">@${esc(c.handle)}</span></h3><span class="ans-time"><time>${c.time}</time></span></header>
-              <p${c.lang ? ` lang="${c.lang}"` : ''}>${esc(c.text)}</p></article></li>${STATE === 'blocked' && i === 0 ? '<li><p class="com-gone">Ovaj komentar nije dostupan.</p></li>' : ''}`).join('')}</ul>`
+              <p${c.lang ? ` lang="${c.lang}"` : ''}>${esc(c.text)}</p>${c.refs && c.refs.length ? `<ul class="refs com-refs">${c.refs.map((r, j) => refCard(D.refs[r], 'c' + a.id + i, j)).join('')}</ul>` : ''}</article></li>${STATE === 'blocked' && i === 0 ? '<li><p class="com-gone">Ovaj komentar nije dostupan.</p></li>' : ''}`).join('')}</ul>`
               : emptyBox(pic('chats-circle', 'empty-ic'), 'Još nema komentara.', 'Započni razgovor.')}
           </section>
           <form class="composer composer-comment" data-form="comment" novalidate>
             <label class="composer-label" for="f-com">Tvoj komentar</label>
             <div class="live-field"><textarea class="textarea" id="f-com" data-k="f-com" rows="2"${st.err.com ? ' aria-invalid="true" aria-describedby="err-com"' : ''}>${esc(st.commentDraft)}</textarea></div>
             ${st.err.com ? fieldErr('com', st.err.com) : ''}
+            ${refsEditor('com')}
             ${audience('comment')}
             ${NET_OFF ? `<p class="post-off" id="com-off">${ic('offline', 'sm')}<span>Objava treba mrežu. Tekst ostaje ovdje dok je stranica otvorena.</span></p>` : ''}
             <div class="composer-actions composer-split"><button type="button" class="btn btn-secondary" data-a="com-cancel" data-k="com-cancel">Odustani</button><button type="submit" class="btn btn-primary" data-k="com-post" aria-describedby="aud-c${NET_OFF ? ' com-off' : ''}"${NET_OFF ? ' disabled' : ''}>Komentiraj</button></div>
@@ -1804,7 +1813,7 @@
         if (AGE18_AT === 'c' && !(root.querySelector('#f-age18') || {}).checked) { st.err.age18 = 'Označi potvrdu za nastavak.'; render(); return focusSel('#f-age18'); }
         delete st.err.age18; st.overlay = null; return go('uilang');
       case 'age18-minor': st.age = 'minor'; st.overlay = null; return go('minor');
-      case 'com-cancel': st.commentDraft = ''; delete st.err.com; return back();
+      case 'com-cancel': st.commentDraft = ''; clearRefs('com'); delete st.err.com; return back();
       case 'setsub': st.sub = b.dataset.s; return go('setsub');
       case 'push-dev': st.pushDev = st.pushDev === false; st.pause = null; return render({ keep: true });
       case 'pause': st.pause = b.dataset.p; render(); focusSel('[data-k="pause-end"]'); return toast('Obavijesti su pauzirane.');
@@ -1820,10 +1829,10 @@
       case 'open-compose': go('drop'); return openOverlay({ type: 'sheet' }, root.querySelector('[data-k="dock-field"]'));
       case 'compose': return openOverlay({ type: 'sheet' }, b);
       case 'cancel-compose': return cancelCompose();
-      case 'ref-open': st.refOpen = true; render({ keep: true }); return focusSel('#f-refq');
-      case 'ref-close': st.refOpen = false; st.refQ = ''; render({ keep: true }); return focusSel('[data-k="ref-open"], [data-k="f-ans"]');
-      case 'ref-add': st.draftRefs.push(+b.dataset.i); if (st.draftRefs.length >= 3) { st.refOpen = false; st.refQ = ''; } render({ keep: true }); return focusSel(st.refOpen ? '#f-refq' : '[data-k="f-ans"]');
-      case 'ref-remove': st.draftRefs.splice(+b.dataset.i, 1); render({ keep: true }); return focusSel('[data-k="ref-open"], #f-refq, [data-k="f-ans"]');
+      case 'ref-open': { const S = RS[b.dataset.s || 'ans']; st[S.open] = true; render({ keep: true }); return focusSel(`#f-refq${S.sfx}`); }
+      case 'ref-close': { const S = RS[b.dataset.s || 'ans']; st[S.open] = false; st[S.q] = ''; render({ keep: true }); return focusSel(`[data-k="ref-open${S.sfx}"], [data-k="${S.field}"]`); }
+      case 'ref-add': { const S = RS[b.dataset.s || 'ans']; st[S.refs].push(+b.dataset.i); if (st[S.refs].length >= REF_MAX) { st[S.open] = false; st[S.q] = ''; } render({ keep: true }); return focusSel(st[S.open] ? `#f-refq${S.sfx}` : `[data-k="${S.field}"]`); }
+      case 'ref-remove': { const S = RS[b.dataset.s || 'ans']; st[S.refs].splice(+b.dataset.i, 1); render({ keep: true }); return focusSel(`[data-k="ref-open${S.sfx}"], #f-refq${S.sfx}, [data-k="${S.field}"]`); }
       case 'react': {
         const x = findAnswer(b.dataset.id); const r = b.dataset.r; const k = b.dataset.k; const i = x.myReacts.indexOf(r);
         i >= 0 ? x.myReacts.splice(i, 1) : x.myReacts.push(r);
@@ -1832,7 +1841,7 @@
         return;
       }
       case 'expand': { const id = b.dataset.id; st.expanded.has(id) ? st.expanded.delete(id) : st.expanded.add(id); return render({ keep: true }); }
-      case 'comments': st.ctx = b.dataset.id; st.commentDraft = ''; return go('answer');
+      case 'comments': st.ctx = b.dataset.id; st.commentDraft = ''; clearRefs('com'); return go('answer');
       case 'more': return openOverlay({ type: 'menu', id: b.dataset.id }, b);
       case 'menu': { const m = b.dataset.msg; closeOverlay(); return toast(m); }
       case 'overlay-close': return st.overlay && st.overlay.type === 'sheet' ? cancelCompose() : closeOverlay();
@@ -1905,6 +1914,8 @@
     }
   });
 
+  function clearRefs(k) { const S = RS[k]; st[S.refs] = []; st[S.q] = ''; st[S.open] = false; }
+
   root.addEventListener('submit', e => {
     e.preventDefault();
     const f = e.target.dataset.form;
@@ -1913,9 +1924,9 @@
       const t = st.commentDraft.trim();
       if (!t) { st.err = { com: 'Napiši komentar prije objave.' }; render({ keep: true }); return focusSel('#f-com'); }
       const list = st.comments[st.ctx] || (st.comments[st.ctx] = []);
-      list.push({ who: st.displayName || 'Ti', handle: st.username || 'ti', time: 'upravo', text: t });
+      list.push({ who: st.displayName || 'Ti', handle: st.username || 'ti', time: 'upravo', text: t, refs: st.comRefs.slice() });
       findAnswer(st.ctx).comments += 1;
-      st.commentDraft = ''; st.err = {};
+      st.commentDraft = ''; clearRefs('com'); st.err = {};
       render(); focusSel(`#hc-${list.length - 1}`); toast('Komentar je objavljen.');
     }
   });
@@ -1954,7 +1965,7 @@
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();
       case 'f-genre': { st.genreQ = t.value; const m = root.querySelector('#more-genres'); if (m) { m.innerHTML = moreGenres(); const f = root.querySelector('#f-genre'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
       case 'f-setq': { st.setQ = t.value; const b = root.querySelector('#set-body'); if (b) { const tmp = document.createElement('div'); tmp.innerHTML = settingsBody(); b.innerHTML = tmp.querySelector('#set-body').innerHTML; } return; }
-      case 'f-refq': { st.refQ = t.value; const r = root.querySelector('#ref-results'); if (r) r.innerHTML = refResults(); return; }
+      case 'f-refq': case 'f-refq-com': { const k = t.id === 'f-refq' ? 'ans' : 'com', S = RS[k]; st[S.q] = t.value; const r = root.querySelector(`#ref-results${S.sfx}`); if (r) r.innerHTML = refResults(k); return; }
       case 'f-ans': st.draft = t.value; return clearErr('ans', t);
       case 'f-com': st.commentDraft = t.value; return clearErr('com', t);
       case 'f-pwin': st.pwIn = t.value; clearErr('pwin', t); return;
