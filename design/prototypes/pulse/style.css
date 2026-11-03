@@ -1179,3 +1179,5 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
   .ans-muted { flex-direction: column; align-items: flex-start; }
   .toast-in.has-act { flex-wrap: wrap; }
 }
+/* D-075: the viewer's own mute mark on a member's profile (dashed, like the collapsed rows). */
+.rel-chip.is-muted { border-style: dashed; }

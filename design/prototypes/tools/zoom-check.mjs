@@ -32,7 +32,7 @@ const DEFAULT = [
   'flow=drop&at=member&who=petra.zvuk&rel=mut&show=unfollow', 'flow=drop&at=mdrops&who=petra.zvuk&rel=fol', 'flow=drop&at=activity&private=1', 'flow=drop&at=follows&list=followers&private=1',
   'flow=drop&at=follows&list=following', 'flow=drop&at=requests&private=1', 'flow=drop&at=follows&list=followers&private=1&show=remove&h=lukabass',
   // round 12b: member safety
-  'flow=drop&at=drop&show=report', 'flow=drop&at=drop&show=report&step=2', 'flow=drop&at=drop&show=report&step=3', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=block', 'flow=drop&at=drop&show=muted',
+  'flow=drop&at=drop&show=report', 'flow=drop&at=drop&show=report&step=2', 'flow=drop&at=drop&show=report&step=3', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=block', 'flow=drop&at=drop&show=muted', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=muted',
   'flow=drop&at=setsub&s=status', 'flow=drop&at=setsub&s=notice&n=n1', 'flow=drop&at=setsub&s=appeal&n=n1', 'flow=drop&at=setsub&s=reports', 'flow=drop&at=setsub&s=reportd&r=r1',
   'flow=drop&at=setsub&s=blocked&bl=1', 'flow=drop&at=drop&acct=restricted&rst=b', 'at=restricted', 'at=suspended&show=appeal'
 ];

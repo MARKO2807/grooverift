@@ -40,7 +40,7 @@
 <body>
 <div class="page">
   <h1>Runda 12b: sigurnost člana</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> „Preporuka” je moj prijedlog. Kad odabereš, odabrano postaje zadano u skici.</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-075, sesija 15).</b> „Odabrano” je zadano u skici; „preporuka” je bio moj prijedlog. Uz to je dodan tihi znak „Utišano” uz ime na profilu utišane osobe (vidi „Na profilu, utišano”).</p>
   <p>Okviri su prava aplikacija: prijavi, blokiraj, utišaj, žali se. Prijavljena si kao Ana. Mia je privatni profil koji ne pratiš; njezin odgovor je treći na današnjem pitanju. Svi podaci, prijave i odluke su izmišljeni; pravni tekst obrazloženja piše pravnik.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (J5, D-019, D-072, R-07, Master Prompt §12, nisu izbor):</p>
     <ul>
@@ -84,7 +84,7 @@
   const DONE = [
     ['Koraci prijave', 'Drugi korak s detaljima i onim što prijavljuješ, treći s potvrdom i ponudom; autorska prava vode na poseban obrazac (PUB-11). Prijava profila s ⋯ na profilu.', [
       ['Korak 2: detalji', 'flow=drop&at=drop&show=report&step=2'], ['Korak 2: autorska prava', 'flow=drop&at=drop&show=report&step=2&cat=copyright'], ['Korak 3: primljeno', 'flow=drop&at=drop&show=report&step=3'], ['Prijava profila', 'flow=drop&at=member&who=nika.rework&rel=none&show=report']]],
-    ['Izbornici ⋯', 'Isti izbornik na odgovoru i na profilu: Podijeli (javni profil), Utišaj, Blokiraj, Prijavi. Kad je netko utišan, nudi „Poništi utišavanje”.', [
+    ['Izbornici ⋯', 'Isti izbornik na odgovoru i na profilu: Podijeli (javni profil), Utišaj, Blokiraj, Prijavi. Kad je netko utišan, nudi „Poništi utišavanje”, a uz ime na profilu stoji tihi znak „Utišano” koji vidiš samo ti (D-075).', [
       ['Na odgovoru', 'flow=drop&at=drop&show=menu'], ['Na profilu', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=menu'], ['Na profilu, utišano', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=muted'], ['Utišani odgovor', 'flow=drop&at=drop&show=muted']]],
     ['Nakon blokiranja (D-019, D-072)', 'Profil blokirane osobe, odblokiranje bez vraćanja praćenja, stvarni popis blokiranih i utišanih, komentar blokirane osobe u raspravi.', [
       ['Profil, blokirano', 'flow=drop&at=member&as=blocker'], ['Blokirani i utišani', 'flow=drop&at=setsub&s=blocked&bl=1'], ['Komentar u raspravi', 'flow=drop&at=answer&bl=1'], ['Odgovori bez blokiranih', 'flow=drop&at=drop&bl=1']]],
@@ -93,7 +93,7 @@
     ['Ograničen i suspendiran račun (SAFE-07)', 'Pri prijavi cijeli ekran: ograničenje s „Nastavi”, suspenzija bez ulaska, uz obrazloženje i žalbu na istom ekranu. Status računa dok traje ograničenje.', [
       ['Ograničenje pri prijavi', 'at=restricted'], ['Status: ograničeno', 'flow=drop&at=setsub&s=status&acct=restricted'], ['Suspenzija', 'at=suspended'], ['Suspenzija: žalba', 'at=suspended&show=appeal']]]
   ];
-  const CHOSEN = {};
+  const CHOSEN = { rep: 'a', blk: 'a', mute: 'b', sor: 'a', rst: 'a' };
   const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>

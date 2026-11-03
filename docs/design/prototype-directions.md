@@ -346,12 +346,13 @@ Recorded in `DECISIONS.md` (D-070 to D-073) and `HANDOFF.md`; sketches `pulse/ro
 - Owner choices (D-074): wide button under the header (A); "Pratiš" plus a relationship chip (B); the quiet block for private profiles (A); history as question plus first lines (C); requests as one row on top of Activity (A); lists as two tabs on one screen (A); remove a follower through ⋯ per row (B, against the recommendation). Naming: „Povezani” / "Connected" replaces „Uzajamni” / "Mutuals" (amends D-012; Claude flagged the closeness to "Music Connections").
 - Verification: `pulse-smoke.mjs` 64/64 (19 new runs), `zoom-check.mjs` 60/60 at 200 % (11 new screens), `smoke.mjs` 3/3.
 
-### Round 12b: member safety (2026-11-03, session 14, overnight; decisions PENDING)
+### Round 12b: member safety (2026-11-03, session 14 overnight; decided in session 15, D-075)
 
 - Scope: SAFE-01 report, SAFE-02 block, SAFE-03 mute, SAFE-04 my reports, SAFE-05 notices with a statement of reasons, SAFE-06 basic appeal, SAFE-07 restricted or suspended, SAFE-08 the real lists; the answer and profile menus wired to them. Sketch `pulse/round12b.html`: five choice sections and a "Napravljeno bez izbora" part (report steps, menus, after a block, the status hub, SAFE-07).
 - Rules applied without a choice (J5, D-019, D-072, R-07, Master Prompt §12): mute is one-way and silent, with a collapsed row and "Prikaži"; block hides both ways, ends follows both ways, cancels requests, sends nothing; a report has categories (impersonation and minors prioritised, copyright to PUB-11), is reviewed by a person and never names the reporter; every decision carries what, rule, decision, how it was decided and the appeal (DSA Art. 17); enforcement is progressive (notice, warning, restriction, suspension); a restricted member keeps reading, reacting and following.
 - Options for the owner (D-075): report sheet vs. screen; block sheet with facts vs. short dialog; mute at once vs. confirmation; statement as sections vs. letter; restriction at the composer only vs. plus a bar.
-- Verification: `pulse-smoke.mjs` 81/81 (17 new runs), `zoom-check.mjs` 74/74 at 200 % (14 new screens), `smoke.mjs` 3/3.
+- Owner choices (session 15, D-075 CONFIRMED): the recommendations everywhere except mute, which asks first (`mute=b`: a short "Utišati @ime?" dialog, then the toast with Undo; the same when mute is offered at the end of a report). Owner addition: a dashed "Utišano" chip by the handle on a muted member's profile, visible to the viewer only (`.rel-chip.is-muted`, screen readers hear "Utišano, vidiš samo ti"). Defaults in `app.js`: `rep=a`, `blk=a`, `mute=b`, `sor=a`, `rst=a`.
+- Verification: `pulse-smoke.mjs` 82/82 (18 round 12b runs), `zoom-check.mjs` 75/75 at 200 % (15 round 12b screens), `smoke.mjs` 3/3.
 
 ### Verification (session 9)
 

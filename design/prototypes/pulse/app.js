@@ -1321,9 +1321,11 @@
   function memberBody(h) {
     const m = member(h), see = canSee(h);
     const chip = relChip(h);
+    /* D-075: a quiet mark that the viewer muted this member. Only the viewer sees it; the member never does. */
+    const muted = !isMe(h) && st.muted.has(h) ? `<span class="rel-chip is-muted">${ic('bell', 'sm')}Utišano<span class="sr-only">, vidiš samo ti</span></span>` : '';
     const withBtn = see || PST_AT !== 'c';
     const head = `<div class="pm-head${RBTN_AT === 'b' ? ' pm-head-b' : ''}">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>
-      <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}${chip ? `<span aria-hidden="true">·</span>${chip}` : ''}</p></div>${RBTN_AT === 'b' && withBtn ? relBtn(h, 'btn-sm') : ''}</div>`;
+      <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}${chip ? `<span aria-hidden="true">·</span>${chip}` : ''}${muted ? `<span aria-hidden="true">·</span>${muted}` : ''}</p></div>${RBTN_AT === 'b' && withBtn ? relBtn(h, 'btn-sm') : ''}</div>`;
     const bio = m.bio ? `<p class="pf-bio">${esc(m.bio)}</p>` : '';
     const relRow = RBTN_AT === 'a' && withBtn ? `<div class="rel-row">${relBtn(h)}${pmenuBtn(h)}</div>` : '';
     let body = '';
@@ -1387,7 +1389,7 @@
      ?flow=drop&at=setsub&s=status|notices|notice&n=n1|appeal&n=n1|reports|reportd&r=r1   the status screens (&sent=1: appeal sent) */
   const REP_AT = pick('rep', ['a', 'b'], 'a');
   const BLK_AT = pick('blk', ['a', 'b'], 'a');
-  const MUTE_AT = pick('mute', ['a', 'b'], 'a');
+  const MUTE_AT = pick('mute', ['a', 'b'], 'b');
   const SOR_AT = pick('sor', ['a', 'b'], 'a');
   const RST_AT = pick('rst', ['a', 'b'], 'a');
   const ACCT = P.get('acct');

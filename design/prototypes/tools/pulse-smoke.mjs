@@ -388,7 +388,8 @@ const runs = [
     await click('[data-a="rep-next"]'); expect($('#err-repcat'), 'a category is required');
     await click('input[name="repcat"][value="harass"]'); await click('[data-a="rep-next"]'); expect($('#f-rep') && $('.rep-quote').textContent.includes('Kamasija'), 'step 2 shows the reported answer');
     await type('#f-rep', 'Ponavlja se.'); await click('[data-a="rep-send"]'); expect($('.sub-hero-t').textContent === 'Prijava je primljena.' && $('[data-k="rep-mute"]') && $('[data-k="rep-block"]'), 'step 3 offers mute and block');
-    await click('[data-k="rep-mute"]'); await sleep(120); expect(!$('.sheet-report') && $('.ans-muted') && $('.toast-btn'), 'mute from the report collapses the answer, with Undo');
+    await click('[data-k="rep-mute"]'); expect(!$('.sheet-report') && $('.dialog [data-a="mute-confirm"]'), 'mute from the report asks first (D-075 B)');
+    await click('[data-a="mute-confirm"]'); await sleep(120); expect($('.ans-muted') && $('.toast-btn'), 'then collapses the answer, with Undo');
     return 'ok'; })()` },
   { name: 'r12b report full screen', url: `${base}?flow=drop&at=drop&show=report&rep=b`, test: `(async () => {${HELPERS}
     expect(scr() === 'report' && $$('input[name="repcat"]').length === 11, 'report as its own screen');
@@ -404,12 +405,16 @@ const runs = [
   { name: 'r12b block from the thread', url: `${base}?flow=drop&at=answer`, test: `(async () => {${HELPERS}
     await click('[data-k="more-a1"]'); await click('[data-k="m-block"]'); await click('[data-a="block-confirm"]');
     expect(scr() === 'drop' && !$('[data-k="more-a1"]') && $('.dd-meta').textContent.includes('6 odgovora'), "the blocked member's answer and thread are gone, the count follows"); return 'ok'; })()` },
-  { name: 'r12b mute undo', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute`, test: `(async () => {${HELPERS}
+  { name: 'r12b mute at once a (rejected)', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute&mute=a`, test: `(async () => {${HELPERS}
     await sleep(200); expect($('.toast-btn') && $('.toast-in').textContent.includes('Utišano'), 'muted at once with Undo'); $('.toast-btn').click(); await sleep(150);
     await click('[data-k="pmenu"]'); expect($('[data-k="m-mute"]').textContent.startsWith('Utišaj'), 'undo restored the state'); return 'ok'; })()` },
-  { name: 'r12b mute confirm b', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute&mute=b`, test: `(async () => {${HELPERS}
-    expect($('.dialog [data-a="mute-confirm"]'), 'confirmation first'); await click('[data-a="mute-confirm"]'); await sleep(150); expect($('.toast-btn'), 'then the toast with Undo');
-    await click('[data-k="pmenu"]'); expect($('[data-k="m-mute"]').textContent.startsWith('Poništi'), 'menu offers unmute'); return 'ok'; })()` },
+  { name: 'r12b mute confirm (D-075 default)', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute`, test: `(async () => {${HELPERS}
+    expect($('.dialog [data-a="mute-confirm"]') && !$('.rel-chip.is-muted'), 'confirmation first, no mark yet'); await click('[data-a="mute-confirm"]'); await sleep(150); expect($('.toast-btn'), 'then the toast with Undo');
+    expect($('.pm-id .rel-chip.is-muted') && $('.rel-chip.is-muted').textContent.startsWith('Utišano'), 'the profile shows the quiet "Utišano" mark (D-075)');
+    await click('[data-k="pmenu"]'); expect($('[data-k="m-mute"]').textContent.startsWith('Poništi'), 'menu offers unmute');
+    await click('[data-k="m-mute"]'); await sleep(150); expect(!$('.rel-chip.is-muted'), 'unmute removes the mark'); return 'ok'; })()` },
+  { name: 'r12b muted profile mark', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=muted`, test: `(async () => {${HELPERS}
+    expect($('.pm-id .rel-chip.is-muted') && $('.rel-chip.is-muted .sr-only'), 'muted mark with a screen-reader note'); return 'ok'; })()` },
   { name: 'r12b muted answer and comment', url: `${base}?flow=drop&at=drop&show=muted`, test: `(async () => {${HELPERS}
     expect($('.ans-muted') && !$('#t-a3'), 'muted answer collapsed'); await click('[data-k="showm-a3"]'); expect($('#t-a3') && !$('.ans-muted'), 'shown on request');
     await click('[data-k="com-a2"]'); expect($('.com-muted'), 'muted comment collapsed in a thread'); return 'ok'; })()` },
