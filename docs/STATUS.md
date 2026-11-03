@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-03 (session 13)_
+_Last updated: 2026-11-03 (session 14)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -12,7 +12,7 @@ _Last updated: 2026-11-03 (session 13)_
 | 3.2 Information architecture ⛳ | ✅ Done ([information-architecture](design/information-architecture.md); decision sketches in `design/prototypes/ia/`) |
 | 3.3 Key journeys | ✅ Done ([journeys](design/journeys/README.md) J1–J6; decision sketches in `design/prototypes/journeys/`) |
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
-| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070; notifications look D-071). All in `design/prototypes/pulse/`. 200 % zoom, desktop and the screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
+| 3.5 Prototypes ⛳ | 🔄 Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070; notifications look D-071); in session 13, comment cards and 200 % text (D-073); in session 14, round 12a: other members' profiles, lists and follow requests (D-074). All in `design/prototypes/pulse/`. Rounds 12b–12d, desktop and the screen reader pass remain ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
 | 3.6 Core components spec | ⏳ |
 | 3.7 Brand derivatives ⛳ | ⏳ |
@@ -21,7 +21,7 @@ _Last updated: 2026-11-03 (session 13)_
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-073. Key ones:
+- Decisions D-001 to D-074. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -84,6 +84,7 @@ _Last updated: 2026-11-03 (session 13)_
     - **D-069:** @username changes once every 30 days, old name reserved 30 days; "Ukloni pratitelja" for private profiles (JO1, approved); naming odgovor / komentar / reakcija.
     - **Round 10 (session 12, D-070):** loading cards that breathe, an offline bar, empty states with an icon and a title, one line when the question is late, privacy as rows with a sheet, deactivate or delete in short steps, a log-out confirmation. **No social emails in the alpha** (OQ-32, deferred; security and account emails stay). Built from confirmed rules: errors with Retry and kept text, blocks, long names, sign-in, the D-054 banner, the grace-period screen, username, password, email and 2FA screens. Sketch: `pulse/round10.html`. **D-071:** the notifications screen has one switch for this phone on top, the types below (`pulse/round11.html`). **D-072:** reactions off by default, a pause (1 h, 3 h, until 08:00) added to the alpha, R-15 to R-18 confirmed (followers stay when going private, notice to the old email, password change signs out other devices, silent unblock).
     - **Large text (session 13, D-073):** a large-text mode for 200 % text: spacing stops growing, layouts stack, the tab bar shows only the open tab's label, and headings grow by a step over body text (the owner accepted the strict WCAG 1.4.4 reading as a risk). Comments now take catalogue cards (D-068). Review page `pulse/large-text.html`.
+    - **Round 12a (session 14, D-074):** another member's profile (public, private, verified), the answer history, the follower lists with "Ukloni pratitelja" (⋯ per row) and follow requests (one row on top of Activity, a requests screen). Who sees what follows J4 and D-033. **Naming change (amends D-012):** the mutual relationship is „Povezani” / "Connected"; code keeps `mutual`. Review page `pulse/round12a.html`.
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -98,7 +99,7 @@ _Last updated: 2026-11-03 (session 13)_
 1. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
    - The desktop adaptation: rail at 600 and 1024 px, a 40 rem reading column, the sheet as a centred dialog. (200 % text and the comment cards are done, session 13.)
    - Screen reader (Narrator) and high-contrast checks.
-2. **Round 12, all remaining alpha screens (owner: "sve"),** one group at a time, each as a round page and a survey: (a) other members' profiles and lists (PROF-01 public and private, PROF-03, PROF-07 with "Ukloni pratitelja", ACT-02); (b) member safety (SAFE-01 to SAFE-05, SAFE-07); (c) signed-out and sign-in (PUB-01, PUB-03, PUB-04, PUB-06, PUB-07, PUB-08); (d) the rest (PROF-09 DNA editor, PROF-08 photo, SET-12 feedback form, SYS-02, SYS-04, the Hub before the first Drop).
+2. **Round 12, all remaining alpha screens (owner: "sve"),** one group at a time, each as a round page and a survey: ~~(a) other members' profiles and lists~~ (done, D-074); (b) member safety (SAFE-01 to SAFE-05, SAFE-07); (c) signed-out and sign-in (PUB-01, PUB-03, PUB-04, PUB-06, PUB-07, PUB-08); (d) the rest (PROF-09 DNA editor, PROF-08 photo, SET-12 feedback form, SYS-02, SYS-04, the Hub before the first Drop).
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
    - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).

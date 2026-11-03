@@ -97,12 +97,12 @@ No confirmation dialog is added for choosing Private. Both directions are equall
 | E11 | Very long display name or bio, Croatian diacritics | Wraps at 320 px without clipping (WCAG 1.4.10). |
 
 ## Accessibility notes
-- The relationship button names its current state ("Following", "Requested", "Mutual"). Unfollow and Cancel request are separate, labelled actions, never a hidden second tap.
+- The relationship button names its current state ("Following", "Requested"). Since D-074 the mutual relationship is shown as a chip by the name ("Connected", HR „Povezani”, which replaces "Mutuals" / „Uzajamni” in UI text) while the button stays "Following"; "Follows you" appears when only they follow. Unfollow and Cancel request are separate, confirmed actions, never a hidden second tap.
 - The private state is text, not only a lock icon.
 - Section audience labels for the owner are text ("Visible to: followers").
 
 ## Open items
-- JO1: Remove follower (OPEN, scope addition).
+- ~~JO1: Remove follower~~ approved (D-069) and prototyped (D-074: ⋯ on each row of the owner's followers list, then a confirmation).
 - JO5: accept pending requests on switch to public (RECOMMENDED).
 - E6 rate limit value (RECOMMENDED).
 - E7 Mutual ends: DM and playlist rules (OPEN, B3/B5).

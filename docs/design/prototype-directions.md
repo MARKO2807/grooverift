@@ -335,6 +335,17 @@ The owner's list, in order. **Direct** items change the prototype; **options** i
   - Research: `docs/research/2026-11-02-artist-search-genres-spotify.md`.
 - Verification: `pulse-smoke.mjs` 21/21; `smoke.mjs` 3/3.
 
+### Rounds 10, 11 and 13 (sessions 12 and 13)
+
+Recorded in `DECISIONS.md` (D-070 to D-073) and `HANDOFF.md`; sketches `pulse/round10.html`, `pulse/round11.html`, `pulse/large-text.html`.
+
+### Round 12a: other members' profiles, lists and follow requests (2026-11-03, session 14)
+
+- Scope: PROF-01 (public, private, verified), PROF-03, PROF-07 with "Ukloni pratitelja" (D-069), ACT-02. Sketch `pulse/round12a.html`: seven choice sections and a "Napravljeno bez izbora" part (states of the button, the confirmations, who sees what, the requests screen, the lists, the own profile).
+- Rules applied without a choice (J4, D-013, D-019, D-032, D-033): hidden sections are omitted, never locked; counts show only to viewers who may see the list; the P state shows the header, the bio and "Zatraži praćenje"; unfollow, cancel and remove are confirmed; decline and remove are silent; a name in an answer or comment opens the profile; requests exist only while the profile is private.
+- Owner choices (D-074): wide button under the header (A); "Pratiš" plus a relationship chip (B); the quiet block for private profiles (A); history as question plus first lines (C); requests as one row on top of Activity (A); lists as two tabs on one screen (A); remove a follower through ⋯ per row (B, against the recommendation). Naming: „Povezani” / "Connected" replaces „Uzajamni” / "Mutuals" (amends D-012; Claude flagged the closeness to "Music Connections").
+- Verification: `pulse-smoke.mjs` 64/64 (19 new runs), `zoom-check.mjs` 60/60 at 200 % (11 new screens), `smoke.mjs` 3/3.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.

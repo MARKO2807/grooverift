@@ -39,17 +39,17 @@
 <body>
 <div class="page">
   <h1>Runda 12a: tuđi profili, popisi pratitelja i zahtjevi</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> „Preporuka” je moj prijedlog. Kad odabereš, odabrano postaje zadano u skici.</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odabrano (D-074):</b> širok gumb ispod zaglavlja, gumb „Pratiš” s oznakom „Povezani” (novi naziv umjesto „Uzajamni”, EN „Connected”), mirni blok za privatni profil, povijest kao pitanje i prvi redci, zahtjevi kao red na vrhu Aktivnosti, popisi s dvije kartice, uklanjanje pratitelja kroz ⋯ u redu. To je sad zadano u skici. „Preporuka” je bio moj prijedlog.</p>
   <p>Okviri su prava aplikacija: klikaj, prati, odbij. Prijavljena si kao Ana (@ana.slusa); Petra je javni profil i uzajamna, Mia je privatna, Luka te prati a ti njega ne, Nika Rework je verificirana producentica. Svi podaci su izmišljeni.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (potvrđena u J4, D-013, D-019, D-032, D-033 i D-069, nisu izbor):</p>
     <ul>
       <li>Vidiš samo ono što je ta osoba dopustila. Skriveni dijelovi se ne prikazuju ni kao „zaključani”, a brojevi se vide samo onome tko smije vidjeti popis.</li>
       <li>Javni profil pratiš jednim dodirom; privatnom šalješ zahtjev. Prestanak praćenja i povlačenje zahtjeva su zasebni, potvrđeni koraci, nikad skriveni drugi dodir.</li>
-      <li>Uzajamni = oboje prate jedno drugo. Odbijanje zahtjeva i uklanjanje pratitelja ne šalju obavijest.</li>
+      <li>Povezani (do D-074 „Uzajamni”) = oboje prate jedno drugo. Odbijanje zahtjeva i uklanjanje pratitelja ne šalju obavijest.</li>
       <li>Ime u odgovoru ili komentaru otvara profil te osobe.</li>
     </ul></div>
   <nav class="toc" aria-label="Teme">
-    <a href="#t-rbtn">1. Gumb za praćenje</a><a href="#t-mut">2. Uzajamni</a><a href="#t-pst">3. Privatni profil</a><a href="#t-hist">4. Povijest odgovora</a>
+    <a href="#t-rbtn">1. Gumb za praćenje</a><a href="#t-mut">2. Povezani</a><a href="#t-pst">3. Privatni profil</a><a href="#t-hist">4. Povijest odgovora</a>
     <a href="#t-req">5. Zahtjevi za praćenje</a><a href="#t-fl">6. Popisi</a><a href="#t-rm">7. Ukloni pratitelja</a><a href="#t-done">Napravljeno bez izbora</a>
   </nav>
   <div id="sections"></div>
@@ -64,9 +64,9 @@
       ['a', 'A. Širok gumb ispod zaglavlja', 'Gumb preko cijele širine, s ⋯ pokraj njega. Velika meta, isti red kao „Uredi profil” na tvom profilu.', 'rec'],
       ['b', 'B. Gumb uz ime', 'Mali gumb desno od imena, ⋯ gore u traci. Zbijenije, kao na Instagramu; na uskom ekranu ime se lomi ranije.', '']
     ]],
-    ['t-mut', '2. Kako se vidi Uzajamni', 'Ti i Petra pratite jedno drugo (D-012, D-013). Dodir na gumb u oba slučaja otvara potvrdu „Prestani pratiti”.', 'flow=drop&at=member&who=petra.zvuk&rel=mut', 'mutual', [
-      ['a', 'A. Gumb kaže „Uzajamni”', 'Gumb sam nosi odnos, kako piše u J4. Jedinstveno, ali se manje vidi da je to mjesto gdje se prestaje pratiti.', ''],
-      ['b', 'B. Gumb „Pratiš” + oznaka „Uzajamni”', 'Gumb je uvijek tvoja radnja, a oznaka uz ime kaže odnos. Isti obrazac kao „Prati te” kad te netko prati, a ti njega ne. Poznato s Twittera.', 'rec']
+    ['t-mut', '2. Kako se vidi Povezani', 'Ti i Petra pratite jedno drugo (D-012, D-013). Dodir na gumb u oba slučaja otvara potvrdu „Prestani pratiti”.', 'flow=drop&at=member&who=petra.zvuk&rel=mut', 'mutual', [
+      ['a', 'A. Gumb kaže „Povezani”', 'Gumb sam nosi odnos, kako piše u J4. Jedinstveno, ali se manje vidi da je to mjesto gdje se prestaje pratiti.', ''],
+      ['b', 'B. Gumb „Pratiš” + oznaka „Povezani”', 'Gumb je uvijek tvoja radnja, a oznaka uz ime kaže odnos. Isti obrazac kao „Prati te” kad te netko prati, a ti njega ne. Poznato s Twittera.', 'rec']
     ]],
     ['t-pst', '3. Privatni profil koji ne pratiš', 'Mia je privatna. Vidiš zaglavlje, bio i gumb; Music DNA, povijest i brojevi se ne prikazuju. Tekst kaže da je profil privatan, ne samo ikona (J4).', 'flow=drop&at=member&who=mia_vinyl&rel=none', 'pst', [
       ['a', 'A. Mirni blok', 'Ikona, naslov i rečenica u tijelu, isti stil kao prazna stanja (D-070).', 'rec'],
@@ -104,7 +104,7 @@
     ['Tvoj profil', 'Brojevi na tvom profilu sad broje prave (izmišljene) popise i otvaraju ih. Treći broj otvara tvoje odgovore.', [
       ['Profil', 'flow=drop&at=profile'], ['Tvoji odgovori', 'flow=drop&at=mdrops&who=ana.slusa']]]
   ];
-  const CHOSEN = {};
+  const CHOSEN = { rbtn: 'a', mutual: 'b', pst: 'a', hist: 'c', req: 'a', fl: 'a', rm: 'b' };
   const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>

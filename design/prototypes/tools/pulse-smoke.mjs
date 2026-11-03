@@ -340,7 +340,7 @@ const runs = [
   { name: 'r12 mutual chip', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=mut`, test: `(async () => {${HELPERS}
     expect($('.rel-chip.is-mut') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Pratiš', 'default b: Pratiš plus an Uzajamni chip'); return 'ok'; })()` },
   { name: 'r12 mutual button', url: `${base}?flow=drop&at=member&who=petra.zvuk&rel=mut&mutual=a`, test: `(async () => {${HELPERS}
-    expect(!$('.rel-chip') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Uzajamni', 'option a: the button says Uzajamni'); return 'ok'; })()` },
+    expect(!$('.rel-chip') && $('[data-k="rel-petra.zvuk"]').textContent.trim() === 'Povezani', 'option a: the button says Uzajamni'); return 'ok'; })()` },
   { name: 'r12 follows you', url: `${base}?flow=drop&at=member&who=lukabass&rel=fy`, test: `(async () => {${HELPERS}
     expect($('.rel-chip').textContent === 'Prati te' && !$('#h-mdna'), 'Prati te chip; DNA for followers only is omitted, not locked'); return 'ok'; })()` },
   { name: 'r12 private request', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none`, test: `(async () => {${HELPERS}
@@ -362,11 +362,11 @@ const runs = [
     await click('[data-k="cnt-fo"]'); expect(scr() === 'follows' && $('input[name="fl"][value="followers"]').checked && $$('.fl-row').length === 7 && !$('[data-a="rm-follower"]'), 'followers list, no Ukloni on a public profile');
     await click('input[name="fl"][value="following"]'); expect($$('.fl-row').length === 10 && $$('[data-a="unfollow"]').length === 10, 'following tab, each row can unfollow');
     await click('[data-k="fl-petra.zvuk"]'); expect(scr() === 'member' && $('.pm-name').textContent.includes('Petra'), 'a row opens the profile'); return 'ok'; })()` },
-  { name: 'r12 remove follower', url: `${base}?flow=drop&at=follows&list=followers&private=1`, test: `(async () => {${HELPERS}
+  { name: 'r12 remove follower (option a)', url: `${base}?flow=drop&at=follows&list=followers&private=1&rm=a`, test: `(async () => {${HELPERS}
     expect($$('[data-a="rm-follower"]').length === 7, 'Ukloni on every row of a private profile (D-069)');
     await click('[data-k="rm-lukabass"]'); expect($('.dialog [data-a="rm-confirm"]'), 'removal is confirmed'); await click('[data-a="rm-confirm"]');
     expect($$('.fl-row').length === 6 && !$('[data-k="fl-lukabass"]') && $('.fl-tabs input:checked + span b').textContent === '6', 'removed, count updated'); return 'ok'; })()` },
-  { name: 'r12 remove via menu', url: `${base}?flow=drop&at=follows&list=followers&private=1&rm=b`, test: `(async () => {${HELPERS}
+  { name: 'r12 remove via menu (chosen)', url: `${base}?flow=drop&at=follows&list=followers&private=1`, test: `(async () => {${HELPERS}
     await click('[data-k="rmm-lukabass"]'); expect($('.sheet [data-a="rm-from-menu"]'), 'menu per row'); await click('[data-a="rm-from-menu"]'); expect($('.dialog [data-a="rm-confirm"]'), 'then the dialog'); return 'ok'; })()` },
   { name: 'r12 requests', url: `${base}?flow=drop&at=activity&private=1`, test: `(async () => {${HELPERS}
     expect($('.req-entry .req-n').textContent === '2' && !$('.act-btns'), 'default a: one row on top, no inline requests');

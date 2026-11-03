@@ -1,14 +1,22 @@
 # Session handoff
 
-_Session 13, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
+_Session 14, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In sessions 11 and 12 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
+3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In sessions 11 and 12 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. In session 14 the owner switched to **Fable 5.1 at high** (visible in the session). Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
 - **Phase 3, step 3.5: refinement of direction C.** Three owner review rounds were done in session 9. The refined prototype is `design/prototypes/pulse/`; `directions/` is the unchanged round-1 record.
+- **Session 14: round 12a, other members' profiles, lists and follow requests (D-074).**
+  - Review page `pulse/round12a.html` (7 choice sections, then "Napravljeno bez izbora"; 35 frames). The owner took every recommendation except two: remove a follower through ⋯ per row (`rm=b`), and the mutual relationship is now named **„Povezani” / "Connected"** (amends D-012; Claude warned about "Music Connections"; code keeps `mutual`).
+  - `data.js`: members carry `bio`, `vis`, `dnaVis`, `hist`, `lists`, `artists`, `verified`, `drops` (`d` = index into `pastDrops`); `follows` is the graph (from → to) and `requests` the pending requests to Ana. Counts on every profile derive from the graph (Ana: 7 followers, 10 following).
+  - `app.js` Round 12a block (before `const S`): `ME_H = 'ana.slusa'`, `isMe`, `FOLLOWS` (a mutable copy), `follows`, `setFollow`, `followersOf`, `followingOf`, `member(h)` (self or `D.members`), `rel(h)` → `{ fol, fy, req }`, `canSee`, `seeDna`, `seeHist`, `seeLists`, `pendingReqs`, `dropsOf`, `whoLink` (names in answers and comments), `dnaFixed` (a canvas with `data-genres`, which dna.js treats as a fixed source), `relBtn`, `relChip`, `countsRow` (also the own profile row, `prow=b`), `histRow`, `privBlock`, `memberBody`, `mdropsBody`, `personRow`, `listRight`, `followsBody`, `requestsBody`. Screens: `member` (rewritten; `as=blocker|blocked` kept), `follows`, `requests`, `mdrops`. Overlays: `pmenu`, `rmmenu`, `unfollow`, `cancelreq`, `remove`. Actions: `follow`, `unfollow(-confirm)`, `req-cancel(-confirm)`, `rm-follower`, `rm-menu`, `rm-from-menu`, `rm-confirm`, `req-ok`, `req-no`, `pmenu`, `open-member`, `open-follows`, `open-requests`, `open-mdrops`. State: `st.who`, `st.listOf`, `st.list`, `st.req` (Set), `st.reqDone`.
+  - URL: `?flow=drop&at=member&who=<handle>&rel=none|req|fol|mut|fy`, `at=follows&list=followers|following&who=`, `at=requests&private=1`, `at=mdrops&who=`, `&show=unfollow|cancel|menu|remove` (`&h=` for remove). Options `rbtn`, `mutual`, `pst`, `hist`, `req`, `fl`, `rm` (defaults a, b, a, c, a, a, b).
+  - Activity: a public profile gets no request items at all; a private one gets the top row (`.req-entry`). The smoke flow (private) now expects 6 items plus the row.
+  - Icons added to `icons.js`: `mutual`, `userplus`, `userminus`. CSS block "Round 12a" at the end of `style.css`, with its large-text rules.
+  - Block, mute and report from the profile menu are toasts until round 12b (SAFE-01 to SAFE-03).
 - **Session 13: comment cards and 200 % text (D-073).**
   - Comments take catalogue cards (D-068). `refsEditor(k)` and `refResults(k)` serve both slots through `RS` (`ans`: `draftRefs`/`refQ`/`refOpen`; `com`: `comRefs`/`comRefQ`/`comRefOpen`, ids with the `-com` suffix). Buttons carry `data-s`. `clearRefs(k)`; `REF_MAX = 3`. Comments store `refs`; Luka's seeded comment on a1 has a card.
   - Large-text mode: the `@media (max-width: 17.5em)` blocks at the end of `style.css`. Em media queries follow the browser text size (and Chrome page zoom), so it runs on a 360 px phone from about 130 % text. Spacing tokens become px; heading tokens become `max(<normal px>, 1rem + step)`. `?lt=a|b|c` (tab bar, a chosen) and `?lth=full` (rejected full-size headings) are classes on `<html>`. The visibility comparison table has explicit ARIA roles so it can stack.
@@ -127,8 +135,8 @@ _Session 13, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
 - **Open items:**
   - OQ-24: the owner's music news idea, after the alpha scope.
 - **Verification:**
-  - `node design/prototypes/tools/pulse-smoke.mjs` passes 46/46 (session 13).
-  - `node design/prototypes/tools/zoom-check.mjs` passes 49/49 at 200 % (also `--scale=1.5`, `--scale=1`, `--w=320 --h=568`).
+  - `node design/prototypes/tools/pulse-smoke.mjs` passes 64/64 (session 14).
+  - `node design/prototypes/tools/zoom-check.mjs` passes 60/60 at 200 % (session 14; in session 13 also `--scale=1.5`, `--scale=1`, `--w=320 --h=568`).
   - `node design/prototypes/tools/smoke.mjs` passes 3/3.
 
 ## Next concrete tasks
@@ -137,9 +145,9 @@ _Session 13, 2026-11-03. Next session: read `docs/STATUS.md`, then this file._
    - Narrator pass and Windows high-contrast check (NVDA needs owner approval to install)
    - extend `pulse-smoke.mjs` for the new states
    - 200 % text and the comment cards are done (session 13, D-073); re-run `zoom-check.mjs` after layout changes.
-2. **Round 12: all remaining alpha screens (owner chose "sve").** Go group by group, each with a `pulse/round12*.html` page and a survey: (a) other profiles and lists, (b) member safety, (c) signed-out and sign-in, (d) the rest and system screens. The exact screen IDs are in STATUS "Next". Settings are done (D-070 to D-072). New screens must pass `zoom-check.mjs`.
+2. **Round 12: all remaining alpha screens (owner chose "sve").** Go group by group, each with a `pulse/round12*.html` page and a survey: ~~(a) other profiles and lists~~ (done, D-074), **(b) member safety next:** SAFE-01 report sheet (categories incl. impersonation, copyright, AI-generated, minor), SAFE-02 block confirmation (D-019, D-072: ends follows both ways), SAFE-03 mute toast with Undo, SAFE-04 my reports, SAFE-05 notices and statement of reasons, SAFE-07 restricted or suspended; wire the profile menu and the answer menu to them. Then (c) signed-out and sign-in, (d) the rest and system screens. The exact screen IDs are in STATUS "Next". New screens must pass `zoom-check.mjs` (add them to its `DEFAULT` list) and get smoke runs.
 3. **OQ-28 (archive depth):** raise with options in design; the confirmed scope is a permanent archive. Step 3.4b is cancelled (D-063, dark only).
-4. JO1 "Ukloni pratitelja" is approved (D-069); add it when the followers list (PROF-07) is sketched.
+4. ~~JO1 "Ukloni pratitelja"~~ done in round 12a (D-074). Copy note for 3.8: „Povezani” / "Connected" replaces „Uzajamni” / "Mutuals" everywhere in UI text; keep it distinct from "Music Connections".
 5. **Real-phone test:** `design/prototypes/tools/serve.mjs` serves the prototypes read-only on the home network. Start it only when the owner asks, and follow the port rule.
 6. **Music DNA ideas** to raise later (RECOMMENDED, R-11 to R-13): the DNA grows from answers; a two-helix compatibility view; same picks give the same helix.
 

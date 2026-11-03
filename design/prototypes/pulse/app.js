@@ -1215,20 +1215,20 @@
      ?at=requests&private=1              follow requests (ACT-02)      ?at=mdrops&who=<handle>   the answer history (PROF-03)
      &show=unfollow|cancel|remove|menu   opens that sheet or dialog on load (&h=<handle> for remove)
      ?rbtn=a|b    the relationship button: a wide row under the header, or b next to the name with ⋯ in the top bar
-     ?mutual=a|b  a: the button itself says "Uzajamni"; b: the button stays "Pratiš" and a chip by the name says "Uzajamni"
+     ?mutual=a|b  a: the button itself says "Povezani"; b: the button stays "Pratiš" and a chip by the name says "Povezani"
      ?pst=a|b|c   the private profile: a quiet block, b one line under the bio, c a card that holds the request button
      ?hist=a|b|c  answer history rows: a date and question only, b answer cards, c question plus the first lines
      ?req=a|b|c   follow requests: a one row on top of Activity that opens ACT-02, b inline in Activity (D-068), c both
      ?fl=a|b      the lists: a one screen with two tabs, b two screens      ?rm=a|b   remove a follower: a button, b ⋯ per row
      Who sees what follows J4: hidden sections are omitted, never shown locked; counts show only to viewers who may see
      the list (D-033, U-13); a private profile shows the header and the request button only (P state). */
-  const RBTN_AT = pick('rbtn', ['a', 'b'], 'a');
-  const MUT_AT = pick('mutual', ['a', 'b'], 'b');
-  const PST_AT = pick('pst', ['a', 'b', 'c'], 'a');
-  const HIST_AT = pick('hist', ['a', 'b', 'c'], 'c');
-  const REQ_AT = pick('req', ['a', 'b', 'c'], 'a');
-  const FL_AT = pick('fl', ['a', 'b'], 'a');
-  const RM_AT = pick('rm', ['a', 'b'], 'a');
+  const RBTN_AT = pick('rbtn', ['a', 'b'], 'a'); // chosen: a (D-074)
+  const MUT_AT = pick('mutual', ['a', 'b'], 'b'); // chosen: b, the chip says "Povezani" (D-074 renames Uzajamni)
+  const PST_AT = pick('pst', ['a', 'b', 'c'], 'a'); // chosen: a (D-074)
+  const HIST_AT = pick('hist', ['a', 'b', 'c'], 'c'); // chosen: c (D-074)
+  const REQ_AT = pick('req', ['a', 'b', 'c'], 'a'); // chosen: a (D-074)
+  const FL_AT = pick('fl', ['a', 'b'], 'a'); // chosen: a (D-074)
+  const RM_AT = pick('rm', ['a', 'b'], 'b'); // chosen: b, ⋯ per row (D-074)
   const ME_H = 'ana.slusa'; // the signed-in member in the follow graph (data.js)
   const isMe = h => h === ME_H || (st.username && h === st.username);
   const FOLLOWS = D.follows.map(p => p.slice());
@@ -1267,13 +1267,13 @@
     if (r.req) return `<button class="${c} btn-secondary" data-a="req-cancel" data-h="${h}" data-k="rel-${h}" aria-label="Zatraženo. Povuci zahtjev za praćenje">${ic('clock', 'sm')}Zatraženo</button>`;
     if (r.fol) {
       const mut = r.fy && MUT_AT === 'a';
-      return `<button class="${c} btn-secondary${mut ? ' btn-mut' : ''}" data-a="unfollow" data-h="${h}" data-k="rel-${h}" aria-label="${mut ? 'Uzajamni' : r.fy ? 'Pratiš, uzajamno' : 'Pratiš'}. Prestani pratiti">${ic(mut ? 'mutual' : 'check', 'sm')}${mut ? 'Uzajamni' : 'Pratiš'}</button>`;
+      return `<button class="${c} btn-secondary${mut ? ' btn-mut' : ''}" data-a="unfollow" data-h="${h}" data-k="rel-${h}" aria-label="${mut ? 'Povezani' : r.fy ? 'Pratiš, povezano' : 'Pratiš'}. Prestani pratiti">${ic(mut ? 'mutual' : 'check', 'sm')}${mut ? 'Povezani' : 'Pratiš'}</button>`;
     }
     return `<button class="${c} btn-primary" data-a="follow" data-h="${h}" data-k="rel-${h}">${ic('userplus', 'sm')}${m.vis === 'private' ? 'Zatraži praćenje' : 'Prati'}</button>`;
   }
   function relChip(h) {
     const r = rel(h);
-    if (r.fol && r.fy && MUT_AT === 'b') return `<span class="rel-chip is-mut">${ic('mutual', 'sm')}Uzajamni</span>`;
+    if (r.fol && r.fy && MUT_AT === 'b') return `<span class="rel-chip is-mut">${ic('mutual', 'sm')}Povezani</span>`;
     if (r.fy && !r.fol) return '<span class="rel-chip">Prati te</span>';
     return '';
   }
