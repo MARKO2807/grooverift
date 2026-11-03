@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 12d: Music DNA urednik, slika profila, povratne informacije, greške i pauze</title>
+<!-- Owner decision sketch (session 16, round 12d): PROF-09 the Music DNA editor (J2), PROF-08 edit profile with a photo,
+     SET-12 help and feedback, SYS-02 something went wrong, SYS-04 a paused feature, HUB-01 and HOME-01 before the first
+     Daily Drop, and the J1 E3/E4 invite cases. Every frame is the real prototype (index.html) with URL options. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .sel { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-coral); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 12d: ostatak alfa ekrana</h1>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> Preporuke su označene; odabrano se bilježi kao D-078.</p>
+  <p>Okviri su prava aplikacija; sve u njima radi (dodavanje, micanje, poništavanje, spremanje) i ništa se ne sprema. U uredniku Music DNA svaka promjena odmah mijenja Spiralu. Sliku profila možeš izabrati i sa svog telefona: ostaje u pregledniku i nigdje se ne šalje. Podaci su izmišljeni.</p>
+  <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (J2, D-017, D-024, D-046, D-052, IA §6, Master Prompt §4 i §13, nisu izbor):</p>
+    <ul>
+      <li>Music DNA mijenja samo član: nijedan sustav ne dodaje, ne briše i ne mijenja redoslijed bez potvrde. Svaka promjena se sprema odmah i izgovara čitaču zaslona; „Ukloni” ima „Poništi”. Isti žanr ili izvođač ne može dvaput; najviše 10 žanrova i 10 izvođača. Tko vidi Music DNA piše riječima, uz „Promijeni”.</li>
+      <li>Slika profila nije obavezna. Vide je svi koji vide profil, i bez prijave ako je profil javan. Podaci o lokaciji iz fotografije se brišu; prima se JPG, PNG ili WebP do 8 MB.</li>
+      <li>Povratne informacije i prijave grešaka su odvojene od prijava neprimjerenog sadržaja. Snimka zaslona je neobavezna, vidi je samo tim i briše se nakon obrade. Što se šalje uz poruku, piše prije slanja.</li>
+      <li>„Nešto je pošlo po zlu” nudi Pokušaj ponovno i put do pomoći, bez tehničkih detalja i oznaka koje otkrivaju podatke. Pauzirana značajka kratko kaže što ne radi, bez krivca, i vodi na Početnu; podsjetnik tada ne stiže.</li>
+      <li>Prije prvog Daily Dropa Hub i Početna kažu kad stiže prvo pitanje (00:00 UTC, u lokalnom vremenu) i što se može dotad. Arhiva počinje s prvim pitanjem.</li>
+    </ul></div>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-dnae">1. Oblik urednika</a><a href="#t-dnamin">2. Najmanje 2 žanra</a><a href="#t-photo">3. Slika: kako</a><a href="#t-crop">4. Slika: izrez</a><a href="#t-fb">5. Povratne informacije</a><a href="#t-fail">6. Nešto je pošlo po zlu</a><a href="#t-paused">7. Daily Drop na pauzi</a><a href="#t-first">8. Prije prvog pitanja</a><a href="#t-done">Napravljeno bez izbora</a>
+  </nav>
+  <div id="sections"></div>
+  <h2 class="part" id="t-done">Napravljeno bez izbora</h2>
+  <p>Ovo slijedi već potvrđena pravila. Pogledaj i javi ako nešto ne štima.</p>
+  <div id="done"></div>
+</div>
+<script>
+(function () {
+  const E = 'flow=drop&at=setsub&s=dna', PR = 'flow=drop&at=setsub&s=profile', H = 'flow=drop&at=setsub&s=help';
+  const T = [
+    ['t-dnae', '1. Urednik Music DNA: oblik (PROF-09)', 'Otvara se s profila („Uredi Music DNA” ispod Spirale) i iz „Uredi profil”. Spirala gore uvijek prati promjene. Prvi žanrovi najviše oblikuju Spiralu, pa redoslijed nešto znači.', E, 'dnae', [
+      ['a', 'A. Popis s gore/dolje', 'Svaki žanr i izvođač je redak s brojem mjesta, gumbima gore, dolje i ukloni. „Dodaj žanr” otvara pretragu, „Dodaj izvođača” katalog. Redoslijed se mijenja gumbima, pa radi i s tipkovnicom i čitačem zaslona (J2, WCAG 2.5.7); povlačenje prstom može doći kao dodatak.', 'rec'],
+      ['b', 'B. Kao u onboardingu', 'Isti čipovi i ista pretraga kao na koraku „Što slušaš”. Dodir uključuje ili isključuje žanr; redoslijed je redoslijed odabira i ne može se mijenjati drukčije nego micanjem i ponovnim dodavanjem. Poznato s onboardinga, ali bez pravog uređivanja redoslijeda.', '']
+    ]],
+    ['t-dnamin', '2. Može li Music DNA ostati prazan?', 'Onboarding traži 2 do 10 žanrova (D-046). Pitanje je što vrijedi poslije: smije li član ukloniti sve. Ovdje su u uredniku samo dva žanra.', E + '&picks=min', 'dnamin', [
+      ['a', 'A. Najmanje 2 žanra uvijek', 'Kad ostanu dva, „ukloni” je ugašen i jedan redak kaže: prvo dodaj novi. Spirala i prsten oko avatara uvijek postoje, kompatibilnost ima od čega krenuti.', 'rec'],
+      ['b', 'B. Može do nule', 'Sve se može ukloniti (J2 E6). Profil tada umjesto Spirale pokazuje „Još nema Music DNA” i gumb „Dodaj žanrove”; drugi tu rubriku ne vide. Više slobode, ali član bez Spirale u aplikaciji kojoj je Spirala srce.', '']
+    ]],
+    ['t-photo', '3. Slika profila: kako se bira (PROF-08)', 'Na „Uredi profil”. Slika nije obavezna (D-017) i sjedi unutar prstena žanrova. Ovdje profil već ima primjer slike.', PR + '&pic=sample', 'photo', [
+      ['a', 'A. List s tri izbora', 'Dodir na „Promijeni sliku” otvara donji list: iz galerije, snimi fotografiju, ukloni sliku. Jedno mjesto za sve, uključujući uklanjanje; jedan dodir više.', 'rec'],
+      ['b', 'B. Odmah u galeriju', '„Promijeni sliku” odmah otvara birač slika telefona; „Ukloni” stoji kao drugi gumb. Dodir manje, a kamera ide kroz birač telefona (koji je obično nudi).', '']
+    ]],
+    ['t-crop', '4. Slika profila: izrez', 'Što se dogodi nakon što izabereš sliku. Ovdje je okvir odmah nakon izbora (primjer slike).', PR + '&show=crop', 'crop', [
+      ['a', 'A. Korak za namještanje', 'Krug s pregledom i povećanje (u aplikaciji i pomicanje prstom), pa „Spremi”. Lice završi gdje treba; jedan ekran više za izradu.', 'rec'],
+      ['b', 'B. Automatski, sredina', 'Slika se postavi odmah, izrezana po sredini. Ako nije dobro, biraš drugu. Najmanje posla, ali visoke fotografije često odrežu glavu.', '']
+    ]],
+    ['t-fb', '5. Pomoć i povratne informacije (SET-12)', 'Iz Postavki. U alfi je ovo glavni kanal za greške i prijedloge (Master Prompt §2A, §13). Što se šalje uz poruku, vidi se prije slanja.', H, 'fb', [
+      ['a', 'A. Jedan obrazac, vrsta na vrhu', 'Odabereš o čemu se radi, opišeš, po želji dodaš snimku. „Što šaljemo uz poruku” nabraja ekran, verziju, preglednik i vrijeme, s kvačicom koja to može isključiti. Jedan put za sve, a tim dobije ono što treba za traženje greške.', 'rec'],
+      ['b', 'B. Dva retka, dva obrasca', '„Prijavi grešku” i „Pošalji prijedlog” svaki otvara svoj kraći obrazac bez biranja vrste. Jasniji ulaz, jedan ekran više.', ''],
+      ['c', 'C. Jedan obrazac bez tehničkih podataka', 'Kao A, ali se ne šalje ništa osim teksta, snimke i e-pošte. Najmanje podataka, a tim češće mora pitati „na kojem ekranu, kojim preglednikom”.', '']
+    ]],
+    ['t-fail', '6. Nešto je pošlo po zlu (SYS-02)', 'Kad se cijela stranica ne uspije učitati (pojedinačni dijelovi imaju svoj „Pokušaj ponovno” od runde 10). Ovdje na Hubu; isto na svakom ekranu.', 'flow=drop&at=hub&state=fail', 'fail', [
+      ['a', 'A. Unutar aplikacije', 'Gornja traka i kartice ostaju, pa je ostatak aplikacije jedan dodir daleko. Poruka, „Pokušaj ponovno” i „Javi nam” (vodi na povratne informacije).', 'rec'],
+      ['b', 'B. Cijeli ekran', 'Sve nestane, ostaje samo poruka i „Pokušaj ponovno”. Za slučaj kad se ni ljuska ne uspije učitati; kao jedini oblik oduzima izlaz.', ''],
+      ['c', 'C. Unutar aplikacije, s oznakom', 'Kao A plus kratka oznaka za podršku (slovo-broj, bez podataka). Lakše spojiti poruku člana s greškom u dnevniku; ali u alfi tim grešku ionako vidi po vremenu i računu, pa je oznaka šum.', '']
+    ]],
+    ['t-paused', '7. Daily Drop na pauzi (SYS-04)', 'Tim može privremeno isključiti Daily Drop dok popravlja problem (J6 E9). Ovdje na Početnoj; isto na Hubu i na stranici pitanja, a sastavljanje odgovora kaže isto.', 'flow=drop&at=home&state=paused', 'paused', [
+      ['a', 'A. Pitanje ostaje čitljivo', 'Kartica o pauzi gore, ispod nje današnje pitanje bez gumba za odgovor. Vidi se da aplikacija živi i što je bilo pitanje.', 'rec'],
+      ['b', 'B. Samo kartica', 'Umjesto cijelog bloka Daily Dropa samo kartica o pauzi. Čišće, ali izgleda kao da pitanja nema.', '']
+    ]],
+    ['t-first', '8. Prije prvog pitanja (HUB-01, HOME-01)', 'Alfa počinje prije prvog Daily Dropa. Na Hubu nema dana ni arhive; Početna i Hub kažu kad stiže prvo pitanje i što se može dotad. Ovdje Hub.', 'flow=drop&at=hub&state=first', 'first', [
+      ['a', 'A. Mirna kartica s vremenom', 'Dan i datum, vrijeme u lokalnoj zoni (00:00 UTC je 01:00 u Zagrebu) i tri stvari dok čekaš: dopuni Music DNA, podsjetnik, kako radi. Bez pritiska (P2).', 'rec'],
+      ['b', 'B. S odbrojavanjem', 'Isto plus „6 h 20 min” koje odbrojava. Živahnije, ali stvara žurbu i pokret na ekranu koji ništa ne traži.', ''],
+      ['c', 'C. Sa strujom', 'Kao A, a ispod imena Daily Drop struja (motiv pitanja, D-042). Više brenda na prvom ekranu alfe, još jedno mjesto za motiv.', '']
+    ]]
+  ];
+  const DONE = [
+    ['Urednik Music DNA, stanja (PROF-09, J2)', 'Dodavanje žanra (pretraga, dodir dodaje odmah), dodavanje izvođača iz kataloga (isti izvođač ne može dvaput), katalog koji ne radi, „Ukloni” s „Poništi”, puni popis (10 i 10), tko vidi Music DNA, bez mreže (samo pregled) i ulaz s profila.', [
+      ['Dodaj žanr', E + '&add=genre'], ['Dodaj izvođača', E + '&q=nin'], ['Katalog ne radi', E + '&q=nin&catalog=fail'], ['Uklonjeno, s Poništi', E + '&show=undo'], ['Puni popis', E + '&picks=full'], ['Tko vidi', E + '&show=aud'], ['Bez mreže', E + '&net=off'], ['Ulaz s profila', 'flow=drop&at=profile']]],
+    ['Uredi profil (PROF-08)', 'Ime za prikaz i bio sa „Spremi”; natrag s nespremljenim promjenama pita; slika koja se ne može primiti; bez slike (početno stanje) i s primjerom slike. Dug tekst na 320 px.', [
+      ['Bez slike', PR], ['List za sliku', PR + '&pic=sample&show=photo'], ['Odbaciti promjene?', PR + '&show=discard'], ['Datoteka nije slika', PR + '&show=badfile'], ['Profil sa slikom', 'flow=drop&at=profile&pic=sample']]],
+    ['Povratne informacije, stanja (SET-12)', 'Prazna poruka, sa snimkom zaslona, poslano.', [
+      ['Prazno', H + '&show=err'], ['Sa snimkom', H + '&shot=1&type=bug'], ['Poslano', H + '&show=sent']]],
+    ['Nešto je pošlo po zlu (SYS-02)', 'Isti ekran na Početnoj, na pitanju i na tuđem profilu; „Pokušaj ponovno” vraća stranicu.', [
+      ['Početna', 'flow=drop&at=home&state=fail'], ['Pitanje', 'flow=drop&at=drop&state=fail'], ['Tuđi profil', 'flow=drop&at=member&who=petra.zvuk&state=fail']]],
+    ['Pauza (SYS-04)', 'Stranica pitanja i sastavljanje odgovora dok je Daily Drop na pauzi, Hub na pauzi, i opća stranica za bilo koju pauziranu značajku (ovdje urednik Music DNA i komentari).', [
+      ['Pitanje na pauzi', 'flow=drop&at=drop&state=paused'], ['Hub na pauzi', 'flow=drop&at=hub&state=paused'], ['Značajka isključena', 'flow=drop&at=featoff&f=dna'], ['Komentari isključeni', 'flow=drop&at=featoff&f=comments']]],
+    ['Prije prvog pitanja', 'Početna i stranica pitanja prije prvog Daily Dropa.', [
+      ['Početna', 'flow=drop&at=home&state=first'], ['Pitanje', 'flow=drop&at=drop&state=first']]],
+    ['Pozivnica dok si prijavljena (J1 E3, E4)', 'Poveznica pozivnice otvorena dok je netko prijavljen: ista adresa (već imaš račun) ili drugi račun (odjavi se da prihvatiš). Google račun s drugom adresom od pozivnice.', [
+      ['Ista adresa', 'flow=drop&at=invsigned&same=1'], ['Drugi račun', 'flow=drop&at=invsigned'], ['Google s drugom adresom', 'at=invmail']]]
+  ];
+  const CHOSEN = {};
+  const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${CHOSEN[key] === v ? ' <span class="sel">odabrano</span>' : ''}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
+      ${frame(title + ': ' + t, `${base}&${key}=${v}`)}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
+    <div class="grid">${frames.map(([t, src]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src)}</div>`).join('')}</div></section>`).join('');
+})();
+</script>
+</body>
+</html>

@@ -19,7 +19,7 @@ const base = pathToFileURL(resolve(here, '../pulse/index.html')).href;
 const args = process.argv.slice(2);
 const opt = (k, d) => { const a = args.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const scale = +opt('scale', '2'), W = +opt('w', '360'), H = +opt('h', '740'), shots = opt('shots', '');
-const SUBS = ['profile', 'account', 'email', 'password', 'username', 'security', 'twofa', 'privacy', 'blocked', 'notifications', 'language', 'status', 'help', 'rules', 'terms', 'about', 'delete'];
+const SUBS = ['profile', 'account', 'email', 'password', 'username', 'security', 'twofa', 'privacy', 'blocked', 'notifications', 'language', 'status', 'help', 'rules', 'terms', 'about', 'delete', 'dna'];
 const DEFAULT = [
   '', 'at=age', 'at=uilang', 'at=account', 'at=username', 'at=language', 'at=visibility', 'at=dna', 'at=dna&picks=1', 'at=dnavis', 'at=how', 'at=reminder', 'at=done',
   'flow=drop&at=home', 'flow=drop&at=drop', 'flow=drop&at=drop&open=compose', 'flow=drop&at=answer', 'flow=drop&at=hub', 'flow=drop&at=activity', 'flow=drop&at=profile', 'flow=drop&at=settings',
@@ -37,7 +37,13 @@ const DEFAULT = [
   'flow=drop&at=setsub&s=blocked&bl=1', 'flow=drop&at=drop&acct=restricted&rst=b', 'at=restricted', 'at=suspended&show=appeal',
   // round 12c: signed-out visitors and sign-in
   'at=landing', 'at=landing&land=b', 'at=landing&land=c&pub=a', 'at=share', 'at=share&share=b&pub=a', 'at=pubprofile&who=nika.rework', 'at=na',
-  'at=signin&lock=1', 'at=share&show=signin', 'at=reset', 'at=resetsent', 'at=resetnew', 'at=twofa&tfa=b', 'at=twofa&rec=1', 'at=linkbad&kind=invite', 'at=verified', 'at=share&wall=soft&wallnow=1', 'at=share&wall=hard&wallnow=1'
+  'at=signin&lock=1', 'at=share&show=signin', 'at=reset', 'at=resetsent', 'at=resetnew', 'at=twofa&tfa=b', 'at=twofa&rec=1', 'at=linkbad&kind=invite', 'at=verified', 'at=share&wall=soft&wallnow=1', 'at=share&wall=hard&wallnow=1',
+  // round 12d: the Music DNA editor, edit profile with a photo, help and feedback, SYS-02, SYS-04, before the first Drop, J1 E3/E4
+  'flow=drop&at=setsub&s=dna', 'flow=drop&at=setsub&s=dna&dnae=b', 'flow=drop&at=setsub&s=dna&add=genre', 'flow=drop&at=setsub&s=dna&q=nin', 'flow=drop&at=setsub&s=dna&picks=full', 'flow=drop&at=setsub&s=dna&show=aud',
+  'flow=drop&at=setsub&s=profile&pic=sample', 'flow=drop&at=setsub&s=profile&pic=sample&photo=b', 'flow=drop&at=setsub&s=profile&pic=sample&show=photo', 'flow=drop&at=setsub&s=profile&show=crop', 'flow=drop&at=setsub&s=profile&show=badfile', 'flow=drop&at=profile&pic=sample',
+  'flow=drop&at=setsub&s=help', 'flow=drop&at=setsub&s=help&fb=b', 'flow=drop&at=setsub&s=help&shot=1&type=bug', 'flow=drop&at=setsub&s=help&show=sent',
+  'flow=drop&at=hub&state=fail', 'flow=drop&at=hub&state=fail&fail=b', 'flow=drop&at=hub&state=fail&fail=c', 'flow=drop&at=home&state=paused', 'flow=drop&at=drop&state=paused', 'flow=drop&at=drop&state=paused&paused=b', 'flow=drop&at=featoff&f=dna',
+  'flow=drop&at=hub&state=first', 'flow=drop&at=hub&state=first&first=b', 'flow=drop&at=home&state=first', 'flow=drop&at=invsigned', 'flow=drop&at=invsigned&same=1', 'at=invmail'
 ];
 const queries = args.filter(a => !a.startsWith('--'));
 const list = queries.length ? queries : DEFAULT;

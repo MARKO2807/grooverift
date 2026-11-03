@@ -79,7 +79,11 @@
     who: null, listOf: null, list: 'followers', req: new Set(), reqDone: {},
     /* Round 12b: blocks and mutes (handles), muted answers the member chose to show, own reports, the report in
        progress, appeals sent (notice id → date), the open notice or report, and the account state. */
-    blocked: new Set(), muted: new Set(), showMuted: new Set(), reports: [], rep: null, appealed: {}, noticeId: null, reportId: null, restricted: null, suspended: false, unblocked: null
+    blocked: new Set(), muted: new Set(), showMuted: new Set(), reports: [], rep: null, appealed: {}, noticeId: null, reportId: null, restricted: null, suspended: false, unblocked: null,
+    /* Round 12d: the open "add" panel in the Music DNA editor, the profile photo (a data URL from the member's own
+       file, or 'sample'), the photo being cropped and its zoom, the unsaved name and bio drafts, the feedback form,
+       and the paused feature shown on the generic SYS-04 page. */
+    dnaAdd: null, photo: null, photoDraft: null, photoZoom: 1, photoErr: null, nameDraft: null, bioDraft: null, profDirty: false, fb: null, filePurpose: null, feat: 'dna', invSame: false
   };
   DNA.setSource(() => ({ genres: st.genres.slice(), artists: st.artists.map(a => ({ name: a.name, g: a.g || [] })) }));
 
@@ -126,6 +130,11 @@
   function avatar(handle, who, size) {
     const m = D.members[handle];
     const dna = handle === st.username ? st.genres : (m ? m.dna : []);
+    /* Round 12d (PROF-08): the member's own photo sits inside the genre ring; 'sample' is the sketch's stand-in picture. */
+    if (handle === st.username && st.photo) {
+      const inner = st.photo === 'sample' ? '<span class="av-photo av-sample"></span>' : `<span class="av-photo" style="background-image:url(&quot;${st.photo}&quot;);background-size:${Math.round(st.photoZoom * 100)}%"></span>`;
+      return `<span class="avatar has-photo${size ? ' ' + size : ''}" style="--ring:${DNA.ring(dna)}" aria-hidden="true">${inner}</span>`;
+    }
     return `<span class="avatar${size ? ' ' + size : ''}" style="--ring:${DNA.ring(dna)}" aria-hidden="true"><span>${esc((who || '?')[0])}</span></span>`;
   }
 
@@ -645,6 +654,9 @@
     /* Round 10 states (IA §6.2 HOME-01): placeholders while loading, yesterday's Drop when today's is late (J3 E2). */
     if (STATE === 'loading') return `<div aria-busy="true">${skelDrop()}${skel(2, 'peek')}</div>${follow}`;
     if (STATE === 'nodrop') return noDropBlock() + follow + past;
+    /* Round 12d: before the first Daily Drop (HOME-01 empty) and while the Daily Drop is paused (SYS-04). */
+    if (FIRST) return firstBlock() + follow;
+    if (PAUSED) return pausedBlock() + follow + past;
     if (HOME_AT === 'a') return dropTeaser() + follow + past;
     if (HOME_AT === 'b') return dropTeaser(true) + follow + past;
     const n = allAnswers().length, peeks = allAnswers().slice(0, ['c', 'e', 'f'].includes(HOME_AT) ? 2 : 3);
@@ -717,11 +729,12 @@
           <span class="past-day" aria-hidden="true">${dparts(d.date).day}.</span><span class="past-q">${esc(d.q)}</span><span class="sr-only">, ${longDate(d.date)}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul>`).join('')}
         <button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Svi mjeseci</button></section>${suggestBtn()}`;
     }
+    if (FIRST) return firstBlock('hub') + '<p class="hint hub-first-hint">Arhiva počinje s prvim pitanjem.</p>' + suggestBtn(); // round 12d, HUB-01 before the first Drop
     if (HUB_AT === 'c' || HUB_AT === 'e') {
       const days = [{ date: D.drop.date, q: D.drop.question, today: true }].concat(D.pastDrops).slice(0, 7).reverse();
       const sel = days.find(d => d.date === st.hubDay) || days[days.length - 1];
       return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${longDate(d.date)}${d.today ? ', danas' : ''}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
-        ${sel.today ? (STATE === 'nodrop' ? noDropBlock() : STATE === 'loading' ? skelDrop() : hubDrop()) : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
+        ${sel.today ? (STATE === 'nodrop' ? noDropBlock() : STATE === 'loading' ? skelDrop() : PAUSED ? pausedBlock(true) : hubDrop()) : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
           <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2>${pastMeta(sel)}<p class="dd-still">Još uvijek možeš odgovoriti.</p>
           <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`}
         ${HUB_AT === 'e' ? hubProgramme() : `<button class="link" data-a="toast" data-msg="Ovdje bi se otvorila cijela arhiva po mjesecima (HUB-04)." data-k="all-months">Cijela arhiva</button>${suggestBtn()}`}`;
@@ -806,22 +819,27 @@
       ${st.mine ? `<ul class="past"><li><button class="past-item" data-a="open-drop" data-k="prof-ans"><span class="past-date">${longDate(D.drop.date)}</span><span class="past-q">${esc(D.drop.question)}</span>${ic('chevron', 'past-ic')}</button></li></ul>` : emptyBox(pic('calendar-dots', 'empty-ic'), 'Još nema odgovora.', 'Tvoji odgovori na Daily Drop skupljaju se ovdje.')}
     </section>`;
   const profVis = () => `<p class="pf-vis">${ic(st.vis === 'public' ? 'globe' : 'lock', 'sm')}<span>${VIS_LABEL[st.vis] || 'Privatni'} profil. Music DNA vide: ${(DNA_LABEL[st.dnaVis] || 'Samo ja').toLowerCase()}.</span></p>`;
-  const profBtns = () => `<div class="foot-row equal pf-btns"><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Uređivanje profila (J4) nije dio skice." data-k="pf-edit">Uredi profil</button>
+  const profBtns = () => `<div class="foot-row equal pf-btns"><button class="btn btn-secondary btn-sm" data-a="setsub" data-s="profile" data-k="pf-edit">Uredi profil</button>
       <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Dijeljenje profila nije dio skice." data-k="pf-share">${ic('share', 'sm')}Podijeli</button></div>`;
   const BIO = 'Jazz ujutro, techno navečer.';
+  st.bio = BIO; // editable since round 12d (PROF-08)
+  /* Round 12d: the own Music DNA on the profile opens its editor (PROF-09); an emptied DNA (dnamin=b) says so. */
+  const profDnaHero = () => st.genres.length
+    ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}<button class="link-quiet pf-dna-edit" data-a="setsub" data-s="dna" data-k="pf-dna-edit">${pic('pencil-simple', 'pi-sm')}<span>Uredi Music DNA</span></button></figcaption></figure>`
+    : `<div class="empty-b pf-dna-empty">${pic('lightning', 'empty-ic')}<p class="empty-t">Još nema Music DNA.</p><p>Spirala nastaje iz žanrova koje odabereš.</p><button class="btn btn-secondary btn-sm" data-a="setsub" data-s="dna" data-k="pf-dna-add">Dodaj žanrove</button></div>`;
   function profileBody() {
     const name = esc(st.displayName || 'Ti'), handle = esc(st.username || 'ti');
     if (PROF_AT === 'b') return `<div class="pf-b">${avatar(st.username, st.displayName || 'T', 'lg')}
         <dl class="pf-stats"><div><dt>Odgovori</dt><dd>${st.mine ? 1 : 0}</dd></div><div><dt>Pratitelji</dt><dd>12</dd></div><div><dt>Prati</dt><dd>18</dd></div></dl></div>
-      <div class="pf-id"><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p><p class="pf-bio">${BIO}</p>${profVis()}</div>
+      <div class="pf-id"><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p><p class="pf-bio">${esc(st.bio)}</p>${profVis()}</div>
       ${profBtns()}
       <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>${profDna(170)}${profArtists()}</section>
       ${profAnswers()}
       <p class="meta">Brojke i bio su izmišljeni. Ostatak profila (J4) nije dio ove skice.</p>`;
     if (PROF_AT === 'c') return `<div class="pf-c">
-        ${st.genres.length ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}</figcaption></figure>` : ''}
+        ${profDnaHero()}
         <div class="pf-c-id">${avatar(st.username, st.displayName || 'T', 'lg')}<div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div></div>
-      <p class="pf-bio">${BIO}</p>
+      ${st.bio ? `<p class="pf-bio">${esc(st.bio)}</p>` : ''}
       ${profRow()}
       ${profVis()}${profBtns()}
       ${st.artists.length ? `<section class="section" aria-labelledby="h-part"><h2 id="h-part" class="section-title">Izvođači</h2>${profArtists()}</section>` : ''}
@@ -932,11 +950,10 @@
   const row = (k, t, d, msg) => `<li><button class="set-row set-row-plain" data-a="toast" data-msg="${esc(msg || t + ': ovaj korak nije dio skice.')}" data-k="${k}"><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
   const grp = (title, inner, note) => `<section class="set-group">${title ? `<h2 class="set-gt">${title}</h2>` : ''}<ul class="set-list">${inner}</ul>${note ? `<p class="set-note">${note}</p>` : ''}</section>`;
   const SUB = {
-    profile: ['Uredi profil', () => `<div class="sub-avatar">${avatar(st.username, st.displayName || 'T', 'lg')}<button class="link" data-a="toast" data-msg="Učitavanje slike (PROF-08) nije dio skice. Slika nije obavezna." data-k="sub-photo">Promijeni sliku</button></div>
-        ${field({ id: 'dname2', label: 'Ime za prikaz', help: 'Do tri riječi. Svaka počinje velikim slovom.', value: st.displayName, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
-        <div class="field"><label class="label" for="f-bio">Bio</label><textarea class="textarea" id="f-bio" data-k="f-bio" rows="3" maxlength="160">${esc(BIO)}</textarea><p class="help">Do 160 znakova.</p></div>
-        ${grp('', row('sub-dna', 'Uredi Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'Uređivanje Music DNA (PROF-09) nije dio skice.'))}
-        <button class="btn btn-primary btn-block" data-a="toast" data-msg="Spremljeno (simulacija)." data-k="sub-save">Spremi</button>`],
+    /* Round 12d: PROF-08 with the photo, PROF-09 the Music DNA editor, SET-12 the feedback form. */
+    profile: ['Uredi profil', () => profileEditBody()],
+    dna: ['Music DNA', () => dnaEditBody()],
+    fbform: ['Povratne informacije', () => fbForm()],
     /* Round 10 (session 12): the account rows open their own screens (SET-02, SET-03). */
     account: ['Račun', () => grp('Prijava', subRow('a-mail', 'E-pošta', esc(D.email), 'email') + subRow('a-pw', 'Lozinka', 'Promijenjena prije 2 dana', 'password') + row('a-g', 'Google', 'Nije povezano', 'Povezivanje Google računa: prijava preko Googlea s istom adresom e-pošte. Nije dio skice.'))
       + grp('Korisničko ime', subRow('a-user', `@${esc(st.username || 'ti')}`, st.userChanged ? `Sljedeća promjena od ${dayMonth(addDays(D.drop.date, 30))}` : 'Promijeni', 'username'), 'Možeš ga promijeniti jednom u 30 dana. Staro ime ostaje rezervirano još 30 dana, da te nitko ne može glumiti.')],
@@ -989,8 +1006,7 @@
     appeal: ['Žalba', () => appealBody(st.noticeId)],
     reports: ['Moje prijave', () => reportsBody()],
     reportd: ['Prijava', () => reportDetail(st.reportId)],
-    help: ['Pomoć', () => grp('', row('h-bug', 'Prijavi grešku', 'Uz opis i, ako želiš, snimku zaslona') + row('h-idea', 'Pošalji prijedlog') + row('h-faq', 'Česta pitanja'))
-      + grp('', row('h-priv', 'Kontakt za privatnost', 'Pitanja o podacima, kopija podataka')) + '<p class="meta">Prijave neprimjerenog sadržaja idu preko ⋯ na samom odgovoru, ne ovdje.</p>'],
+    help: ['Pomoć', () => helpBody()],
     rules: ['Pravila zajednice', () => `<div class="sub-doc"><p class="lead">Ukratko, dok pravnik ne napiše pravi tekst:</p><ul><li>Pričaj o glazbi i ljudima s poštovanjem, i kad se ne slažeš.</li><li>Bez mržnje, uznemiravanja i otkrivanja tuđih podataka.</li><li>Bez spama i lažnog predstavljanja.</li><li>Dijeli poveznice, ne piratske snimke.</li></ul><p class="meta">Nacrt za skicu, nije pravni tekst (PUB-11).</p></div>`],
     terms: ['Uvjeti i privatnost', () => grp('', row('t-terms', 'Uvjeti korištenja') + row('t-priv', 'Pravila privatnosti') + row('t-cook', 'Kolačići', 'Koje koristimo i zašto')) + '<p class="meta">Tekstove piše pravnik prije alfe (PUB-10).</p>'],
     about: ['O GrooveRiftu', () => `<div class="sub-hero"><span class="wordmark">groove<span class="wm-rift">rift</span></span><p class="tagline" lang="en">Where musical worlds collide.</p><p class="help">Alfa · skica 3.5</p></div>
@@ -1013,7 +1029,7 @@
      ?flow=drop&at=member&as=blocker|blocked   another member's profile after a block (D-019, IA §6.1 B)
      ?uc=locked     the username was changed today (D-069)
      Owner choices (D-070): ld=b, off=a, emp=b, nd=a, prv=b, ntf=c (push only, no social emails in the alpha), del=b, out=b. */
-  const STATE = pick('state', ['loading', 'error', 'empty', 'nodrop', 'blocked', 'long'], '');
+  const STATE = pick('state', ['loading', 'error', 'empty', 'nodrop', 'blocked', 'long', 'first', 'paused', 'fail'], ''); // first, paused and fail: round 12d
   const NET_OFF = P.get('net') === 'off';
   const LD_AT = pick('ld', ['a', 'b', 'c'], 'b');
   const OFF_AT = pick('off', ['a', 'b', 'c'], 'a');
@@ -1253,7 +1269,7 @@
   const followersOf = h => FOLLOWS.filter(p => p[1] === h).map(p => p[0]);
   const followingOf = h => FOLLOWS.filter(p => p[0] === h).map(p => p[1]);
   const member = h => isMe(h)
-    ? { who: st.displayName || 'Ana', dna: st.genres, artists: st.artists.map(a => a.name), bio: BIO, vis: st.vis || 'public', dnaVis: st.dnaVis || 'all', hist: st.histVis || 'same', lists: st.lists || 'followers', me: true }
+    ? { who: st.displayName || 'Ana', dna: st.genres, artists: st.artists.map(a => a.name), bio: st.bio, vis: st.vis || 'public', dnaVis: st.dnaVis || 'all', hist: st.histVis || 'same', lists: st.lists || 'followers', me: true }
     : (D.members[h] || { who: h, dna: [], vis: 'public' });
   /* The viewer's relationship with h: fol = I follow h, fy = h follows me, req = my request to h is pending. */
   const rel = h => ({ fol: follows(ME_H, h), fy: follows(h, ME_H), req: st.req.has(h) });
@@ -1648,6 +1664,239 @@
       <p class="lead"><b>${esc(D.email)}</b> je sad adresa tvog računa.</p></div>
       <p class="meta">Prihvaćanje pozivnice već potvrđuje adresu (JO6), pa se ovaj ekran vidi uglavnom nakon promjene e-pošte (D-072).</p>`;
 
+  /* ---------- Round 12d (session 16): the rest of the alpha screens. Options compared in round12d.html.
+     PROF-09 the Music DNA editor (J2), PROF-08 edit profile with a photo, SET-12 help and feedback, SYS-02 something
+     went wrong, SYS-04 a paused feature, HUB-01 and HOME-01 before the first Daily Drop, and the J1 E3/E4 invite cases.
+     ?dnae=a|b    editor shape: a rows with Move up / Move down / Remove (J2, WCAG 2.5.7), b chips as in onboarding
+     ?dnamin=a|b  a at least 2 genres always (D-046), b the list may be emptied (J2 E6)
+     ?photo=a|b   the photo action: a a sheet (gallery, camera, remove), b straight to the picker
+     ?crop=a|b    a a crop step with zoom, b auto-centred
+     ?fb=a|b|c    SET-12: a one form, type on top, technical details listed; b one row per kind; c one form, no technical details
+     ?fail=a|b|c  SYS-02: a inside the shell, b a bare page, c inside the shell with a support code
+     ?paused=a|b  SYS-04 on the Daily Drop: a the question stays readable above the pause card, b the card alone
+     ?first=a|b|c before the first Drop: a a calm card with the local time, b with a countdown, c with the current
+     ?state=first|paused|fail   the three states. On the editor: &picks=full|min, &add=genre|artist (&q=), &show=aud|undo.
+     On edit profile: &pic=sample, &show=photo|crop|badfile|discard. On help: &fb=, &type=bug|idea, &shot=1, &show=sent|err.
+     ?flow=drop&at=featoff&f=dna|comments, ?flow=drop&at=invsigned(&same=1), ?at=invmail. ---------- */
+  const DNAE_AT = pick('dnae', ['a', 'b'], 'a');
+  const DNAMIN_AT = pick('dnamin', ['a', 'b'], 'a');
+  const PHOTO_AT = pick('photo', ['a', 'b'], 'a');
+  const CROP_AT = pick('crop', ['a', 'b'], 'a');
+  const FB_AT = pick('fb', ['a', 'b', 'c'], 'a');
+  const FAIL_AT = pick('fail', ['a', 'b', 'c'], 'a');
+  const PAUSE_AT = pick('paused', ['a', 'b'], 'a');
+  const FIRST_AT = pick('first', ['a', 'b', 'c'], 'a');
+  const FIRST = STATE === 'first', PAUSED = STATE === 'paused';
+
+  /* PROF-09 (J2): every change saves at once and is announced; Remove has Undo in the toast; Move up / Move down are
+     buttons named with the item, and focus stays on the moved item. The first genres weigh most in the Spirala
+     (dna.js), so the order means something. Drag to reorder would be an extra, never the only way (WCAG 2.5.7). */
+  const dnaEdit = () => st.screen === 'setsub' && st.sub === 'dna';
+  const dnaLive = msg => { const el = root.querySelector('#dna-msg'); if (el) el.textContent = msg; };
+  const dnaKey = (kind, item) => kind === 'genre' ? item : item.id;
+  const dnaName = (kind, item) => kind === 'genre' ? item : item.name;
+  const dnaList = kind => kind === 'genre' ? st.genres : st.artists;
+  const dnaIndex = (kind, key) => kind === 'genre' ? st.genres.indexOf(key) : st.artists.findIndex(a => a.id === key);
+  function dnaRow(kind, i, n, item) {
+    const key = esc(dnaKey(kind, item)), name = esc(dnaName(kind, item));
+    const minLock = kind === 'genre' && DNAMIN_AT === 'a' && n <= D.genreMin;
+    return `<li class="dna-row"${kind === 'genre' ? ` style="--g:${DNA.colorOf(item)}"` : ''}>${kind === 'artist' ? artistTile(item, 'sm') : '<span class="dna-swatch" aria-hidden="true"></span>'}<span class="dna-pos" aria-hidden="true">${i + 1}</span><span class="dna-name">${name}<span class="sr-only">, ${i + 1}. mjesto</span></span>
+      <span class="dna-btns"><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="-1" data-k="up-${kind}-${key}" aria-label="Pomakni ${name} gore"${i === 0 ? ' disabled' : ''}>${pic('caret-up', 'pi-sm')}</button><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="1" data-k="down-${kind}-${key}" aria-label="Pomakni ${name} dolje"${i === n - 1 ? ' disabled' : ''}>${pic('caret-down', 'pi-sm')}</button><button type="button" class="iconbtn sm dna-x" data-a="dna-remove" data-kind="${kind}" data-n="${key}" data-k="rm-${kind}-${key}" aria-label="Ukloni ${name}"${minLock ? ' aria-disabled="true"' : ''}>${ic('x')}</button></span></li>`;
+  }
+  /* The add-a-genre panel (editor a): the same search as onboarding (D-062), without the main-genre grid. */
+  function dnaAddGenre() {
+    const q = CAT.fold(st.genreQ.trim());
+    const all = q ? genreHits(q) : D.mainGenres.concat(D.genreSuggest).filter(n => !st.genres.includes(n)).map(n => genrePool().find(g => g.n === n)).filter(Boolean);
+    const hits = all.slice(0, 12);
+    return `<div class="dna-add-head"><label class="label-sm" for="f-genre">Dodaj žanr</label><button type="button" class="link" data-a="dna-add-close" data-k="dna-add-close">Zatvori</button></div>
+      <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-genre" data-k="f-genre" type="search" autocomplete="off" value="${esc(st.genreQ)}" aria-describedby="genre-hint" aria-controls="genre-results"></div>
+      <p class="help" id="genre-hint">Upiši naziv, npr. „heavy metal”. Dodir dodaje žanr na kraj popisa.</p>
+      ${hits.length ? `<div class="g-grid" id="genre-results">${hits.map(g => genreChip(g.n, g.p, true)).join('')}</div>` : '<p class="hint" id="genre-results">Nema tog žanra na popisu. U aplikaciji ga možeš predložiti.</p>'}`;
+  }
+  const dnaAddArtist = () => `<div class="dna-add-head"><label class="label-sm" for="f-artist">Dodaj izvođača</label><button type="button" class="link" data-a="dna-add-close" data-k="dna-add-close">Zatvori</button></div>
+      <div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">${ic('search', 'sm')}</span><input class="input" id="f-artist" data-k="f-artist" type="search" autocomplete="off" value="${esc(st.artistQ)}" aria-describedby="artist-hint" aria-controls="artist-results"></div>
+      <p class="help" id="artist-hint">${CAT.LIVE ? 'Pravi katalog: MusicBrainz.' : 'Npr. „Metallica”, „Let 3” ili „Björk”. Ogledni popis bez mreže.'} Isti izvođač ne može dvaput.</p>
+      <ul class="results" id="artist-results" aria-live="off">${artistResults()}</ul><p class="sr-only" id="artist-live" aria-live="polite"></p>`;
+  function dnaSection(kind) {
+    const list = dnaList(kind), cap = kind === 'genre' ? D.genreMax : D.artistMax, n = list.length;
+    const title = kind === 'genre' ? 'Žanrovi' : 'Izvođači';
+    const order = kind === 'genre' ? `<p class="hint dna-order">${DNAE_AT === 'a' ? 'Prva tri žanra najviše oblikuju Spiralu.' : 'Redoslijed odabira: prvi odabrani najviše oblikuju Spiralu.'}</p>` : '';
+    const full = n >= cap ? `<p class="hint">Najviše ${cap} ${kind === 'genre' ? 'žanrova' : 'izvođača'}. Ukloni ${kind === 'genre' ? 'jedan da dodaš drugi' : 'jednog da dodaš drugog'}.</p>` : '';
+    const minHint = kind === 'genre' && DNAMIN_AT === 'a' && n && n <= D.genreMin ? `<p class="hint">Music DNA ima najmanje ${D.genreMin} žanra, pa prvo dodaj novi.</p>` : '';
+    let body;
+    if (DNAE_AT === 'b') {
+      body = kind === 'genre'
+        ? `<div class="chips chips-genres" id="genre-chips">${genreChips()}</div><div id="more-genres">${moreGenres()}</div><p class="sr-only" id="genre-max" aria-live="polite"></p>`
+        : `<div id="picked">${pickedArtists()}</div>${full || dnaAddArtist()}`;
+    } else {
+      const rows = n ? `<ol class="dna-rows dna-rows-${kind}" aria-label="${title}, redoslijed">${list.map((it, i) => dnaRow(kind, i, n, it)).join('')}</ol>` : `<p class="set-empty">${kind === 'genre' ? 'Još nema žanrova.' : 'Još nema izvođača. Neobavezno.'}</p>`;
+      const add = st.dnaAdd === kind ? `<div class="dna-add" id="dna-add">${kind === 'genre' ? dnaAddGenre() : dnaAddArtist()}</div>`
+        : full || `<button type="button" class="btn btn-secondary btn-sm dna-addbtn" data-a="dna-add" data-kind="${kind}" data-k="dna-add-${kind}">${ic('plus', 'sm')}${kind === 'genre' ? 'Dodaj žanr' : 'Dodaj izvođača'}</button>`;
+      body = rows + minHint + add;
+    }
+    return `<section class="set-group dna-sec" aria-labelledby="h-d${kind}"><h2 class="set-gt" id="h-d${kind}">${title} <span class="count">${n}/${cap}</span></h2>${order}${body}</section>`;
+  }
+  function dnaEditBody() {
+    const v = st.dnaVis || 'me', label = DNA_LABEL[v] || 'Samo ja';
+    return `<div class="dna-live dna-live-edit">${st.genres.length ? dnaCanvas('edit', 150) : `<p class="dna-empty">${pic('lightning', 'empty-ic')}<span>Spirala nastaje iz žanrova.</span></p>`}<p class="dna-count" id="dna-count" aria-live="polite">${dnaCountText()}</p>${dnaText()}</div>
+      <p class="aud-line">${ic(v === 'me' ? 'lock' : v === 'followers' ? 'user' : 'users', 'sm')}<span>Vide: <b>${label.toLowerCase()}</b></span><button type="button" class="link" data-a="pick" data-p="dnaVis2" data-k="dna-aud">Promijeni</button></p>
+      <p class="sr-only" id="dna-msg" role="status"></p>
+      ${dnaSection('genre')}${dnaSection('artist')}
+      <p class="meta">Svaka promjena se sprema odmah. Kompatibilnost s drugima računa se kasnije, bez obavijesti ikome (J2).</p>`;
+  }
+  function dnaToggleGenre(b) {
+    const g = b.dataset.g, i = st.genres.indexOf(g);
+    if (i >= 0) {
+      if (DNAMIN_AT === 'a' && st.genres.length <= D.genreMin) return toast(`Music DNA ima najmanje ${D.genreMin} žanra. Dodaj drugi pa ukloni ovaj.`);
+      return dnaRemove('genre', g);
+    }
+    if (st.genres.length >= D.genreMax) return toast(`Najviše ${D.genreMax} žanrova. Ukloni jedan da dodaš drugi.`);
+    st.genres.push(g); st.genreQ = '';
+    render({ keep: true }); DNA.refresh(); dnaLive(`Dodano: ${g}.`);
+    focusSel(DNAE_AT === 'a' ? '#f-genre' : `[data-k="g-${CSS.escape(g)}"]`);
+  }
+  function dnaRemove(kind, key) {
+    const list = dnaList(kind), i = dnaIndex(kind, key);
+    if (i < 0) return;
+    const [item] = list.splice(i, 1), name = dnaName(kind, item);
+    render({ keep: true }); DNA.refresh();
+    const rows = root.querySelectorAll(`.dna-rows-${kind} .dna-x`), t = rows[Math.min(i, rows.length - 1)];
+    if (t) t.focus(); else focusSel(`[data-k="dna-add-${kind}"], [data-k="more-genres"], #f-artist, main h1`);
+    dnaLive(`Uklonjeno: ${name}.`);
+    toast(`Uklonjeno: ${name}.`, { label: 'Poništi', fn: () => {
+      list.splice(Math.min(i, list.length), 0, item);
+      render({ keep: true }); DNA.refresh(); dnaLive(`Vraćeno: ${name}.`);
+      focusSel(`[data-k="rm-${kind}-${CSS.escape(dnaKey(kind, item))}"], [data-k="g-${CSS.escape(name)}"], main h1`);
+    } });
+  }
+  function dnaMove(kind, key, d) {
+    const list = dnaList(kind), i = dnaIndex(kind, key), j = i + d;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    const name = dnaName(kind, list[j]);
+    render({ keep: true }); DNA.refresh();
+    const kk = CSS.escape(key), same = root.querySelector(`[data-k="${d < 0 ? 'up' : 'down'}-${kind}-${kk}"]`);
+    const other = root.querySelector(`[data-k="${d < 0 ? 'down' : 'up'}-${kind}-${kk}"]`);
+    if (same && !same.disabled) same.focus(); else if (other) other.focus();
+    dnaLive(`${name} je sad na ${j + 1}. mjestu.`);
+  }
+
+  /* PROF-08: display name and bio with one Save and an unsaved-changes dialog; the photo saves on its own (a sheet
+     or the picker, then a crop step). A photo is never required (D-017). The sketch reads the chosen file into
+     memory only; the app strips EXIF, re-encodes and stores it (threat model). */
+  const BADFILE = 'Ta datoteka nije slika koju možemo primiti. JPG, PNG ili WebP do 8 MB.';
+  function profileEditBody() {
+    const has = !!st.photo, cam = pic('camera', 'btn-pi');
+    const act = PHOTO_AT === 'a'
+      ? `<button type="button" class="btn btn-secondary btn-sm" data-a="photo-sheet" data-k="sub-photo">${cam}${has ? 'Promijeni sliku' : 'Dodaj sliku'}</button>`
+      : `<div class="foot-row equal photo-btns"><button type="button" class="btn btn-secondary btn-sm" data-a="photo-pick" data-k="sub-photo">${cam}${has ? 'Promijeni sliku' : 'Dodaj sliku'}</button>${has ? '<button type="button" class="btn btn-secondary btn-sm" data-a="photo-remove" data-k="sub-photo-rm">Ukloni</button>' : ''}</div>`;
+    return `<div class="sub-avatar">${avatar(st.username, st.displayName || 'T', 'xl')}${act}
+        ${st.photoErr ? `<p class="field-err" id="photo-err" role="alert" tabindex="-1">${ic('alert')}<span>${st.photoErr}</span></p>` : '<p class="help">Slika nije obavezna. Vide je svi, i bez prijave ako je profil javan.</p>'}</div>
+      ${field({ id: 'dname2', label: 'Ime za prikaz', help: 'Do tri riječi. Svaka počinje velikim slovom.', value: st.nameDraft == null ? st.displayName : st.nameDraft, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
+      <div class="field"><label class="label" for="f-bio">Bio <span class="opt">neobavezno</span></label><textarea class="textarea textarea-sm" id="f-bio" data-k="f-bio" rows="3" maxlength="160" aria-describedby="help-bio">${esc(st.bioDraft == null ? st.bio : st.bioDraft)}</textarea><p class="help" id="help-bio">Do 160 znakova. Vidi se i bez prijave ako je profil javan.</p></div>
+      ${grp('', subRow('sub-dna', 'Uredi Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'dna'))}
+      <button class="btn btn-primary btn-block" data-a="prof-save" data-k="sub-save">Spremi</button>`;
+  }
+  function pickFile(purpose, cam) {
+    const f = root.querySelector('#f-file'); if (!f) return;
+    st.filePurpose = purpose; f.value = '';
+    if (cam) f.setAttribute('capture', 'user'); else f.removeAttribute('capture');
+    f.click();
+  }
+  function fileChosen(file) {
+    if (!file) return;
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 8 * 1024 * 1024;
+    if (!ok) {
+      if (st.filePurpose === 'photo') { st.photoErr = BADFILE; st.overlay = null; render(); return focusSel('#photo-err'); }
+      st.err.shot = BADFILE; render({ keep: true }); return focusSel('#err-shot');
+    }
+    const r = new FileReader();
+    r.onload = () => {
+      if (st.filePurpose === 'photo') return photoChosen(r.result);
+      st.fb.shot = r.result; delete st.err.shot; render({ keep: true }); focusSel('[data-k="fb-shot-rm"]');
+    };
+    r.readAsDataURL(file);
+  }
+  function photoChosen(url) {
+    st.photoErr = null;
+    if (CROP_AT === 'a') { st.photoDraft = url; st.photoZoom = 1; st.overlay = { type: 'crop', ret: 'sub-photo' }; return render(); }
+    st.photo = url; st.photoZoom = 1; st.overlay = null; render(); focusSel('[data-k="sub-photo"]'); toast('Slika je postavljena.');
+  }
+
+  /* SET-12: feedback and bug reports, separate from abuse reports (Master Prompt §13). The screenshot is optional
+     and treated as sensitive (audit A-06). The technical details are listed in full before sending. */
+  const fbInit = () => ({ type: null, text: '', shot: null, info: true, mail: true, sent: false });
+  st.fb = fbInit();
+  const FB_TYPES = [{ v: 'bug', t: 'Nešto ne radi', d: 'Greška, zastoj ili čudan prikaz' }, { v: 'idea', t: 'Prijedlog', d: 'Što bi bilo bolje ili što nedostaje' }, { v: 'other', t: 'Nešto drugo' }];
+  const fbTitle = () => st.fb.type === 'idea' ? 'Pošalji prijedlog' : st.fb.type === 'bug' ? 'Prijavi grešku' : 'Povratne informacije';
+  const SCREEN_LBL = { home: 'Početna', hub: 'Hub', drop: 'Daily Drop', answer: 'Komentari', activity: 'Aktivnost', profile: 'Profil', member: 'Profil člana', follows: 'Pratitelji', requests: 'Zahtjevi', mdrops: 'Odgovori člana' };
+  const fbScreen = () => { const h = st.hist.map(x => x.screen).reverse().find(s => SCREEN_LBL[s]); return h ? SCREEN_LBL[h] : 'Postavke'; };
+  const helpRows = () => grp('Još', row('h-faq', 'Česta pitanja i o alfi', 'Što radi, što još ne radi, što je s podacima', 'Stranica o alfi (PUB-12) nije dio skice.') + row('h-priv', 'Kontakt za privatnost', 'Pitanja o podacima, kopija podataka', 'Kontakt za privatnost: e-pošta voditelju obrade. Nije dio skice.'))
+    + '<p class="meta">Prijave neprimjerenog sadržaja ili računa idu preko ⋯ na odgovoru ili profilu, ne ovdje.</p>';
+  function helpBody() {
+    if (FB_AT === 'b') return grp('', `<li><button class="set-row" data-a="fb-open" data-t="bug" data-k="h-bug"><span class="set-ic-wrap" aria-hidden="true">${pic('bug-beetle', 'set-ic')}</span><span class="set-txt"><span class="set-t">Prijavi grešku</span><span class="set-d">Nešto ne radi ili izgleda čudno</span></span>${ic('chevron', 'sm set-go')}</button></li>
+      <li><button class="set-row" data-a="fb-open" data-t="idea" data-k="h-idea"><span class="set-ic-wrap" aria-hidden="true">${pic('lightbulb-filament', 'set-ic')}</span><span class="set-txt"><span class="set-t">Pošalji prijedlog</span><span class="set-d">Što bi bilo bolje ili što nedostaje</span></span>${ic('chevron', 'sm set-go')}</button></li>`) + helpRows();
+    return fbForm() + helpRows();
+  }
+  function fbForm() {
+    const f = st.fb;
+    if (f.sent) return `<div class="sub-hero">${ic('check')}<p class="sub-hero-t" tabindex="-1">Hvala, poruka je stigla timu.</p><p class="help">U alfi čitamo svaku poruku.${f.mail ? ` Ako treba, odgovorimo na ${esc(D.email)}.` : ' Bez odgovora e-poštom, kako si odabrala.'}</p></div>
+      <button class="btn btn-primary btn-block" data-a="fb-done" data-k="fb-done">Gotovo</button>`;
+    const typeSel = FB_AT === 'b' ? '' : choices('fbtype', 'O čemu se radi?', FB_TYPES, f.type, 'choices-compact');
+    const shot = f.shot
+      ? `<div class="fb-shot"><span class="fb-thumb${f.shot === 'sample' ? ' av-sample' : ''}"${f.shot !== 'sample' ? ` style="background-image:url(&quot;${f.shot}&quot;)"` : ''} aria-hidden="true"></span><span class="set-txt"><span class="set-t">Snimka zaslona</span><span class="set-d">Vidi je samo tim i briše se nakon obrade.</span></span><button type="button" class="btn btn-secondary btn-sm" data-a="fb-shot-rm" data-k="fb-shot-rm">Ukloni</button></div>`
+      : `<div class="fb-shot-add"><button type="button" class="btn btn-secondary btn-sm" data-a="fb-shot" data-k="fb-shot" aria-describedby="help-shot${st.err.shot ? ' err-shot' : ''}">${pic('image', 'btn-pi')}Dodaj snimku zaslona</button><p class="help" id="help-shot">Neobavezno. Snimka može sadržavati tuđa imena ili poruke: vidi je samo tim i briše se nakon obrade.</p>${st.err.shot ? fieldErr('shot', st.err.shot) : ''}</div>`;
+    const info = FB_AT === 'c' ? '' : `<details class="fb-info"><summary>Što šaljemo uz poruku</summary><ul class="sub-facts"><li>Ekran prije otvaranja pomoći: ${fbScreen()}</li><li>Verzija: alfa, skica 3.5</li><li>Preglednik i uređaj: Chrome 131, Android 15 (primjer)</li><li>Vrijeme: 3. studenoga 2026., 18:40</li></ul><p class="help">Ništa iz tvojih odgovora, poruka ni Music DNA.</p></details>
+      <label class="age-check sub-check"><input type="checkbox" id="f-fbinfo" data-k="f-fbinfo"${f.info ? ' checked' : ''}><span>Pošalji i te podatke, pomažu u traženju greške</span></label>`;
+    const lbl = f.type === 'idea' ? 'Tvoj prijedlog' : 'Što se dogodilo?';
+    const hlp = f.type === 'idea' ? 'Što bi trebalo biti drugačije i zašto.' : 'Što radiš kad se pojavi, što očekuješ i što se umjesto toga dogodi.';
+    return `${typeSel}
+      <div class="field"><label class="label" for="f-fb">${lbl}</label><p class="help" id="help-fb">${hlp}</p><textarea class="textarea" id="f-fb" data-k="f-fb" rows="4" maxlength="2000" aria-describedby="help-fb${st.err.fb ? ' err-fb' : ''}"${st.err.fb ? ' aria-invalid="true"' : ''}>${esc(f.text)}</textarea>${st.err.fb ? fieldErr('fb', st.err.fb) : ''}</div>
+      ${shot}${info}
+      <label class="age-check sub-check"><input type="checkbox" id="f-fbmail" data-k="f-fbmail"${f.mail ? ' checked' : ''}><span>Želim odgovor e-poštom (${esc(D.email)}) ako treba</span></label>
+      ${NET_OFF ? netHint('Slanje treba mrežu. Tekst ostaje ovdje.') : ''}
+      <button class="btn btn-primary btn-block" data-a="fb-send" data-k="fb-send"${NET_OFF ? ' disabled' : ''}>Pošalji</button>`;
+  }
+
+  /* SYS-02: one calm page, Retry first, help second. No technical details or ids that could reveal data (IA);
+     option c adds an opaque support code. The shell stays (a, c) so the rest of the app is one tap away. */
+  const FAIL_SCREENS = ['home', 'hub', 'drop', 'answer', 'activity', 'profile', 'member', 'follows', 'mdrops', 'requests'];
+  const failing = () => STATE === 'fail' && !st.loadOk && FAIL_SCREENS.includes(st.screen);
+  function failBody(bare) {
+    return `<div class="sys-na sys-fail"><span class="step-ic" aria-hidden="true">${pic('warning-circle')}</span><h1>Nešto je pošlo po zlu</h1>
+      <p class="lead lead-sm">${bare ? 'Aplikacija se nije uspjela učitati.' : 'Ovaj dio se nije učitao, a ostatak aplikacije radi.'} Nije do tebe.</p>
+      <div class="dialog-stack sys-fail-btns"><button class="btn btn-primary" data-a="retry-load" data-k="fail-retry">Pokušaj ponovno</button></div>
+      <p class="fine">Ponavlja se? <button class="link" data-a="setsub" data-s="help" data-k="fail-help">Javi nam</button></p>
+      ${FAIL_AT === 'c' ? '<p class="meta fail-code">Oznaka za podršku: <code>K7F2-9Q</code></p>' : ''}</div>`;
+  }
+
+  /* SYS-04: the Daily Drop paused through a feature flag during an incident (J6 E9). Brief, no blame, the way out is
+     named. The reminder is not sent while paused. The generic page covers any other paused feature. */
+  const FEAT = {
+    dna: { t: 'Uređivanje Music DNA je privremeno isključeno', d: 'Popravljamo problem s uređivanjem.' },
+    comments: { t: 'Komentari su privremeno isključeni', d: 'Popravljamo problem s komentarima. Odgovori na pitanje rade.' }
+  };
+  const pausedCard = btn => `<div class="dd-wait dd-paused" role="status">${pic('pause-circle')}<div><p class="dd-wait-t">Daily Drop je na pauzi</p><p>Popravljamo nešto u pozadini. Odgovori i komentari čekaju dok se ne vratimo, a ostatak aplikacije radi. Podsjetnik ne stiže dok traje pauza.</p>${btn ? '<button class="btn btn-secondary btn-sm" data-a="tab" data-t="home" data-k="paused-home">Na početnu</button>' : ''}</div></div>`;
+  const pausedBlock = hub => PAUSE_AT === 'b' ? pausedCard(hub) : `${pausedCard()}<section class="dd dd-teaser dd-c dd-e dd-paused-q" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p></div>
+      <h2 id="h-teaser" class="dd-q">${esc(D.drop.question)}</h2><p class="dd-still">Odgovaranje je na pauzi.</p></section>`;
+  const dockPaused = () => `<div class="dock dock-locked"><p class="dock-done">${pic('pause-circle', 'dock-pi')}<span>Daily Drop je na pauzi. Tvoj odgovor može pričekati.</span></p></div>`;
+
+  /* HUB-01 and HOME-01 before the first Daily Drop: the date and the local time (00:00 UTC is 01:00 in Zagreb in
+     November), and what the member can do meanwhile. No countdown pressure in a (P2); b shows the time left; c adds
+     the current, the motif of the question (D-042). */
+  const WDU = ['u nedjelju', 'u ponedjeljak', 'u utorak', 'u srijedu', 'u četvrtak', 'u petak', 'u subotu'];
+  function firstBlock(where) {
+    const p = dparts(D.drop.date), d = new Date(D.drop.date + 'T12:00:00Z');
+    const count = FIRST_AT === 'b' ? '<p class="first-count"><span class="first-n">6</span><span class="first-u">h</span><span class="first-n">20</span><span class="first-u">min</span><span class="sr-only">do prvog pitanja</span></p>' : '';
+    const rows = `<section class="section" aria-labelledby="h-while"><h2 id="h-while" class="section-title">Dok čekaš</h2><ul class="set-list">
+        ${subRow('fw-dna', 'Dopuni Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'dna')}
+        ${subRow('fw-rem', 'Podsjetnik za novo pitanje', st.reminder === 'on' ? `Uključen, u ${st.remTime}` : 'Isključen', 'notifications')}
+        <li><button class="set-row set-row-plain" data-a="toast" data-msg="Ovdje bi se otvorilo „Kako radi” iz onboardinga, kao podsjetnik." data-k="fw-how"><span class="set-txt"><span class="set-t">Kako radi Daily Drop</span></span>${ic('chevron', 'sm set-go')}</button></li></ul></section>`;
+    return `<section class="dd dd-teaser dd-c dd-e dd-first" aria-labelledby="h-first"><div class="dd-top">${ddName()}${FIRST_AT === 'c' ? current('dd-first', 'md', 'dd-current') : ''}</div>
+      <${where === 'drop' ? 'h1' : 'h2'} id="h-first" class="dd-q dd-q-first">Prvo pitanje stiže ${WDU[d.getUTCDay()]}, ${p.day}. ${p.mg}</${where === 'drop' ? 'h1' : 'h2'}>
+      <p class="dd-meta first-time">${ic('clock', 'sm')}<span>U 01:00 po tvom vremenu (00:00 UTC). Isto pitanje za sve, svaki dan.</span></p>${count}</section>${rows}`;
+  }
+
   const S = {
     invite: () => ({
       kind: 'bare',
@@ -1817,6 +2066,10 @@
       body: hubBody()
     }),
     drop: () => {
+      /* Round 12d: no question page before the first Drop; a paused Daily Drop keeps the question readable (a) or
+         shows only the pause card (b). */
+      if (FIRST) return { kind: 'app', tab: 'hub', back: true, topBlank: true, body: firstBlock('drop') };
+      if (PAUSED) return { kind: 'app', tab: 'hub', back: true, topBlank: true, body: PAUSE_AT === 'a' ? `<header class="dd dd-page">${ddHead('drop', true)}<h1 class="dd-q">${esc(D.drop.question)}</h1></header>${pausedCard()}` : `<h1 class="sr-only">Daily Drop</h1><div class="sys-pause">${pausedCard(true)}</div>`, dock: PAUSE_AT === 'a' ? dockPaused() : '' };
       scheduleNew();
       const n = allAnswers().length;
       return {
@@ -1874,7 +2127,7 @@
     }),
     setsub: () => {
       const sub = SUB[st.sub] || SUB.account;
-      return { kind: 'app', tab: 'profile', back: true, topTitle: sub[0], topH1: true, body: NET_OFF ? `<p class="net-hint">${ic('offline', 'sm')}<span>Bez mreže postavke možeš samo pregledati.</span></p><fieldset class="sub sub-ro" disabled>${sub[1]()}</fieldset>` : `<div class="sub">${sub[1]()}</div>` };
+      return { kind: 'app', tab: 'profile', back: true, topTitle: st.sub === 'fbform' ? fbTitle() : sub[0], topH1: true, body: NET_OFF ? `<p class="net-hint">${ic('offline', 'sm')}<span>Bez mreže postavke možeš samo pregledati.</span></p><fieldset class="sub sub-ro" disabled>${sub[1]()}</fieldset>` : `<div class="sub">${sub[1]()}</div>` };
     },
     settings: () => ({
       kind: 'app', tab: 'profile', back: true, topTitle: 'Postavke', topH1: true,
@@ -1956,7 +2209,25 @@
     resetsent: () => ({ kind: 'onb', noProgress: true, body: resetSentBody(), foot: '<button class="btn btn-secondary btn-block" data-a="to-signin2" data-k="sent-signin">Natrag na prijavu</button>' }),
     resetnew: () => ({ kind: 'onb', noProgress: true, body: resetNewBody(), foot: '<button class="btn btn-primary btn-block" data-a="reset-save" data-k="reset-save">Spremi lozinku</button>' }),
     linkbad: () => { const k = LINKBAD[linkKind()]; return { kind: 'onb', noProgress: true, body: linkBadBody(), foot: `<button class="btn btn-primary btn-block" data-a="${k.a}" data-k="lb-go">${k.btn}</button>` }; },
-    verified: () => ({ kind: 'onb', noProgress: true, body: verifiedBody(), foot: '<button class="btn btn-primary btn-block" data-a="to-signin2" data-k="ver-go">Nastavi na prijavu</button>' })
+    verified: () => ({ kind: 'onb', noProgress: true, body: verifiedBody(), foot: '<button class="btn btn-primary btn-block" data-a="to-signin2" data-k="ver-go">Nastavi na prijavu</button>' }),
+    /* Round 12d: the generic SYS-04 page for a paused feature, and the J1 E3/E4 invite edge cases. */
+    featoff: () => { const f = FEAT[st.feat] || FEAT.dna; return { kind: 'app', tab: 'profile', back: true, topTitle: 'Na pauzi', body: `<div class="sys-na"><span class="step-ic" aria-hidden="true">${pic('pause-circle')}</span><h1>${f.t}</h1><p class="lead lead-sm">${f.d} Tvoji podaci su na sigurnom, a ostatak aplikacije radi.</p><button class="btn btn-secondary" data-a="tab" data-t="home" data-k="fo-home">Na početnu</button></div>` }; },
+    invsigned: () => ({
+      kind: 'onb', noProgress: true,
+      body: `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic(st.invSame ? 'check' : 'user')}</span>
+        <h1>${st.invSame ? 'Već imaš račun' : 'Pozivnica je za novu osobu'}</h1>
+        <p class="lead">${st.invSame ? `Pozivnica je za <b>${esc(D.email)}</b>, a s tom adresom već imaš račun i u njemu si. Ništa ne trebaš napraviti.` : `Trenutačno si u računu <b>@${esc(st.username)}</b>. Da prihvatiš pozivnicu za drugi račun, prvo se odjavi. Pozivnica ostaje valjana.`}</p></div>
+        <p class="meta">Pozivnica se ne troši dok je ne prihvatiš (J1 E3).</p>`,
+      foot: st.invSame ? '<button class="btn btn-primary btn-block" data-a="finish" data-k="inv-home">Na početnu</button>'
+        : '<div class="foot-row equal"><button class="btn btn-secondary" data-a="finish" data-k="inv-stay">Ostani u ovom računu</button><button class="btn btn-secondary" data-a="inv-out" data-k="inv-out">Odjavi se</button></div>'
+    }),
+    invmail: () => ({
+      kind: 'onb', noProgress: true, back: true,
+      body: `<div class="center-block"><span class="step-ic" aria-hidden="true">${ic('alert')}</span><h1>Pozivnica vrijedi za jednu adresu</h1>
+        <p class="lead">Pozivnica je poslana na <b>${esc(D.email)}</b>, a odabrani Google račun ima drugu adresu (<b>ana.horvat@gmail.com</b>). Račun možeš otvoriti e-poštom i lozinkom s adresom iz pozivnice, ili Google računom koji koristi tu adresu.</p></div>
+        <p class="meta">Pozivnica je vezana uz adresu da je nitko ne može proslijediti (R-08, J1 E4). Za drugu adresu treba nova pozivnica. Adrese su izmišljene.</p>`,
+      foot: '<div class="foot-row equal"><button class="btn btn-secondary" data-a="back" data-k="inv-other">Drugi Google račun</button><button class="btn btn-primary" data-a="back" data-k="inv-email">E-poštom i lozinkom</button></div>'
+    })
   };
 
   /* ---------- shell ---------- */
@@ -2070,6 +2341,26 @@
     if (o.type === 'unfollow') { const priv = member(o.h).vis === 'private'; return dlg(`Prestati pratiti @${esc(o.h)}?`, priv ? 'Profil je privatan: za ponovno praćenje trebat će novi zahtjev, koji ta osoba mora odobriti. Ne dobije obavijest o ovome.' : 'Možeš opet zapratiti bilo kad. Ta osoba ne dobije obavijest.', 'Odustani', 'unfollow-confirm', 'Prestani pratiti'); }
     if (o.type === 'cancelreq') return dlg(`Povući zahtjev za @${esc(o.h)}?`, 'Ta osoba ne dobije obavijest. Novi zahtjev možeš poslati kasnije.', 'Odustani', 'req-cancel-confirm', 'Povuci zahtjev');
     if (o.type === 'remove') return dlg(`Ukloniti @${esc(o.h)} iz pratitelja?`, 'Ta osoba više ne vidi tvoj profil, Music DNA ni povijest odgovora. Ne dobije obavijest i može opet poslati zahtjev. Blokiranje je jači korak.', 'Odustani', 'rm-confirm', 'Ukloni', true);
+    /* Round 12d overlays: the photo sheet, the crop step and the unsaved-changes dialog (PROF-08). */
+    if (o.type === 'photo') return `<div class="scrim" data-a="overlay-close"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <div class="sheet-head"><h2 id="ov-title" class="sheet-title">Slika profila</h2><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
+        <ul class="menu">
+          <li><button class="menu-item" data-a="photo-pick" data-k="ph-gal">${pic('image', 'menu-pi')}Odaberi iz galerije</button></li>
+          <li><button class="menu-item" data-a="photo-pick" data-cam="1" data-k="ph-cam">${pic('camera', 'menu-pi')}Snimi fotografiju</button></li>
+          <li><button class="menu-item" data-a="photo-sample" data-k="ph-sample">${pic('lightning', 'menu-pi')}Primjer slike <span class="menu-note">(skica)</span></button></li>
+          ${st.photo ? `<li><button class="menu-item" data-a="photo-remove" data-k="ph-rm">${ic('trash')}Ukloni sliku</button></li>` : ''}
+        </ul>
+        <p class="meta">JPG, PNG ili WebP do 8 MB. Podaci o lokaciji iz fotografije (EXIF) brišu se pri slanju. Vide je svi, i bez prijave ako je profil javan.</p></div>`;
+    if (o.type === 'crop') {
+      const d = st.photoDraft;
+      return `<div class="scrim"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+        <div class="sheet-head"><h2 id="ov-title" class="sheet-title">Namjesti sliku</h2><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
+        <div class="crop-wrap"><div class="crop-circ">${d === 'sample' ? `<span class="crop-img av-sample" style="transform:scale(${st.photoZoom})"></span>` : `<img class="crop-img" src="${d}" alt="" style="transform:scale(${st.photoZoom})">`}</div></div>
+        <div class="field"><label class="label" for="f-zoom">Povećanje</label><input type="range" class="range" id="f-zoom" data-k="f-zoom" min="1" max="2.5" step="0.05" value="${st.photoZoom}"></div>
+        <p class="help">Vidi se ono u krugu. U aplikaciji sliku možeš i pomaknuti prstom; u skici samo povećanje.</p>
+        <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Odustani</button><button class="btn btn-primary" data-a="crop-save" data-k="ov-ok">Spremi</button></div></div>`;
+    }
+    if (o.type === 'discard') return dlg('Odbaciti promjene?', 'Ime i bio vraćaju se na spremljeno.', 'Nastavi uređivati', 'prof-discard', 'Odbaci', true);
     if (o.type === 'uname') return dlg(`Promijeniti u @${esc(st.newUser)}?`, `Sljedeća promjena moguća je tek od ${dayMonth(addDays(D.drop.date, 30))}. @${esc(st.username)} ostaje rezervirano za tebe 30 dana.`, 'Odustani', 'uname-confirm', 'Promijeni');
     if (o.type === 'unblock') return dlg(`Odblokirati @${esc(o.h || 'mia_vinyl')}?`, 'Opet ćete vidjeti profile i odgovore jedno drugoga. Praćenje se ne vraća samo. Ta osoba ne dobije obavijest.', 'Odustani', 'unblock-confirm', 'Odblokiraj');
     if (o.type === 'logout') return dlg('Odjaviti se?', 'Samo na ovom uređaju. Za povratak trebaš e-poštu i lozinku ili Google.', 'Odustani', 'logout-confirm', 'Odjavi se');
@@ -2109,7 +2400,9 @@
   function render(opt) {
     opt = opt || {};
     const keep = opt.keep ? snapshot() : null;
-    const s = S[st.screen]();
+    let s = S[st.screen]();
+    /* Round 12d, SYS-02: a whole-page failure keeps the shell (a, c) or takes the whole screen (b). */
+    if (failing()) s = FAIL_AT === 'b' ? { kind: 'bare', body: failBody(true) } : Object.assign({}, s, { body: failBody(false), dock: '' });
     const standalone = window.top === window;
     let shell = '';
     if (standalone) shell += `<p class="proto-note">Skica 3.5: izmišljeni podaci, privremeni wordmark.</p>`;
@@ -2118,7 +2411,9 @@
     shell += `<main id="main" class="screen screen-${st.screen} kind-${s.kind}">${s.body}</main>`;
     if (s.foot) shell += `<div class="foot">${s.foot}</div>`;
     if (s.kind === 'app') shell += `<div class="bottom">${netPill()}${s.dock || ''}${tabbar(s.tab)}</div>`;
-    root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${shell}</div>${overlayHtml()}`;
+    /* The file input for the profile photo and the feedback screenshot lives outside the shell, so it still opens
+       while a sheet is up (the shell is inert then). Nothing leaves the browser: the file is read into memory only. */
+    root.innerHTML = `<div class="shell"${st.overlay ? ' inert' : ''}>${shell}</div>${overlayHtml()}<input type="file" id="f-file" hidden accept="image/jpeg,image/png,image/webp">`;
     root.dataset.screen = st.screen;
     if (st.swipeDir) { const m = root.querySelector('main'); if (m) m.classList.add('swipe-' + st.swipeDir); st.swipeDir = null; }
     if (s.kind === 'onb' && !s.noProgress) { const h = root.querySelector('main h1'); if (h) h.setAttribute('aria-describedby', 'prog-text'); }
@@ -2338,23 +2633,53 @@
     const a = b.dataset.a;
     switch (a) {
       case 'next': return next();
-      case 'back': return back();
+      case 'back': if (st.profDirty && st.screen === 'setsub' && st.sub === 'profile') return openOverlay({ type: 'discard' }, b); return back();
       case 'lang': return toast('U skici je samo hrvatski tekst. U aplikaciji se jezik mijenja ovdje na svakom koraku.');
       case 'toast': return toast(b.dataset.msg);
       case 'showpw': st.showPw = !st.showPw; return render({ keep: true });
       case 'google': toast('Simulacija: Google račun s istom adresom kao pozivnica. Račun je napravljen.'); return go('username', { reset: true });
       case 'pickuser': st.username = b.dataset.u; st.userState = 'ok'; delete st.err.uname; render(); return focusSel('#f-uname');
       case 'readlang': { const l = b.dataset.l; st.readLangs.has(l) ? st.readLangs.delete(l) : st.readLangs.add(l); return b.setAttribute('aria-pressed', st.readLangs.has(l)); }
-      case 'genre': return toggleGenre(b);
+      case 'genre': if (dnaEdit()) return dnaToggleGenre(b); return toggleGenre(b);
       case 'more-genres': { st.moreOpen = true; const c = root.querySelector('#genre-chips'); if (c) c.innerHTML = genreChips(); const m = root.querySelector('#more-genres'); if (m) m.innerHTML = moreGenres(); return focusSel('#f-genre'); }
       case 'artist-add': {
         const item = st.artistRes.items.find(x => x.id === b.dataset.id);
         if (!item || st.artists.some(x => x.id === item.id)) return;
         if (st.artists.length >= D.artistMax) return toast(`Najviše ${D.artistMax} izvođača. Makni jednog da dodaš drugog.`);
         st.artists.push(Object.assign({}, item));
+        if (dnaEdit()) { render({ keep: true }); DNA.refresh(); dnaLive(`Dodano: ${item.name}.`); return focusSel('#f-artist'); }
         updateDnaStep(); return focusSel('#f-artist');
       }
-      case 'artist-remove': { st.artists = st.artists.filter(x => x.id !== b.dataset.id); updateDnaStep(); return focusSel('#f-artist'); }
+      case 'artist-remove': { if (dnaEdit()) return dnaRemove('artist', b.dataset.id); st.artists = st.artists.filter(x => x.id !== b.dataset.id); updateDnaStep(); return focusSel('#f-artist'); }
+      /* Round 12d: the Music DNA editor, the profile photo, the feedback form and the invite cases. */
+      case 'dna-add': st.dnaAdd = b.dataset.kind; st.genreQ = ''; render({ keep: true }); return focusSel(b.dataset.kind === 'genre' ? '#f-genre' : '#f-artist');
+      case 'dna-add-close': { const k = st.dnaAdd; st.dnaAdd = null; st.genreQ = ''; st.artistQ = ''; st.artistRes = { state: 'idle', items: [] }; render(); return focusSel(`[data-k="dna-add-${k}"], main h1`); }
+      case 'dna-move': return dnaMove(b.dataset.kind, b.dataset.n, +b.dataset.d);
+      case 'dna-remove': if (b.getAttribute('aria-disabled') === 'true') return toast(`Music DNA ima najmanje ${D.genreMin} žanra. Dodaj drugi pa ukloni ovaj.`); return dnaRemove(b.dataset.kind, b.dataset.n);
+      case 'photo-sheet': return openOverlay({ type: 'photo' }, b);
+      case 'photo-pick': return pickFile('photo', !!b.dataset.cam);
+      case 'photo-sample': return photoChosen('sample');
+      case 'photo-remove': st.photo = null; st.photoErr = null; st.overlay = null; render(); focusSel('[data-k="sub-photo"]'); return toast('Slika je uklonjena.');
+      case 'crop-save': st.photo = st.photoDraft; st.photoDraft = null; st.overlay = null; render(); focusSel('[data-k="sub-photo"]'); return toast('Slika je postavljena.');
+      case 'prof-save': {
+        const name = (st.nameDraft == null ? st.displayName : st.nameDraft).trim(); st.err = {};
+        if (!name) { st.err.dname2 = 'Upiši ime za prikaz.'; render({ keep: true }); return focusSel('#f-dname2'); }
+        st.displayName = name; st.bio = (st.bioDraft == null ? st.bio : st.bioDraft).trim(); st.nameDraft = null; st.bioDraft = null; st.profDirty = false;
+        back(); return toast('Profil je spremljen.');
+      }
+      case 'prof-discard': st.nameDraft = null; st.bioDraft = null; st.profDirty = false; st.overlay = null; return back();
+      case 'fb-open': st.fb = fbInit(); st.fb.type = b.dataset.t; return go('setsub', { sub: 'fbform' });
+      case 'fb-shot': return pickFile('shot', false);
+      case 'fb-shot-rm': st.fb.shot = null; render({ keep: true }); return focusSel('[data-k="fb-shot"]');
+      case 'fb-send': {
+        st.err = {};
+        if (FB_AT !== 'b' && !st.fb.type) st.err.fbtype = 'Odaberi o čemu se radi.';
+        if (!st.fb.text.trim()) st.err.fb = 'Napiši barem jednu rečenicu.';
+        if (Object.keys(st.err).length) { render({ keep: true }); return focusSel(st.err.fbtype ? 'input[name="fbtype"]' : '#f-fb'); }
+        st.fb.sent = true; render(); window.scrollTo(0, 0); return focusSel('.sub-hero-t');
+      }
+      case 'fb-done': st.fb = fbInit(); return back();
+      case 'inv-out': signOut(); return toast('Odjava je uspjela. Otvori poveznicu iz pozivnice ponovno.');
       case 'artist-retry': runArtistSearch(); return focusSel('#f-artist');
       case 'remind-off': st.reminder = 'off'; return go('done', { reset: true });
       case 'remind-on': return openOverlay({ type: 'perm' }, b);
@@ -2564,10 +2889,14 @@
     const t = e.target;
     switch (t.id) {
       case 'f-pw': { st.pw = t.value; clearErr('pw', t); const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return; }
-      case 'f-dname': case 'f-dname2': { nameFix(t); st.displayName = t.value; return clearErr(t.id.slice(2), t); }
+      case 'f-dname': { nameFix(t); st.displayName = t.value; return clearErr('dname', t); }
+      case 'f-dname2': { nameFix(t); st.nameDraft = t.value; st.profDirty = true; return clearErr('dname2', t); } // round 12d: a draft until Save
+      case 'f-bio': st.bioDraft = t.value; st.profDirty = true; return;
+      case 'f-fb': st.fb.text = t.value; return clearErr('fb', t);
+      case 'f-zoom': { st.photoZoom = +t.value; const im = root.querySelector('.crop-img'); if (im) im.style.transform = `scale(${st.photoZoom})`; return; }
       case 'f-uname': st.username = t.value.trim(); clearErr('uname', t); return checkUser();
       case 'f-artist': st.artistQ = t.value; return runArtistSearch();
-      case 'f-genre': { st.genreQ = t.value; const m = root.querySelector('#more-genres'); if (m) { m.innerHTML = moreGenres(); const f = root.querySelector('#f-genre'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
+      case 'f-genre': { st.genreQ = t.value; const m = root.querySelector('#more-genres') || root.querySelector('#dna-add'); if (m) { m.innerHTML = m.id === 'dna-add' ? dnaAddGenre() : moreGenres(); const f = root.querySelector('#f-genre'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); } return; }
       case 'f-setq': { st.setQ = t.value; const b = root.querySelector('#set-body'); if (b) { const tmp = document.createElement('div'); tmp.innerHTML = settingsBody(); b.innerHTML = tmp.querySelector('#set-body').innerHTML; } return; }
       case 'f-refq': case 'f-refq-com': { const k = t.id === 'f-refq' ? 'ans' : 'com', S = RS[k]; st[S.q] = t.value; const r = root.querySelector(`#ref-results${S.sfx}`); if (r) r.innerHTML = refResults(k); return; }
       case 'f-ans': st.draft = t.value; return clearErr('ans', t);
@@ -2589,6 +2918,7 @@
       if (n === 'sort') { st.sort = t.value; return render({ keep: true }); }
       if (n === 'actf') { st.actF = t.value; return render({ keep: true }); }
       if (n === 'fl') { st.list = t.value; return render({ keep: true }); }
+      if (n === 'fbtype') { st.fb.type = t.value; delete st.err.fbtype; return render({ keep: true }); }
       if (n === 'repcat' && st.rep) { st.rep.cat = t.value; delete st.err.repcat; const er = root.querySelector('#err-repcat'); if (er) er.remove(); const fs = t.closest('fieldset'); if (fs) fs.removeAttribute('aria-describedby'); return; }
       if (n === 'vis2') st.vis = t.value; else if (n === 'dnaVis2') st.dnaVis = t.value; else if (n === 'lang2') st.lang = t.value; else if (n === 'del') st.del = t.value;
       else if (n === 'hist2') st.histVis = t.value; else if (n === 'lists2') st.lists = t.value;
@@ -2603,6 +2933,9 @@
       if (st.err[n]) { delete st.err[n]; const er = root.querySelector('#err-' + n); if (er) er.remove(); const fs = t.closest('fieldset'); if (fs) fs.removeAttribute('aria-describedby'); }
     } else if (t.id === 'f-time' || t.id === 'f-time2') st.remTime = t.value;
     else if (t.id === 'f-blkrep') st.blkReport = t.checked;
+    else if (t.id === 'f-fbinfo') st.fb.info = t.checked;
+    else if (t.id === 'f-fbmail') st.fb.mail = t.checked;
+    else if (t.id === 'f-file') fileChosen(t.files && t.files[0]);
   });
 
   document.addEventListener('keydown', e => {
@@ -2628,9 +2961,10 @@
     st.screen = AT;
     const from = k < 3 ? 0 : 3;
     st.hist = AT === 'username' || AT === 'done' ? [] : ORDER.slice(from, k).map(s => ({ screen: s, y: 0 }));
-  } else if (AT && !START_DROP && ['landing', 'share', 'pubprofile', 'na', 'twofa', 'reset', 'resetsent', 'resetnew', 'linkbad', 'verified'].includes(AT)) {
-    /* Round 12c: signed-out screens and the sign-in side screens. */
+  } else if (AT && !START_DROP && ['landing', 'share', 'pubprofile', 'na', 'twofa', 'reset', 'resetsent', 'resetnew', 'linkbad', 'verified', 'invmail'].includes(AT)) {
+    /* Round 12c: signed-out screens and the sign-in side screens. Round 12d: the Google-address mismatch (J1 E4). */
     st.screen = AT;
+    if (AT === 'invmail') { st.age = 'adult'; st.hist = ['invite', 'age', 'uilang', 'account'].map(s => ({ screen: s, y: 0 })); }
     if (AT === 'share') {
       const pd = P.get('day') && D.pastDrops.find(x => x.date === P.get('day'));
       if (pd) { st.shareDay = pd.date; st.shareQ = pd.q; }
@@ -2648,9 +2982,34 @@
     if (AT === 'signin') { st.lock = P.get('lock') === '1'; st.tfaNeeded = P.get('twofa') === '1'; if (P.get('show') === 'err') st.err.signin = true; }
     if (AT === 'restricted') st.restricted = D.restriction;
     if (AT === 'suspended') { st.suspended = true; if (P.get('sent') === '1') st.appealed[D.suspension.id] = TODAY; if (P.get('show') === 'appeal') st.susAppeal = true; }
-  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member', 'follows', 'requests', 'mdrops'].includes(AT)) {
+  } else if (AT && START_DROP && ['hub', 'drop', 'answer', 'activity', 'profile', 'settings', 'setsub', 'member', 'follows', 'requests', 'mdrops', 'featoff', 'invsigned'].includes(AT)) {
     st.screen = AT;
     if (AT === 'member') st.hist = [{ screen: 'home', y: 0 }];
+    /* Round 12d: the editor, the profile edit, the feedback form, the paused page and the signed-in invite case. */
+    if (AT === 'featoff') { st.feat = FEAT[P.get('f')] ? P.get('f') : 'dna'; st.hist = [{ screen: 'home', y: 0 }, { screen: 'profile', y: 0 }]; }
+    if (AT === 'invsigned') st.invSame = P.get('same') === '1';
+    if (AT === 'setsub' && P.get('s') === 'dna') {
+      const pk = P.get('picks');
+      if (pk === 'full') { st.genres = ['Jazz', 'Soul', 'Kantautorska', 'Elektronika', 'Funk', 'Techno', 'Metal', 'Klasična', 'Indie', 'Rap']; st.artists = ['Nina Simone', 'Arsen Dedić', 'Massive Attack', 'James Brown', 'Charlotte de Witte', 'Metallica', 'Johann Sebastian Bach', 'Arctic Monkeys', 'Kendrick Lamar', 'Björk'].map(fx); }
+      else if (pk === 'min') { st.genres = ['Jazz', 'Soul']; st.artists = [fx('Nina Simone')]; }
+      if (['genre', 'artist'].includes(P.get('add'))) st.dnaAdd = P.get('add');
+      if (P.get('q')) { st.artistQ = P.get('q'); st.dnaAdd = 'artist'; }
+      if (P.get('show') === 'aud') st.overlay = { type: 'pick', p: 'dnaVis2', ret: 'dna-aud' };
+      if (P.get('show') === 'undo') st.undoOnLoad = true;
+    }
+    if (AT === 'setsub' && P.get('s') === 'profile') {
+      const sh = P.get('show');
+      if (sh === 'photo') st.overlay = { type: 'photo', ret: 'sub-photo' };
+      if (sh === 'crop') { st.photoDraft = 'sample'; st.photoZoom = 1.3; st.overlay = { type: 'crop', ret: 'sub-photo' }; }
+      if (sh === 'badfile') st.photoErr = BADFILE;
+      if (sh === 'discard') { st.nameDraft = 'Ana Marija'; st.profDirty = true; st.overlay = { type: 'discard', ret: 'top-back' }; }
+    }
+    if (AT === 'setsub' && (P.get('s') === 'help' || P.get('s') === 'fbform')) {
+      if (['bug', 'idea', 'other'].includes(P.get('type'))) st.fb.type = P.get('type');
+      if (P.get('shot') === '1') st.fb.shot = 'sample';
+      if (P.get('show') === 'sent') st.fb.sent = true;
+      if (P.get('show') === 'err') { st.err.fb = 'Napiši barem jednu rečenicu.'; if (FB_AT !== 'b') st.err.fbtype = 'Odaberi o čemu se radi.'; }
+    }
     /* Round 12b: open a safety flow on load, and the status screens. */
     if (P.get('as') === 'blocker') st.blocked.add('mia_vinyl');
     if (AT === 'drop' || AT === 'answer') {
@@ -2690,15 +3049,18 @@
     if (AT === 'setsub' && P.get('s') === 'privacy' && P.get('pick')) st.overlay = { type: 'pick', p: P.get('pick') };
     if (AT === 'drop') st.hist = st.screen === 'report' ? [{ screen: 'home', y: 0 }, { screen: 'drop', y: 0 }] : [{ screen: 'home', y: 0 }];
     if (AT === 'settings') st.hist = [{ screen: 'profile', y: 0 }];
-    if (AT === 'setsub') { st.sub = P.get('s') || 'account'; st.hist = [{ screen: 'profile', y: 0 }, { screen: 'settings', y: 0 }]; }
+    if (AT === 'setsub') { st.sub = P.get('s') || 'account'; st.hist = st.sub === 'dna' ? [{ screen: 'home', y: 0 }, { screen: 'profile', y: 0 }] : st.sub === 'fbform' ? [{ screen: 'profile', y: 0 }, { screen: 'settings', y: 0 }, { screen: 'setsub', sub: 'help', y: 0 }] : [{ screen: 'profile', y: 0 }, { screen: 'settings', y: 0 }]; }
     if (AT === 'hub' && P.get('day')) st.hubDay = P.get('day');
     if (AT === 'answer') { st.ctx = 'a1'; st.hist = [{ screen: 'home', y: 0 }, { screen: 'drop', y: 0 }]; }
     if (AT === 'drop' && P.get('open') === 'compose') st.overlay = { type: 'sheet', ret: 'dock-field' };
   }
 
   if (START_DROP && P.get('pw') === 'breached') st.pwBanner = true; // ?flow=drop&pw=breached: Home right after sign-in, for the review page
+  if (START_DROP && P.get('pic') === 'sample') st.photo = 'sample'; // round 12d: the sample profile picture on any signed-in screen
   render();
   if (st.muteOnLoad) { const h = st.muteOnLoad; st.muteOnLoad = null; doMute(h); }
   if (st.resetDone) { st.resetDone = false; resetSave(); } // ?at=resetnew&done=1: the frame after a saved password (round 12c)
+  if (st.undoOnLoad) { st.undoOnLoad = false; dnaRemove('genre', st.genres[st.genres.length - 1]); } // ?show=undo: the frame right after a removal (round 12d)
+  if (dnaEdit() && st.artistQ) runArtistSearch();
   if (st.screen === 'dna' && st.artistQ) { runArtistSearch(); setTimeout(() => { const f = root.querySelector('#f-artist'); if (f) f.scrollIntoView({ block: 'start' }); }, 450); }
 })();
