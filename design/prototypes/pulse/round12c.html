@@ -40,7 +40,7 @@
 <body>
 <div class="page">
   <h1>Runda 12c: odjavljeni posjetitelji i prijava</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> „Preporuka” je moj prijedlog. Kad odabereš, odabrano postaje zadano u skici.</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-076 i D-077, sesija 15).</b> Početna sa strujom, prijava u podnožju, podijeljeno pitanje bez struje ispod datuma, nova lozinka vodi natrag na prijavu, drugi korak samo s kodom, zid za prijavu nakon 5 sekundi koji se ne može zatvoriti (C), zaključavanje nakon 5 promašaja (15 min, pa 1 h, pa 24 h).</p>
   <p>Okviri su prava aplikacija. U prvom dijelu nisi prijavljena: ovo vidi netko tko dobije poveznicu ili dođe na grooverift.com. Prijava prolazi s bilo kojom lozinkom („kriva” pokazuje grešku). Sve adrese, kodovi i podaci su izmišljeni; pravni tekstovi (Uvjeti, Privatnost) pišu se s pravnikom.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (D-022, IA8, U-05, U-08, R-08, Master Prompt §3, nisu izbor):</p>
     <ul>
@@ -50,7 +50,7 @@
       <li>Drugi korak prijave (aplikacija za autentifikaciju) nije obavezan za članove; kod za oporavak zamjenjuje ga kad telefona nema. Nakon nove lozinke ostali uređaji se odjavljuju.</li>
     </ul></div>
   <nav class="toc" aria-label="Teme">
-    <a href="#t-land">1. Početna</a><a href="#t-pub">2. Gdje je „Prijavi se”</a><a href="#t-share">3. Podijeljeno pitanje</a><a href="#t-reset">4. Nakon nove lozinke</a><a href="#t-tfa">5. Drugi korak</a><a href="#t-done">Napravljeno bez izbora</a>
+    <a href="#t-land">1. Početna</a><a href="#t-pub">2. Gdje je „Prijavi se”</a><a href="#t-share">3. Podijeljeno pitanje</a><a href="#t-reset">4. Nakon nove lozinke</a><a href="#t-tfa">5. Drugi korak</a><a href="#t-wall">6. Zid za prijavu</a><a href="#t-done">Napravljeno bez izbora</a>
   </nav>
   <div id="sections"></div>
   <h2 class="part" id="t-done">Napravljeno bez izbora</h2>
@@ -70,7 +70,7 @@
       ['b', 'B. U podnožju', 'Glavni gumb u ljepljivom podnožju kao na svim koracima prijave. Uvijek pod palcem i uvijek isti.', 'rec']
     ]],
     ['t-share', '3. Podijeljeno pitanje (PUB-07, D-022)', 'Netko ti pošalje poveznicu na današnje pitanje, a nemaš račun. Vidiš pitanje i poziv; odgovori, imena i brojevi ostaju članovima. Poveznica na odgovor pokazuje isti ekran.', 'at=share', 'share', [
-      ['a', 'A. Samo pitanje', 'Pitanje, jedna rečenica, prijava i poveznica „Što je GrooveRift?” na početnu. Najbliže D-022.', 'rec'],
+      ['a', 'A. Samo pitanje', 'Pitanje, jedna rečenica, prijava i poveznica „Što je GrooveRift?” na početnu. Najbliže D-022. Bez struje ispod datuma (vlasnik, sesija 15).', 'rec'],
       ['b', 'B. Pitanje i predstavljanje', 'Ispod pitanja kratko „Što je GrooveRift?” s tri retka, da stranac ne mora na početnu. Duži ekran.', '']
     ]],
     ['t-reset', '4. Nakon nove lozinke (PUB-04)', 'Što se dogodi kad spremiš novu lozinku preko poveznice iz e-pošte. Ovdje je okvir odmah nakon spremanja.', 'at=resetnew&done=1', 'reset', [
@@ -80,10 +80,15 @@
     ['t-tfa', '5. Drugi korak prijave (PUB-03)', 'Ako si uključila aplikaciju za autentifikaciju, nakon lozinke upišeš kod. Kod za oporavak je zamjena kad telefona nema.', 'at=twofa', 'tfa', [
       ['a', 'A. Samo kod', 'Kod i poveznica na kod za oporavak. Pitanje se vidi samo pri novoj prijavi, jer app ostaje prijavljen.', 'rec'],
       ['b', 'B. Uz „Zapamti ovaj uređaj”', 'Kvačica koja 30 dana preskače drugi korak na ovom uređaju. Udobnije, ali uređaj postaje slabija točka.', '']
+    ]],
+    ['t-wall', '6. Zid za prijavu (ideja vlasnika)', 'Netko bez računa otvori podijeljeno pitanje ili javni profil. Nakon pet sekundi (ovdje odmah) traži se prijava. Nema registracije (samo uz pozivnicu), pa zid može ponuditi samo prijavu i „Što je GrooveRift?”. Ovdje na podijeljenom pitanju; isto vrijedi za javni profil i „nije dostupno”, nikad za početnu.', 'at=share&wallnow=1', 'wall', [
+      ['none', 'A. Bez zida', 'Stranica je već zid: posjetitelj vidi samo pitanje i poziv (D-022), ništa više ne postoji iza nje. Pitanje ostaje čitljivo, što je i u pregledu poveznice (Open Graph).', 'rec'],
+      ['soft', 'B. List nakon pet sekundi', 'Donji list s prijavom i „Što je GrooveRift?”, može se zatvoriti (X, Escape, dodir izvan). Podsjeti, ne prisiljava.', ''],
+      ['hard', 'C. Zid koji se ne može zatvoriti', 'Dijalog bez X-a, stranica iza je zamagljena (malo blaže, na zahtjev vlasnika, ali i dalje nečitljivo). Kao na većini mreža, ali one nude registraciju; ovdje nudi prijavu i „Što je GrooveRift?”. Zabilježeni rizici: tamni obrazac (EDPB, pitanje C.9 za pravnika), pitanje nečitljivo, slabija pristupačnost.', '']
     ]]
   ];
   const DONE = [
-    ['Prijava (PUB-02)', 'Postojeći ekran prijave s novim stanjima: kriva lozinka, previše pokušaja (zaključano 15 minuta, uz put do nove lozinke) i prijava s podijeljene poveznice, koja te vraća na pitanje.', [
+    ['Prijava (PUB-02)', 'Postojeći ekran prijave s novim stanjima: kriva lozinka, previše pokušaja (D-077: 5 promašaja u 15 minuta s istog uređaja zaključa na 15 minuta, pa 1 h, pa 24 h; put do nove lozinke uvijek ostaje) i prijava s podijeljene poveznice, koja te vraća na pitanje.', [
       ['Prijava', 'at=signin'], ['Kriva lozinka', 'at=signin&show=err'], ['Previše pokušaja', 'at=signin&lock=1'], ['S podijeljene poveznice', 'at=share&show=signin']]],
     ['Nova lozinka (PUB-04)', 'Zahtjev s adresom, neutralna potvrda (ista postoji li račun ili ne, poveznica vrijedi 30 minuta i jednom), nova lozinka s istim pravilima kao pri registraciji (D-061) i poveznica koja više ne vrijedi.', [
       ['Zahtjev', 'at=reset'], ['Poslano', 'at=resetsent'], ['Nova lozinka', 'at=resetnew'], ['Poveznica ne vrijedi', 'at=linkbad&kind=reset']]],
@@ -94,7 +99,7 @@
     ['Odjavljeni posjetitelj (PUB-07, PUB-08, SYS-01)', 'Poveznica na odgovor pokazuje isto što i poveznica na pitanje. Javni profil u najmanjem obliku; verificirani izvođač ima oznaku. Privatni profil i nepostojeća stranica izgledaju isto.', [
       ['Poveznica na odgovor', 'at=share&a=1'], ['Starije pitanje', 'at=share&day=2026-10-30'], ['Javni profil', 'at=pubprofile&who=petra.zvuk'], ['Verificirani profil', 'at=pubprofile&who=nika.rework'], ['Privatni profil', 'at=pubprofile&who=mia_vinyl'], ['Nije dostupno', 'at=na']]]
   ];
-  const CHOSEN = {};
+  const CHOSEN = { land: 'b', pub: 'b', share: 'a', reset: 'b', tfa: 'a', wall: 'hard' };
   const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>

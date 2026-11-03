@@ -37,7 +37,7 @@ const DEFAULT = [
   'flow=drop&at=setsub&s=blocked&bl=1', 'flow=drop&at=drop&acct=restricted&rst=b', 'at=restricted', 'at=suspended&show=appeal',
   // round 12c: signed-out visitors and sign-in
   'at=landing', 'at=landing&land=b', 'at=landing&land=c&pub=a', 'at=share', 'at=share&share=b&pub=a', 'at=pubprofile&who=nika.rework', 'at=na',
-  'at=signin&lock=1', 'at=share&show=signin', 'at=reset', 'at=resetsent', 'at=resetnew', 'at=twofa&tfa=b', 'at=twofa&rec=1', 'at=linkbad&kind=invite', 'at=verified'
+  'at=signin&lock=1', 'at=share&show=signin', 'at=reset', 'at=resetsent', 'at=resetnew', 'at=twofa&tfa=b', 'at=twofa&rec=1', 'at=linkbad&kind=invite', 'at=verified', 'at=share&wall=soft&wallnow=1', 'at=share&wall=hard&wallnow=1'
 ];
 const queries = args.filter(a => !a.startsWith('--'));
 const list = queries.length ? queries : DEFAULT;

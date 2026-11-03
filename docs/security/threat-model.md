@@ -55,6 +55,8 @@ Browser/PWA ↔ Next.js web service ↔ Postgres. Web ↔ worker (via the job qu
 - Password composition (D-061): 12 characters plus upper, lower and special, a conscious deviation from NIST SP 800-63B-4 §3.1.1.2 (15 characters for password-only sign-in, no composition rules). Mitigations: the breached-password check must cover predictable patterns ("Lozinka2024!"); rate limits per D-054; passkeys or a second factor to be weighed in Phase 4. Revisit before the alpha.
 - ~~Breached-password check provider (privacy review).~~ Decided (D-054): Have I Been Pwned range API from the server, k-anonymity with `Add-Padding`, fail-open with a logged event and a re-check at the next sign-in. Counsel question C.10 covers the privacy-policy wording.
 - Password hashing parameters: Argon2id (R-14) to decide in Phase 4.
+- ~~Sign-in throttling limits.~~ Decided (D-077, session 15): five failures in 15 minutes per account and device/IP lock that pair for 15 minutes, then 1 hour, then 24 hours; at most 100 consecutive failures per account in total (NIST SP 800-63B-4 §3.2.2), then only a password reset. Reset requests are rate-limited on their own; lockouts are logged. Mechanism (Better Auth rate limiting plus an account counter) to confirm in Phase 4.
+- Sign-in wall for visitors (D-076): the share view, public profile and "not available" page show an undismissable blurred dialog after five seconds. Not a security control; noted here because it is a dark-pattern risk for counsel C.9 and a 3.9 accessibility item.
 - Hash matching for known illegal content: availability and legal obligations.
 - Account-linking heuristics for ban evasion (privacy trade-off).
 - Real-device verification of iOS EU Web Push.

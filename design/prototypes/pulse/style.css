@@ -1214,3 +1214,9 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
   .top-signin { min-height: 32px; padding: 0 8px; font-size: 0.8125rem; }
   .topbar:has(.top-signin) .alpha-tag { display: none; }
 }
+/* The sign-in wall for visitors (round 12c option, D-076). The hard version blurs the page behind it. */
+.scrim-blur { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); background: rgba(11, 13, 18, 0.45); } /* a little softer (owner), still unreadable */
+.wall .sheet-head { min-height: 0; }
+.wall .sheet-head span { flex: 1; }
+.wall-actions { margin-top: var(--gr-space-4); }
+@media (prefers-reduced-transparency: reduce) { .scrim-blur { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(11, 13, 18, 0.9); } }

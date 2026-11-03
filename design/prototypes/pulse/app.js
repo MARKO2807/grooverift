@@ -1525,7 +1525,12 @@
      PUB-04 password reset, PUB-06 email verification, PUB-07 the Daily Drop share view (D-022), PUB-08 the minimal
      public profile, SYS-01 for everything a visitor may not see (IA8), the invite that cannot be used (J1 E1) and the
      sign-in lockout. Options compared in round12c.html. All addresses and codes are fictional. ---------- */
-  const LAND_AT = pick('land', ['a', 'b', 'c'], 'a');     // landing: a quiet, b with the invite current, c with today's question
+  const LAND_AT = pick('land', ['a', 'b', 'c'], 'b');     // landing: a quiet, b with the invite current (chosen, D-076), c with today's question
+  /* The sign-in wall for visitors (owner idea, session 15): none = the page itself is the invitation; soft = a sheet
+     after a few seconds that can be closed; hard = a dialog after a few seconds that cannot be closed, with the page
+     blurred behind it. Never on the landing. ?wallnow=1 skips the wait, for the review frames. */
+  const WALL_AT = pick('wall', ['none', 'soft', 'hard'], 'hard'); // chosen: hard, after 5 s (owner, D-076)
+  const WALL_MS = P.get('wallnow') === '1' ? 0 : 5000;
   const PUB_AT = pick('pub', ['a', 'b'], 'b');            // signed-out shell: a "Prijavi se" in the top bar, b a sticky foot
   const SHARE_AT = pick('share', ['a', 'b'], 'a');        // PUB-07: a the question only, b plus a short introduction
   const RESET_AT = pick('reset', ['a', 'b'], 'b');        // after a new password: a signed in at once, b back to sign-in
@@ -1558,11 +1563,26 @@
       ${legalRow()}`;
   }
   /* PUB-07 (D-022, U-08): the question and the invitation to join. No answers, names or counts; an answer link shows
-     the very same view. The current stays, because the Daily Drop question is a motif placement (D-042). */
+     the very same view. */
+  const wallScreens = ['share', 'pubprofile', 'na'];
+  function wallHtml() {
+    const hard = WALL_AT === 'hard';
+    const body = `<h2 id="ov-title" class="${hard ? 'dialog-title' : 'sheet-title'}">Prijavi se da nastaviš</h2>
+      <p id="ov-desc">Odgovore, profile i Music DNA vide članovi. ${wm(true)} je zasad samo uz pozivnicu: nema registracije ni liste čekanja.</p>
+      <div class="dialog-actions wall-actions"><button class="btn btn-secondary" data-a="to-landing" data-k="wall-what"><span>Što je ${wm()}?</span></button><button class="btn btn-primary" data-a="pub-signin" data-k="wall-signin">Prijavi se</button></div>`;
+    if (hard) return `<div class="scrim scrim-blur"></div><div class="dialog wall" role="dialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">${body}</div>`;
+    return `<div class="scrim" data-a="overlay-close"></div><div class="sheet wall" role="dialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc"><div class="sheet-head"><span></span><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>${body}</div>`;
+  }
+  function scheduleWall() {
+    clearTimeout(st.wallTimer);
+    if (WALL_AT === 'none' || st.wallDone || st.overlay || !wallScreens.includes(st.screen)) return;
+    st.wallTimer = setTimeout(() => { if (!wallScreens.includes(st.screen) || st.overlay) return; st.wallDone = true; st.overlay = { type: 'wall' }; render(); }, WALL_MS);
+  }
   function shareBody() {
     const day = st.shareDay || D.drop.date, q = st.shareQ || D.drop.question;
     const intro = SHARE_AT === 'b' ? `<section class="pub-intro" aria-labelledby="h-pubwhat"><h2 id="h-pubwhat" class="section-title">Što je ${wm()}?</h2><p class="lead">Zajednica ljubitelja glazbe: svaki dan jedno pitanje, Music DNA i ljudi različitih ukusa.</p>${howRows()}</section>` : '';
-    return `<div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${day}">${longDate(day)}</time></p>${current('dd-share', 'md', 'dd-current')}</div>
+    /* No current under the date: the owner's choice (D-076), like the Drop page (D-061). */
+    return `<div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${day}">${longDate(day)}</time></p></div>
       <h1 class="dd-q pub-q">${esc(q)}</h1>
       <p class="lead pub-lead">Odgovore članova vidiš kad se prijaviš.</p>
       ${intro}
@@ -1958,6 +1978,7 @@
   function overlayHtml() {
     const o = st.overlay;
     if (!o) return '';
+    if (o.type === 'wall') return wallHtml();
     if (o.type === 'menu') {
       const a = findAnswer(o.id);
       return `<div class="scrim" data-a="overlay-close"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title">
@@ -2080,6 +2101,7 @@
   /* Motifs after each render: mount the current, the dock orbit and the Music DNA canvases. */
   function afterRender() {
     CUR.scan(root); INV.scan(root); DNA.scan(root);
+    scheduleWall();
     // review pages in iframes (invite-layout.html) ask whether the screen fits without scrolling
     if (window.parent !== window) setTimeout(() => parent.postMessage({ gr: 'fit', screen: st.screen, over: document.documentElement.scrollHeight - window.innerHeight }, '*'), 250);
   }
@@ -2584,7 +2606,7 @@
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape' || !st.overlay || st.overlay.type === 'perm') return;
+    if (e.key !== 'Escape' || !st.overlay || st.overlay.type === 'perm' || (st.overlay.type === 'wall' && WALL_AT === 'hard')) return;
     if (st.overlay.type === 'sheet') cancelCompose(); else closeOverlay();
   });
 

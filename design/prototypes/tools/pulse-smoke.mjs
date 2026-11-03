@@ -445,17 +445,29 @@ const runs = [
     await click('[data-k="sus-out"]'); expect(scr() === 'signin', 'signed out'); return 'ok'; })()` },
   /* Round 12c (session 15): signed-out visitors and sign-in. */
   { name: 'r12c landing', url: `${base}?at=landing`, test: `(async () => {${HELPERS}
-    expect(scr() === 'landing' && $('.h-hero') && !$('.tabbar') && !$('canvas.ic'), 'quiet landing, no tabs, no current (a)');
+    expect(scr() === 'landing' && $('.h-hero') && !$('.tabbar') && $('canvas.ic.inv-wide'), 'landing with the invite current (b, D-076), no tabs');
     expect(document.body.textContent.includes('Nema liste čekanja') && $('[data-k="l-notice"]'), 'no waitlist; the DSA notice form is reachable');
     expect($('.foot [data-a="pub-signin"]') && !$('.top-signin'), 'sign-in in the foot (pub=b)');
     await click('[data-a="pub-signin"]'); expect(scr() === 'signin' && !$('.ret-line'), 'to sign-in, no return line'); return 'ok'; })()` },
-  { name: 'r12c landing b and c', url: `${base}?at=landing&land=b`, test: `(async () => {${HELPERS} expect($('canvas.ic.inv-wide'), 'b: the invite current'); return 'ok'; })()` },
+  { name: 'r12c landing a (rejected)', url: `${base}?at=landing&land=a`, test: `(async () => {${HELPERS} expect(!$('canvas.ic'), 'a: no current'); return 'ok'; })()` },
+  { name: 'r12c sign-in wall soft', url: `${base}?at=share&wall=soft&wallnow=1`, test: `(async () => {${HELPERS}
+    await sleep(250); expect($('.sheet.wall') && $('.wall [data-k="ov-x"]') && $('.shell[inert]'), 'soft: a sheet that can be closed');
+    await click('[data-k="ov-x"]'); expect(!$('.wall'), 'closed'); await sleep(300); expect(!$('.wall'), 'and it does not come back');
+    return 'ok'; })()` },
+  { name: 'r12c sign-in wall hard (default) on a profile', url: `${base}?at=pubprofile&who=petra.zvuk&wallnow=1`, test: `(async () => {${HELPERS}
+    await sleep(250); expect($('.dialog.wall') && $('.scrim-blur') && !$('.wall [data-k="ov-x"]') && !$('.scrim[data-a]'), 'hard: no close button, no scrim close, blurred');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await sleep(100); expect($('.wall'), 'Escape does not close it');
+    await click('[data-k="wall-signin"]'); expect(scr() === 'signin' && $('.ret-line'), 'to sign-in with the return line'); return 'ok'; })()` },
+  { name: 'r12c no wall on the landing', url: `${base}?at=landing&wallnow=1`, test: `(async () => {${HELPERS} await sleep(300); expect(!$('.wall'), 'the landing never gets a wall'); return 'ok'; })()` },
+  { name: 'r12c no wall (rejected option)', url: `${base}?at=share&wall=none&wallnow=1`, test: `(async () => {${HELPERS} await sleep(300); expect(!$('.wall'), 'wall=none'); return 'ok'; })()` },
   { name: 'r12c landing c', url: `${base}?at=landing&land=c`, test: `(async () => {${HELPERS} expect($('.pub-dd-card .dd-q-sm') && !$('.ans') && !$('.dd-meta'), 'c: today\\'s question, no answers or counts'); return 'ok'; })()` },
   { name: 'r12c share view returns to the question', url: `${base}?at=share`, test: `(async () => {${HELPERS}
-    expect(scr() === 'share' && $('h1.dd-q') && $('canvas.current') && !$('.ans') && !$('.dd-meta') && !$('.stack'), 'question only: no answers, counts or faces (D-022)');
+    expect(scr() === 'share' && $('h1.dd-q') && !$('canvas.current') && !$('.ans') && !$('.dd-meta') && !$('.stack'), 'question only, no current under the date: no answers, counts or faces (D-022)');
     expect(!document.body.textContent.includes('Mia') && !document.body.textContent.includes('Petra'), 'no member names');
     expect($('[data-k="what"]') && !$('.pub-intro'), 'a: the link to the landing, no intro block');
-    await click('[data-a="pub-signin"]'); expect(scr() === 'signin' && $('.ret-line').textContent.includes('pitanje'), 'sign-in says it returns to the question');
+    await sleep(3000); expect(!$('.wall'), 'no wall yet after three seconds');
+    await sleep(2300); expect($('.dialog.wall') && $('.scrim-blur') && !$('.wall [data-k="ov-x"]') && $('.shell[inert]'), 'the wall after five seconds, cannot be closed (D-076 C)');
+    await click('[data-k="wall-signin"]'); expect(scr() === 'signin' && $('.ret-line').textContent.includes('pitanje'), 'sign-in says it returns to the question');
     await type('#f-pwin', 'bilo koja'); await click('[data-a="signin"]'); expect(scr() === 'drop' && $('.ans'), 'back on the question, answers visible as a member');
     await click('[data-a="back"]'); expect(scr() === 'home', 'Back leads Home, not to the signed-out view'); return 'ok'; })()` },
   { name: 'r12c share b and the answer link', url: `${base}?at=share&share=b&a=1`, test: `(async () => {${HELPERS}
@@ -496,7 +508,7 @@ const runs = [
     await click('[data-k="lb-go"]'); expect(scr() === 'landing', 'to the landing'); return 'ok'; })()` },
   { name: 'r12c reset link expired', url: `${base}?at=linkbad&kind=reset`, test: `(async () => {${HELPERS} expect(document.body.textContent.includes('30 minuta')); await click('[data-k="lb-go"]'); expect(scr() === 'reset', 'request a new one'); return 'ok'; })()` },
   { name: 'r12c verified', url: `${base}?at=verified`, test: `(async () => {${HELPERS} expect($('main h1').textContent === 'Adresa je potvrđena'); await click('[data-k="ver-go"]'); expect(scr() === 'signin'); return 'ok'; })()` },
-  { name: 'round 12c page', url: base.replace('index.html', 'round12c.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 30) throw new Error('30 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'round 12c page', url: base.replace('index.html', 'round12c.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 33) throw new Error('33 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12b page', url: base.replace('index.html', 'round12b.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 34) throw new Error('34 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12a page', url: base.replace('index.html', 'round12a.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 35) throw new Error('35 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 11 page', url: base.replace('index.html', 'round11.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 4) throw new Error('4 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
