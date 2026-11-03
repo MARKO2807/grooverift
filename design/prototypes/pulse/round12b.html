@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · runda 12b: sigurnost člana</title>
+<!-- Owner decision sketch (session 14, round 12b): report (SAFE-01), block (SAFE-02), mute (SAFE-03), my reports
+     (SAFE-04), notices with a statement of reasons (SAFE-05), a basic appeal (SAFE-06), restricted or suspended
+     (SAFE-07) and the real block and mute lists (SAFE-08). Every frame is the real prototype (index.html) with URL
+     options. The second half shows what was built from confirmed rules (J5, D-019, D-072, R-07). -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .sel { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-coral); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Runda 12b: sigurnost člana</h1>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Na odluci.</b> „Preporuka” je moj prijedlog. Kad odabereš, odabrano postaje zadano u skici.</p>
+  <p>Okviri su prava aplikacija: prijavi, blokiraj, utišaj, žali se. Prijavljena si kao Ana. Mia je privatni profil koji ne pratiš; njezin odgovor je treći na današnjem pitanju. Svi podaci, prijave i odluke su izmišljeni; pravni tekst obrazloženja piše pravnik.</p>
+  <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (J5, D-019, D-072, R-07, Master Prompt §12, nisu izbor):</p>
+    <ul>
+      <li>Tri alata, svaki radi točno ono što kaže: utišavanje nitko ne primijeti; blokiranje skriva oboje jedno drugome i prekida praćenje u oba smjera, bez obavijesti; prijavu vidi samo moderator, a prijavljena osoba nikad ne sazna tko je prijavio.</li>
+      <li>Prijava ima kategorije (lažno predstavljanje i maloljetnici imaju prednost), prijavu pregledava čovjek, a prijavitelj vidi samo stanje svoje prijave.</li>
+      <li>Svaka odluka moderacije dolazi s obrazloženjem: što, koje pravilo, odluka, kako je odlučeno i kako se žaliti (DSA čl. 17). Kazne su postupne: napomena, upozorenje, ograničenje, suspenzija.</li>
+      <li>Blokiranje i prijava su dostupni u dva-tri dodira s profila, odgovora i komentara (⋯). Fokus se vraća na ⋯ kad se list zatvori.</li>
+    </ul></div>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-rep">1. Prijava</a><a href="#t-blk">2. Blokiranje</a><a href="#t-mute">3. Utišavanje</a><a href="#t-sor">4. Obrazloženje</a><a href="#t-rst">5. Ograničenje</a><a href="#t-done">Napravljeno bez izbora</a>
+  </nav>
+  <div id="sections"></div>
+  <h2 class="part" id="t-done">Napravljeno bez izbora</h2>
+  <p>Ovo slijedi već potvrđena pravila. Pogledaj i javi ako nešto ne štima.</p>
+  <div id="done"></div>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-rep', '1. Prijava (SAFE-01)', 'Tri koraka: što nije u redu (kategorija), detalji uz ono što prijavljuješ, pa potvrda s ponudom da utišaš ili blokiraš. Ovdje prijavljuješ Mijin odgovor s ⋯ na odgovoru.', 'flow=drop&at=drop&show=report', 'rep', [
+      ['a', 'A. Donji list', 'Prijava se otvara kao list preko odgovora; ostaješ gdje si bila. Kao izbornik ⋯ i pisanje odgovora.', 'rec'],
+      ['b', 'B. Cijeli ekran', 'Prijava je vlastiti ekran s naslovom i strelicom natrag. Više mjesta za popis kategorija, ali odvodi s mjesta događaja.', '']
+    ]],
+    ['t-blk', '2. Blokiranje (SAFE-02)', 'Potvrda prije blokiranja s činjenicama što se mijenja (J5) i kvačicom „Prijavi i ovaj račun”. Blokiraš Miju s njezina profila.', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=block', 'blk', [
+      ['a', 'A. List s cijelim popisom', 'Svih pet činjenica odmah vidljivo, kao popis. Najiskrenije, malo duže.', 'rec'],
+      ['b', 'B. Kratki dijalog', 'Jedna rečenica i gumb; činjenice pod „Što se točno mijenja”. Brže, ali se detalji lako preskoče.', '']
+    ]],
+    ['t-mute', '3. Utišavanje (SAFE-03)', 'Utišani odgovori i komentari se sklope u jedan redak koji možeš otvoriti. Nitko ne zna da si nekoga utišala. Utišavaš Miju s njezina profila.', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=mute', 'mute', [
+      ['a', 'A. Odmah, uz Poništi', 'Jedan dodir i gotovo; poruka na dnu nudi „Poništi” sedam sekundi (J5).', 'rec'],
+      ['b', 'B. Kratka potvrda', 'Prvo dijalog koji objasni što utišavanje radi, pa poruka s „Poništi”. Jasnije prvi put, dodir više svaki put.', '']
+    ]],
+    ['t-sor', '4. Obrazloženje odluke (SAFE-05)', 'Što se događa kad moderacija nešto odluči o tvom sadržaju. Primjer: uklonjen komentar uz upozorenje. Obrazloženje mora reći što, koje pravilo, odluka, kako je odlučeno i žalba (DSA čl. 17).', 'flow=drop&at=setsub&s=notice&n=n1', 'sor', [
+      ['a', 'A. Označeni dijelovi', 'Pet redaka s oznakama: Što, Pravilo, Odluka, Kako je odlučeno, Žalba. Lako se provjeri da ništa ne nedostaje.', 'rec'],
+      ['b', 'B. Pismo', 'Isti sadržaj kao tekst u nekoliko rečenica. Toplije, teže za brzo čitanje.', '']
+    ]],
+    ['t-rst', '5. Ograničenje objavljivanja (SAFE-07)', 'Tri dana bez objavljivanja nakon drugog prekršaja. Sve ostalo radi. Pri prijavi vidiš cijeli ekran s razlogom; pitanje je kako te podsjeća dok koristiš aplikaciju.', 'flow=drop&at=drop&acct=restricted', 'rst', [
+      ['a', 'A. Samo gdje objavljuješ', 'Polje za odgovor i obrazac za komentar kažu da je ograničeno, uz „Zašto?”. Ostatak aplikacije je kao i inače.', 'rec'],
+      ['b', 'B. I traka na svakom ekranu', 'Uz to, tanka traka ispod gornje trake na svakom ekranu dok ograničenje traje. Ne može se zaboraviti, ali podsjeća i tamo gdje ne treba.', '']
+    ]]
+  ];
+  const DONE = [
+    ['Koraci prijave', 'Drugi korak s detaljima i onim što prijavljuješ, treći s potvrdom i ponudom; autorska prava vode na poseban obrazac (PUB-11). Prijava profila s ⋯ na profilu.', [
+      ['Korak 2: detalji', 'flow=drop&at=drop&show=report&step=2'], ['Korak 2: autorska prava', 'flow=drop&at=drop&show=report&step=2&cat=copyright'], ['Korak 3: primljeno', 'flow=drop&at=drop&show=report&step=3'], ['Prijava profila', 'flow=drop&at=member&who=nika.rework&rel=none&show=report']]],
+    ['Izbornici ⋯', 'Isti izbornik na odgovoru i na profilu: Podijeli (javni profil), Utišaj, Blokiraj, Prijavi. Kad je netko utišan, nudi „Poništi utišavanje”.', [
+      ['Na odgovoru', 'flow=drop&at=drop&show=menu'], ['Na profilu', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=menu'], ['Na profilu, utišano', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=muted'], ['Utišani odgovor', 'flow=drop&at=drop&show=muted']]],
+    ['Nakon blokiranja (D-019, D-072)', 'Profil blokirane osobe, odblokiranje bez vraćanja praćenja, stvarni popis blokiranih i utišanih, komentar blokirane osobe u raspravi.', [
+      ['Profil, blokirano', 'flow=drop&at=member&as=blocker'], ['Blokirani i utišani', 'flow=drop&at=setsub&s=blocked&bl=1'], ['Komentar u raspravi', 'flow=drop&at=answer&bl=1'], ['Odgovori bez blokiranih', 'flow=drop&at=drop&bl=1']]],
+    ['Status računa (SAFE-04 do SAFE-06)', 'Čvorište u Postavkama: obavijesti i odluke, moje prijave. Žalba s drugom osobom iz tima; prijavitelj vidi samo stanje svojih prijava.', [
+      ['Status računa', 'flow=drop&at=setsub&s=status'], ['Obavijesti i odluke', 'flow=drop&at=setsub&s=notices'], ['Napomena bez posljedica', 'flow=drop&at=setsub&s=notice&n=n2'], ['Žalba', 'flow=drop&at=setsub&s=appeal&n=n1'], ['Žalba poslana', 'flow=drop&at=setsub&s=notice&n=n1&sent=1'], ['Moje prijave', 'flow=drop&at=setsub&s=reports'], ['Prijava: odlučeno', 'flow=drop&at=setsub&s=reportd&r=r1'], ['Prijava: u pregledu', 'flow=drop&at=setsub&s=reportd&r=r3']]],
+    ['Ograničen i suspendiran račun (SAFE-07)', 'Pri prijavi cijeli ekran: ograničenje s „Nastavi”, suspenzija bez ulaska, uz obrazloženje i žalbu na istom ekranu. Status računa dok traje ograničenje.', [
+      ['Ograničenje pri prijavi', 'at=restricted'], ['Status: ograničeno', 'flow=drop&at=setsub&s=status&acct=restricted'], ['Suspenzija', 'at=suspended'], ['Suspenzija: žalba', 'at=suspended&show=appeal']]]
+  ];
+  const CHOSEN = {};
+  const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${CHOSEN[key] === v ? ' <span class="sel">odabrano</span>' : ''}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
+      ${frame(title + ': ' + t, `${base}&${key}=${v}`)}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
+    <div class="grid">${frames.map(([t, src]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src)}</div>`).join('')}</div></section>`).join('');
+})();
+</script>
+</body>
+</html>

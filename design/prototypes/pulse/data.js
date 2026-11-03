@@ -190,6 +190,46 @@ window.GR_DATA = {
   /* Pending follow requests to ana.slusa. They exist only while her profile is private (J4). */
   requests: ['mia_vinyl', 'roko.riff'],
 
+  /* Round 12b (session 14): member safety. Report categories (J5 working list; final names in step 3.8), and fictional
+     moderation records for the signed-in member: her own reports (SAFE-04), notices with a statement of reasons
+     (SAFE-05, R-07) and the restriction and suspension states (SAFE-07). PLACEHOLDER: not legal text. */
+  reportCats: [
+    ['harass', 'Uznemiravanje ili zlostavljanje', 'Vrijeđanje, ponižavanje, ciljano napadanje.'],
+    ['hate', 'Mržnja', 'Napadi na ljude zbog toga tko su.'],
+    ['threat', 'Prijetnje ili nasilje', 'Prijetnja ozljedom ili poticanje nasilja.'],
+    ['sexual', 'Seksualni sadržaj', ''],
+    ['minor', 'Osoba mlađa od 18', 'Račun ili sadržaj maloljetne osobe. Ima prednost u pregledu.'],
+    ['imperson', 'Lažno predstavljanje', 'Glumi drugu osobu, izvođača ili tvrtku. Ima prednost u pregledu.'],
+    ['spam', 'Spam ili prijevara', ''],
+    ['copyright', 'Autorska prava', 'Tuđa glazba, tekst ili slika bez dopuštenja.'],
+    ['ai', 'Sadržaj iz AI-ja kao vlastiti', 'Tekst ili slika koju je napravio AI, a predstavlja se kao ljudski rad.'],
+    ['private', 'Tuđi privatni podaci', 'Adresa, broj, fotografije ili poruke bez pristanka.'],
+    ['other', 'Nešto drugo', '']
+  ],
+  myReports: [
+    { id: 'r1', date: '2026-10-30', cat: 'spam', target: 'Odgovor @roko.riff', status: 'done', outcome: 'action' },
+    { id: 'r2', date: '2026-10-25', cat: 'harass', target: 'Komentar @dino_dub', status: 'done', outcome: 'none' },
+    { id: 'r3', date: '2026-11-01', cat: 'imperson', target: 'Profil @ema.beat', status: 'review' }
+  ],
+  notices: [
+    { id: 'n1', date: '2026-10-29', kind: 'warning', title: 'Komentar je uklonjen, uz upozorenje', rule: 'Bez uznemiravanja', ruleText: 'Pravila zajednice, točka 1: o glazbi i ljudima s poštovanjem, i kad se ne slažeš.',
+      itemType: 'Komentar', itemText: 'Tko ovo sluša, nema pojma o glazbi. Obriši račun.', where: 'na pitanje „Koji koncert pamtiš do danas?”, 28. listopada',
+      action: 'Komentar je uklonjen. Ovo je prvo upozorenje; sljedeći put slijedi privremeno ograničenje objavljivanja.',
+      how: 'Prijava člana i pregled moderatora, bez automatskog odlučivanja.', appealUntil: '2026-11-12' },
+    { id: 'n2', date: '2026-10-20', kind: 'notice', title: 'Napomena o poveznicama', rule: 'Dijeli poveznice, ne piratske snimke', ruleText: 'Pravila zajednice, točka 4.',
+      itemType: 'Odgovor', itemText: 'Evo cijeli album na ovom linku, skini dok traje.', where: 'na pitanje „Koji album prvi spašavaš iz poplave?”, 19. listopada',
+      action: 'Poveznica je uklonjena iz odgovora, ostatak teksta ostaje. Bez posljedica za račun.',
+      how: 'Prijava člana i pregled moderatora, bez automatskog odlučivanja.', appealUntil: '2026-11-02' }
+  ],
+  restriction: { id: 'n3', date: '2026-11-03', kind: 'restriction', title: 'Objavljivanje je ograničeno do 6. studenoga', rule: 'Bez uznemiravanja', ruleText: 'Pravila zajednice, točka 1.',
+    itemType: 'Komentar', itemText: 'Opet ti. Nitko te ovdje ne želi, odi negdje drugdje.', where: 'na pitanje „Koja pjesma te uvijek digne iz loše volje?”, 2. studenoga',
+    action: 'Tri dana ne možeš objavljivati odgovore ni komentare. Čitanje, reakcije i praćenje rade. Ograničenje prestaje samo, 6. studenoga u 01:00. Ovo je drugi korak nakon upozorenja od 29. listopada.',
+    how: 'Prijava člana i pregled moderatora, bez automatskog odlučivanja.', until: '2026-11-06', appealUntil: '2026-11-17' },
+  suspension: { id: 'n4', date: '2026-11-03', kind: 'suspension', title: 'Račun je suspendiran do 17. studenoga', rule: 'Bez prijetnji i nasilja', ruleText: 'Pravila zajednice, točka 2.',
+    itemType: 'Komentar', itemText: 'Znam gdje sviraš u petak. Vidimo se poslije.', where: 'na pitanje „Koji koncert pamtiš do danas?”, 2. studenoga',
+    action: 'Dva tjedna ne možeš koristiti GrooveRift. Profil, odgovori i komentari skriveni su drugima dok traje. Nakon 17. studenoga račun radi kao prije; sljedeći prekršaj znači trajno zatvaranje.',
+    how: 'Prijava člana i hitan pregled moderatora, bez automatskog odlučivanja.', until: '2026-11-17', appealUntil: '2026-11-17' },
+
   /* min = minutes since 00:00 UTC publication, used by the Recent sort. comments = number of comments. */
   answers: [
     { id: 'a1', who: 'Petra', handle: 'petra.zvuk', time: '08:12', min: 432, text: 'Kind of Blue. Svi ga preporučuju s razlogom: ništa ne žuri i svaka pjesma ima prostora. Ako ni to ne upali, barem si pokušao.', refs: [0], reacts: { same: 4, new: 0, good: 6 }, comments: 2 },

@@ -382,6 +382,63 @@ const runs = [
     await click('[data-k="who-a1"]'); expect(scr() === 'member' && $('.pm-name').textContent.includes('Petra'), 'the name in an answer opens the profile'); await click('[data-a="back"]'); expect(scr() === 'drop', 'back'); return 'ok'; })()` },
   { name: 'r12 blocked keeps relation button', url: `${base}?flow=drop&at=member&as=blocker`, test: `(async () => {${HELPERS}
     await click('[data-a="unblock"]'); await click('[data-a="unblock-confirm"]'); expect($('.blk-card [data-a="follow"]'), 'after unblocking, the real follow button'); return 'ok'; })()` },
+  /* Round 12b (session 14): member safety. */
+  { name: 'r12b report sheet', url: `${base}?flow=drop&at=drop`, test: `(async () => {${HELPERS}
+    await click('[data-k="more-a3"]'); await click('[data-k="m-report"]'); expect($('.sheet-report') && $$('input[name="repcat"]').length === 11, 'report sheet with the category list (J5)');
+    await click('[data-a="rep-next"]'); expect($('#err-repcat'), 'a category is required');
+    await click('input[name="repcat"][value="harass"]'); await click('[data-a="rep-next"]'); expect($('#f-rep') && $('.rep-quote').textContent.includes('Kamasija'), 'step 2 shows the reported answer');
+    await type('#f-rep', 'Ponavlja se.'); await click('[data-a="rep-send"]'); expect($('.sub-hero-t').textContent === 'Prijava je primljena.' && $('[data-k="rep-mute"]') && $('[data-k="rep-block"]'), 'step 3 offers mute and block');
+    await click('[data-k="rep-mute"]'); await sleep(120); expect(!$('.sheet-report') && $('.ans-muted') && $('.toast-btn'), 'mute from the report collapses the answer, with Undo');
+    return 'ok'; })()` },
+  { name: 'r12b report full screen', url: `${base}?flow=drop&at=drop&show=report&rep=b`, test: `(async () => {${HELPERS}
+    expect(scr() === 'report' && $$('input[name="repcat"]').length === 11, 'report as its own screen');
+    await click('input[name="repcat"][value="copyright"]'); await click('[data-a="rep-next"]'); expect($('[data-k="rep-copy"]') && !$('[data-a="rep-send"]'), 'copyright routes to the notice form (PUB-11)');
+    await click('[data-a="rep-back"]'); await click('input[name="repcat"][value="spam"]'); await click('[data-a="rep-next"]'); await click('[data-a="rep-send"]'); await click('[data-a="rep-done"]'); expect(scr() === 'drop', 'done returns to the question'); return 'ok'; })()` },
+  { name: 'r12b block from profile', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=block`, test: `(async () => {${HELPERS}
+    expect($('.sheet .facts') && $$('.facts li').length === 5 && $('#f-blkrep'), 'block sheet lists the facts (J5) and offers a report');
+    $('#f-blkrep').click(); await sleep(50); await click('[data-a="block-confirm"]'); expect($('.sheet-report') && $('.rep-step'), 'also report opens the report');
+    await click('[data-k="ov-x"]'); expect($('.blk-card').textContent.includes('blokiran') && !$('[data-a="follow"]'), 'the profile shows the blocker state (D-019)');
+    await click('[data-a="unblock"]'); await click('[data-a="unblock-confirm"]'); expect($('.blk-card').textContent.includes('Odblokirano') && $('.blk-card [data-a="follow"]'), 'unblocked, follows not restored'); return 'ok'; })()` },
+  { name: 'r12b block dialog b', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=block&blk=b`, test: `(async () => {${HELPERS}
+    expect($('.dialog .blk-more') && $$('.blk-more .facts li').length === 5, 'short dialog with the facts under details'); await click('[data-a="block-confirm"]'); expect($('.blk-card'), 'blocked'); return 'ok'; })()` },
+  { name: 'r12b block from the thread', url: `${base}?flow=drop&at=answer`, test: `(async () => {${HELPERS}
+    await click('[data-k="more-a1"]'); await click('[data-k="m-block"]'); await click('[data-a="block-confirm"]');
+    expect(scr() === 'drop' && !$('[data-k="more-a1"]') && $('.dd-meta').textContent.includes('6 odgovora'), "the blocked member's answer and thread are gone, the count follows"); return 'ok'; })()` },
+  { name: 'r12b mute undo', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute`, test: `(async () => {${HELPERS}
+    await sleep(200); expect($('.toast-btn') && $('.toast-in').textContent.includes('Utišano'), 'muted at once with Undo'); $('.toast-btn').click(); await sleep(150);
+    await click('[data-k="pmenu"]'); expect($('[data-k="m-mute"]').textContent.startsWith('Utišaj'), 'undo restored the state'); return 'ok'; })()` },
+  { name: 'r12b mute confirm b', url: `${base}?flow=drop&at=member&who=mia_vinyl&rel=none&show=mute&mute=b`, test: `(async () => {${HELPERS}
+    expect($('.dialog [data-a="mute-confirm"]'), 'confirmation first'); await click('[data-a="mute-confirm"]'); await sleep(150); expect($('.toast-btn'), 'then the toast with Undo');
+    await click('[data-k="pmenu"]'); expect($('[data-k="m-mute"]').textContent.startsWith('Poništi'), 'menu offers unmute'); return 'ok'; })()` },
+  { name: 'r12b muted answer and comment', url: `${base}?flow=drop&at=drop&show=muted`, test: `(async () => {${HELPERS}
+    expect($('.ans-muted') && !$('#t-a3'), 'muted answer collapsed'); await click('[data-k="showm-a3"]'); expect($('#t-a3') && !$('.ans-muted'), 'shown on request');
+    await click('[data-k="com-a2"]'); expect($('.com-muted'), 'muted comment collapsed in a thread'); return 'ok'; })()` },
+  { name: 'r12b blocked and muted lists', url: `${base}?flow=drop&at=setsub&s=blocked&bl=1`, test: `(async () => {${HELPERS}
+    expect($$('[data-a="unblock"]').length === 2 && $$('[data-a="unmute"]').length === 1, 'real lists (SAFE-08)');
+    await click('[data-k="bl-lukabass"]'); expect(!$('[data-a="unmute"]') && $('.set-empty'), 'unmuted');
+    await click('[data-k="bl-mia_vinyl"]'); expect($('.dialog'), 'unblock is confirmed'); await click('[data-a="unblock-confirm"]'); expect($$('[data-a="unblock"]').length === 1, 'unblocked'); return 'ok'; })()` },
+  { name: 'r12b status, notice and appeal', url: `${base}?flow=drop&at=setsub&s=status`, test: `(async () => {${HELPERS}
+    expect($('.sub-hero-t').textContent === 'Račun je u redu' && $('[data-k="st-not"]') && $('[data-k="st-rep"]'), 'status hub');
+    await click('[data-k="st-not"]'); expect($$('[data-a="open-notice"]').length === 2, 'two notices'); await click('[data-k="nt-n1"]');
+    expect($$('.sor-list > div').length === 5 && $('.sor-item') && $('[data-k="appeal-n1"]'), 'statement of reasons with five parts and an appeal (R-07)');
+    await click('[data-k="appeal-n1"]'); await click('[data-a="appeal-send"]'); expect($('#err-appeal'), 'an empty appeal is refused');
+    await type('#f-appeal', 'Citirao sam tuđi komentar, nije moj.'); await click('[data-a="appeal-send"]'); expect($('.sub-hero-t').textContent === 'Žalba je poslana', 'appeal sent');
+    await click('[data-a="back"]'); expect($('.sor-appeal') && !$('[data-k="appeal-n1"]'), 'the notice shows the appeal as sent'); return 'ok'; })()` },
+  { name: 'r12b statement as a letter', url: `${base}?flow=drop&at=setsub&s=notice&n=n2&sor=b`, test: `(async () => {${HELPERS} expect($('.sor-letter') && $('.sor-item') && document.body.textContent.includes('Rok za žalbu je istekao'), 'letter form, expired appeal window'); return 'ok'; })()` },
+  { name: 'r12b my reports', url: `${base}?flow=drop&at=setsub&s=reports`, test: `(async () => {${HELPERS}
+    expect($$('.status-pill').length === 3 && $('.status-pill.is-rev'), 'own reports with status'); await click('[data-k="rp-r1"]'); expect($$('.rep-steps li.on').length === 3 && document.body.textContent.includes('Poduzete su mjere'), 'decided report, no detail about the other person');
+    await click('[data-a="back"]'); await click('[data-k="rp-r3"]'); expect($$('.rep-steps li.on').length === 2, 'report in review'); return 'ok'; })()` },
+  { name: 'r12b restricted while browsing', url: `${base}?flow=drop&at=drop&acct=restricted`, test: `(async () => {${HELPERS}
+    expect($('.dock-locked') && !$('[data-k="dock-field"]') && !$('.rst-bar'), 'default a: the dock says it, no bar'); await click('[data-k="dock-why"]'); expect(scr() === 'setsub' && $('.sor') && document.body.textContent.includes('6. studenoga'), 'why opens the statement of reasons');
+    await click('[data-a="back"]'); await click('[data-k="com-a1"]'); expect($('form[data-form="comment"][hidden]') && $('[data-k="com-why"]'), 'the comment form is replaced by the reason'); return 'ok'; })()` },
+  { name: 'r12b restricted bar b', url: `${base}?flow=drop&at=drop&acct=restricted&rst=b`, test: `(async () => {${HELPERS} expect($('.rst-bar') && $('.dock-locked'), 'option b: bar plus the dock'); return 'ok'; })()` },
+  { name: 'r12b restricted at sign-in', url: `${base}?at=signin&acct=restricted`, test: `(async () => {${HELPERS}
+    await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'restricted' && $('main h1').textContent.includes('ograničeno'), 'SAFE-07 interstitial'); await click('[data-a="rst-go"]'); expect(scr() === 'home' && $('.set-status-warn, .dd-q'), 'continues to Home'); return 'ok'; })()` },
+  { name: 'r12b suspended at sign-in', url: `${base}?at=signin&acct=suspended`, test: `(async () => {${HELPERS}
+    await type('#f-pwin', 'x'); await click('[data-a="signin"]'); expect(scr() === 'suspended' && $('.sor-list') && !$('.tabbar'), 'suspended: statement of reasons, no app');
+    await click('[data-k="appeal-n4"]'); expect($('#f-appeal'), 'appeal inline'); await type('#f-appeal', 'To nije bila prijetnja nego dogovor za koncert.'); await click('[data-a="appeal-send"]'); expect($('.sor-appeal'), 'appeal sent');
+    await click('[data-k="sus-out"]'); expect(scr() === 'signin', 'signed out'); return 'ok'; })()` },
+  { name: 'round 12b page', url: base.replace('index.html', 'round12b.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 34) throw new Error('34 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12a page', url: base.replace('index.html', 'round12a.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 35) throw new Error('35 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 11 page', url: base.replace('index.html', 'round11.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 4) throw new Error('4 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 10 page', url: base.replace('index.html', 'round10.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 43) throw new Error(43 + ' frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },

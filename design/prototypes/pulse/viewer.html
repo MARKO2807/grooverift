@@ -40,7 +40,7 @@
 <aside>
   <h1>Smjer C, dorada</h1>
   <p>Skica 3.5. Izmišljeni podaci, ništa se ne sprema. Na mobitelu otvori <a href="index.html" id="solo">samostalnu verziju</a>.</p>
-  <p><a href="choices.html">Music DNA galerija i struja →</a><br><a href="wordmark.html">Wordmark s munjicom →</a><br><a href="invite-current.html">Struja na pozivnici: novi prijedlozi →</a><br><a href="invite-layout.html">Pozivnica bez skrolanja: rasporedi →</a><br><a href="round6.html">Runda 6: prijedlozi →</a><br><a href="round7.html">Runda 7: prijedlozi →</a><br><a href="round8.html">Runda 8: postavke →</a><br><a href="round9.html">Runda 9: prijedlozi →</a><br><a href="round10.html">Runda 10: stanja i postavke →</a><br><a href="round11.html">Runda 11: obavijesti →</a><br><a href="large-text.html">Velika slova (200 %) →</a><br><a href="round12a.html">Runda 12a: tuđi profili, popisi i zahtjevi →</a></p>
+  <p><a href="choices.html">Music DNA galerija i struja →</a><br><a href="wordmark.html">Wordmark s munjicom →</a><br><a href="invite-current.html">Struja na pozivnici: novi prijedlozi →</a><br><a href="invite-layout.html">Pozivnica bez skrolanja: rasporedi →</a><br><a href="round6.html">Runda 6: prijedlozi →</a><br><a href="round7.html">Runda 7: prijedlozi →</a><br><a href="round8.html">Runda 8: postavke →</a><br><a href="round9.html">Runda 9: prijedlozi →</a><br><a href="round10.html">Runda 10: stanja i postavke →</a><br><a href="round11.html">Runda 11: obavijesti →</a><br><a href="large-text.html">Velika slova (200 %) →</a><br><a href="round12a.html">Runda 12a: tuđi profili, popisi i zahtjevi →</a><br><a href="round12b.html">Runda 12b: sigurnost člana →</a></p>
 
   <h2>Ekran</h2>
   <p>Onboarding</p>
@@ -67,7 +67,7 @@
 <script>
 (function () {
   const ONB = [['', 'Pozivnica'], ['age', '18+'], ['uilang', 'Jezik'], ['account', 'Račun'], ['username', 'Ime'], ['language', 'Jezici čitanja'], ['visibility', 'Tko vidi profil'], ['dna', 'Što slušaš'], ['dna&picks=1', 'Što slušaš (popunjeno)'], ['dnavis', 'Tko vidi DNA'], ['how', 'Kako radi'], ['reminder', 'Podsjetnik'], ['done', 'Spremno']];
-  const DROP = [['home', 'Početna'], ['drop', 'Pitanje i odgovori'], ['drop&open=compose', 'Pisanje odgovora'], ['answer', 'Komentari'], ['hub', 'Hub'], ['activity', 'Aktivnost'], ['profile', 'Profil'], ['settings', 'Postavke'], ['member&who=petra.zvuk', 'Tuđi profil (Petra)'], ['member&who=mia_vinyl', 'Privatni profil (Mia)'], ['mdrops&who=petra.zvuk&rel=fol', 'Odgovori člana'], ['follows', 'Pratitelji i praćeni'], ['requests', 'Zahtjevi za praćenje (privatni)']];
+  const DROP = [['home', 'Početna'], ['drop', 'Pitanje i odgovori'], ['drop&open=compose', 'Pisanje odgovora'], ['answer', 'Komentari'], ['hub', 'Hub'], ['activity', 'Aktivnost'], ['profile', 'Profil'], ['settings', 'Postavke'], ['member&who=petra.zvuk', 'Tuđi profil (Petra)'], ['member&who=mia_vinyl', 'Privatni profil (Mia)'], ['mdrops&who=petra.zvuk&rel=fol', 'Odgovori člana'], ['follows', 'Pratitelji i praćeni'], ['requests', 'Zahtjevi za praćenje (privatni)'], ['drop&show=report', 'Prijava odgovora'], ['member&who=mia_vinyl&show=block', 'Blokiranje'], ['setsub&s=status', 'Status računa'], ['setsub&s=notice&n=n1', 'Obrazloženje odluke']];
   const DEV = [['360x640', 'Mali Android 360×640'], ['390x844', 'iPhone 390×844'], ['412x915', 'Pixel 412×915'], ['320x568', 'Najmanji 320×568']];
   const s = Object.assign({ scr: 'o:', dev: '360x640', live: true, fail: false, calm: false, priv: false },
     JSON.parse(decodeURIComponent(location.hash.slice(1) || '{}') || '{}'));
