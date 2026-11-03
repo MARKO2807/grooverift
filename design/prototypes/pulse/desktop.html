@@ -44,7 +44,7 @@
 <body>
 <div class="page">
   <h1>Desktop: tračnica, stupac za čitanje, dijalozi</h1>
-  <p id="chosen"><b>Otvoreno (sesija 17).</b> Tri pitanja dolje; ostalo slijedi već potvrđena pravila. Preporuke su označene.</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-079, sesija 17).</b> Sklopljena tračnica na srednjim ekranima, wordmark u širokoj tračnici, bez desnog stupca u alfi: sve tri preporuke.</p>
   <p>Svaki okvir je prava aplikacija na desktop veličini, prikazana upola manja: sve u njima radi (tračnica, dijalozi, pisanje odgovora). Podaci su izmišljeni. Širina stvarnog prozora piše uz svaki okvir; isto možeš otvoriti i u punoj veličini preko poveznice „otvori” i mijenjati širinu prozora.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (tokeni 3.4 §7, IA §3 i §4, D-031, IA9, SYS-05, WCAG 2.4.1 i 3.2.3; nisu izbor):</p>
     <ul>
@@ -88,7 +88,7 @@
     ['Rubovi', 'Točno 600 px (tračnica) i 599 px (donja traka); 1024 px (tračnica s nazivima); 200 % teksta na 1366 px prolazi zoom-check.', [
       ['600 px', 'flow=drop&at=home', [600, 800]], ['599 px', 'flow=drop&at=home', [599, 800]], ['1024 px', 'flow=drop&at=hub', [1024, 768]]]]
   ];
-  const CHOSEN = {};
+  const CHOSEN = { rail: 'a', brand: 'rail', side: 'none' };
   const frame = (title, src, [w, h]) => `<div class="screen"><div style="width:${w / 2}px;height:${h / 2}px"><iframe title="${title}" loading="lazy" src="index.html?${src}" width="${w}" height="${h}"></iframe></div></div>`;
   const open = (src, [w, h]) => `<a class="open" href="index.html?${src}" target="_blank" rel="noopener">otvori u punoj veličini (${w} × ${h})</a>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, size, opts]) => `<section aria-labelledby="${id}">
