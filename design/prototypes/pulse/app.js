@@ -582,30 +582,15 @@
   const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
   const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
   if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
-  /* Desktop (session 17, prototype-directions §6; breakpoints from tokens.md §7, the rail from IA §4 and D-031).
-     Signed-in screens get a left rail instead of the bottom tab bar, the content sits in a 40 rem reading column and
-     sheets open as centred dialogs. The CSS lives in the "Desktop" block of style.css; the breakpoints are applied
-     here as classes on <html> so one set of rules can serve the three rail options (in the app this is plain CSS).
-       ?rail=a  collapsed rail (icon over label) from 600 px, rail with labels beside the icons from 1024 px  (RECOMMENDED)
-       ?rail=b  rail with labels from 600 px
-       ?rail=c  the bottom tab bar stays until 1024 px, then the rail with labels
-       ?brand=rail|top  with the wide rail, the wordmark moves into the rail and the top bar shows the page title (rail,
-                        RECOMMENDED), or it stays in the top bar (top)
-       ?side=none|hub   on 1280 px and wider: no context column (none, RECOMMENDED), or the Hub's week and archive move
-                        into a right-hand column (hub) */
-  const RAIL_AT = pick('rail', ['a', 'b', 'c'], 'a');
-  const BRAND_AT = pick('brand', ['rail', 'top'], 'rail');
-  const SIDE_AT = pick('side', ['none', 'hub'], 'none');
-  document.documentElement.classList.add('brand-' + BRAND_AT, 'side-' + SIDE_AT);
-  {
-    const medium = matchMedia('(min-width: 600px)'), expanded = matchMedia('(min-width: 1024px)'), wide = matchMedia('(min-width: 1280px)');
-    const apply = () => {
-      const on = RAIL_AT === 'c' ? expanded.matches : medium.matches, labels = RAIL_AT === 'b' ? medium.matches : expanded.matches;
-      const c = document.documentElement.classList;
-      c.toggle('rail-on', on); c.toggle('rail-wide', on && labels); c.toggle('side-on', on && wide.matches && SIDE_AT !== 'none');
-    };
-    apply(); [medium, expanded, wide].forEach(m => m.addEventListener('change', apply));
-  }
+  /* Desktop (session 17, D-079 and D-080; breakpoints from tokens.md §7, the rail from IA §4 and D-031). Everything is
+     plain CSS in the "Desktop" block of style.css, keyed on the viewport and on html[data-kind] (the screen kind) and
+     #app[data-screen]: from 600 px signed-in screens get a collapsed rail, from 1024 px the rail has labels and the
+     wordmark, from 1280 px Home, the Hub, the question page and the profiles take two columns and the settings
+     sub-screens show the settings list beside the detail, from 1600 px the columns widen. Onboarding and the account
+     pages become a centred card, visitors get the sign-in in the top bar, sheets open as centred dialogs.
+     The only JS part: the settings split needs the list rendered, so a change across 1280 px re-renders. */
+  const SPLIT = matchMedia('(min-width: 1280px)');
+  SPLIT.addEventListener('change', () => { if (st.screen === 'setsub') render({ keep: true }); });
   /* Large text (D-073): the tab bar shows only the open tab's label (lt=a, chosen); ?lt=b|c show the rejected options and ?lth=full the rejected full-size headings. CSS: the large-text block in style.css. */
   const LT_AT = pick('lt', ['a', 'b', 'c'], 'a');
   document.documentElement.classList.add('lt-' + LT_AT);
@@ -677,11 +662,11 @@
       ${emptyBox(pic('users-three', 'empty-ic'), 'Još nikoga ne pratiš.', 'Ljude možeš pronaći kroz odgovore na Daily Drop.')}</section>`;
     const past = pastList('Prethodni Daily Dropovi', 3, STATE === 'nodrop' ? 1 : 0);
     /* Round 10 states (IA §6.2 HOME-01): placeholders while loading, yesterday's Drop when today's is late (J3 E2). */
-    if (STATE === 'loading') return `<div aria-busy="true">${skelDrop()}${skel(2, 'peek')}</div>${follow}`;
-    if (STATE === 'nodrop') return noDropBlock() + follow + past;
+    if (STATE === 'loading') return `<div aria-busy="true">${skelDrop()}${skel(2, 'peek')}</div><div class="home-side">${follow}</div>`;
+    if (STATE === 'nodrop') return noDropBlock() + `<div class="home-side">${follow}${past}</div>`;
     /* Round 12d: before the first Daily Drop (HOME-01 empty) and while the Daily Drop is paused (SYS-04). */
-    if (FIRST) return firstBlock() + follow;
-    if (PAUSED) return pausedBlock() + follow + past;
+    if (FIRST) return firstBlock() + `<div class="home-side">${follow}</div>`;
+    if (PAUSED) return pausedBlock() + `<div class="home-side">${follow}${past}</div>`;
     if (HOME_AT === 'a') return dropTeaser() + follow + past;
     if (HOME_AT === 'b') return dropTeaser(true) + follow + past;
     const n = allAnswers().length, peeks = allAnswers().slice(0, ['c', 'e', 'f'].includes(HOME_AT) ? 2 : 3);
@@ -700,7 +685,7 @@
           : STATE === 'error' && !st.loadOk ? loadErr('Prvi odgovori nisu se učitali.', 'retry-peeks')
           : peeks.length ? `<ul class="peeks" aria-label="Prvi odgovori">${peeks.map(answerPeek).join('')}${allPeekCard(n, peeks)}</ul>
         ${allAnswersLink(n, peeks)}` : ''}
-      </section>` + follow + past;
+      </section><div class="home-side">${follow}${past}</div>`; // .home-side: display: contents on the phone, the right column from 1280 px (D-080)
     if (HOME_AT === 'f') return `<section class="dd-card dd-live" aria-labelledby="h-teaser">
         <p class="dd-eyebrow">${ddName('dd-name-sm', 'span')}<time datetime="${D.drop.date}">${longDate(D.drop.date)}</time></p>
         <h2 id="h-teaser" class="dd-q dd-q-sm">${esc(D.drop.question)}</h2>
@@ -770,7 +755,7 @@
   /* The programme under the Daily Drop: this week's Weekly Poll and Did You Know? (B2, sample content), the archives
      and "Predloži pitanje". How far back the archives reach is OPEN (OQ-28). */
   function hubProgramme() {
-    /* The .hub-side wrapper is for the desktop option ?side=hub (session 17): on 1280 px and wider it becomes a right-hand column. */
+    /* .hub-side: display: contents on the phone, the right-hand column from 1280 px (D-080). */
     return `<div class="hub-side"><section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
         <article class="prog-card" aria-labelledby="h-poll"><p class="prog-tag">${pic('chart-bar-horizontal', 'prog-ic')}<span lang="en">Weekly Poll</span></p>
           <h3 id="h-poll" class="prog-t">Koje desetljeće ima najbolje debitantske albume?</h3><p class="prog-d">Rezultate vidiš kad glasaš. Zatvara se u nedjelju.</p>
@@ -865,12 +850,12 @@
     if (PROF_AT === 'c') return `<div class="pf-c">
         ${profDnaHero()}
         <div class="pf-c-id">${avatar(st.username, st.displayName || 'T', 'lg')}<div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div></div>
-      ${st.bio ? `<p class="pf-bio">${esc(st.bio)}</p>` : ''}
+      <div class="pf-main">${st.bio ? `<p class="pf-bio">${esc(st.bio)}</p>` : ''}
       ${profRow()}
-      ${profVis()}${profBtns()}
-      ${st.artists.length ? `<section class="section" aria-labelledby="h-part"><h2 id="h-part" class="section-title">Izvođači</h2>${profArtists()}</section>` : ''}
-      ${profAnswers()}
-      <p class="meta">Brojke i bio su izmišljeni. Ostatak profila (J4) nije dio ove skice.</p>`;
+      ${profVis()}${profBtns()}</div>
+      <div class="pf-side">${st.artists.length ? `<section class="section" aria-labelledby="h-part"><h2 id="h-part" class="section-title">Izvođači</h2>${profArtists()}</section>` : ''}
+      ${profAnswers()}</div>
+      <p class="meta">Brojke i bio su izmišljeni. Ostatak profila (J4) nije dio ove skice.</p>`; // .pf-main / .pf-side: display: contents on the phone, two columns from 1280 px (D-080)
     return `<div class="prof-head">${avatar(st.username, st.displayName || 'T', 'lg')}
         <div><h1 class="prof-name">${name}</h1><p class="meta">@${handle}</p></div></div>
       <section class="section" aria-labelledby="h-pdna"><h2 id="h-pdna" class="section-title">Music DNA</h2>${profDna(184)}${profArtists()}</section>
@@ -1376,7 +1361,8 @@
       if (seeDna(h)) body += `<section class="section" aria-labelledby="h-mdna"><h2 id="h-mdna" class="section-title">Music DNA</h2><figure class="dna-card">${dnaFixed('m-' + h, m, 170)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span><p class="sr-only">Žanrovi: ${(m.dna || []).map(esc).join(', ')}.</p></figcaption></figure>${artistsOf(m)}</section>`;
       if (seeHist(h)) { const ds = dropsOf(h); body += `<section class="section" aria-labelledby="h-mdd"><h2 id="h-mdd" class="section-title">Daily Drop odgovori${ds.length ? ` <span class="count">${ds.length}</span>` : ''}</h2>${ds.length ? `<ul class="hist hist-${HIST_AT}">${ds.slice(0, 3).map(histRow).join('')}</ul>${ds.length > 3 ? `<button class="link" data-a="open-mdrops" data-h="${h}" data-k="all-hist">Svi odgovori (${ds.length})</button>` : ''}` : histEmpty(false)}</section>`; }
     }
-    return `${head}${bio}${relRow}${countsRow(h)}${body}<p class="meta">Izmišljeni podaci. Vidiš samo ono što je ta osoba dopustila; skriveni dijelovi se ne prikazuju ni kao zaključani (J4).</p>`;
+    // .pm-main / .pm-side: display: contents on the phone, two columns from 1280 px (D-080)
+    return `<div class="pm-main">${head}${bio}${relRow}${countsRow(h)}</div><div class="pm-side">${body}</div><p class="meta">Izmišljeni podaci. Vidiš samo ono što je ta osoba dopustila; skriveni dijelovi se ne prikazuju ni kao zaključani (J4).</p>`;
   }
   function mdropsBody(h) {
     const m = member(h), ds = dropsOf(h);
@@ -1579,7 +1565,8 @@
   const TFA_AT = pick('tfa', ['a', 'b'], 'a');            // PUB-03: a code only, b plus "remember this device"
   const RESET_MIN = 30;                                   // minutes a reset link stays valid (RECOMMENDED; R-08: single-use, expiring)
   const inviteLine = () => `<p class="fine">Nemaš račun? ${wm()} je zasad samo uz pozivnicu.</p>`;
-  const pubTop = () => PUB_AT === 'a' ? '<button class="btn btn-secondary btn-sm top-signin" data-a="pub-signin" data-k="top-signin">Prijavi se</button>' : '';
+  /* Desktop (D-080): from 600 px the sign-in sits in the top bar whatever the phone shell (b hides its sticky foot there). */
+  const pubTop = () => `<button class="btn btn-secondary btn-sm top-signin${PUB_AT === 'b' ? ' top-signin-desk' : ''}" data-a="pub-signin" data-k="top-signin">Prijavi se</button>`;
   const pubFoot = () => PUB_AT === 'b' ? '<button class="btn btn-primary btn-block" data-a="pub-signin" data-k="pub-signin">Prijavi se</button>' : '';
   /* Legal links (PUB-10) and the DSA Art. 16 notice form (PUB-11), which must be reachable without an account. */
   const legalRow = () => `<p class="pub-legal"><button class="link" data-a="toast" data-msg="Uvjeti korištenja (PUB-10) nisu dio skice." data-k="l-terms">Uvjeti</button><button class="link" data-a="toast" data-msg="Pravila privatnosti (PUB-10) nisu dio skice." data-k="l-priv">Privatnost</button><button class="link" data-a="toast" data-msg="Obrazac za prijavu nezakonitog sadržaja (PUB-11, DSA čl. 16) nije dio skice. Dostupan je i bez računa." data-k="l-notice">Prijavi sadržaj</button></p>`;
@@ -2458,6 +2445,8 @@
     let s = S[st.screen]();
     /* Round 12d, SYS-02: a whole-page failure keeps the shell (a, c) or takes the whole screen (b). */
     if (failing()) s = FAIL_AT === 'b' ? { kind: 'bare', body: failBody(true) } : Object.assign({}, s, { body: failBody(false), dock: '' });
+    /* Desktop (D-080): from 1280 px a settings sub-screen shows the settings list beside the detail, the open row marked. */
+    if (st.screen === 'setsub' && SPLIT.matches && !failing()) s = Object.assign({}, s, { body: `<div class="set-split"><nav class="set-nav" aria-label="Postavke">${settingsBody().replace(`data-s="${st.sub}"`, `data-s="${st.sub}" aria-current="page"`)}</nav><div class="set-detail">${s.body}</div></div>` });
     const standalone = window.top === window;
     let shell = '';
     if (standalone) shell += `<p class="proto-note">Skica 3.5: izmišljeni podaci, privremeni wordmark.</p>`;
@@ -2664,7 +2653,7 @@
   const swMain = () => root.querySelector('main');
   root.addEventListener('pointerdown', e => {
     if (st.overlay || !TABS.includes(st.screen) || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    if (e.pointerType === 'mouse' && document.documentElement.classList.contains('rail-on')) return; // desktop: a mouse drag selects text, it does not switch tabs
+    if (e.pointerType === 'mouse' && innerWidth >= 600) return; // desktop: a mouse drag selects text, it does not switch tabs
     if (e.target.closest('input, textarea, select, canvas, .chips, [data-noswipe]')) return;
     sw = { x: e.clientX, y: e.clientY, t: performance.now(), h: null, id: e.pointerId };
   });

@@ -1316,70 +1316,169 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 }
 .screen-invmail .lead, .screen-invsigned .lead { overflow-wrap: anywhere; }
 
-/* ---------- Desktop (session 17): the rail, the reading column, sheets as dialogs ----------
-   Breakpoints follow tokens.md §7: medium 600 px (a collapsed rail replaces the bottom bar), expanded 1024 px (the rail
-   gets labels beside the icons), wide 1280 px (an optional context column). app.js mirrors them as classes on <html>
-   (rail-on, rail-wide, side-on) so the three rail options can share these rules; in the app they are media queries.
-   Signed-in screens (html[data-kind="app"]) get the rail; onboarding, sign-in and the visitor pages keep one column.
-   The reading column is size.content-max, 40 rem: each bar and the page keep their phone padding and add the free
-   space on both sides, so the geometry inside the column stays exactly the phone's. */
-:root { --rail-w: 0px; }
+/* ---------- Desktop (session 17, D-079 and D-080): the rail, the columns, cards and dialogs ----------
+   Everything below 600 px is the phone. The breakpoints follow tokens.md §7: medium 600 px (a collapsed rail replaces
+   the bottom bar), expanded 1024 px (the rail gets labels and the wordmark), wide 1280 px (two columns where the content
+   has two parts), plus 1600 px where the columns widen for Full HD. The screen kind is html[data-kind] (app, onb, bare,
+   pub) and the screen name #app[data-screen]. The owner asked (D-080) for a desktop that is built from the phone but no
+   longer looks like one: the same components, the same order inside each part, desktop placement and sizes.
+   Column model: .page carries --col, the free space on one side of the column; each bar adds --col to its phone padding
+   (--pad), so the geometry inside the column stays the phone's. --col-main is the column's full width (content plus the
+   phone's 16 px on each side). Two-column screens set --col-main from --main, --gap and --side. */
+:root { --rail-w: 0px; --col-main: 42rem; --main: 44rem; --side: 22rem; --gap: 2.5rem; }
 .skip { position: absolute; left: var(--gr-space-2); top: var(--gr-space-2); z-index: calc(var(--gr-z-toast) + 1); padding: var(--gr-space-2) var(--gr-space-3); background: var(--gr-color-bg-raised); color: var(--gr-color-text-primary); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: var(--gr-radius-control); font: var(--gr-type-label); text-decoration: none; transform: translateY(-300%); }
 .skip:focus { transform: none; }
 main:focus { outline: none; box-shadow: none; }
-.rail, .top-home { display: none; }
-.rail-on[data-kind="app"] #app { max-width: none; }
-.rail-on[data-kind="app"] .tabbar { display: none; }
-.rail-on[data-kind="app"] .bottom { position: sticky; }
-.rail-on[data-kind="app"] { --rail-w: 80px; }
-.rail-on.rail-wide[data-kind="app"] { --rail-w: clamp(12rem, 15rem, 22vw); }
-.rail-on[data-kind="app"] .rail { display: flex; flex-direction: column; flex: none; width: var(--rail-w); position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; padding: var(--gr-space-3) var(--gr-space-2) var(--gr-space-4); gap: var(--gr-space-2); border-right: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: var(--gr-color-bg-canvas); }
-.rail-list { display: flex; flex-direction: column; gap: 2px; }
-.rail-item { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; padding: var(--gr-space-2) 2px; border: 0; background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); border-radius: var(--gr-radius-control); text-align: center; }
-.rail-item span { overflow-wrap: anywhere; }
-.rail-item:hover { background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); }
-.rail-item[aria-current="page"] { color: var(--gr-color-text-accent); }
-.rail-item[aria-current="page"]::before { content: ""; position: absolute; left: calc(var(--gr-space-2) * -1); top: 25%; bottom: 25%; width: var(--gr-border-width-thick); background: var(--gr-color-text-accent); border-radius: 2px; }
-.rail-item .pi { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); flex: none; }
-.rail-brand { display: none; padding: var(--gr-space-2) var(--gr-space-3) var(--gr-space-4); }
-.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--gr-space-3); align-items: center; }
-.rail-foot .rail-list { width: 100%; }
-.rail-on[data-kind="app"] .topbar .alpha-tag { display: none; } /* the rail footer carries the alpha mark (SYS-05) */
-/* The rail with labels (1024 px and wider, or from 600 px with ?rail=b). */
-.rail-wide .rail-item { flex-direction: row; justify-content: flex-start; gap: var(--gr-space-3); min-height: 48px; padding: 0 var(--gr-space-3); font: var(--gr-type-body); text-align: left; }
-.rail-wide .rail-item span { overflow-wrap: normal; }
-.rail-wide .rail-foot { align-items: flex-start; }
-.rail-wide .rail-foot .alpha-tag { margin-left: var(--gr-space-3); }
-.rail-wide.brand-rail .rail-brand { display: block; }
-.rail-wide.brand-rail[data-kind="app"] .topbar > .wordmark { display: none; }
-.rail-wide.brand-rail[data-kind="app"] .topbar .top-home { display: block; }
-/* The reading column. --col is the free space on one side of the column inside .page: 40 rem of content plus the phone's
-   16 px padding on each side (42 rem), so the content is exactly 40 rem and every bar keeps its phone geometry. */
-.page { --col: max(0px, calc((100% - 42rem) / 2)); }
-.rail-on[data-kind="app"] .page > .topbar { padding-inline: calc(var(--col) + var(--gr-space-2)); }
-.rail-on[data-kind="app"] .page > .screen { padding-inline: calc(var(--col) + var(--gr-space-4)); padding-top: var(--gr-space-6); }
-.rail-on[data-kind="app"] .page > .foot { padding-inline: calc(var(--col) + var(--gr-space-4)); }
-.rail-on[data-kind="app"] .page > .net-bar { padding-inline: calc(var(--col) + var(--gr-space-4)); }
-.rail-on[data-kind="app"] .page > .bottom { padding-inline: var(--col); }
-.rail-on[data-kind="app"] .nav-glass .bottom, .nav-glass.rail-on[data-kind="app"] .bottom { background: var(--gr-color-bg-canvas); -webkit-backdrop-filter: none; backdrop-filter: none; } /* nothing passes under the dock on desktop */
-.rail-on[data-kind="app"] .dock { border-top: 0; background: none; padding-bottom: var(--gr-space-3); }
-.rail-on[data-kind="app"] .dock-field { background: var(--gr-color-bg-surface); }
-/* Visitor pages (landing, share view, public profile) and the account pages keep one column; the visitor pages may be a little wider. */
+.rail, .top-home, .top-signin-desk { display: none; }
+/* Phone: the desktop wrappers do not exist as boxes. */
+.home-side, .hub-side, .pf-main, .pf-side, .pm-main, .pm-side, .set-split, .set-detail { display: contents; }
+.set-nav { display: none; }
+@media (forced-colors: active) { .rail-item[aria-current="page"]::before { background: Highlight; } .rail-item[aria-current="page"] { color: Highlight; } .skip { border-color: CanvasText; } .set-nav [aria-current="page"] { outline: 2px solid Highlight; } }
+
+/* ===== 600 px and up: the collapsed rail, one column, cards, dialogs ===== */
 @media (min-width: 600px) {
-  html[data-kind="pub"] #app { max-width: var(--gr-size-content-max); }
-  /* Sheets open as centred dialogs (prototype-directions §6). They keep their markup, order and focus handling;
-     only the placement changes: centred over the content area (to the right of the rail), all corners rounded,
-     a hairline edge, and a fade-and-rise instead of the slide from the bottom. */
+  .page { --col: max(0px, calc((100% - var(--col-main)) / 2)); --pad: var(--col); }
+  /* Signed-in screens */
+  html[data-kind="app"] { --rail-w: 80px; }
+  html[data-kind="app"] #app { max-width: none; }
+  html[data-kind="app"] .tabbar { display: none; }
+  html[data-kind="app"] .rail { display: flex; flex-direction: column; flex: none; width: var(--rail-w); position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; padding: var(--gr-space-3) var(--gr-space-2) var(--gr-space-4); gap: var(--gr-space-2); border-right: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: var(--gr-color-bg-canvas); }
+  .rail-list { display: flex; flex-direction: column; gap: 2px; }
+  .rail-item { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; padding: var(--gr-space-2) 2px; border: 0; background: none; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); border-radius: var(--gr-radius-control); text-align: center; }
+  .rail-item span { overflow-wrap: anywhere; }
+  .rail-item:hover { background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); }
+  .rail-item[aria-current="page"] { color: var(--gr-color-text-accent); }
+  .rail-item[aria-current="page"]::before { content: ""; position: absolute; left: calc(var(--gr-space-2) * -1); top: 25%; bottom: 25%; width: var(--gr-border-width-thick); background: var(--gr-color-text-accent); border-radius: 2px; }
+  .rail-item .pi { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); flex: none; }
+  .rail-brand { display: none; padding: var(--gr-space-2) var(--gr-space-3) var(--gr-space-4); }
+  .rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--gr-space-3); align-items: center; }
+  .rail-foot .rail-list { width: 100%; }
+  html[data-kind="app"] .topbar .alpha-tag { display: none; } /* the rail footer carries the alpha mark (SYS-05) */
+  html[data-kind="app"] .page > .topbar { padding-inline: calc(var(--pad) + var(--gr-space-2)); }
+  html[data-kind="app"] .page > .screen { padding-inline: calc(var(--pad) + var(--gr-space-4)); padding-top: var(--gr-space-6); }
+  html[data-kind="app"] .page > .foot { padding-inline: calc(var(--pad) + var(--gr-space-4)); }
+  html[data-kind="app"] .page > .net-bar { padding-inline: calc(var(--pad) + var(--gr-space-4)); }
+  html[data-kind="app"] .page > .bottom { padding-inline: var(--pad); }
+  html[data-kind="app"] .page > .proto-note { text-align: left; padding-inline: calc(var(--pad) + var(--gr-space-4)); }
+  .nav-glass[data-kind="app"] .bottom { background: var(--gr-color-bg-canvas); -webkit-backdrop-filter: none; backdrop-filter: none; } /* nothing passes under the dock on desktop */
+  html[data-kind="app"] .dock { border-top: 0; background: none; padding-bottom: var(--gr-space-3); }
+  html[data-kind="app"] .dock-field { background: var(--gr-color-bg-surface); }
+  /* Onboarding, sign-in and the account pages: one centred card instead of a phone column with a bar at the window's foot. */
+  html[data-kind="onb"] #app, html[data-kind="bare"] #app { max-width: none; }
+  html[data-kind="onb"] .shell, html[data-kind="bare"] .shell { padding: var(--gr-space-6) var(--gr-space-4); }
+  html[data-kind="onb"] .page, html[data-kind="bare"] .page { margin: auto; width: 100%; max-width: 34rem; min-height: 0; border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: var(--gr-radius-sheet); background: var(--gr-color-bg-surface); overflow: hidden; }
+  html[data-kind="onb"] .topbar, html[data-kind="bare"] .topbar { position: static; background: var(--gr-color-bg-surface); }
+  html[data-kind="onb"] .foot, html[data-kind="bare"] .foot { position: static; background: var(--gr-color-bg-surface); padding-bottom: var(--gr-space-5); }
+  html[data-kind="onb"] .screen, html[data-kind="bare"] .screen { padding-inline: var(--gr-space-6); }
+  html[data-kind="onb"] .net-bar, html[data-kind="bare"] .net-bar { position: static; }
+  html[data-kind="onb"] .sheet .textarea, html[data-kind="onb"] .input { background: var(--gr-color-bg-canvas); }
+  html[data-kind="bare"] .inv-wide { width: calc(100% + 2 * var(--gr-space-6)); }
+  /* Visitors: the sign-in moves into the top bar, the page may be wider. */
+  html[data-kind="pub"] #app { max-width: 48rem; }
+  html[data-kind="pub"] .page > .foot { display: none; }
+  .top-signin-desk { display: inline-flex; }
+  /* Sheets open as centred dialogs (IA §3). Same markup, order, focus and Escape; centred over the content area (to the
+     right of the rail), all corners rounded, a hairline edge, a fade-and-rise instead of the slide from the bottom. */
   .sheet { left: var(--rail-w); right: 0; top: 50%; bottom: auto; transform: translateY(-50%); max-width: min(30rem, calc(100% - var(--rail-w) - 2 * var(--gr-space-6))); max-height: min(85vh, calc(100vh - 2 * var(--gr-space-6))); border-radius: var(--gr-radius-sheet); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); padding-bottom: var(--gr-space-5); animation-name: gr-in; }
   .sheet-report { max-height: min(85vh, calc(100vh - 2 * var(--gr-space-6))); }
+  .sheet-compose { max-width: min(36rem, calc(100% - var(--rail-w) - 2 * var(--gr-space-6))); }
   .dialog { left: calc(var(--rail-w) + var(--gr-space-4)); }
   #toast { left: var(--rail-w); bottom: 96px; }
-  .rail-on[data-kind="app"] .proto-note { text-align: left; padding-inline: calc(var(--col) + var(--gr-space-4)); }
 }
 @keyframes gr-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
-/* Context column (1280 px and wider, ?side=hub): the Hub's week and archives sit beside the day and its question. */
-.hub-side { display: flex; flex-direction: column; gap: var(--gr-space-5); }
-.side-on .page > .screen-hub { --col: max(0px, calc((100% - 64rem) / 2)); display: grid; grid-template-columns: minmax(0, 40rem) minmax(0, 20rem); column-gap: var(--gr-space-8); align-items: start; }
-.side-on .screen-hub > * { grid-column: 1; }
-.side-on .screen-hub > .hub-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(56px + var(--gr-space-6)); }
-@media (forced-colors: active) { .rail-item[aria-current="page"]::before { background: Highlight; } .rail-item[aria-current="page"] { color: Highlight; } .skip { border-color: CanvasText; } }
+
+/* ===== 1024 px and up: the rail with labels and the wordmark, larger type, a wider column ===== */
+@media (min-width: 1024px) {
+  :root { --col-main: 46rem; }
+  html[data-kind="app"] { --rail-w: clamp(12rem, 15rem, 22vw); }
+  html[data-kind="app"] .rail { padding-inline: var(--gr-space-3); }
+  .rail-item { flex-direction: row; justify-content: flex-start; gap: var(--gr-space-3); min-height: 48px; padding: 0 var(--gr-space-3); font: var(--gr-type-body); text-align: left; }
+  .rail-item span { overflow-wrap: normal; }
+  .rail-item[aria-current="page"]::before { left: calc(var(--gr-space-3) * -1); }
+  .rail-foot { align-items: flex-start; }
+  .rail-foot .alpha-tag { margin-left: var(--gr-space-3); }
+  .rail-brand { display: block; }
+  html[data-kind="app"] .topbar > .wordmark { display: none; }
+  html[data-kind="app"] .topbar .top-home { display: block; }
+  html[data-kind="app"] .topbar { min-height: 64px; }
+  html[data-kind="app"] .page > .screen { padding-top: var(--gr-space-8); gap: var(--gr-space-6); }
+  .section-title { font-size: 1.375rem; }
+  .dd-q { font-size: 2rem; max-width: 26ch; }
+  .dd-page .dd-q { font-size: 2.5rem; max-width: 28ch; }
+  .portraits li { width: 88px; } .portraits-sm li { width: 84px; }
+  .dd-name { font-size: 2.25rem; }
+  .dd-e .dd-q { font-size: 1.75rem; }
+  .prof-name { font-size: 1.75rem; }
+  .ans-list { gap: var(--gr-space-4); }
+  .ans-list .ans, .ans-solo .ans { padding: var(--gr-space-5) var(--gr-space-5) var(--gr-space-3); }
+  .day-strip { gap: var(--gr-space-2); }
+  /* Visitors: the landing becomes a real landing page. */
+  html[data-kind="pub"] #app { max-width: 60rem; }
+  .screen-landing .h-hero { font-size: 3rem; }
+  .screen-landing .tagline { font-size: var(--gr-font-size-xl); }
+  .screen-landing .hero .lead { max-width: 34rem; font-size: var(--gr-font-size-lg); }
+  .screen-landing .inv-wide { width: 100%; max-width: 48rem; }
+  .screen-landing .how-rows { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gr-space-4); }
+  .screen-landing .how-rows li { flex-direction: column; gap: var(--gr-space-2); padding: var(--gr-space-5); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-surface); font: var(--gr-type-body); }
+  .screen-landing .how-rows li > svg { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); }
+  .screen-landing .how-rows b { display: block; margin-bottom: 2px; }
+  .screen-landing .info-stack { max-width: 40rem; align-self: center; width: 100%; }
+  .screen-share .pub-q, .screen-share .dd-q { font-size: 2.5rem; }
+  .screen-pubprofile .prof-name { font-size: 1.75rem; }
+}
+
+/* ===== 1280 px and up: two columns where the content has two parts, the settings list beside the detail ===== */
+@media (min-width: 1280px) {
+  #app[data-screen="home"] .page, #app[data-screen="hub"] .page, #app[data-screen="drop"] .page { --col-main: calc(var(--main) + var(--gap) + var(--side) + 2rem); }
+  #app[data-screen="profile"] .page, #app[data-screen="member"] .page { --col-main: calc(24rem + var(--gap) + var(--main) + 2rem); }
+  #app[data-screen="setsub"] .page { --col-main: calc(20rem + var(--gap) + var(--main) + 2rem); }
+  .home-side, .hub-side, .pf-main, .pf-side, .pm-main, .pm-side { display: flex; flex-direction: column; gap: var(--gr-space-6); min-width: 0; }
+  /* Home: the Daily Drop on the left, "from people you follow" and the past days on the right. */
+  html[data-kind="app"] .screen-home { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
+  .screen-home > * { grid-column: 1; }
+  .screen-home > .home-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(64px + var(--gr-space-8)); }
+  .screen-home .dd-teaser { border-bottom: 0; padding-bottom: 0; }
+  /* Hub: the day and its question on the left, this week and the archives on the right. */
+  html[data-kind="app"] .screen-hub { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
+  .screen-hub > * { grid-column: 1; }
+  .screen-hub > .hub-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(64px + var(--gr-space-8)); }
+  /* The question page: answers on the left, the composer dock as a card on the right, in view while reading. */
+  #app[data-screen="drop"] .page { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; padding-inline: max(var(--gr-space-4), calc((100% - var(--rail-w) - var(--col-main)) / 2)); --pad: 0px; } /* the page's own % is the shell, so the rail is taken off */
+  #app[data-screen="drop"] .page > * { grid-column: 1 / -1; }
+  #app[data-screen="drop"] .page > .screen { grid-column: 1; max-width: calc(var(--main) + 2rem); }
+  #app[data-screen="drop"] .page > .bottom { grid-column: 2; position: sticky; top: calc(64px + var(--gr-space-8)); align-self: start; width: var(--side); margin-left: var(--gap); margin-top: var(--gr-space-8); background: none; z-index: 1; }
+  #app[data-screen="drop"] .page > .bottom:not(:has(.dock)) { display: none; }
+  #app[data-screen="drop"] .dock { flex-direction: column; align-items: stretch; gap: var(--gr-space-3); padding: var(--gr-space-4); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); border-radius: 18px; background: var(--gr-color-bg-surface); }
+  #app[data-screen="drop"] .dock-field { min-height: 52px; background: var(--gr-color-bg-raised); }
+  #app[data-screen="drop"] .dock-done { padding: var(--gr-space-2) 0; }
+  /* Profiles: the Spirala across the top, identity on the left, artists and answers on the right. */
+  html[data-kind="app"] .screen-profile, html[data-kind="app"] .screen-member { display: grid; grid-template-columns: 24rem minmax(0, 1fr); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
+  .screen-profile > *, .screen-member > * { grid-column: 1 / -1; }
+  .screen-profile > .pf-main, .screen-member > .pm-main { grid-column: 1; position: sticky; top: calc(64px + var(--gr-space-8)); }
+  .screen-profile > .pf-side, .screen-member > .pm-side { grid-column: 2; grid-row: span 6; }
+  .screen-profile > .pf-c { grid-column: 1 / -1; }
+  .screen-profile .pf-c { margin-top: calc(-1 * var(--gr-space-8)); }
+  .screen-profile .pf-c-hero canvas, .screen-profile .pf-c-hero { height: auto; }
+  .screen-member .pm-head { grid-template-columns: auto 1fr; }
+  .screen-member .pm-side .dna-card canvas { height: 220px; }
+  /* Settings sub-screens: the settings list on the left, the open row marked, the detail on the right. */
+  .set-split { display: grid; grid-template-columns: 20rem minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
+  .set-nav { display: block; position: sticky; top: calc(64px + var(--gr-space-8)); max-height: calc(100vh - 64px - 2 * var(--gr-space-8)); overflow-y: auto; padding-right: var(--gr-space-2); scrollbar-width: thin; }
+  .set-nav .set-row[aria-current="page"], .set-nav .set-me[aria-current="page"] { background: var(--gr-color-bg-raised); box-shadow: inset var(--gr-border-width-thick) 0 0 var(--gr-color-text-accent); }
+  .set-nav .set-row[aria-current="page"] .set-t { color: var(--gr-color-text-accent); }
+  .set-detail { display: flex; flex-direction: column; gap: var(--gr-space-5); min-width: 0; }
+  #app[data-screen="setsub"] .topbar .iconbtn[data-a="back"] { display: none; } /* the list on the left is the way back */
+  /* Lists that read better in two columns of cards on a wide screen. */
+  .screen-activity .act-list, .screen-follows .fl-list { max-width: none; }
+}
+
+/* ===== 1600 px and up (Full HD): wider columns and rail ===== */
+@media (min-width: 1600px) {
+  :root { --col-main: 48rem; --main: 48rem; --side: 24rem; --gap: 3rem; }
+  html[data-kind="app"] { --rail-w: 16rem; }
+  html[data-kind="app"] .page > .screen { padding-top: var(--gr-space-10); }
+  .dd-page .dd-q { font-size: 2.625rem; }
+  .screen-landing .h-hero { font-size: 3.5rem; }
+  html[data-kind="pub"] #app { max-width: 64rem; }
+  html[data-kind="onb"] .page, html[data-kind="bare"] .page { max-width: 36rem; }
+}

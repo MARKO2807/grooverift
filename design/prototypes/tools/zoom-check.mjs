@@ -7,7 +7,7 @@
 //   - visible text that runs past the right edge of the viewport,
 //   - fixed bars (top bar, tab bar, dock) that cover more than half of the viewport.
 // Desktop (session 17): --scale=1 --w=1366 --h=800 (the rail with labels), --w=800 (the collapsed rail), --w=600 and --w=599 (the edge).
-// The rail stands beside the content, so it is not counted as a bar that covers it.
+// The rail and the settings list stand beside the content, so they are not counted as bars that cover it.
 // Node 22, no dependencies, offline. Exit code 1 if any screen has a finding.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -85,7 +85,7 @@ const PROBE = `(() => {
     if (hasText) { const r = el.getBoundingClientRect(); if (r.right > vw + 1 && !el.closest('[class*="scroll"], .portraits')) out.push('past the right edge (' + Math.round(r.right) + '): ' + label(el)); }
   }
   let fixed = 0;
-  for (const el of document.querySelectorAll('.topbar, .tabbar, .dock, nav[aria-label]:not(.rail)')) { if (!shown(el)) continue; const s = getComputedStyle(el); if (s.position === 'fixed' || s.position === 'sticky') fixed += el.getBoundingClientRect().height; }
+  for (const el of document.querySelectorAll('.topbar, .tabbar, .dock, nav[aria-label]:not(.rail):not(.set-nav)')) { if (!shown(el)) continue; const s = getComputedStyle(el); if (s.position === 'fixed' || s.position === 'sticky') fixed += el.getBoundingClientRect().height; }
   if (fixed > vh / 2) out.push('fixed bars cover ' + Math.round(fixed) + ' of ' + vh + ' px');
   const fs = parseFloat(getComputedStyle(document.body).fontSize);
   return { fs, out: [...new Set(out)] };

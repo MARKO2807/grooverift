@@ -4,11 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>GrooveRift · desktop: tračnica, stupac za čitanje, dijalozi</title>
-<!-- Owner decision sketch (session 17): the desktop adaptation of direction C (prototype-directions §6). Breakpoints
-     from tokens.md §7 (600, 1024, 1280 px), the rail from IA §4 (D-031), the 40 rem reading column (size.content-max),
-     sheets as centred dialogs (IA §3). Every frame is the real prototype (index.html) at a desktop size, scaled to a half,
-     with URL options ?rail=, ?brand= and ?side=. -->
+<title>GrooveRift · desktop: pregled svih ekrana od 600 do 1920 px</title>
+<!-- Owner review page (session 17, D-079 and D-080): the desktop adaptation of direction C. Breakpoints from tokens.md §7
+     (600, 1024, 1280 px) plus 1600 px for Full HD. Every frame is the real prototype (index.html) at a real window size,
+     shown scaled down; everything inside works. No options: the owner asked for the whole desktop at once (D-080). -->
 <link rel="stylesheet" href="../../fonts/fonts.css">
 <link rel="stylesheet" href="../../tokens/tokens.css">
 <style>
@@ -17,88 +16,70 @@
   .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
   h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
   h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
-  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
   p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
   p { margin: 0 0 10px; }
   b { color: var(--gr-color-text-primary); }
   a { color: var(--gr-color-text-link); }
-  code { font-size: .875em; color: var(--gr-color-text-primary); }
   nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
   nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
   a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
   .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
   .opt { display: flex; flex-direction: column; gap: 8px; }
-  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; }
   .opt .open { font: var(--gr-type-caption); }
-  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
-  .sel { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-coral); border-radius: 9999px; padding: 1px 8px; }
-  /* A desktop frame: the real page at its full size, shown at a half. Everything inside still works. */
+  /* A frame: the real page at its full size, shown smaller. Everything inside still works. */
   .screen { border-radius: 12px; padding: 6px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
   .screen > div { overflow: hidden; border-radius: 8px; background: #0B0D12; }
-  .screen iframe { display: block; border: 0; background: #0B0D12; transform: scale(.5); transform-origin: 0 0; }
+  .screen iframe { display: block; border: 0; background: #0B0D12; transform-origin: 0 0; }
   .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
   .note ul { margin: 6px 0 0; padding-left: 18px; }
 </style>
 </head>
 <body>
 <div class="page">
-  <h1>Desktop: tračnica, stupac za čitanje, dijalozi</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-079, sesija 17).</b> Sklopljena tračnica na srednjim ekranima, wordmark u širokoj tračnici, bez desnog stupca u alfi: sve tri preporuke.</p>
-  <p>Svaki okvir je prava aplikacija na desktop veličini, prikazana upola manja: sve u njima radi (tračnica, dijalozi, pisanje odgovora). Podaci su izmišljeni. Širina stvarnog prozora piše uz svaki okvir; isto možeš otvoriti i u punoj veličini preko poveznice „otvori” i mijenjati širinu prozora.</p>
-  <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (tokeni 3.4 §7, IA §3 i §4, D-031, IA9, SYS-05, WCAG 2.4.1 i 3.2.3; nisu izbor):</p>
+  <h1>Desktop: svi ekrani od 600 do 1920 px</h1>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Napravljeno u cijelosti (D-080, sesija 17).</b> Sve je građeno iz mobilne verzije: isti dijelovi, isti redoslijed unutar svakog dijela, a raspored i veličine su za desktop. Ništa nije izbor; ako nešto ne valja, mijenja se kasnije.</p>
+  <p>Svaki okvir je prava aplikacija na stvarnoj veličini prozora, prikazana umanjeno: sve u njima radi. Poveznica „otvori” otvara isti ekran u punoj veličini pa možeš sužavati prozor i gledati kako se raspored mijenja. Podaci su izmišljeni.</p>
+  <div class="note"><p><b>Što se mijenja po širini</b> (tokeni 3.4 §7, IA §3 i §4, D-031, IA9, SYS-05, WCAG 2.4.1 i 3.2.3):</p>
     <ul>
-      <li>Prijelomne točke: <b>600 px</b> (srednji ekran: tračnica zamjenjuje donju traku), <b>1024 px</b> (širi ekran: tračnica s nazivima), <b>1280 px</b> (vrlo širok: mogući kontekstni stupac). Ispod 600 px sve ostaje kao na mobitelu.</li>
-      <li>Tračnica ima ista četiri odredišta istim redom kao donja traka (Početna, Hub, Aktivnost, Profil); Discover i Poruke dolaze u B4 i B3 na svoje mjesto. U podnožju tračnice su Postavke, Pomoć i oznaka Alfa, pa su pomoć i povratne informacije uvijek na istom mjestu. Na Postavkama i Pomoći tračnica označava njih, ne Profil.</li>
-      <li>Sadržaj stoji u stupcu za čitanje od <b>40 rem</b> (640 px), s istim razmacima kao na mobitelu; gornja traka ostaje zaglavlje stranice (naslov, natrag, radnje). Prijavljeni ekrani dobivaju tračnicu; onboarding, prijava i stranice za posjetitelje ostaju jedan stupac.</li>
-      <li>Listovi s dna (pisanje odgovora, prijava, izbornici, tko vidi) otvaraju se kao <b>dijalog u sredini</b> sadržaja, s istim redoslijedom, fokusom i Escape. Obavijesti stoje iznad docka.</li>
-      <li>Tipkovnica: prva stavka je „Preskoči na sadržaj” (vidljiva kad dobije fokus). Mišem se ne swipea između kartica; na tabletu prstom i dalje može.</li>
-      <li>Nema ničega samo zato što ima mjesta: nema pretrage u gornjoj traci (B4), nema gumba „+” (B1), nema desnog stupca ako ne nosi sadržaj (pitanje 3).</li>
+      <li><b>Ispod 600 px:</b> mobitel, bez promjene.</li>
+      <li><b>Od 600 px:</b> prijavljeni ekrani dobivaju sklopljenu tračnicu (80 px) umjesto donje trake, s Postavkama, Pomoći i oznakom Alfa u podnožju; sadržaj u stupcu od 40 rem. Onboarding, prijava i stranice računa postaju jedna kartica u sredini. Posjetitelji dobivaju „Prijavi se” u gornjoj traci. Listovi s dna otvaraju se kao dijalozi u sredini.</li>
+      <li><b>Od 1024 px:</b> tračnica s nazivima i wordmarkom; gornja traka je zaglavlje stranice („Početna” umjesto wordmarka). Veći naslovi, pitanje i razmaci; stupac 44 rem. Početna stranica za posjetitelje s tri kartice.</li>
+      <li><b>Od 1280 px:</b> dva stupca gdje sadržaj ima dva dijela: Početna (Daily Drop lijevo, ljudi koje pratiš i prošli dani desno), Hub (dan lijevo, tjedan i arhive desno), pitanje i odgovori (dock za odgovor kao kartica desno, uvijek u vidokrugu), profili (Spirala preko cijele širine, identitet lijevo, izvođači i odgovori desno), postavke (popis lijevo s označenim retkom, detalj desno).</li>
+      <li><b>Od 1600 px (Full HD):</b> širi stupci (48 rem + 24 rem) i tračnica od 16 rem, veće pitanje.</li>
+      <li>Uvijek: „Preskoči na sadržaj” kao prva stavka za tipkovnicu; mišem se ne swipea između kartica; ništa nije dodano samo zato što ima mjesta (bez pretrage u gornjoj traci do B4, bez „+” do B1).</li>
     </ul></div>
-  <nav class="toc" aria-label="Teme">
-    <a href="#t-rail">1. Tračnica na srednjim ekranima</a><a href="#t-brand">2. Wordmark na širokoj tračnici</a><a href="#t-side">3. Kontekstni stupac</a><a href="#t-done">Napravljeno bez izbora</a>
+  <nav class="toc" aria-label="Veličine">
+    <a href="#s-1920">1920 × 1080</a><a href="#s-1366">1366 × 800</a><a href="#s-1024">1024 × 768</a><a href="#s-800">800 × 800</a><a href="#s-600">600 i 599 px</a>
   </nav>
   <div id="sections"></div>
-  <h2 class="part" id="t-done">Napravljeno bez izbora</h2>
-  <p>Ovo slijedi već potvrđena pravila. Pogledaj i javi ako nešto ne štima.</p>
-  <div id="done"></div>
 </div>
 <script>
 (function () {
-  const T = [
-    ['t-rail', 'Tračnica na srednjim ekranima (600 do 1023 px)', 'Tablet i uski prozor na računalu. Tokeni (3.4) kažu: na 600 px sklopljena tračnica zamjenjuje donju traku, na 1024 px dobiva nazive. Okviri su 800 × 800 px.', 'flow=drop&at=home', 'rail', [800, 800], [
-      ['a', 'A. Sklopljena, 80 px', 'Ikona iznad kratkog naziva, kao Material navigation rail. Wordmark ostaje u gornjoj traci dok tračnica nema mjesta za njega. Od 1024 px tračnica se širi i dobiva nazive uz ikone.', 'rec'],
-      ['b', 'B. Široka od 600 px', 'Nazivi uz ikone već na tabletu. Oduzima 190 px širine, pa stupac za čitanje na 800 px dobije 610 px umjesto 720.'],
-      ['c', 'C. Donja traka do 1024 px', 'Tablet zadržava mobilni izgled; tračnica tek od 1024 px. Odstupa od tokena 3.4 (prijelomna točka 600 px bi se promijenila).']]],
-    ['t-brand', 'Wordmark na širokoj tračnici (od 1024 px)', 'Kad tračnica ima nazive, ima mjesta i za wordmark s munjicom. Okviri su 1366 × 800 px.', 'flow=drop&at=home', 'brand', [1366, 800], [
-      ['rail', 'A. Wordmark u tračnici', 'Tračnica nosi ime i oznaku Alfa, kao Threads i Mastodon. Gornja traka je čisto zaglavlje stranice: na Početnoj piše „Početna”, drugdje naslov ekrana s natrag i radnjama.', 'rec'],
-      ['top', 'B. Wordmark u gornjoj traci', 'Kao na mobitelu: ime ostaje iznad sadržaja, tračnica počinje odredištima. Početna nema naslov, kao ni na mobitelu.']]],
-    ['t-side', 'Kontekstni stupac (od 1280 px)', 'IA §4 dopušta desni stupac „samo gdje pomaže”. U alfi Početna već jest Daily Drop, pa jedini sadržaj koji bi mogao stajati sa strane su tjedan i arhive na Hubu. Okviri su 1440 × 900 px.', 'flow=drop&at=hub', 'side', [1440, 900], [
-      ['none', 'A. Bez stupca', 'Jedan stupac za čitanje i na širokim ekranima. Desni stupac se vraća u B1 (feed), kad bude imao što nositi (npr. današnji Drop uz feed, kako IA predviđa).', 'rec'],
-      ['hub', 'B. Hub: tjedan i arhive desno', 'Dan i pitanje lijevo, „Ovaj tjedan” i arhive desno, pa je sve bez skrolanja. Početna i ostalo ostaju jedan stupac.']]]
+  const APP = 'flow=drop&at=';
+  const S = [
+    ['s-1920', '1920 × 1080 (Full HD, tvoj ekran)', 'Tračnica 16 rem, dva stupca gdje treba, prikaz na 40 %.', [1920, 1080], 0.4, [
+      ['Početna', APP + 'home'], ['Hub', APP + 'hub'], ['Pitanje i odgovori', APP + 'drop'], ['Pisanje odgovora (dijalog)', APP + 'drop&open=compose'], ['Komentari', APP + 'answer'], ['Aktivnost', APP + 'activity'],
+      ['Profil', APP + 'profile'], ['Tuđi profil', APP + 'member&who=petra.zvuk&rel=mut'], ['Privatni profil', APP + 'member&who=mia_vinyl&rel=none'], ['Pratitelji', APP + 'follows&list=followers'],
+      ['Postavke', APP + 'settings'], ['Postavke: Račun', APP + 'setsub&s=account'], ['Postavke: Privatnost', APP + 'setsub&s=privacy'], ['Uredi Music DNA', APP + 'setsub&s=dna'], ['Uredi profil', APP + 'setsub&s=profile&pic=sample'], ['Pomoć', APP + 'setsub&s=help'],
+      ['Prijava odgovora (dijalog)', APP + 'drop&show=report'], ['Odjava (dijalog)', APP + 'settings&show=logout'], ['Blokiranje (dijalog)', APP + 'member&who=mia_vinyl&rel=none&show=block'],
+      ['Prije prvog pitanja', APP + 'home&state=first'], ['Daily Drop na pauzi', APP + 'drop&state=paused'], ['Nešto je pošlo po zlu', APP + 'hub&state=fail'],
+      ['Posjetitelj: početna', 'at=landing'], ['Posjetitelj: podijeljeno pitanje', 'at=share'], ['Zid za prijavu', 'at=share&wallnow=1'], ['Javni profil', 'at=pubprofile&who=nika.rework'],
+      ['Prijava', 'at=signin'], ['Pozivnica', ''], ['Napravi račun', 'at=account'], ['Što slušaš', 'at=dna&picks=1'], ['Tko vidi profil', 'at=visibility'], ['Kako radi', 'at=how'], ['Spremno', 'at=done']]],
+    ['s-1366', '1366 × 800 (laptop)', 'Tračnica 15 rem, dva stupca od 1280 px, prikaz na 50 %.', [1366, 800], 0.5, [
+      ['Početna', APP + 'home'], ['Pitanje i odgovori', APP + 'drop'], ['Profil', APP + 'profile'], ['Postavke: Račun', APP + 'setsub&s=account'], ['Posjetitelj: početna', 'at=landing'], ['Prijava', 'at=signin']]],
+    ['s-1024', '1024 × 768 (mali laptop)', 'Tračnica s nazivima, jedan stupac od 44 rem, prikaz na 50 %.', [1024, 768], 0.5, [
+      ['Početna', APP + 'home'], ['Pitanje i odgovori', APP + 'drop'], ['Hub', APP + 'hub'], ['Postavke: Privatnost', APP + 'setsub&s=privacy']]],
+    ['s-800', '800 × 800 (tablet, uski prozor)', 'Sklopljena tračnica 80 px, wordmark u gornjoj traci, prikaz na 50 %.', [800, 800], 0.5, [
+      ['Početna', APP + 'home'], ['Pisanje odgovora (dijalog)', APP + 'drop&open=compose'], ['Profil', APP + 'profile'], ['Posjetitelj: početna', 'at=landing']]],
+    ['s-600', 'Rubovi: 600 i 599 px', 'Točno na prijelomnoj točki: tračnica na 600 px, donja traka na 599 px. Prikaz na 50 %.', [600, 800], 0.5, [
+      ['600 px: Početna', APP + 'home'], ['600 px: Napravi račun', 'at=account'], ['599 px: Početna', APP + 'home', [599, 800]], ['599 px: Napravi račun', 'at=account', [599, 800]]]]
   ];
-  const D16 = [1366, 800], D14 = [1440, 900];
-  const DONE = [
-    ['Prijavljeni ekrani na 1366 × 800', 'Stupac od 40 rem s istim razmacima kao na mobitelu; gornja traka kao zaglavlje; dock iznad dna stupca.', [
-      ['Pitanje i odgovori', 'flow=drop&at=drop', D16], ['Aktivnost', 'flow=drop&at=activity', D16], ['Profil', 'flow=drop&at=profile', D16], ['Tuđi profil', 'flow=drop&at=member&who=petra.zvuk&rel=mut', D16], ['Postavke (tračnica označava Postavke)', 'flow=drop&at=settings', D16], ['Pomoć (tračnica označava Pomoć)', 'flow=drop&at=setsub&s=help', D16], ['Pratitelji', 'flow=drop&at=follows&list=followers', D16]]],
-    ['Listovi kao dijalozi', 'Isti sadržaj, redoslijed i fokus kao na mobitelu; u sredini sadržaja, desno od tračnice. Dijalozi koji su i na mobitelu dijalozi (odjava, utišavanje) samo se pomiču u sredinu sadržaja.', [
-      ['Pisanje odgovora', 'flow=drop&at=drop&open=compose', D16], ['Prijava odgovora', 'flow=drop&at=drop&show=report', D16], ['Tko vidi Music DNA', 'flow=drop&at=setsub&s=dna&show=aud', D16], ['Izbornik odgovora', 'flow=drop&at=drop&show=menu', D16], ['Odjava', 'flow=drop&at=settings&show=logout', D16], ['Blokiranje', 'flow=drop&at=member&who=mia_vinyl&rel=none&show=block', D16]]],
-    ['Jedan stupac: posjetitelji, prijava, onboarding', 'Stranice bez tračnice. Posjetiteljske stranice su do 40 rem, račun i onboarding do 30 rem kao na mobitelu.', [
-      ['Posjetitelj: početna', 'at=landing', D14], ['Zid za prijavu', 'at=share&wallnow=1', D14], ['Javni profil', 'at=pubprofile&who=nika.rework', D14], ['Prijava', 'at=signin', D14], ['Napravi račun', 'at=account', D14], ['Što slušaš', 'at=dna&picks=1', D14]]],
-    ['Rubovi', 'Točno 600 px (tračnica) i 599 px (donja traka); 1024 px (tračnica s nazivima); 200 % teksta na 1366 px prolazi zoom-check.', [
-      ['600 px', 'flow=drop&at=home', [600, 800]], ['599 px', 'flow=drop&at=home', [599, 800]], ['1024 px', 'flow=drop&at=hub', [1024, 768]]]]
-  ];
-  const CHOSEN = { rail: 'a', brand: 'rail', side: 'none' };
-  const frame = (title, src, [w, h]) => `<div class="screen"><div style="width:${w / 2}px;height:${h / 2}px"><iframe title="${title}" loading="lazy" src="index.html?${src}" width="${w}" height="${h}"></iframe></div></div>`;
+  const frame = (title, src, [w, h], k) => `<div class="screen"><div style="width:${Math.round(w * k)}px;height:${Math.round(h * k)}px"><iframe title="${title}" loading="lazy" src="index.html?${src}" width="${w}" height="${h}" style="transform:scale(${k})"></iframe></div></div>`;
   const open = (src, [w, h]) => `<a class="open" href="index.html?${src}" target="_blank" rel="noopener">otvori u punoj veličini (${w} × ${h})</a>`;
-  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, size, opts]) => `<section aria-labelledby="${id}">
+  document.getElementById('sections').innerHTML = S.map(([id, title, desc, size, k, frames]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
-    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
-      <h3>${t}${CHOSEN[key] === v ? ' <span class="sel">odabrano</span>' : ''}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
-      ${frame(title + ': ' + t, `${base}&${key}=${v}`, size)}
-      <p>${d}</p>${open(`${base}&${key}=${v}`, size)}</div>`).join('')}</div></section>`).join('');
-  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
-    <div class="grid">${frames.map(([t, src, size]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src, size)}${open(src, size)}</div>`).join('')}</div></section>`).join('');
+    <div class="grid">${frames.map(([t, src, sz]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src, sz || size, k)}${open(src, sz || size)}</div>`).join('')}</div></section>`).join('');
 })();
 </script>
 </body>
