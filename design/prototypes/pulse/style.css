@@ -972,3 +972,77 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 .ntf-pause { display: flex; flex-direction: column; gap: 6px; margin-top: var(--gr-space-3); padding-top: var(--gr-space-3); border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
 .ntf-pause .chips { gap: var(--gr-space-2); }
 .ntf-resume { margin-top: var(--gr-space-3); }
+
+/* ---------- large text (200 % zoom pass, session 13) ----------
+   An em media query follows the browser's text size, so this block runs when the viewport is narrower than 17.5em:
+   280 px at normal text, a 360 px phone from about 130 % text, and every phone at 200 % (also Chrome's page zoom).
+   Body text keeps growing to the full 200 %. Spacing, the top-bar wordmark and the bars stop growing so the words get
+   the room, and side-by-side layouts stack. Headings never shrink, but above their normal size they grow by a fixed
+   step over body text, not by the same factor (like Android 14's non-linear font scaling), so a question still fits
+   a few lines. The steps and the 17.5em threshold are tuned on the 200 % screenshots. */
+@media (max-width: 17.5em) {
+  :root {
+    --gr-space-half: 2px; --gr-space-1: 4px; --gr-space-2: 8px; --gr-space-3: 12px; --gr-space-4: 16px; --gr-space-5: 20px;
+    --gr-space-6: 24px; --gr-space-8: 32px; --gr-space-10: 40px; --gr-space-12: 48px; --gr-space-16: 64px;
+  }
+  /* ?lth=full turns this off, so headings also double (the comparison on large-text.html). */
+  :root:not(.lth-full) {
+    --gr-type-display: 700 max(36px, 1rem + 12px)/1.15 "Sora", "Segoe UI", system-ui, sans-serif;
+    --gr-type-title-1: 600 max(30px, 1rem + 8px)/1.2 "Sora", "Segoe UI", system-ui, sans-serif;
+    --gr-type-title-2: 600 max(24px, 1rem + 5px)/1.2 "Sora", "Segoe UI", system-ui, sans-serif;
+    --gr-type-title-3: 600 max(20px, 1rem + 2px)/1.3 "Sora", "Segoe UI", system-ui, sans-serif;
+  }
+  .proto-note { font-size: 12px; }
+  .topbar .wordmark { font-size: 20px; white-space: nowrap; }
+  .top-title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: break-word; line-height: 1.2; padding: 6px 0; }
+  html:not(.lth-full) .dd-name { font-size: max(32px, 1rem + 10px); }
+  html:not(.lth-full) .dd-page .dd-q { font-size: max(30px, 1rem + 8px); }
+  html:not(.lth-full) .dd-e .dd-q { font-size: max(24px, 1rem + 5px); }
+  html:not(.lth-full) .h-hero { font-size: max(36px, 1rem + 12px); }
+  .h-hero, .dd-q, h1 { overflow-wrap: break-word; }
+  /* Answer and comment heads: name on the first line, time under it. */
+  .ans-head { grid-template-columns: auto 1fr auto; row-gap: 2px; }
+  .ans-head > .avatar { grid-row: 1 / span 2; align-self: start; }
+  .ans-who { grid-column: 2; grid-row: 1; }
+  .ans-time { grid-column: 2; grid-row: 2; flex-direction: row; flex-wrap: wrap; gap: 0 var(--gr-space-2); align-items: baseline; }
+  .ans-more { grid-column: 3; grid-row: 1 / span 2; align-self: start; }
+  .com .ans-head { grid-template-columns: auto 1fr; }
+  .com p, .com-refs { padding-left: 0; }
+  .ans-text p, .ref-title, .ans-who .name { overflow-wrap: break-word; }
+  .ref { grid-template-columns: 44px 1fr; }
+  .ref .ref-go { display: none; }
+  /* Rows and pairs stack. */
+  .sort { flex-wrap: wrap; overflow: visible; }
+  .foot-row { flex-direction: column; }
+  .foot-row > .btn { width: 100%; }
+  .composer-actions, .dialog-actions, .act-btns { flex-wrap: wrap; }
+  .composer-actions > .btn, .dialog-actions > .btn { flex: 1 1 auto; }
+  .dock-field > span { white-space: normal; overflow: visible; padding: 10px 0; line-height: 1.25; }
+  .day-strip { grid-template-columns: repeat(4, 1fr); }
+  .facts-grid { grid-template-columns: 1fr; }
+  .portraits li { width: 6.5em; }
+  .set-row-switch, .set-row-dev { grid-template-columns: 1fr; row-gap: var(--gr-space-2); }
+  .set-row-switch > .switch, .set-row-dev > .switch { justify-self: start; }
+  /* Tab bar: ?lt=a shows the label of the open tab only, b keeps every label at a capped size, c shows icons only.
+     Hidden labels stay in the accessibility tree, so screen readers still hear every tab name. */
+  .lt-a .tab:not([aria-current]) span, .lt-c .tab span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lt-a .tab[aria-current="page"] { flex: 2.2; }
+  .lt-b .tab span { font-size: min(0.8125rem, 15px); }
+  .lt-a .tab, .lt-c .tab { min-height: 56px; }
+}
+/* The visibility comparison table becomes stacked rows with labels. Explicit ARIA table roles in the markup keep
+   the table semantics when the cells switch to block display. */
+@media (max-width: 17.5em) {
+  .vrow-table, .vrow-table tbody, .vrow-table tr, .vrow-table th, .vrow-table td { display: block; width: auto; text-align: left; }
+  .vrow-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .vrow-table tr { padding: var(--gr-space-2) 0; border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
+  .vrow-table th, .vrow-table td { border: 0; padding: 2px 0; }
+  .vrow-table td::before { content: attr(data-l) ": "; color: var(--gr-color-text-secondary); font-weight: var(--gr-font-weight-medium); }
+}
+/* The show-password button moves under the field, so the field keeps its full width for typing. */
+@media (max-width: 17.5em) {
+  .has-after { flex-wrap: wrap; justify-content: flex-end; }
+  .has-after .input { padding-right: var(--gr-space-3); }
+  .has-after .input-btn { position: static; transform: none; margin-top: var(--gr-space-1); }
+  .set-row-plain:has(> .rem-time) { grid-template-columns: 1fr; justify-items: start; row-gap: var(--gr-space-2); }
+}

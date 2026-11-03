@@ -558,6 +558,10 @@
   const PROF_AT = pick('prof', ['a', 'b', 'c'], 'c');
   const NAV_AT = pick('nav', ['solid', 'glass', 'float', 'ember'], 'glass');
   if (NAV_AT !== 'solid') document.documentElement.classList.add('nav-' + NAV_AT);
+  /* Large text (200 % zoom pass, session 13): how the tab bar copes when the labels no longer fit. ?lt=a|b|c, see the large-text block in style.css. */
+  const LT_AT = pick('lt', ['a', 'b', 'c'], 'a');
+  document.documentElement.classList.add('lt-' + LT_AT);
+  if (pick('lth', ['step', 'full'], 'step') === 'full') document.documentElement.classList.add('lth-full');
 
   /* Round 7 (owner, session 11; D-063). The example question in the reminder notification is a separate, more personal
      question (owner: "cool i baš connecting"); ?nq=1..4 shows the candidates compared in round7.html.
@@ -608,8 +612,8 @@
       ${err ? fieldErr('vis', err) : ''}
       <p class="vrow-same">${ic('users', 'sm')}<span>U oba slučaja odgovore i komentare vide svi članovi, a popis pratitelja samo pratitelji.</span></p>
       ${compact ? `<details class="vrow-more"><summary>Usporedi sve razlike</summary>
-        <table class="vrow-table"><thead><tr><td></td><th scope="col">Javno</th><th scope="col">Privatno</th></tr></thead>
-        <tbody>${VIS_TABLE.map(([k, a, b]) => `<tr><th scope="row">${k}</th><td>${a}</td><td>${b}</td></tr>`).join('')}</tbody></table></details>` : ''}
+        <table class="vrow-table" role="table"><thead role="rowgroup"><tr role="row"><td role="cell"></td><th scope="col" role="columnheader">Javno</th><th scope="col" role="columnheader">Privatno</th></tr></thead>
+        <tbody role="rowgroup">${VIS_TABLE.map(([k, a, b]) => `<tr role="row"><th scope="row" role="rowheader">${k}</th><td role="cell" data-l="Javno">${a}</td><td role="cell" data-l="Privatno">${b}</td></tr>`).join('')}</tbody></table></details>` : ''}
       <p class="fine fine-left">Music DNA možeš dodatno suziti u sljedećim koracima.</p>`;
   }
 

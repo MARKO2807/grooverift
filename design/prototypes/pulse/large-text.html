@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · velika slova (200 %)</title>
+<!-- Owner decision sketch (session 13): the 200 % text pass. Every frame is the real prototype (index.html).
+     Each iframe is 180 x 370 CSS px shown at zoom 2, which is what Chrome's page zoom at 200 % does on a 360 x 740 phone.
+     It triggers the same large-text rules (style.css, max-width: 17.5em) as a 200 % browser text size.
+     The text-size check itself is tools/zoom-check.mjs. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2 { font: var(--gr-type-title-2); margin: 48px 0 8px; }
+  p { color: var(--gr-color-text-secondary); max-width: 80ch; margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { display: flex; flex-direction: column; gap: 8px; max-width: 790px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; max-width: 60ch; }
+  .frames { display: flex; gap: 12px; flex-wrap: wrap; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  .phone small { display: block; text-align: center; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); padding: 6px 0 0; }
+  iframe { display: block; border: 0; border-radius: 11px; background: #0B0D12; width: 180px; height: 370px; zoom: 2; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Velika slova: tekst na 200 %</h1>
+  <p>Ovako aplikacija izgleda kad netko na mobitelu postavi najveća slova. Okviri su prava skica i sve se može klikati. Prikazani su kao zoom stranice od 200 %, pa su ikone i razmaci malo veći nego kad se povećaju samo slova.</p>
+  <p>Što se mijenja kad su slova velika: razmaci više ne rastu, logo u gornjoj traci ostaje iste veličine, a stvari koje stoje jedna do druge slažu se jedna ispod druge. Tekst nigdje nije odrezan i stranica se ne pomiče lijevo-desno. To je provjereno na 49 ekrana, na 100 %, 150 % i 200 %, i na 320 px širine.</p>
+
+  <h2>1. Donja traka s karticama</h2>
+  <p>Na 200 % četiri natpisa (Početna, Hub, Aktivnost, Profil) više ne stanu jedan do drugoga. Čitač ekrana u sve tri verzije čuje svako ime.</p>
+  <div class="grid" id="tabs"></div>
+
+  <h2>2. Koliko rastu naslovi</h2>
+  <p>Običan tekst uvijek naraste do punih 200 %. Pitanje je koliko rastu veliki naslovi.</p>
+  <div class="grid" id="heads"></div>
+
+  <h2>3. Napravljeno bez izbora</h2>
+  <p>Ovo slijedi iz pravila iznad i nije trebalo birati.</p>
+  <div class="grid" id="done"></div>
+</div>
+<script>
+(function () {
+  const frame = (q, t) => `<div class="phone"><iframe title="${t}" loading="lazy" src="index.html?${q}"></iframe><small>${t}</small></div>`;
+  const opt = (t, tag, d, frames) => `<div class="opt"><h3>${t}${tag ? ' <span class="rec">preporuka</span>' : ''}</h3><div class="frames">${frames}</div><p>${d}</p></div>`;
+  document.getElementById('tabs').innerHTML = [
+    ['a', 'A. Natpis samo na otvorenoj kartici', 1, 'Otvorena kartica ima ikonu i ime, ostale samo ikonu. Ovako radi Android (Material). Uvijek znaš gdje si, a ikone su poznate.'],
+    ['b', 'B. Svi natpisi, ali manji', 0, 'Svi natpisi ostaju, ali samo oni narastu tek malo (najviše 15 px). Sve je vidljivo, ali ti natpisi nisu na 200 %. Uz zoom stranice (kao u ovim okvirima) i dalje se preklapaju.'],
+    ['c', 'C. Samo ikone', 0, 'Nijedan natpis, samo ikone. Najmirnije, ali trebaš znati što koja ikona znači.']
+  ].map(([v, t, r, d]) => opt(t, r, d, frame(`flow=drop&at=home&lt=${v}`, 'Početna') + frame(`flow=drop&at=activity&lt=${v}`, 'Aktivnost'))).join('');
+  document.getElementById('heads').innerHTML = [
+    ['step', 'A. Naslovi rastu manje od teksta', 1, 'Naslov nikad nije manji nego inače, ali raste samo za korak iznad teksta. Ovako radi Android 14. Pitanje dana stane u nekoliko redaka. Rizik: stroga provjera WCAG 1.4.4 mogla bi reći da naslovi nisu na 200 % (ostali tekst jest).'],
+    ['full', 'B. Sve raste do 200 %', 0, 'I naslovi se udvostruče. Strogo po pravilu, ali pitanje dana zauzme cijeli ekran i čita se riječ po riječ.']
+  ].map(([v, t, r, d]) => opt(t, r, d, frame(`flow=drop&at=drop&lth=${v}`, 'Pitanje i odgovori') + frame(`at=done&lth=${v}`, 'Spremno'))).join('');
+  document.getElementById('done').innerHTML = [
+    ['flow=drop&at=answer', 'Komentari: ime gore, vrijeme ispod'],
+    ['flow=drop&at=settings', 'Postavke: naslov u dva retka'],
+    ['at=account', 'Lozinka: „Prikaži” ispod polja'],
+    ['flow=drop&at=hub', 'Hub: dani u dva reda'],
+    ['at=pending', 'Gumbi jedan ispod drugog'],
+    ['at=visibility', '„Usporedi sve razlike” kao popis']
+  ].map(([q, t]) => frame(q, t)).join('');
+})();
+</script>
+</body>
+</html>
