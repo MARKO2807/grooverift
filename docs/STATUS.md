@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-04 (session 20, step 3.7: brand derivatives)_
+_Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy guide)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -16,12 +16,12 @@ _Last updated: 2026-11-04 (session 20, step 3.7: brand derivatives)_
 | ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
 | 3.6 Core components spec | ✅ Done (session 19, D-082): [components](design/components.md) and the specimen `design/prototypes/components.html`; component tokens in `design/tokens/` |
 | 3.7 Brand derivatives ⛳ | ✅ Done (session 20, D-083): `docs/brand/derived/` (cleaned master, app icons, favicon S1, badge, light variants, interim wordmark); review page `design/prototypes/brand.html` |
-| 3.8 HR/EN copy tone guide | ⏳ Next |
-| 3.9 Review and close | ⏳ |
+| 3.8 HR/EN copy tone guide | ✅ Done (session 20, D-084): [copy-guide](design/copy-guide.md); decision page `design/prototypes/copy.html` |
+| 3.9 Review and close | ⏳ Next |
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-083. Key ones:
+- Decisions D-001 to D-084. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -92,6 +92,7 @@ _Last updated: 2026-11-04 (session 20, step 3.7: brand derivatives)_
     - **Accessibility pass (session 18, D-081):** `tools/a11y-check.mjs` reads the accessibility tree Narrator receives, walks every screen with Tab and emulates Windows high contrast; 123 screens at 360, 800, 1366 and 1920 px. Seven fixes (a dangling `aria-describedby`, four unnamed Spirala figures, a second `h1` on the in-shell failure, and the forced-colour marks of the current tab and rail item, the switches, the open settings row and the skeletons). The owner's own Narrator listen is a ten-minute script in `docs/design/accessibility-pass.md`. **Step 3.5 is closed.**
     - **Core components spec (session 19, D-082):** `docs/design/components.md` and the specimen `design/prototypes/components.html` (every component in every state on the real CSS, plus three live overlays in phone frames). Component tokens in `tokens.json` (180 variables, 89 contrast pairs, all pass). Prototype changes: one disabled opacity, the missing hover and pressed states, a bar under the chosen sort option and day (a tick broke D-047), `Highlight` for every selected state and a visible focus outline on hidden radios in forced colours, `scroll-padding` for 2.4.11. Icon mapping to Phosphor for Phase 4. **Step 3.6 is closed.**
     - **Brand derivatives (session 20, D-083):** cleaned symbol master (silhouette byte-identical), apple-touch/PWA/maskable icons, favicon and badge in the drawn S1 "Obris" shape, light-paper L1 "Tinta" (print-only deep Amber `#B87A12`) and L2 tile, and the interim outlined wordmark (D-011). Tools and provenance in `docs/brand/` (README §5). **All review pages are linked from `design/prototypes/index.html`.**
+    - **Copy guide (session 20, D-084):** voice "miran i izravan"; feature names English, content types Croatian (Tjedna anketa, Znaš li?); odgovor/komentar; gender-neutral Croatian by rephrasing; full HR/EN glossary in `docs/design/copy-guide.md`.
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -103,7 +104,7 @@ _Last updated: 2026-11-04 (session 20, step 3.7: brand derivatives)_
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Step 3.8, HR/EN copy tone guide** (effort: Medium; owner approves the glossary and tone). Fresh session. Output: `docs/design/copy-guide.md` (voice, glossary: Mutuals/Uzajamni, whether "Daily Drop" is translated; microcopy for notices, errors, empty states; gender-neutral Croatian conventions). Inputs: the copy already in `design/prototypes/pulse/` (drafts marked "for 3.8" in D-076 and others), `docs/design/ux-foundations.md`.
+1. **Step 3.9, review and close Phase 3** (effort: **High**; owner gate: approves IA, prototypes and tokens, the roadmap Phase 3 acceptance). Fresh session. Plan: an independent accessibility/UX review by a subagent, all contrast checks and test suites rerun (`contrast-check`, `pulse-smoke`, `zoom-check`, `a11y-check` incl. a visible-box check for hidden radios in forced colours, see HANDOFF session 19), the open 3.9 items (D-073 large-text interpretation, the D-076 visitor wall, the D-078 countdown reduced-motion variant, the owner's Narrator listen), then STATUS/HANDOFF/DECISIONS and a Phase 4 proposal for owner approval.
 2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:

@@ -1,6 +1,6 @@
 # Session handoff
 
-_Session 20, 2026-11-04 (step 3.7, brand derivatives; closed). Next session: read `docs/STATUS.md`, then this file, then start step 3.8 (HR/EN copy tone guide)._
+_Session 20, 2026-11-04 (steps 3.7 brand derivatives and 3.8 copy guide; both closed). Next session: read `docs/STATUS.md`, then this file, then start step 3.9 (review and close Phase 3; recommend High effort)._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
@@ -8,7 +8,8 @@ _Session 20, 2026-11-04 (step 3.7, brand derivatives; closed). Next session: rea
 3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In sessions 11 and 12 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. In session 14 the owner switched to **Fable 5.1 at high** (visible in the session). In session 15 the owner set Fable 5.1 as the default model; the effort was not visible. In session 17 the owner confirmed **high effort** in words ("high effort je uključen") on Fable 5.1. In session 18 Claude asked whether high was still on and got no answer; the work went ahead. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
-- **Phase 3, step 3.7 is closed (D-083). Next: step 3.8, the HR/EN copy tone guide**, in a fresh session.
+- **Phase 3, steps 3.7 (D-083) and 3.8 (D-084) are closed. Next: step 3.9, review and close Phase 3**, in a fresh session, at High effort.
+- **Session 20, part 2: the copy guide (step 3.8).** The owner chose to continue in the same session. Decision page `design/prototypes/copy.html` (K1–K4, every option on the same situations in HR and EN, plus the glossary table); the owner chose every recommendation, then approved the glossary ("Odobravam sve"). Guide: `docs/design/copy-guide.md` (voice, mechanics, gender-neutral Croatian, glossary incl. report categories, patterns, safety copy, accessibility, editorial). Applied in `pulse/app.js` and `components.html`: Tjedna anketa, Znaš li? (no `lang="en"`), Izbriši for permanent deletion, accessible names without „korisnika <ime>". `pulse-smoke.mjs` 146/146, exit 0. Not done: English UI copy for the prototype (it is Croatian only) and e-mail templates; both follow the guide in Phase 4.
 - **Owner rules from session 20 (also in memory):**
   - **One hub for everything:** `design/prototypes/index.html` links every review and decision page, newest first, with D-numbers. Every new page gets its row there in the same commit.
   - **Always give full URLs** when pointing the owner to a page, e.g. `file:///C:/Users/marko/Desktop/GrooveRift/design/prototypes/brand.html#small`, never a bare relative path.

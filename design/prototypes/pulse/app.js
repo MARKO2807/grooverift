@@ -397,7 +397,7 @@
         <div class="reacts" role="group" aria-label="Reakcije">${D.reactions.map(r => react(a, r)).join('')}</div>
         ${o.full ? '' : commentsBtn(a)}
       </div>
-      ${a.mine && !o.full ? `<div class="ans-own"><button class="btn btn-secondary btn-sm" data-a="edit" data-k="edit">${ic('edit', 'sm')}Uredi</button><button class="btn btn-danger btn-sm" data-a="delete" data-k="delete">${ic('trash', 'sm')}Obriši</button></div>` : ''}
+      ${a.mine && !o.full ? `<div class="ans-own"><button class="btn btn-secondary btn-sm" data-a="edit" data-k="edit">${ic('edit', 'sm')}Uredi</button><button class="btn btn-danger btn-sm" data-a="delete" data-k="delete">${ic('trash', 'sm')}Izbriši</button></div>` : ''}
     </article>`;
   }
 
@@ -779,7 +779,7 @@
   const profArtists = () => st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : '';
   /* Settings (SET-01). Entered from the gear at the top right of the member's own profile (D-063), as on Instagram,
      TikTok and Spotify (docs/research/2026-11-02-settings-benchmark.md). Round 8 (owner, D-065): no separate "download
-     your data" row (PENDING: GDPR export, OQ-30), "Deaktiviraj ili obriši račun" at the very bottom, and the account
+     your data" row (PENDING: GDPR export, OQ-30), "Deaktiviraj ili izbriši račun" at the very bottom, and the account
      status shown quietly at the top. Four arrangements, ?set=a..d, compared in round8.html.
      a: groups with titles, the status as one quiet line on top. b: a profile card on top with the status inside it.
      c: one flat list without group titles and plain icons. d: a search field on top that filters the rows.
@@ -831,7 +831,7 @@
     } else body = groups.map(([g, rows], gi) => `<section class="set-group" aria-labelledby="sg-${gi}"><h2 class="set-gt" id="sg-${gi}">${g}</h2><ul class="set-list">${list(rows, gi)}</ul></section>`).join('');
     return `${top}<div id="set-body" class="set-body">${body}</div>
       <button class="btn btn-secondary btn-block set-out" data-a="logout" data-k="logout">${pic('sign-out', 'set-ic')}Odjavi se</button>
-      <button class="set-delete" data-a="setsub" data-s="delete" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili obriši račun</button>
+      <button class="set-delete" data-a="setsub" data-s="delete" data-k="set-delete">${ic('trash', 'sm')}Deaktiviraj ili izbriši račun</button>
       <p class="meta set-ver">${wm()} alfa · skica 3.5</p>`;
   }
   const profAnswers = () => `<section class="section" aria-labelledby="h-pdd"><h2 id="h-pdd" class="section-title">Daily Drop odgovori</h2>
@@ -1032,7 +1032,7 @@
         ${grp('', row('ab-contact', 'Kontakt') + row('ab-imp', 'Impresum', 'Tko stoji iza GrooveRifta (OQ-05)') + row('ab-lic', 'Licence', 'MusicBrainz (CC0), ikone Phosphor (MIT), fontovi Sora i Inter (OFL)'))}`],
     delete: ['Brisanje računa', () => deleteBody()],
     deleteA: ['Brisanje računa', () => `<div class="sub-copy">${pic('database', 'set-ic')}<div><p class="set-t">Prije toga: kopija tvojih podataka</p><p class="set-d">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci.</p></div><button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Pripremamo kopiju. Javit ćemo e-poštom kad bude spremna (simulacija)." data-k="d-copy">Preuzmi</button></div>
-        ${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Vratiš se kad se opet prijaviš.' }, { v: 'del', t: 'Obriši trajno', d: `Račun se skriva odmah, a briše se ${(p => p.day + '. ' + p.mg)(dparts(addDays(D.drop.date, 30)))}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
+        ${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Vratiš se kad se opet prijaviš.' }, { v: 'del', t: 'Izbriši trajno', d: `Račun se skriva odmah, a briše se ${(p => p.day + '. ' + p.mg)(dparts(addDays(D.drop.date, 30)))}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
         ${field({ id: 'delpw', label: 'Za potvrdu upiši lozinku', type: 'password', attrs: 'autocomplete="current-password"' })}
         <button class="btn btn-danger btn-block" data-a="del-one" data-k="d-go">${ic('trash', 'sm')}Nastavi</button>`]
   };
@@ -1243,18 +1243,18 @@
     if (DEL_AT !== 'b') return SUB.deleteA[1]();
     const step = st.delStep || 'choose';
     const prog = (i, n) => `<p class="progress-text">Korak ${i} od ${n}</p>`;
-    if (step === 'choose') return `${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Kad se opet prijaviš, sve se vraća.' }, { v: 'del', t: 'Obriši trajno', d: `Račun se skriva odmah, a briše se ${delDate()}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
+    if (step === 'choose') return `${choices('del', 'Što želiš?', [{ v: 'off', t: 'Deaktiviraj', d: 'Profil i odgovori se skrivaju. Kad se opet prijaviš, sve se vraća.' }, { v: 'del', t: 'Izbriši trajno', d: `Račun se skriva odmah, a briše se ${delDate()}. Do tada se možeš predomisliti.` }], st.del, 'choices-compact')}
       <button class="btn btn-primary btn-block" data-a="del-next" data-k="del-next">Nastavi</button>`;
     if (step === 'copy') return `${prog(1, 3)}<div class="sub-step"><span class="step-ic" aria-hidden="true">${pic('database')}</span><h2 class="sub-h">Želiš li prvo kopiju svojih podataka?</h2>
       <p class="help">Odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci. Kad bude spremna, javimo e-poštom.</p></div>
       ${st.delCopy ? `<p class="status-line ok">${ic('check')}<span>Kopija se priprema.</span></p>` : ''}
       <div class="foot-row equal"><button class="btn btn-secondary" data-a="del-copy" data-k="del-copy"${st.delCopy ? ' disabled' : ''}>Preuzmi kopiju</button><button class="btn btn-secondary" data-a="del-next" data-k="del-next">${st.delCopy ? 'Nastavi' : 'Preskoči'}</button></div>`;
-    if (step === 'confirm') return `${st.del === 'off' ? '' : prog(2, 3)}<h2 class="sub-h">${st.del === 'off' ? 'Deaktiviraj račun' : `Obriši račun ${delDate()}`}</h2>
+    if (step === 'confirm') return `${st.del === 'off' ? '' : prog(2, 3)}<h2 class="sub-h">${st.del === 'off' ? 'Deaktiviraj račun' : `Izbriši račun ${delDate()}`}</h2>
       <ul class="sub-facts">${st.del === 'off'
         ? '<li>Profil, Music DNA i odgovori se skrivaju.</li><li>Nitko ti ne može pisati ni te pratiti.</li><li>Kad se opet prijaviš, sve se vraća.</li>'
         : `<li>Račun se skriva odmah.</li><li>${delDate()} brišemo profil, Music DNA, odgovore, komentare i reakcije.</li><li>Do tada se možeš prijaviti i vratiti račun.</li><li>Neke zapise moramo čuvati duže jer to traži zakon. Piše u Pravilima privatnosti.</li>`}</ul>
       ${field({ id: 'delpw', label: 'Za potvrdu upiši lozinku', type: 'password', attrs: 'autocomplete="current-password"' })}
-      <button class="btn btn-danger btn-block" data-a="del-go" data-k="del-go">${st.del === 'off' ? 'Deaktiviraj' : `${ic('trash', 'sm')}Obriši račun`}</button>`;
+      <button class="btn btn-danger btn-block" data-a="del-go" data-k="del-go">${st.del === 'off' ? 'Deaktiviraj' : `${ic('trash', 'sm')}Izbriši račun`}</button>`;
     return '';
   }
 
@@ -2336,10 +2336,10 @@
         <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Odustani</button><button class="btn btn-primary" data-a="mute-confirm" data-k="ov-ok">Utišaj</button></div></div>`;
     if (o.type === 'delete') {
       return `<div class="scrim" data-a="overlay-close"></div><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="ov-title" aria-describedby="ov-desc">
-        <h2 id="ov-title" class="dialog-title">Obrisati odgovor?</h2>
+        <h2 id="ov-title" class="dialog-title">Izbrisati odgovor?</h2>
         <p id="ov-desc">Odgovor nestaje s pitanja i s tvog profila. To se ne može vratiti.</p>
         <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Odustani</button>
-        <button class="btn btn-danger" data-a="delete-confirm" data-k="ov-delete">${ic('trash', 'sm')}Obriši</button></div></div>`;
+        <button class="btn btn-danger" data-a="delete-confirm" data-k="ov-delete">${ic('trash', 'sm')}Izbriši</button></div></div>`;
     }
     if (o.type === 'sheet') {
       return `<div class="scrim" data-a="overlay-close"></div><div class="sheet sheet-compose" role="dialog" aria-modal="true" aria-labelledby="ov-title">
@@ -2416,7 +2416,7 @@
     if (o.type === 'uname') return dlg(`Promijeniti u @${esc(st.newUser)}?`, `Sljedeća promjena moguća je tek od ${dayMonth(addDays(D.drop.date, 30))}. @${esc(st.username)} ostaje rezervirano za tebe 30 dana.`, 'Odustani', 'uname-confirm', 'Promijeni');
     if (o.type === 'unblock') return dlg(`Odblokirati @${esc(o.h || 'mia_vinyl')}?`, 'Opet ćete vidjeti profile i odgovore jedno drugoga. Praćenje se ne vraća samo. Ta osoba ne dobije obavijest.', 'Odustani', 'unblock-confirm', 'Odblokiraj');
     if (o.type === 'logout') return dlg('Odjaviti se?', 'Samo na ovom uređaju. Za povratak trebaš e-poštu i lozinku ili Google.', 'Odustani', 'logout-confirm', 'Odjavi se');
-    if (o.type === 'deltype') return dlg(st.del === 'off' ? 'Deaktivirati račun?' : `Obrisati račun ${delDate()}?`, 'Za potvrdu upiši OBRIŠI velikim slovima.', 'Odustani', 'del-type-go', st.del === 'off' ? 'Deaktiviraj' : 'Obriši', true,
+    if (o.type === 'deltype') return dlg(st.del === 'off' ? 'Deaktivirati račun?' : `Izbrisati račun ${delDate()}?`, 'Za potvrdu upiši OBRIŠI velikim slovima.', 'Odustani', 'del-type-go', st.del === 'off' ? 'Deaktiviraj' : 'Izbriši', true,
       `<label class="sr-only" for="f-deltype">Upiši OBRIŠI</label><input class="input" id="f-deltype" data-k="f-deltype" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(st.delType || '')}">`);
     if (o.type === 'perm') {
       return `<div class="scrim"></div><div class="dialog perm" role="dialog" aria-modal="true" aria-labelledby="ov-title">
@@ -2803,7 +2803,7 @@
       case 'delete-confirm':
         st.mine = null; st.overlay = null; render();
         focusSel('[data-k="dock-field"]');
-        return toast('Odgovor je obrisan.');
+        return toast('Odgovor je izbrisan.');
       /* Round 10. */
       case 'retry-load': st.loadOk = true; render(); return focusSel('#h-answers, main h1');
       case 'signin': {

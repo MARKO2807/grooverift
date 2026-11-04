@@ -1,6 +1,6 @@
 # GrooveRift copy guide (HR/EN), v0.1
 
-Step 3.8. Status: the four owner choices K1–K4 are **CONFIRMED** (D-084, 2026-11-04, decision page `design/prototypes/copy.html`). Everything else is **RECOMMENDED**: it follows from them and from earlier decisions, and the owner approves it with this guide. Croatian examples come first because Croatian is the harder language. English must say the same thing, not translate word by word.
+Step 3.8. Status: **CONFIRMED** (D-084, 2026-11-04). The owner chose K1–K4 on the decision page `design/prototypes/copy.html` and then approved the whole glossary and these rules ("Odobravam sve"). In the tables, "C" marks items fixed by an earlier decision and "R" items introduced here; both are now the rule. Croatian examples come first because Croatian is the harder language. English must say the same thing, not translate word by word.
 
 Scope: all interface text written by the product: buttons, labels, headings, notifications, toasts, errors, empty states, confirmations, onboarding, settings, e-mails, accessible names. Not in scope: Daily Drop questions and other editorial content (written by editors, may carry more personality, still follow §6 and §8); legal texts (counsel); member content (never edited, Master Prompt §2).
 
@@ -200,6 +200,7 @@ Editors may be more personal and playful in questions, polls and Did You Know?/Z
 
 - „Weekly Poll" → „Tjedna anketa", „Did You Know?" → „Znaš li?" in the Croatian UI (Kako radi, Hub cards, toasts, archives), without `lang="en"`.
 - Accessible names no longer use „korisnika <ime>": „Više opcija za odgovor: Luka", „Komentari na odgovor: Luka".
-- `pulse-smoke.mjs` passes 146/146 after the change.
+- „Obriši" → „Izbriši" (and „Obrisati" → „Izbrisati", „obrisan" → „izbrisan") in the prototype and in `components.html`, per the delete/remove rule.
+- `pulse-smoke.mjs` passes 146/146 after the changes.
 
 Remaining copy work happens screen by screen in Phase 4, with this guide as the rule set. Open for later: English UI copy for the prototype (the prototype is Croatian only), e-mail templates (B3/beta), and the final legal texts (counsel).
