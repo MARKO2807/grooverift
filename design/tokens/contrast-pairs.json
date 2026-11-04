@@ -19,6 +19,7 @@
       "kind": "text", "min": 4.5,
       "pairs": [
         ["color.state.danger", "color.state.danger-bg"],
+        ["color.state.danger", "color.state.danger-bg-hover"],
         ["color.state.warning", "color.state.warning-bg"],
         ["color.state.success", "color.state.success-bg"],
         ["color.highlight.text", "color.highlight.bg"],
@@ -53,7 +54,7 @@
       "name": "Focus ring against surfaces and tints",
       "kind": "non-text", "min": 3,
       "fg": ["color.focus.ring"],
-      "bg": ["color.bg.canvas", "color.bg.surface", "color.bg.raised", "color.bg.high", "color.selected.bg", "color.highlight.bg", "color.state.danger-bg"]
+      "bg": ["color.bg.canvas", "color.bg.surface", "color.bg.raised", "color.bg.high", "color.selected.bg", "color.highlight.bg", "color.state.danger-bg", "color.state.danger-bg-hover"]
     },
     {
       "name": "Focus gap against brand fills (ring stays visible on Coral/Amber)",

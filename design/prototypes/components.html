@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · osnovne komponente (korak 3.6)</title>
+<!-- Step 3.6 specimen. Every component here is the real one: the same markup classes and pulse/style.css as the
+     prototype (pulse/index.html), on the --gr-* tokens. The written spec is docs/design/components.md (English); the
+     section numbers match. States that need a pointer or a key (hover, pressed, focus) are shown with the specimen-only
+     classes sp-hover / sp-active / sp-focus below, which copy the real :hover / :active / :focus-visible rules.
+     Everything in the "Zadano" cells also works for real: click, Tab, Space, Enter, arrow keys. Data is fictional. -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="pulse/style.css">
+<style>
+  /* Specimen layout. */
+  body { background: #07080B; }
+  .sp { max-width: 84rem; margin: 0 auto; padding: 32px 24px 96px; display: flex; flex-direction: column; gap: 8px; }
+  .sp > header h1 { font: var(--gr-type-title-1); margin-bottom: 8px; }
+  .sp p.sp-lead, .sp-sec > p, .sp-kb li { color: var(--gr-color-text-secondary); max-width: 80ch; font: var(--gr-type-body-sm); }
+  .sp b { color: var(--gr-color-text-primary); }
+  .sp a.sp-a { color: var(--gr-color-text-link); }
+  .sp-tools { position: sticky; top: 0; z-index: 500; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 0; background: #07080B; border-bottom: 1px solid var(--gr-color-border-subtle); }
+  .sp-tools label { display: inline-flex; gap: 8px; align-items: center; font: var(--gr-type-label); }
+  .sp-toc { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sp-toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 4px 12px; text-decoration: none; font: var(--gr-type-caption); }
+  .sp-toc a:hover { background: var(--gr-color-bg-high); }
+  .sp-sec { padding-top: 40px; display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 64px; }
+  .sp-sec > h2 { font: var(--gr-type-title-2); }
+  .sp-sec > h3 { font: var(--gr-type-title-3); margin-top: 12px; }
+  .sp-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+  .sp-cell { display: flex; flex-direction: column; gap: 8px; min-width: 9.5rem; padding: 16px; border-radius: 12px; background: var(--gr-color-bg-canvas); border: 1px solid var(--gr-color-border-subtle); }
+  .sp-cell.w { flex: 1 1 22rem; max-width: 30rem; }
+  .sp-cell.ww { flex: 1 1 100%; max-width: 46rem; }
+  .sp-cell > .sp-st { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); order: 9; margin-top: auto; padding-top: 4px; }
+  .sp-cell > .sp-st code, .sp code { font-family: ui-monospace, Consolas, monospace; font-size: .8125rem; color: var(--gr-color-highlight-text); }
+  .sp-stage { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .sp-col { display: flex; flex-direction: column; gap: 12px; }
+  .sp-kb { border-left: 2px solid var(--gr-color-highlight-border); padding: 4px 0 4px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .sp-kb li { list-style: disc; margin-left: 18px; }
+  .sp-frame { position: relative; transform: translateZ(0); overflow: hidden; height: 340px; border-radius: 12px; border: 1px solid var(--gr-color-border-subtle); background: var(--gr-color-bg-canvas); flex: 1 1 22rem; max-width: 30rem; }
+  .sp-frame .sp-under { padding: 16px; color: var(--gr-color-text-secondary); font: var(--gr-type-body-sm); }
+  .sp-frame .sheet { animation: none; }
+  .sp-phone { border-radius: 26px; padding: 6px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  .sp-phone iframe { display: block; border: 0; border-radius: 20px; background: #0B0D12; width: 360px; height: 640px; }
+  .sp-tabbar { width: 360px; max-width: 100%; position: relative; }
+  .sp-rail { display: flex !important; flex-direction: column; gap: 2px; width: 15rem; padding: 12px; border: 1px solid var(--gr-color-border-subtle); border-radius: 12px; }
+  .sp-rail-c { width: 80px; padding: 12px 8px; }
+  .sp-rail .rail-item { position: relative; width: 100%; display: flex; align-items: center; min-height: 48px; border: 0; background: none; color: var(--gr-color-text-secondary); border-radius: var(--gr-radius-control); }
+  .sp-rail:not(.sp-rail-c) .rail-item { flex-direction: row; justify-content: flex-start; gap: var(--gr-space-3); padding: 0 var(--gr-space-3); font: var(--gr-type-body); }
+  .sp-rail-c .rail-item { flex-direction: column; justify-content: center; gap: 4px; min-height: 56px; font: var(--gr-type-caption); }
+  .sp-rail .rail-item[aria-current="page"] { color: var(--gr-color-text-accent); }
+  .sp-rail .rail-item[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 25%; bottom: 25%; width: 2px; background: var(--gr-color-text-accent); border-radius: 2px; }
+  .sp-rail-c .rail-item[aria-current="page"]::before { left: -8px; }
+  .sp-rail .rail-item .pi, .sp-rail .rail-item svg { width: 24px; height: 24px; flex: none; }
+  .sp-rail .rail-item.sp-hover { background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); }
+  .sp-toast { position: static; display: block; padding: 0; }
+  .sp-skip { position: static; transform: none; display: inline-block; }
+  .sp-dna { width: 100%; max-width: 36rem; }
+  .sp-tbl { border-collapse: collapse; font: var(--gr-type-body-sm); width: 100%; max-width: 80rem; }
+  .sp-tbl th, .sp-tbl td { text-align: left; vertical-align: top; padding: 8px 10px; border-top: 1px solid var(--gr-color-border-subtle); }
+  .sp-tbl th { color: var(--gr-color-text-primary); font-weight: 600; }
+  .sp-tbl td { color: var(--gr-color-text-secondary); }
+  .sp-sw { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--gr-color-border-subtle); }
+  /* Specimen-only state classes. They copy the real rules in pulse/style.css (:hover, :active, :focus-visible). */
+  .sp-hover.btn-primary { background: var(--gr-color-action-primary-hover); }
+  .sp-active.btn-primary { background: var(--gr-color-action-primary-pressed); }
+  .sp-hover.btn-secondary, .sp-hover.iconbtn, .sp-hover.chip:not(.chip-genre), .sp-hover.menu-item, .sp-hover.comments-btn { background: var(--gr-color-bg-high); }
+  .sp-active.btn-secondary { background: var(--gr-color-bg-surface); }
+  .sp-hover.btn-danger, .sp-active.btn-danger { background: var(--gr-color-state-danger-bg-hover); }
+  .sp-hover.chip-genre { border-color: color-mix(in srgb, var(--g) 55%, var(--gr-color-border-strong)); }
+  .sp-hover.ref { border-color: var(--gr-color-border-strong); }
+  .sp-hover.peek { background: var(--gr-color-bg-raised); }
+  .sp-focus, .choice.sp-focus, .sort label.sp-focus span { box-shadow: 0 0 0 var(--gr-focus-gap) var(--gr-color-focus-gap), 0 0 0 calc(var(--gr-focus-gap) + var(--gr-focus-width)) var(--gr-color-focus-ring); }
+  .sort label.sp-focus { box-shadow: none; }
+  .sp-focus.btn-primary { box-shadow: 0 0 0 var(--gr-focus-gap) var(--gr-color-focus-gap), 0 0 0 calc(var(--gr-focus-gap) + var(--gr-focus-width)) var(--gr-color-focus-ring); }
+  h3.sp-focus-h { text-decoration: underline; text-decoration-color: var(--gr-color-focus-ring); text-underline-offset: 4px; }
+  @media (forced-colors: active) { .sp-focus:not(label), .sort label.sp-focus span { outline: 2px solid CanvasText; outline-offset: 2px; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="gr-ember" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient></defs></svg>
+<div class="sp">
+  <header>
+    <h1>Osnovne komponente</h1>
+    <p class="sp-lead"><b>Korak 3.6.</b> Svaka komponenta iz prototipa „Pulse”, u svim stanjima, na pravim tokenima i pravom CSS-u (<code>pulse/style.css</code>). Ćelije „Zadano” rade (klik, Tab, razmak, Enter, strelice); ostala stanja su prikazana statično. Pisana specifikacija, s tipkovnicom, čitačem zaslona, visokim kontrastom i tokenima po stanju: <code>docs/design/components.md</code>. Brojevi odjeljaka su isti. Podaci su izmišljeni.</p>
+  </header>
+  <div class="sp-tools">
+    <label><button type="button" class="switch" role="switch" aria-checked="false" id="sp-calm" aria-labelledby="sp-calm-l"><span></span></button><span id="sp-calm-l">Smanji pokrete</span></label>
+    <nav class="sp-toc" aria-label="Komponente">
+      <a href="#c-btn">1 Gumbi</a><a href="#c-field">2 Polja</a><a href="#c-chip">3 Čipovi</a><a href="#c-choice">4 Izbor i prekidač</a><a href="#c-card">5 Kartice</a><a href="#c-avatar">6 Avatar</a><a href="#c-nav">7 Navigacija</a><a href="#c-overlay">8 Listovi i dijalozi</a><a href="#c-toast">9 Toast</a><a href="#c-notice">10 Obavijesti</a><a href="#c-state">11 Stanja</a><a href="#c-react">12 Reakcija</a><a href="#c-dock">13 Dock</a><a href="#c-dna">14 Okvir Spirale</a><a href="#c-tokens">15 Tokeni</a>
+    </nav>
+  </div>
+
+  <!-- 1 Buttons -->
+  <section class="sp-sec" id="c-btn" aria-labelledby="h-btn">
+    <h2 id="h-btn">1. Gumbi</h2>
+    <p>Jedan <b>primarni</b> gumb po prikazu (Coral, tamni tekst). <b>Sekundarni</b> za sve ostalo. <b>Opasni</b> (obriši, blokiraj) nikad nije pun Coral, nego tamna Coral podloga, Coral rub i ikona. Mali gumb (36 px) samo uz miš; na dodir je 44 px.</p>
+    <h3>Primarni</h3>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary" type="button">Objavi</button></div><p class="sp-st">Zadano</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary sp-hover" type="button" tabindex="-1">Objavi</button></div><p class="sp-st">Hover <code>action.primary-hover</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary sp-active" type="button" tabindex="-1">Objavi</button></div><p class="sp-st">Pritisnuto <code>-pressed</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary sp-focus" type="button" tabindex="-1">Objavi</button></div><p class="sp-st">Fokus (tipkovnica)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary" type="button" disabled>Objavi</button></div><p class="sp-st">Onemogućeno <code>opacity.disabled</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary" type="button" aria-disabled="true">Objavljujem…</button></div><p class="sp-st">Učitavanje: tekst kaže što se događa, gumb ostaje u fokusu</p></div>
+    </div>
+    <h3>Sekundarni i opasni</h3>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary" type="button">Odustani</button></div><p class="sp-st">Sekundarni, zadano</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary sp-hover" type="button" tabindex="-1">Odustani</button></div><p class="sp-st">Hover <code>bg.high</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary sp-active" type="button" tabindex="-1">Odustani</button></div><p class="sp-st">Pritisnuto <code>bg.surface</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary sp-focus" type="button" tabindex="-1">Odustani</button></div><p class="sp-st">Fokus</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-danger" type="button"><i data-ic="trash" data-c="sm"></i>Obriši</button></div><p class="sp-st">Opasni, zadano</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-danger sp-hover" type="button" tabindex="-1"><i data-ic="trash" data-c="sm"></i>Obriši</button></div><p class="sp-st">Hover i pritisnuto <code>state.danger-bg-hover</code></p></div>
+    </div>
+    <h3>Veličine i vrste</h3>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary btn-sm" type="button"><i data-ic="edit" data-c="sm"></i>Uredi</button></div><p class="sp-st">Mali <code>button.height-sm</code> 36 / dodir 44</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary btn-cta" type="button">Odgovori</button></div><p class="sp-st">CTA (jedan, samo brand ekrani) 52 px</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-primary btn-cta btn-invite" type="button">Odgovori</button></div><p class="sp-st">CTA s pozivnim prstenom (Početna, dok odgovor nije objavljen)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="iconbtn" type="button" aria-label="Natrag"><i data-ic="back"></i></button><button class="iconbtn sp-hover" type="button" tabindex="-1" aria-label="Više opcija"><i data-ic="more"></i></button><button class="iconbtn sp-focus" type="button" tabindex="-1" aria-label="Zatvori"><i data-ic="x"></i></button></div><p class="sp-st">Ikona-gumb 44×44: zadano, hover, fokus. Uvijek ima <code>aria-label</code></p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="link" type="button">Zaboravljena lozinka?</button><button class="add-ref" type="button"><i data-ic="plus" data-c="sm"></i>Dodaj pjesmu ili album</button></div><p class="sp-st">Poveznica-gumb (Amber, podcrtano) i tekstualni gumb</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> Tab do gumba, Enter ili razmak ga pokreće. Onemogućeni gumb (<code>disabled</code>) nije u redoslijedu; gumb koji „radi” (<code>aria-disabled</code>) ostaje u fokusu i ne reagira.</li><li><b>Visoki kontrast:</b> sistemski gumb (ButtonText rub), onemogućeni u GrayText.</li></ul>
+  </section>
+
+  <!-- 2 Fields -->
+  <section class="sp-sec" id="c-field" aria-labelledby="h-field">
+    <h2 id="h-field">2. Polja</h2>
+    <p>Natpis je uvijek iznad polja i vidljiv (nikad samo placeholder). Pomoć je ispod natpisa, greška ispod polja, s ikonom i riječima, i povezana s poljem (<code>aria-describedby</code>). Tekst je 16 px, da iPhone ne zumira.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f1">E-pošta</label><p class="help" id="sp-f1-h">Pozivnica je vezana uz ovu adresu.</p><input class="input" id="sp-f1" type="email" autocomplete="email" aria-describedby="sp-f1-h" placeholder="ime@primjer.hr"></div><p class="sp-st">Zadano (pomoć, placeholder <code>text.secondary</code>)</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f2">Korisničko ime</label><div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">@</span><input class="input sp-focus" id="sp-f2" value="ana.slusa" tabindex="-1"></div><div class="status"><p class="status-line ok"><i data-ic="check"></i>Slobodno je.</p></div></div><p class="sp-st">Fokus, s prefiksom i statusom (<code>aria-live="polite"</code>)</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f3">Korisničko ime</label><div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true">@</span><input class="input" id="sp-f3" value="ana slusa" aria-invalid="true" aria-describedby="sp-f3-e"></div><p class="field-err" id="sp-f3-e"><i data-ic="alert"></i><span>Samo slova, brojke, točka i podvlaka. Pokušaj „ana.slusa”.</span></p></div><p class="sp-st">Greška: rub 2 px Coral, ikona i rečenica s prijedlogom</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f4">Lozinka</label><div class="input-wrap has-after"><input class="input" id="sp-f4" type="password" value="primjerlozinke" autocomplete="new-password"><button class="input-btn" type="button" aria-controls="sp-f4" aria-pressed="false"><i data-pic="eye" data-c="pw-ic"></i>Prikaži</button></div><p class="pw-need" id="sp-f4-n"><i data-ic="x"></i><span>Još: veliko slovo i poseban znak.</span></p></div><p class="sp-st">Lozinka: gumb „Prikaži” u polju, crta što nedostaje (D-062)</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f5">E-pošta</label><input class="input" id="sp-f5" value="ana@primjer.hr" readonly></div><p class="sp-st">Samo za čitanje (<code>bg.canvas</code>, <code>text.secondary</code>)</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f6">Grad</label><input class="input" id="sp-f6" value="Zagreb" disabled></div><p class="sp-st">Onemogućeno (rijetko: radije objasni zašto ne)</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f7">Tvoj odgovor</label><textarea class="textarea" id="sp-f7" placeholder="Napiši što misliš…"></textarea></div><p class="sp-st">Višeredno polje <code>field.textarea-min</code> 6 rem, raste</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f8">Podsjetnik</label><select class="select" id="sp-f8"><option>09:00</option><option>12:00</option><option>20:00</option></select></div><p class="sp-st">Padajući izbornik (nativni)</p></div>
+      <div class="sp-cell w"><div class="field"><label class="label" for="sp-f9">Traži izvođača</label><div class="input-wrap has-prefix"><span class="prefix" aria-hidden="true"><i data-ic="search" data-c="sm"></i></span><input class="input" id="sp-f9" type="search" placeholder="Npr. Arsen Dedić"></div></div><p class="sp-st">Pretraga (ikona je ukras; natpis ostaje)</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> Tab ulazi u polje, Enter u formi šalje. Kod slanja s greškama fokus ide na prvo neispravno polje; greške se izgovaraju.</li><li><b>Visoki kontrast:</b> rub polja je sistemski; greška ostaje vidljiva zbog ikone i teksta.</li></ul>
+  </section>
+
+  <!-- 3 Chips -->
+  <section class="sp-sec" id="c-chip" aria-labelledby="h-chip">
+    <h2 id="h-chip">3. Čipovi</h2>
+    <p><b>Čip-prekidač</b> je gumb s <code>aria-pressed</code>: može ih se odabrati više. <b>Segmentni red</b> (poredak, filteri, popisi) su radio gumbi: točno jedan. Odabrano se uvijek vidi po <b>obliku</b>, ne samo po boji: jedan od više (kartice, segmenti, dani) dobiva <b>crticu</b>, više od više (čipovi) <b>kvačicu</b>. <b>Oznake</b> (žanrovi na profilu, „Povezani”) nisu interaktivne.</p>
+    <h3>Čip-prekidač</h3>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage chips"><button class="chip sp-live" type="button" aria-pressed="false"><span class="ck"><i data-ic="check" data-c="sm"></i></span>English</button></div><p class="sp-st">Zadano (klikni)</p></div>
+      <div class="sp-cell"><div class="sp-stage chips"><button class="chip sp-hover" type="button" tabindex="-1" aria-pressed="false"><span class="ck"><i data-ic="check" data-c="sm"></i></span>English</button></div><p class="sp-st">Hover</p></div>
+      <div class="sp-cell"><div class="sp-stage chips"><button class="chip" type="button" tabindex="-1" aria-pressed="true"><span class="ck"><i data-ic="check" data-c="sm"></i></span>Hrvatski</button></div><p class="sp-st">Odabrano: kvačica, rub 2 px</p></div>
+      <div class="sp-cell"><div class="sp-stage chips"><button class="chip sp-focus" type="button" tabindex="-1" aria-pressed="true"><span class="ck"><i data-ic="check" data-c="sm"></i></span>Hrvatski</button></div><p class="sp-st">Odabrano i fokus</p></div>
+      <div class="sp-cell"><div class="sp-stage chips"><button class="chip" type="button" tabindex="-1" aria-pressed="false" aria-disabled="true"><span class="ck"><i data-ic="check" data-c="sm"></i></span>Disco</button></div><p class="sp-st">Ne može (već 10): <code>aria-disabled</code>, ostaje u fokusu i kaže zašto</p></div>
+    </div>
+    <h3>Žanr-čip (D-062) i „Još žanrova”</h3>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="sp-stage chips chips-genres" id="sp-genres"></div><p class="sp-st">Zadano, hover, odabrano (svaki žanr u svojoj boji, s kvačicom); zadnji: „+ Još žanrova”</p></div>
+    </div>
+    <h3>Segmentni red (radio)</h3>
+    <div class="sp-row">
+      <div class="sp-cell w"><fieldset class="sort" style="margin:0;padding:2px"><legend class="sr-only">Poredaj odgovore</legend><label><input type="radio" name="sp-sort" checked><span>Za tebe</span></label><label><input type="radio" name="sp-sort"><span>Najnovije</span></label><label><input type="radio" name="sp-sort"><span>Najviše rasprave</span></label></fieldset><p class="sp-st">Zadano: strelice mijenjaju izbor. <b>Novo u 3.6:</b> crtica ispod odabranog (kao na donjoj traci); ne širi red, pa tri opcije i dalje stanu u jedan red na 320 px (D-047)</p></div>
+      <div class="sp-cell w"><fieldset class="sort" style="margin:0;padding:2px"><legend class="sr-only">Primjer fokusa</legend><label class="sp-focus"><input type="radio" name="sp-sort2" checked tabindex="-1"><span>Za tebe</span></label><label><input type="radio" name="sp-sort2" tabindex="-1"><span>Najnovije</span></label></fieldset><p class="sp-st">Fokus na odabranom</p></div>
+      <div class="sp-cell"><div class="day-strip" style="grid-template-columns:repeat(3,56px)"><button class="day" type="button" tabindex="-1" aria-pressed="false"><span class="day-wd">pon</span><span class="day-n">2</span></button><button class="day" type="button" tabindex="-1" aria-pressed="true"><span class="day-wd">uto</span><span class="day-n">3</span></button><button class="day" type="button" tabindex="-1" aria-pressed="false"><span class="day-wd">danas</span><span class="day-n">4</span></button></div><p class="sp-st">Dani (Hub): odabrani dan ima i crtu ispod broja (<b>novo u 3.6</b>)</p></div>
+    </div>
+    <h3>Oznake (nisu gumbi)</h3>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="sp-stage"><span class="rel-chip">Prati te</span><span class="rel-chip is-mut"><i data-ic="mutual"></i>Povezani</span><span class="rel-chip is-muted">Utišano</span><span class="status-pill is-rev">U obradi</span><span class="status-pill is-done">Riješeno</span><span class="alpha-tag">Alfa</span></div><p class="sp-st">Odnos, stanje prijave, oznaka alfe: tekst nosi značenje</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> čip-prekidač: Tab do njega, razmak ili Enter. Segmentni red: Tab ulazi na odabrano, strelice mijenjaju izbor (nativni radio).</li><li><b>Čitač zaslona:</b> „Hrvatski, prekidač, pritisnut”; „Za tebe, radio gumb, odabran, 1 od 3”.</li><li><b>Visoki kontrast:</b> odabrano dobiva sistemsku boju Highlight uz kvačicu ili crticu.</li></ul>
+  </section>
+
+  <!-- 4 Choice cards, switch, checkbox -->
+  <section class="sp-sec" id="c-choice" aria-labelledby="h-choice">
+    <h2 id="h-choice">4. Izbor, prekidač i kvačica</h2>
+    <p><b>Kartica izbora</b> je veliki radio gumb za važne odluke (dob, vidljivost, kategorija prijave): ništa nije unaprijed odabrano kad je izbor neutralan (D-030), sve kartice su jednake težine. <b>Prekidač</b> je za postavke koje djeluju odmah. <b>Kvačica</b> (nativna) za potvrde i tablice.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><fieldset class="choices choices-compact"><legend class="choices-legend">Tko vidi tvoj profil?</legend><label class="choice"><input type="radio" name="sp-vis"><span class="choice-title"><i data-pic="globe-hemisphere-east" data-c="choice-ic"></i>Javno</span><span class="choice-desc">Svi, i bez prijave.</span><span class="choice-mark" aria-hidden="true"><i data-ic="check"></i></span></label><label class="choice"><input type="radio" name="sp-vis"><span class="choice-title"><i data-ic="lock" data-c="choice-ic"></i>Privatno</span><span class="choice-desc">Samo ljudi koje prihvatiš.</span><span class="choice-mark" aria-hidden="true"><i data-ic="check"></i></span></label></fieldset><p class="sp-st">Zadano: ništa odabrano (klikni, strelice)</p></div>
+      <div class="sp-cell w"><fieldset class="choices choices-compact"><legend class="choices-legend">Odabrano i fokus</legend><label class="choice sp-focus"><input type="radio" name="sp-vis2" checked tabindex="-1"><span class="choice-title"><i data-pic="globe-hemisphere-east" data-c="choice-ic"></i>Javno</span><span class="choice-desc">Svi, i bez prijave.</span><span class="choice-mark" aria-hidden="true"><i data-ic="check"></i></span></label><label class="choice"><input type="radio" name="sp-vis2" tabindex="-1"><span class="choice-title"><i data-ic="lock" data-c="choice-ic"></i>Privatno</span><span class="choice-desc">Samo ljudi koje prihvatiš.</span><span class="choice-mark" aria-hidden="true"><i data-ic="check"></i></span></label></fieldset><p class="sp-st">Odabrano: krug s kvačicom, rub 2 px; fokus na cijeloj kartici</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage"><button type="button" class="switch sp-live-sw" role="switch" aria-checked="false" aria-label="Primjer prekidača"><span></span></button></div><p class="sp-st">Prekidač, isključen (klikni)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button type="button" class="switch" role="switch" aria-checked="true" tabindex="-1" aria-label="Uključen"><span></span></button></div><p class="sp-st">Uključen: kružić desno, Coral</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button type="button" class="switch sp-focus" role="switch" aria-checked="true" tabindex="-1" aria-label="Fokus"><span></span></button></div><p class="sp-st">Fokus</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button type="button" class="switch" role="switch" aria-checked="false" disabled aria-label="Onemogućen"><span></span></button></div><p class="sp-st">Onemogućen (npr. bez dozvole za obavijesti)</p></div>
+      <div class="sp-cell w"><label class="age-check"><input type="checkbox"><span>Imam 18 ili više godina.</span></label><p class="sp-st">Kvačica u kartici (nativna, Coral <code>accent-color</code>)</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell ww"><ul class="set-list"><li class="set-row set-row-switch"><span class="set-txt"><span class="set-t" id="sp-s1-l">Smanji pokrete</span><span class="set-d" id="sp-s1-d">Zaustavlja animacije struje, Spirale i prijelaza.</span></span><button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="sp-s1-l" aria-describedby="sp-s1-d"><span></span></button></li></ul><p class="sp-st">Prekidač u retku postavki: ime iz retka (<code>aria-labelledby</code>), opis (<code>aria-describedby</code>)</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> kartice izbora: Tab do skupine, strelice biraju. Prekidač: Tab, razmak ga mijenja (Enter također). Kvačica: razmak.</li><li><b>Visoki kontrast:</b> kružić prekidača ButtonText, uključen Highlight; odabrana kartica ima Highlight rub i krug.</li></ul>
+  </section>
+
+  <!-- 5 Cards -->
+  <section class="sp-sec" id="c-card" aria-labelledby="h-card">
+    <h2 id="h-card">5. Kartice i reci</h2>
+    <p>Površina (<code>bg.surface</code>) i tanki rub nose dubinu; sjene samo na lebdećim slojevima. Kartica koja vodi negdje je jedan gumb; unutar kartice odgovora gumbi su odvojeni.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="ans-list" style="margin:0"><article class="ans" aria-labelledby="sp-a1"><header class="ans-head"><span class="avatar" data-ring="Jazz|Soul" aria-hidden="true"><span>P</span></span><h3 class="ans-who" id="sp-a1"><span class="name">Petra</span><span class="sr-only">, </span><span class="handle">@petra.zvuk</span></h3><span class="ans-time"><time>prije 2 h</time><span class="edited">uređeno</span></span><button class="iconbtn ans-more" type="button" aria-label="Više opcija: odgovor korisnika Petra"><i data-ic="more"></i></button></header><div class="ans-text"><p>Rano jutro, prazan tramvaj i „Ne daj se, Ines”. Svaki put mi se čini da je pjesma pisana baš za tu vožnju.</p></div><ul class="refs"><li><button class="ref" type="button"><span class="ref-art" data-tile="Ne daj se, Ines" aria-hidden="true"></span><span class="ref-body"><span class="ref-title">Ne daj se, Ines</span><span class="ref-by">Pjesma, Arsen Dedić</span></span><i data-ic="chevron" data-c="sm ref-go"></i></button></li></ul><div class="ans-actions"><div class="reacts" role="group" aria-label="Reakcije"><button class="react react-like sp-live-r" type="button" aria-pressed="false" aria-label="Sviđa mi se, 4 reakcije"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">4</span></button></div><button class="comments-btn" type="button"><i data-ic="comment" data-c="sm"></i><span>2 komentara</span></button></div></article></div><p class="sp-st">Kartica odgovora: zaglavlje (avatar, ime kao naslov, vrijeme, „Više”), tekst, kartica iz kataloga, reakcija, komentari</p></div>
+      <div class="sp-cell w"><div class="mine-wrap"><article class="ans" aria-labelledby="sp-a2"><p class="ans-label">Tvoj odgovor</p><header class="ans-head"><span class="avatar" data-ring="Jazz|Kantautorska" aria-hidden="true"><span>A</span></span><h3 class="ans-who" id="sp-a2"><span class="name">Ana</span><span class="sr-only">, </span><span class="handle">@ana.slusa</span></h3><span class="ans-time"><time>prije 5 min</time></span></header><div class="ans-text"><p>Massive Attack, „Teardrop”. Uvijek.</p></div><div class="ans-actions"><div class="reacts" role="group" aria-label="Reakcije"><span class="react react-like is-own" role="img" aria-label="Sviđa mi se, 3 reakcije"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">3</span></span></div></div><div class="ans-own"><button class="btn btn-secondary btn-sm" type="button"><i data-ic="edit" data-c="sm"></i>Uredi</button><button class="btn btn-danger btn-sm" type="button"><i data-ic="trash" data-c="sm"></i>Obriši</button></div></article></div><p class="sp-st">Vlastiti odgovor: Ember obrub (motiv), broj reakcija bez gumba</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell w"><ul class="refs"><li><button class="ref" type="button"><span class="ref-art" data-tile="Mezzanine" aria-hidden="true"></span><span class="ref-body"><span class="ref-title">Mezzanine</span><span class="ref-by">Album, Massive Attack</span></span><i data-ic="chevron" data-c="sm ref-go"></i></button></li><li><button class="ref sp-hover" type="button" tabindex="-1"><span class="ref-art" data-tile="Blue" aria-hidden="true"></span><span class="ref-body"><span class="ref-title">Blue</span><span class="ref-by">Album, Joni Mitchell</span></span><i data-ic="chevron" data-c="sm ref-go"></i></button></li><li><button class="ref sp-focus" type="button" tabindex="-1"><span class="ref-art" data-tile="Kind of Blue" aria-hidden="true"></span><span class="ref-body"><span class="ref-title">Kind of Blue</span><span class="ref-by">Album, Miles Davis</span></span><i data-ic="chevron" data-c="sm ref-go"></i></button></li></ul><p class="sp-st">Kartica iz kataloga <b>bez omota</b> (D-017): generirana pločica s inicijalom. Zadano, hover, fokus. Bez reprodukcije</p></div>
+      <div class="sp-cell w"><ul class="results"><li><button class="result" type="button"><span class="art" data-tile="Nina Simone"></span><span class="r-body"><span class="r-title">Nina Simone</span><span class="r-meta">SAD · jazz, soul</span></span><span class="r-add"><i data-ic="plus"></i></span></button></li><li><button class="result" type="button" aria-disabled="true"><span class="art" data-tile="Arsen Dedić"></span><span class="r-body"><span class="r-title">Arsen Dedić</span><span class="r-meta">Hrvatska · kantautorska</span></span><span class="r-add"><i data-ic="check"></i></span></button></li></ul><p class="sp-st">Red rezultata pretrage (56 px): zadano; već dodano (<code>aria-disabled</code>)</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell w"><ul class="peeks"><li><button class="peek" type="button"><span class="avatar sm" data-ring="Rock|Metal" aria-hidden="true"><span>L</span></span><span class="peek-body"><span class="peek-who">Luka</span><span class="peek-text">„Bohemian Rhapsody” na punoj glasnoći, auto, sam. Ne treba mi ništa više.</span></span></button></li><li><button class="peek sp-hover" type="button" tabindex="-1"><span class="avatar sm" data-ring="Elektronika" aria-hidden="true"><span>N</span></span><span class="peek-body"><span class="peek-who">Nika</span><span class="peek-text">Sve od Bonobo.</span></span></button></li></ul><p class="sp-st">Pregled odgovora (Početna): cijela kartica je gumb; zadano, hover</p></div>
+      <div class="sp-cell w"><ul class="set-list"><li><button class="set-row" type="button"><span class="set-ic-wrap" aria-hidden="true"><i data-pic="user-circle" data-c="set-ic"></i></span><span class="set-txt"><span class="set-t">Profil</span><span class="set-d">Ime, slika, opis</span></span><i data-ic="chevron" data-c="sm set-go"></i></button></li><li><button class="set-row sp-focus" type="button" tabindex="-1"><span class="set-ic-wrap" aria-hidden="true"><i data-pic="shield-check" data-c="set-ic"></i></span><span class="set-txt"><span class="set-t">Privatnost</span><span class="set-d">Tko vidi profil i Music DNA</span></span><i data-ic="chevron" data-c="sm set-go"></i></button></li><li class="set-danger"><button class="set-row" type="button"><span class="set-ic-wrap" aria-hidden="true"><i data-ic="trash" data-c="set-ic"></i></span><span class="set-txt"><span class="set-t">Obriši račun</span></span><i data-ic="chevron" data-c="sm set-go"></i></button></li></ul><p class="sp-st">Reci postavki: grupa, red, fokus (prsten unutar grupe), opasni red</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> kartica-gumb je jedan Tab; u kartici odgovora redom: ime (otvara profil), „Više opcija”, „Pročitaj više”, kartica kataloga, reakcija, komentari.</li><li><b>Čitač zaslona:</b> ime autora je naslov odgovora (H tipka skače od odgovora do odgovora).</li></ul>
+  </section>
+
+  <!-- 6 Avatar -->
+  <section class="sp-sec" id="c-avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">6. Avatar i zamjena kad nema slike</h2>
+    <p>Bez slike: prvo slovo imena na <code>bg.high</code>, u prstenu koji nose boje članovih žanrova (Music DNA). Bez žanrova je prsten neutralan (<code>border.strong</code>). Slika je uvijek neobavezna. Avatar je ukras (<code>aria-hidden</code>): ime uvijek stoji uz njega.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="sp-stage" style="align-items:flex-end"><span class="avatar xxs" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span><span class="avatar xs" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span><span class="avatar sm" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span><span class="avatar" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span><span class="avatar lg" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span><span class="avatar xl" data-ring="Jazz|Soul" aria-hidden="true"><span>A</span></span></div><p class="sp-st">xxs 22 · xs 26 · sm 32 · md 40 · lg 72 · xl 96 (<code>avatar.*</code>)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><span class="avatar lg" aria-hidden="true"><span>M</span></span></div><p class="sp-st">Bez žanrova: neutralni prsten</p></div>
+      <div class="sp-cell"><div class="sp-stage"><span class="avatar lg has-photo" data-ring="Rap|Funk|Elektronika" aria-hidden="true"><span class="av-photo av-sample"></span></span></div><p class="sp-st">Sa slikom (u prstenu)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><span class="stack" aria-hidden="true"><span class="avatar xs" data-ring="Rock" aria-hidden="true"><span>L</span></span><span class="avatar xs" data-ring="Pop" aria-hidden="true"><span>M</span></span><span class="avatar xs" data-ring="Jazz" aria-hidden="true"><span>P</span></span></span><span class="meta">3 odgovora</span></div><p class="sp-st">Hrpa (najviše 3) uz broj u tekstu</p></div>
+      <div class="sp-cell"><div class="sp-stage"><span class="art lg" data-tile="Nina Simone"></span><span class="art" data-tile="Arsen Dedić"></span></div><p class="sp-st">Izvođač bez slobodne fotografije: generirana pločica</p></div>
+    </div>
+  </section>
+
+  <!-- 7 Navigation -->
+  <section class="sp-sec" id="c-nav" aria-labelledby="h-nav">
+    <h2 id="h-nav">7. Navigacija</h2>
+    <p>Telefon: <b>gornja traka</b> (56 px) i <b>donja traka s karticama</b> (4 odredišta). Od 600 px <b>bočna traka</b> (rail) zamjenjuje donju: uska (80 px), od 1024 px s nazivima. Isti redoslijed svugdje (D-031). Trenutno mjesto: <code>aria-current="page"</code>, Coral i crta.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><header class="topbar" style="position:static"><button class="iconbtn" type="button" aria-label="Natrag"><i data-ic="back"></i></button><span class="top-title">Postavke</span><div class="top-right"><span class="alpha-tag">Alfa</span></div></header><p class="sp-st">Gornja traka: natrag, naslov, desno radnje</p></div>
+      <div class="sp-cell w"><div class="sp-tabbar"><nav class="tabbar" aria-label="Primjer donje trake"><button class="tab" type="button" aria-current="page"><i data-ic="home"></i><span>Početna</span></button><button class="tab" type="button"><i data-ic="hub"></i><span>Hub</span></button><button class="tab" type="button"><i data-ic="bell"></i><span>Aktivnost</span></button><button class="tab" type="button"><i data-ic="user"></i><span>Profil</span></button></nav></div><p class="sp-st">Donja traka (60 px), Početna otvorena</p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell"><nav class="sp-rail sp-rail-c" aria-label="Primjer uske bočne trake"><button class="rail-item" type="button" aria-current="page"><i data-ic="home"></i><span>Početna</span></button><button class="rail-item sp-hover" type="button" tabindex="-1"><i data-ic="hub"></i><span>Hub</span></button><button class="rail-item" type="button"><i data-ic="bell"></i><span>Aktivnost</span></button></nav><p class="sp-st">Uska (600 px+): trenutno, hover, zadano</p></div>
+      <div class="sp-cell"><nav class="sp-rail" aria-label="Primjer bočne trake s nazivima"><button class="rail-item" type="button"><i data-ic="home"></i><span>Početna</span></button><button class="rail-item" type="button" aria-current="page"><i data-ic="hub"></i><span>Hub</span></button><button class="rail-item sp-focus" type="button" tabindex="-1"><i data-ic="bell"></i><span>Aktivnost</span></button><button class="rail-item" type="button"><i data-ic="user"></i><span>Profil</span></button></nav><p class="sp-st">S nazivima (1024 px+): Hub otvoren, fokus na Aktivnosti</p></div>
+      <div class="sp-cell"><div class="sp-stage"><a class="skip sp-skip" href="#c-nav">Preskoči na sadržaj</a></div><p class="sp-st">Poveznica „Preskoči”: prvi Tab na svakoj stranici, vidljiva tek na fokusu</p></div>
+    </div>
+    <ul class="sp-kb"><li><b>Tipkovnica:</b> prvi Tab je „Preskoči na sadržaj”; zatim gornja traka, sadržaj, pa donja traka (na računalu: bočna traka prije sadržaja). Svaka kartica je gumb; Enter otvara. Promjena ekrana stavlja fokus na naslov stranice.</li><li><b>Prevlačenje</b> između kartica je samo dodatak (2.5.1): svaka kartica ima gumb.</li><li><b>Visoki kontrast:</b> trenutna kartica i crta u Highlight (popravljeno u 3.5).</li></ul>
+  </section>
+
+  <!-- 8 Overlays -->
+  <section class="sp-sec" id="c-overlay" aria-labelledby="h-overlay">
+    <h2 id="h-overlay">8. Listovi, dijalozi i izbornik</h2>
+    <p><b>List</b> (odozdo na telefonu, u sredini na računalu) za zadatke: pisanje odgovora, prijava, izbor. <b>Dijalog</b> za potvrdu jedne odluke (<code>alertdialog</code>), s posljedicama u tekstu. <b>Izbornik</b> „Više opcija” je list s recima. Sve je modalno: pozadina je <code>inert</code>, fokus ulazi unutra, Escape zatvara, fokus se vraća na gumb koji je otvorio.</p>
+    <div class="sp-row">
+      <div class="sp-frame"><p class="sp-under">Ispod je stranica.</p><div class="scrim"></div><div class="sheet" role="group" aria-label="Primjer izbornika"><div class="sheet-head"><span class="sheet-title">Odgovor korisnika Petra</span><button class="iconbtn" type="button" aria-label="Zatvori"><i data-ic="x"></i></button></div><div class="menu"><button class="menu-item" type="button"><i data-ic="share"></i>Podijeli poveznicu</button><button class="menu-item sp-hover" type="button" tabindex="-1"><i data-ic="bell"></i>Utišaj @petra.zvuk</button><button class="menu-item" type="button"><i data-ic="alert"></i>Prijavi</button></div></div></div>
+      <div class="sp-frame"><p class="sp-under">Ispod je stranica.</p><div class="scrim"></div><div class="dialog" role="group" aria-label="Primjer dijaloga"><h3 class="dialog-title">Obrisati odgovor?</h3><p>Odgovor nestaje s pitanja i s tvog profila. To se ne može vratiti.</p><div class="dialog-actions"><button class="btn btn-secondary sp-focus" type="button" tabindex="-1">Odustani</button><button class="btn btn-danger" type="button"><i data-ic="trash" data-c="sm"></i>Obriši</button></div></div></div>
+    </div>
+    <p>Pravi listovi i dijalozi u aplikaciji (otvoreni, s fokusom unutra; Escape i Tab rade):</p>
+    <div class="sp-row">
+      <div class="sp-phone"><iframe title="Pisanje odgovora (list)" src="pulse/index.html?flow=drop&amp;at=drop&amp;open=compose" loading="lazy"></iframe></div>
+      <div class="sp-phone"><iframe title="Prijava, korak 1 (list)" src="pulse/index.html?flow=drop&amp;at=drop&amp;show=report" loading="lazy"></iframe></div>
+      <div class="sp-phone"><iframe title="Blokiranje (dijalog)" src="pulse/index.html?flow=drop&amp;at=member&amp;who=mia_vinyl&amp;rel=none&amp;show=block" loading="lazy"></iframe></div>
+    </div>
+    <ul class="sp-kb"><li><b>Otvaranje:</b> fokus na prvo polje (list za pisanje), prvu stavku (izbornik) ili, u dijalogu odluke, na prvu opciju (npr. „Prijavi i ovaj račun”), a inače na sigurni gumb „Odustani”, koji je uvijek prvi (gore lijevo: fokus na „Odustani”).</li><li><b>Unutra:</b> Tab i Shift+Tab kruže unutar sloja. <b>Escape</b> ili klik na zatamnjenje zatvara; ne zatvaraju se samo korak 18+, objašnjenje dozvole za obavijesti i čvrsti zid prijave. Zatvoreni novi odgovor ostaje kao nacrt u docku.</li><li><b>Zatvaranje:</b> fokus se vraća na gumb koji je otvorio sloj.</li><li><b>Smanji pokrete:</b> nema klizanja; list se samo pojavi.</li></ul>
+  </section>
+
+  <!-- 9 Toast -->
+  <section class="sp-sec" id="c-toast" aria-labelledby="h-toast">
+    <h2 id="h-toast">9. Toast</h2>
+    <p>Kratka potvrda nakon radnje. Izgovara se bez pomicanja fokusa (<code>role="status"</code>). Bez gumba ostaje 2 s; s gumbom (Poništi) 5 s (D-078). Nikad ne nosi jedinu kopiju važne informacije.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="sp-toast"><div class="toast-in"><span>Odgovor je objavljen.</span></div></div><p class="sp-st">Bez radnje: 2 s (<code>toast.duration</code>)</p></div>
+      <div class="sp-cell w"><div class="sp-toast"><div class="toast-in has-act"><span>Utišano: @mia_vinyl.</span><button type="button" class="toast-btn">Poništi</button></div></div><p class="sp-st">S radnjom: 5 s (<code>toast.duration-action</code>)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="btn btn-secondary btn-sm" type="button" id="sp-toast-go">Pokaži toast</button></div><p class="sp-st">Živi primjer (dolje na ekranu)</p></div>
+    </div>
+  </section>
+
+  <!-- 10 Notices -->
+  <section class="sp-sec" id="c-notice" aria-labelledby="h-notice">
+    <h2 id="h-notice">10. Obavijesti u stranici</h2>
+    <p>Uvijek ikona + tekst + rub; boja samo ponavlja značenje. <b>Info</b> je neutralna, <b>upozorenje</b> Amber, <b>greška</b> Coral, <b>uspjeh</b> zelena (rijetko). <b>Obavijest o vidljivosti</b> kaže tko će nešto vidjeti, prije nego što objaviš.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><p class="info"><i data-ic="info"></i><span>Ovo je alfa: neke stvari će se mijenjati.</span></p><p class="sp-st">Info (<code>bg.surface</code>, <code>border.subtle</code>)</p></div>
+      <div class="sp-cell w"><div class="notice"><i data-ic="alert"></i><p>Preglednik je blokirao obavijesti, pa je podsjetnik isključen.</p></div><p class="sp-st">Upozorenje (<code>state.warning</code>), <code>role="status"</code></p></div>
+      <div class="sp-cell w"><div class="post-err"><i data-ic="alert"></i><p><b>Odgovor nije objavljen.</b> Veza je pukla. Tekst je ostao ovdje, pokušaj ponovno.</p></div><p class="sp-st">Greška (<code>state.danger</code>), <code>role="alert"</code></p></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-cell w"><p class="aud-line"><i data-pic="eye" data-c="pi-sm"></i><span>Vide: <b>svi članovi</b></span><button class="link" type="button">Promijeni</button></p><p class="sp-st">Obavijest o vidljivosti (urednik Music DNA)</p></div>
+      <div class="sp-cell w"><p class="pf-vis"><i data-ic="lock" data-c="sm"></i><span>Profil je privatan. Odgovori na Daily Drop su i dalje vidljivi svim članovima (D-021).</span></p><p class="sp-st">Obavijest o vidljivosti na profilu</p></div>
+      <div class="sp-cell w"><p class="req-done" style="margin:0"><i data-ic="check" data-c="sm"></i>Zahtjev prihvaćen</p><p class="sp-st">Uspjeh u retku (zelena, s ikonom)</p></div>
+    </div>
+  </section>
+
+  <!-- 11 States -->
+  <section class="sp-sec" id="c-state" aria-labelledby="h-state">
+    <h2 id="h-state">11. Prazno, učitavanje, greška, izvan mreže</h2>
+    <p>Svaki popis i svaka stranica ima sva četiri stanja. Učitavanje su obrisi sadržaja (bez vrtnje), s <code>aria-busy</code> i „Učitavam…” za čitač. Greška kaže što ne radi, da ostatak radi, i nudi „Pokušaj ponovno”.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="empty-b"><i data-pic="chat-text" data-c="empty-ic"></i><p class="empty-t">Još nema odgovora.</p><p>Budi prvi ili svrati kasnije.</p></div><p class="sp-st">Prazno: ikona, naslov, jedna rečenica, najviše jedna radnja</p></div>
+      <div class="sp-cell w"><div class="skel-wrap ld-b" aria-busy="true"><p class="sr-only" role="status">Učitavam…</p><div class="skel" aria-hidden="true"><span class="sk-av"></span><span class="w40"></span><span class="sk-wide w90"></span><span class="sk-wide w70"></span></div></div><p class="sp-st">Učitavanje: obris kartice, polako „diše” (miruje uz Smanji pokrete)</p></div>
+      <div class="sp-cell w"><div class="cat-err load-err" role="group" aria-label="Primjer greške"><i data-ic="alert"></i><div><p><b>Odgovori se nisu učitali.</b> Ostatak stranice radi.</p><button type="button" class="btn btn-secondary btn-sm">Pokušaj ponovno</button></div></div><p class="sp-st">Greška dijela stranice</p></div>
+      <div class="sp-cell w"><p class="net-bar" style="position:static"><i data-ic="offline" data-c="sm"></i><span>Nisi na mreži. Prikazujemo spremljeno u 09:41.</span></p><p class="sp-st">Izvan mreže: traka ispod gornje trake</p></div>
+    </div>
+  </section>
+
+  <!-- 12 Reaction -->
+  <section class="sp-sec" id="c-react" aria-labelledby="h-react">
+    <h2 id="h-react">12. Reakcija „Sviđa mi se” (D-056)</h2>
+    <p>Jedna reakcija, samo ikona (val) i broj. Pritisnuta: val u Ember gradijentu i kratki „otkucaj” (stane uz Smanji pokrete). Na vlastitom odgovoru samo broj, bez gumba (isprekidan rub).</p>
+    <div class="sp-row">
+      <div class="sp-cell"><div class="sp-stage"><button class="react react-like sp-live-r" type="button" aria-pressed="false" aria-label="Sviđa mi se, 12 reakcija"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">12</span></button></div><p class="sp-st">Zadano (klikni)</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="react react-like" type="button" tabindex="-1" aria-pressed="true" aria-label="Sviđa mi se, 13 reakcija, ti"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">13</span></button></div><p class="sp-st">Pritisnuto</p></div>
+      <div class="sp-cell"><div class="sp-stage"><button class="react react-like sp-focus" type="button" tabindex="-1" aria-pressed="false" aria-label="Sviđa mi se, 12 reakcija"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">12</span></button></div><p class="sp-st">Fokus</p></div>
+      <div class="sp-cell"><div class="sp-stage"><span class="react react-like is-own" role="img" aria-label="Sviđa mi se, 3 reakcije"><svg class="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline class="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12"/></svg><span class="n">3</span></span></div><p class="sp-st">Vlastiti odgovor</p></div>
+    </div>
+  </section>
+
+  <!-- 13 Dock -->
+  <section class="sp-sec" id="c-dock" aria-labelledby="h-dock">
+    <h2 id="h-dock">13. Dock (D-043)</h2>
+    <p>Na stranici pitanja, iznad donje trake: polje-gumb koje otvara list za pisanje. Mali naboj kruži oko polja dok odgovor nije objavljen (motiv; stane uz Smanji pokrete). Na računalu dock je na dnu stupca.</p>
+    <div class="sp-row">
+      <div class="sp-cell w"><div class="dock" style="border-radius:12px"><button class="dock-field" type="button"><canvas class="orbit" aria-hidden="true"></canvas><span>Napiši svoj odgovor…</span></button></div><p class="sp-st">Prazno (gumb, ne polje: otvara list)</p></div>
+      <div class="sp-cell w"><div class="dock" style="border-radius:12px"><button class="dock-field has-draft" type="button"><span>Rano jutro, prazan tramvaj i…</span></button></div><p class="sp-st">Nacrt sačuvan</p></div>
+      <div class="sp-cell w"><div class="dock" style="border-radius:12px"><p class="dock-done"><i data-ic="check" data-c="sm"></i><span>Tvoj odgovor je objavljen.</span></p></div><p class="sp-st">Već odgovoreno</p></div>
+    </div>
+  </section>
+
+  <!-- 14 Spirala frame -->
+  <section class="sp-sec" id="c-dna" aria-labelledby="h-dna">
+    <h2 id="h-dna">14. Okvir Spirale (Music DNA)</h2>
+    <p>Spirala je slika (<code>canvas</code>, <code>aria-hidden</code>); tekstualni popis žanrova i izvođača stoji uz nju za čitač zaslona. Okvir: <code>radius.card</code>, rub <code>border.strong</code>, svijetli gornji rub i meka sjena. U visokom kontrastu Spirala zadržava svoje boje, kao slika.</p>
+    <div class="sp-row">
+      <figure class="dna-card sp-dna" aria-labelledby="sp-dna-cap"><canvas class="dna" data-dna="spec" data-h="150" data-genres="Jazz|Soul|Kantautorska|Elektronika" data-artists="Nina Simone|Arsen Dedić|Massive Attack" aria-hidden="true"></canvas><figcaption><span class="dna-cap" id="sp-dna-cap">Music DNA</span><span class="sr-only">Žanrovi: Jazz, Soul, Kantautorska, Elektronika. Izvođači: Nina Simone, Arsen Dedić, Massive Attack.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 15 Tokens -->
+  <section class="sp-sec" id="c-tokens" aria-labelledby="h-tokens">
+    <h2 id="h-tokens">15. Tokeni komponenti (novo u 3.6)</h2>
+    <p>Mjere komponenti sad su tokeni u <code>design/tokens/tokens.json</code> (sloj iznad osnovnih tokena). Vrijednosti su iste kao u prototipu; prototip ih sad koristi.</p>
+    <table class="sp-tbl" id="sp-tokens"><thead><tr><th scope="col">Token</th><th scope="col">Vrijednost</th></tr></thead><tbody></tbody></table>
+  </section>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="pulse/genres-mb.js"></script>
+<script src="pulse/data.js"></script>
+<script src="pulse/icons.js"></script>
+<script src="pulse/picons.js"></script>
+<script src="pulse/current.js"></script>
+<script src="pulse/dna.js"></script>
+<script src="pulse/catalog.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+  // Icons: <i data-ic="name" data-c="classes"> (prototype stroke set) and <i data-pic="name"> (Phosphor light).
+  $$('i[data-ic]').forEach(i => { i.outerHTML = window.GR_ICON(i.dataset.ic, i.dataset.c); });
+  $$('i[data-pic]').forEach(i => { i.outerHTML = window.GR_PICON(i.dataset.pic, i.dataset.c); });
+  // Genre rings and generated artist tiles, from the prototype's own helpers.
+  $$('[data-ring]').forEach(a => { a.style.setProperty('--ring', window.GR_DNA.ring(a.dataset.ring.split('|'))); });
+  $$('[data-tile]').forEach(a => { const t = window.GR_CATALOG.tile(a.dataset.tile); a.style.background = t.bg; if (!a.querySelector('img')) a.textContent = t.ini; });
+  // Genre chips: off, hover, picked, picked; then the "+ Još žanrova" chip.
+  const G = [['Jazz', false, ''], ['Rock', false, 'sp-hover'], ['Soul', true, ''], ['Elektronika', true, 'sp-focus']];
+  const ck = '<span class="ck">' + window.GR_ICON('check', 'sm') + '</span>';
+  document.getElementById('sp-genres').innerHTML = G.map(([n, on, cls]) => `<button type="button" class="chip chip-genre ${cls}"${cls ? ' tabindex="-1"' : ''} aria-pressed="${on}" style="--g:${window.GR_DNA.colorOf(n)}">${ck}${n}</button>`).join('') +
+    '<button type="button" class="chip chip-more">+ Još žanrova</button>';
+  // Live toggles.
+  document.addEventListener('click', e => {
+    const t = e.target.closest('.chip:not(.chip-more), .sp-live-sw, .sp-live-r, #sp-calm, .input-btn');
+    if (!t || t.tabIndex < 0 || t.getAttribute('aria-disabled') === 'true') return;
+    if (t.classList.contains('switch')) { const on = t.getAttribute('aria-checked') !== 'true'; t.setAttribute('aria-checked', on); if (t.id === 'sp-calm') window.GR_MOTION.setCalm(on); return; }
+    if (t.classList.contains('input-btn')) { const f = document.getElementById(t.getAttribute('aria-controls')); const on = f.type === 'password'; f.type = on ? 'text' : 'password'; t.setAttribute('aria-pressed', on); t.lastChild.textContent = on ? 'Sakrij' : 'Prikaži'; return; }
+    const on = t.getAttribute('aria-pressed') !== 'true'; t.setAttribute('aria-pressed', on);
+    if (t.classList.contains('react-like')) { const n = t.querySelector('.n'); n.textContent = +n.textContent + (on ? 1 : -1); t.classList.remove('pressing'); void t.offsetWidth; if (on) t.classList.add('pressing'); }
+  });
+  $$('.switch[role="switch"]:not(#sp-calm):not(.sp-live-sw)').forEach(s => { if (s.tabIndex >= 0 && !s.disabled && s.closest('.set-list')) s.classList.add('sp-live-sw'); });
+  // Toast, as in the app: 2 s, polite status.
+  const toastEl = document.getElementById('toast');
+  document.getElementById('sp-toast-go').addEventListener('click', () => { toastEl.innerHTML = ''; setTimeout(() => { toastEl.innerHTML = '<div class="toast-in"><span>Spremljeno.</span></div>'; }, 40); setTimeout(() => { toastEl.innerHTML = ''; }, 2000); });
+  // Component token table, read from the live CSS variables.
+  // Component tokens (step 3.6), read from the live CSS variables. file:// pages cannot read stylesheet rules, so the names are listed.
+  const names = ['--gr-avatar-lg','--gr-avatar-md','--gr-avatar-ring','--gr-avatar-sm','--gr-avatar-xl','--gr-avatar-xs','--gr-avatar-xxs','--gr-bar-dock-field','--gr-bar-rail','--gr-bar-rail-collapsed','--gr-bar-rail-full','--gr-bar-tab','--gr-bar-top','--gr-bar-top-expanded','--gr-breakpoint-full','--gr-button-gap','--gr-button-height','--gr-button-height-cta','--gr-button-height-sm','--gr-button-padding-x','--gr-button-padding-x-cta','--gr-button-padding-x-sm','--gr-button-radius','--gr-button-radius-cta','--gr-chip-height','--gr-chip-padding-x','--gr-chip-radius','--gr-chip-segment-height','--gr-color-state-danger-bg-hover','--gr-field-border','--gr-field-border-invalid','--gr-field-height','--gr-field-padding-x','--gr-field-radius','--gr-field-textarea-min','--gr-list-row','--gr-opacity-disabled','--gr-overlay-dialog-max','--gr-overlay-padding','--gr-overlay-sheet-compose-max','--gr-overlay-sheet-max','--gr-switch-height','--gr-switch-knob','--gr-switch-width','--gr-toast-duration','--gr-toast-duration-action'];
+  const cs = getComputedStyle(document.documentElement);
+  const rows = names.map(p => [p, cs.getPropertyValue(p).trim()]);
+  document.querySelector('#sp-tokens tbody').innerHTML = rows.map(([p, v]) => `<tr><td><code>${p}</code></td><td>${v}</td></tr>`).join('');
+  window.GR_CURRENT.scan(document);
+  window.GR_DNA.scan(document);
+})();
+</script>
+</body>
+</html>

@@ -32,6 +32,7 @@
   --gr-color-selected-bg: #3A1F22;
   --gr-color-highlight-bg: #2C261D;
   --gr-color-state-danger-bg: #301C1E;
+  --gr-color-state-danger-bg-hover: #3A1F22;
   --gr-color-state-warning-bg: #2C261D;
   --gr-color-state-success-bg: #1D2B24;
   --gr-color-state-info: #ADADAD;
@@ -61,6 +62,7 @@
   --gr-color-selected-bg: #3B1E1E;
   --gr-color-highlight-bg: #2D2518;
   --gr-color-state-danger-bg: #321B1A;
+  --gr-color-state-danger-bg-hover: #3B1E1E;
   --gr-color-state-warning-bg: #2D2518;
   --gr-color-state-success-bg: #1F2A20;
   --gr-color-state-info: #B7AEA3;
@@ -76,6 +78,8 @@
   --gr-radius-control: 12px;
   --gr-radius-card: 16px;
   --gr-radius-sheet: 24px;
+  --gr-button-radius: 12px;
+  --gr-field-radius: 12px;
 }
 [data-tq4="medium"] {}
 [data-tq4="sharp"] {
@@ -83,4 +87,7 @@
   --gr-radius-card: 6px;
   --gr-radius-chip: 4px;
   --gr-radius-sheet: 8px;
+  --gr-button-radius: 4px;
+  --gr-field-radius: 4px;
+  --gr-chip-radius: 4px;
 }

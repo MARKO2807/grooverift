@@ -72,3 +72,7 @@ node design/prototypes/tools/a11y-check.mjs "flow=drop&at=home"   # one screen
 ```
 
 Exit code 1 on any finding. Do not run it at the same time as `pulse-smoke.mjs` or `zoom-check.mjs`; the suites share headless Chrome and the second one hangs.
+
+## 6. Follow-up in step 3.6 (session 19)
+
+The forced-colour runs above used `--no-keys`, so the Tab walk never ran with forced colours on. Step 3.6 found by hand that the visually hidden radios (the sort row, choice cards, the visibility rows) lost their focus ring there: the ring is a `box-shadow` on the visible box, which forced colours remove, and the 1 px input's own outline cannot be seen. Fixed in `pulse/style.css` (a `CanvasText` outline on the visible part, `components.md` §6). `a11y-check.mjs` now ignores the own ring of a 1 px or transparent input and looks for it on the visible box (`.choice`, `.vis-opt`, `.vrow`, the `.sort` pill), so `--fc` with the Tab walk (no `--no-keys`) catches this kind of loss.

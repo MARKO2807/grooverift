@@ -7,7 +7,7 @@ _Step 3.4, approved by the owner on 2026-11-01 (D-038 to D-041). Source of truth
 | File | Purpose |
 |---|---|
 | `design/tokens/tokens.json` | Source of truth. DTCG-style groups with `$value`, `$type`, `$description`; aliases as `{path}`. |
-| `design/tokens/tokens.css` | **Generated.** 134 CSS custom properties (`--gr-*`) on `:root`, plus a `prefers-reduced-motion` block. Do not edit by hand. |
+| `design/tokens/tokens.css` | **Generated.** 180 CSS custom properties (`--gr-*`) on `:root` (134 base tokens from step 3.4, 46 component and state tokens added in step 3.6), plus a `prefers-reduced-motion` block. Do not edit by hand. |
 | `design/tokens/build.mjs` | Builds `tokens.css` (and the decision-sketch `options.css` while `options.json` exists). |
 | `design/tokens/contrast-pairs.json` | Every allowed foreground/background pair with its WCAG minimum. |
 | `design/tokens/contrast-check.mjs` | Contrast check over all pairs. Exit code 1 on any failure. |
@@ -112,7 +112,7 @@ Two-tone ring: a 2 px Void Black gap, then a 2 px Amber ring (4 px total), drawn
 }
 ```
 
-The Void gap keeps the ring visible on Coral and Amber fills, and the Amber ring is ≥ 9.9:1 on every surface. In Windows high-contrast mode (`forced-colors: active`), components must fall back to a real `outline`, because box-shadows are removed. This is specified per component in step 3.6.
+The Void gap keeps the ring visible on Coral and Amber fills, and the Amber ring is ≥ 9.9:1 on every surface. In Windows high-contrast mode (`forced-colors: active`), components must fall back to a real `outline`, because box-shadows are removed. This is specified per component in [`components.md`](components.md) (step 3.6).
 
 ## 7. Elevation, motion, layout
 - **Elevation:** on surfaces it comes from the `bg` steps plus `border.subtle`, never from shadows. `shadow.overlay` (0 8 32, 50% black) is used only for dialogs, sheets, menus and toasts.
@@ -132,6 +132,6 @@ The check is rerun in step 3.9 and, from Phase 4, in CI.
 
 ## 9. Not in v0.1
 - **No light theme (D-063, replaces D-045).** The product is dark only. The semantic token structure would still allow a light set later without renaming.
-- Component tokens (button padding, avatar sizes and so on): step 3.6.
+- ~~Component tokens (button padding, avatar sizes and so on): step 3.6.~~ Done in step 3.6: [`components.md`](components.md) §5 (`opacity`, `button`, `field`, `chip`, `avatar`, `switch`, `bar`, `list`, `overlay`, `toast`), plus `color.state.danger-bg-hover` (2 contrast pairs, 89 in all, all pass) and `breakpoint.full` (1600 px).
 - Data-visualization colors: not needed in the alpha. Music DNA proportions must reflect what the member actually selected (brand README §4).
 - Cyrillic, Greek and Vietnamese font subsets ([fonts README](../../design/fonts/README.md)).

@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-04 (session 18, the accessibility pass; step 3.5 closed)_
+_Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -14,14 +14,14 @@ _Last updated: 2026-11-04 (session 18, the accessibility pass; step 3.5 closed)_
 | 3.4 Design tokens v0.1 ⛳ | ✅ Done ([tokens](design/tokens.md); `design/tokens/`, fonts in `design/fonts/`, decision sketch in `design/prototypes/tokens/`) |
 | 3.5 Prototypes ⛳ | ✅ Done (closed in session 18 by the accessibility pass, D-081). Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070; notifications look D-071); in session 13, comment cards and 200 % text (D-073); in session 14, round 12a: other members' profiles, lists and follow requests (D-074); in session 15, round 12b: member safety (D-075) and round 12c: signed-out visitors and sign-in (D-076, D-077); in session 16, round 12d: the rest of the alpha screens (D-078); in session 17, **the whole desktop up to 1920 px** (rail, columns, cards, dialogs; D-079, D-080). in session 18, **the accessibility pass** (the accessibility tree, keyboard and forced colours on all 123 screens; D-081, [accessibility-pass](design/accessibility-pass.md)). All in `design/prototypes/pulse/`. Round 12 is complete and the §6 list is done ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
-| 3.6 Core components spec | ⏳ Next (the owner: "kasnije nastaviti od 3.6") |
-| 3.7 Brand derivatives ⛳ | ⏳ |
+| 3.6 Core components spec | ✅ Done (session 19, D-082): [components](design/components.md) and the specimen `design/prototypes/components.html`; component tokens in `design/tokens/` |
+| 3.7 Brand derivatives ⛳ | ⏳ Next |
 | 3.8 HR/EN copy tone guide | ⏳ |
 | 3.9 Review and close | ⏳ |
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-080. Key ones:
+- Decisions D-001 to D-082. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -90,6 +90,7 @@ _Last updated: 2026-11-04 (session 18, the accessibility pass; step 3.5 closed)_
     - **Round 12d (session 16, D-078):** PROF-09 the Music DNA editor (rows with Move up / Move down / Remove, add from the genre search and the catalogue, Undo on remove, a live Spirala, the audience line; at least two genres always), PROF-08 edit profile with a photo (sheet with gallery, camera and remove; a crop step; 5 MB; rejected file; unsaved-changes dialog), SET-12 help and feedback (one form: type, text, optional screenshot, the listed technical details, reply by email as a ticked choice), SYS-02 something went wrong inside the shell, SYS-04 a paused Daily Drop with the question still readable plus a generic paused-feature page, Home and the Hub before the first Daily Drop **with a countdown with seconds** (owner's choice; minutes only under reduced motion), and J1 E3/E4. Toasts: 5 s with a button, 2 s without. Review page `pulse/round12d.html`.
     - **Desktop (session 17, D-079 and D-080):** the whole desktop up to 1920 px, built from the phone with a free hand (owner instruction, no survey): from 600 px a collapsed rail with Postavke, Pomoć and Alfa in its footer, onboarding and sign-in as a centred card, the visitor sign-in in the top bar, sheets as centred dialogs, a skip link, no tab swipe by mouse; from 1024 px the rail with labels and the wordmark, larger type, a 44 rem column, a three-card landing; from 1280 px two columns where the content has two parts (Home, Hub, profiles, the settings list beside the detail; the question page keeps the dock at the foot); from 1600 px a 17 px root, wider columns and rail, a wider onboarding card, the Spirala capped (the owner's 1920 px review, same day). Review page `pulse/desktop.html` (51 frames at 1920, 1366, 1024, 800, 600 and 599 px).
     - **Accessibility pass (session 18, D-081):** `tools/a11y-check.mjs` reads the accessibility tree Narrator receives, walks every screen with Tab and emulates Windows high contrast; 123 screens at 360, 800, 1366 and 1920 px. Seven fixes (a dangling `aria-describedby`, four unnamed Spirala figures, a second `h1` on the in-shell failure, and the forced-colour marks of the current tab and rail item, the switches, the open settings row and the skeletons). The owner's own Narrator listen is a ten-minute script in `docs/design/accessibility-pass.md`. **Step 3.5 is closed.**
+    - **Core components spec (session 19, D-082):** `docs/design/components.md` and the specimen `design/prototypes/components.html` (every component in every state on the real CSS, plus three live overlays in phone frames). Component tokens in `tokens.json` (180 variables, 89 contrast pairs, all pass). Prototype changes: one disabled opacity, the missing hover and pressed states, a bar under the chosen sort option and day (a tick broke D-047), `Highlight` for every selected state and a visible focus outline on hidden radios in forced colours, `scroll-padding` for 2.4.11. Icon mapping to Phosphor for Phase 4. **Step 3.6 is closed.**
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -101,10 +102,11 @@ _Last updated: 2026-11-04 (session 18, the accessibility pass; step 3.5 closed)_
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Step 3.6, core components spec** (effort: High; the spec fixes every state, including focus, large text and forced colours, and is the hand-off to Phase 4). Start in a fresh session. Inputs: `pulse/` as built, `tokens.md`, the 3.5 round pages and `accessibility-pass.md` §2 and §4 (selected chips need a shape, not only a border weight). Owner approval to start was given in session 18 ("kasnije nastaviti od 3.6"); confirm the scope at the start.
-2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
-3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
-4. Open, to raise when convenient:
+1. **Step 3.7, brand derivatives** ⛳ (effort: Medium; owner gate: each proposal is reviewed). Fresh session. Inputs: `docs/brand/README.md`, the originals in `docs/brand/source/` (never overwritten; SHA-256 re-verified), D-011, D-029 (raster via built-in .NET, no SVG trace), D-058 (wordmark bolt N2). Note: the plan lists a light-background logo variant; the product is dark only (D-063), so ask whether it is still wanted for outside uses (press, documents) before making it.
+2. **Owner, when convenient:** look through `design/prototypes/components.html` (step 3.6, D-082) and say if any component or state looks wrong.
+3. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
+4. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
+5. Open, to raise when convenient:
    - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).
    - OQ-32: opt-in social emails, deferred by the owner; decide before DMs (B3) or the beta.
    - OQ-24: music news idea, after the alpha scope.
@@ -138,13 +140,14 @@ No application code. No dependencies installed.
 - `design/prototypes/pulse/` holds the refined direction C. Desktop (session 17): `desktop.html` is the review page and `screens.html` opens any of 61 screens in its own window at 360, 600, 800, 1024, 1366 or 1920 px (headless check: every link opens the named screen); `app.js` renders a rail for signed-in screens and the settings split, and `style.css` ends with the "Desktop" block (media queries at 600, 1024, 1280 and 1600 px). It includes `wordmark.html` (the D-058 bolt options, with the D-055 rounds archived), `invite-current.html` and `invite-current.js` (the D-058 invite current; the app uses variant I4 "branch"), `invite-layout.html` (the D-059 layouts in phone frames), `round6.html` (the D-060 options in phone frames), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `screens.mjs` is the shared list of 123 prototype screens (URL queries) for `zoom-check.mjs` and `a11y-check.mjs`; add every new screen there.
-  - `a11y-check.mjs` (session 18) reads the accessibility tree over CDP, walks each screen with Tab and, with `--fc`, emulates forced colours (`--shots` saves screenshots). Passes 123/123 at 360×740, 800×800, 1366×800 and 1920×1080, with and without `--fc` (2026-11-04). Doc: `docs/design/accessibility-pass.md`.
+  - `a11y-check.mjs` (session 18) reads the accessibility tree over CDP, walks each screen with Tab and, with `--fc`, emulates forced colours (`--shots` saves screenshots). Passes 123/123 at 360×740, 800×800, 1366×800 and 1920×1080, with and without `--fc` (2026-11-04); re-run in session 19 after step 3.6 at 360×740 and 1366×800, with `--fc` at both (the 360 run with the Tab walk). Since session 19 a hidden 1 px radio only counts as focused if its visible box shows the ring. Doc: `docs/design/accessibility-pass.md`.
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 146/146 (2026-11-04, session 18, after the accessibility fixes, exit 0).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 146/146 (2026-11-04, session 19, after step 3.6, exit 0).
   - `zoom-check.mjs` checks 123 screens at a raised browser text size (`--scale=2` by default) for sideways scrolling, clipped text and oversized bars; all pass at 200 % (session 17); the round 12d screens also at 100 % and at 320 px; in session 13 the earlier screens also at 150 %. Desktop (session 17; the 1920 runs repeated 2026-11-04 after the second review): all pass at 1920×1080 at 100 % and 200 % text, at 1366×800, 800×800 and 600×800 at 100 % (`--scale=1 --w=1920 --h=1080` and so on).
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
-- `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css`, and `contrast-check.mjs` checks 87 pairs (all pass; output in `contrast-report.md`).
+- `design/prototypes/components.html` (session 19) is the step 3.6 specimen: every component and state on `pulse/style.css`; spec in `docs/design/components.md`.
+- `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css` (180 variables, incl. the step 3.6 component tokens), and `contrast-check.mjs` checks 89 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.
 - Phase 3 adds only static design files under `design/`. Stack approved (ADR-0002); libraries are confirmed in Phase 4.

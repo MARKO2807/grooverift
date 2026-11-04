@@ -57,9 +57,14 @@ const HELPERS = `
     // Does the focused element (or the box that carries its ring) show a visible indicator?
     ring(el) {
       const box = s => s.boxShadow !== 'none' || (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) || /underline/.test(s.textDecorationLine);
-      if (box(getComputedStyle(el))) return true;
+      // A visually hidden radio (1 px, opacity 0) cannot show its own ring; only the visible box that carries it counts
+      // (step 3.6: in forced colours these had lost their ring while the 1 px input's outline still passed).
+      const r = el.getBoundingClientRect(), tiny = el.matches('input') && (r.width <= 2 || getComputedStyle(el).opacity === '0');
+      if (!tiny && box(getComputedStyle(el))) return true;
       const host = el.closest('.choice, .vis-opt, .vrow, .sort label, label');
       if (host && box(getComputedStyle(host))) return true;
+      const pill = host && host.matches('.sort label') && host.querySelector(':scope > span');
+      if (pill && box(getComputedStyle(pill))) return true;
       if (host && host.matches('.vis-opt') && box(getComputedStyle(host, '::before'))) return true;
       return false;
     }
