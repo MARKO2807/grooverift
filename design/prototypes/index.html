@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · sve skice na jednom mjestu</title>
+<!-- The one entry point to every HTML page the owner has reviewed or decided on (owner request, session 20).
+     RULE: every new review or decision page gets a row here in the same commit (see docs/HANDOFF.md). Newest step first.
+     Decision numbers refer to docs/decisions/DECISIONS.md. -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font-family: var(--gr-font-family-body); }
+  main { max-width: 64rem; margin: 0 auto; padding: 32px 20px 96px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 6px; }
+  h1 .r { color: var(--gr-color-text-accent); }
+  h2 { font: var(--gr-type-title-3); margin: 36px 0 10px; color: var(--gr-color-text-secondary); }
+  p { color: var(--gr-color-text-secondary); font: var(--gr-type-body-sm); max-width: 72ch; margin: 0 0 8px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .8125rem; color: var(--gr-color-highlight-text); }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  li a { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 12px 16px; border-radius: 12px; background: var(--gr-color-bg-canvas);
+         border: 1px solid var(--gr-color-border-subtle); color: inherit; text-decoration: none; }
+  li a:hover { background: var(--gr-color-bg-surface); border-color: var(--gr-color-border-strong); }
+  li a:focus-visible { outline: 2px solid var(--gr-color-focus-ring, #FFCB69); outline-offset: 2px; }
+  .t { font: var(--gr-type-label); }
+  .d { grid-column: 1; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
+  .dec { grid-row: 1 / span 2; grid-column: 2; align-self: center; font: var(--gr-type-caption); color: var(--gr-color-highlight-text); text-align: right; white-space: nowrap; }
+  .star li a { border-color: var(--gr-color-highlight-border); }
+  @media (max-width: 560px) { li a { grid-template-columns: 1fr; } .dec { grid-row: auto; grid-column: 1; text-align: left; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>groove<span class="r">rift</span> · sve skice na jednom mjestu</h1>
+  <p>Svaka HTML stranica koju smo gledali i na kojoj smo odlučivali, od najnovije prema najstarijoj. Desno su brojevi odluka iz
+  <code>docs/decisions/DECISIONS.md</code>. Stare stranice ostaju kao zapis. Ako se razlikuju od prototipa, vrijedi prototip i novija odluka.</p>
+
+  <h2>Glavno (uvijek aktualno)</h2>
+  <ul class="star">
+    <li><a href="pulse/index.html"><span class="t">Prototip aplikacije (smjer C „Pulse”)</span><span class="d">Živa skica cijele alfe: svi ekrani, sve odluke do danas</span><span class="dec">D-042 →</span></a></li>
+    <li><a href="pulse/screens.html"><span class="t">Svi ekrani, od mobitela do desktopa</span><span class="d">Svaki od 123 ekrana u svom prozoru, 360 do 1920 px</span><span class="dec">D-080, D-081</span></a></li>
+    <li><a href="pulse/desktop.html"><span class="t">Desktop pregled</span><span class="d">51 okvir od 600 do 1920 px</span><span class="dec">D-079, D-080</span></a></li>
+    <li><a href="components.html"><span class="t">Osnovne komponente</span><span class="d">14 komponenti sa svim stanjima (3.6)</span><span class="dec">D-082</span></a></li>
+  </ul>
+
+  <h2>3.7 · Izvedenice branda</h2>
+  <ul>
+    <li><a href="brand.html"><span class="t">Izvedenice branda</span><span class="d">Očišćeni master, ikone aplikacije, mala ikona, značka, svijetla pozadina, privremeni wordmark</span><span class="dec">3.7, u tijeku</span></a></li>
+  </ul>
+
+  <h2>3.5 · Prototip: runde dorade</h2>
+  <ul>
+    <li><a href="pulse/round12d.html"><span class="t">Runda 12d · ostatak alfe</span><span class="d">Music DNA urednik, slika profila, povratne informacije, greške i pauze</span><span class="dec">D-078</span></a></li>
+    <li><a href="pulse/round12c.html"><span class="t">Runda 12c · posjetitelji i prijava</span><span class="d">Odjavljeni posjetitelji, prijava, zaključavanje, reset lozinke</span><span class="dec">D-076, D-077</span></a></li>
+    <li><a href="pulse/round12b.html"><span class="t">Runda 12b · sigurnost člana</span><span class="d">Utišavanje, blokiranje, prijava</span><span class="dec">D-075</span></a></li>
+    <li><a href="pulse/round12a.html"><span class="t">Runda 12a · tuđi profili</span><span class="d">Profili drugih članova, popisi, zahtjevi za praćenje</span><span class="dec">D-074</span></a></li>
+    <li><a href="pulse/large-text.html"><span class="t">Velika slova (200 %)</span><span class="d">Kartice komentara i povećan tekst</span><span class="dec">D-073</span></a></li>
+    <li><a href="pulse/round11.html"><span class="t">Runda 11 · obavijesti</span><span class="d">Izgled i zadane postavke obavijesti</span><span class="dec">D-071, D-072</span></a></li>
+    <li><a href="pulse/round10.html"><span class="t">Runda 10 · stanja i postavke</span><span class="d">Ključna stanja i svi tokovi postavki</span><span class="dec">D-070</span></a></li>
+    <li><a href="pulse/round9.html"><span class="t">Runda 9</span><span class="d">18+ potvrda i ostali izbori</span><span class="dec">D-067, D-068</span></a></li>
+    <li><a href="pulse/round8.html"><span class="t">Runda 8 · postavke</span><span class="d">Raspored postavki</span><span class="dec">D-065, D-066</span></a></li>
+    <li><a href="pulse/round7.html"><span class="t">Runda 7</span><span class="d">Daily Drop „Strujica”, samo tamna tema</span><span class="dec">D-063, D-064</span></a></li>
+    <li><a href="pulse/round6.html"><span class="t">Runda 6</span><span class="d">Jezik, pozivnica, „Kako radi”, Home, profil</span><span class="dec">D-060</span></a></li>
+    <li><a href="pulse/invite-layout.html"><span class="t">Raspored pozivnice</span><span class="d">Pozivnica na jednom ekranu</span><span class="dec">D-059</span></a></li>
+    <li><a href="pulse/invite-current.html"><span class="t">Struja na pozivnici</span><span class="d">I4 „Grananje”</span><span class="dec">D-058</span></a></li>
+    <li><a href="pulse/wordmark.html"><span class="t">Wordmark s munjicom</span><span class="d">Munja N2 „Nit s iskrama” ispod „rift”</span><span class="dec">D-055, D-057, D-058</span></a></li>
+    <li><a href="pulse/reactions.html"><span class="t">Reakcije</span><span class="d">Jedna reakcija, mali audio val</span><span class="dec">D-056</span></a></li>
+    <li><a href="pulse/password.html"><span class="t">Pravila za lozinke</span><span class="d">Duljina, sastav, povratna linija</span><span class="dec">D-054, D-061, D-062</span></a></li>
+    <li><a href="pulse/choices.html"><span class="t">Music DNA galerija i struja</span><span class="d">„Spirala”, boje žanrova, živi motivi</span><span class="dec">D-048, D-049, D-052</span></a></li>
+    <li><a href="pulse/viewer.html"><span class="t">Pregled dorade smjera C</span><span class="d">Prve runde dorade (sesija 9)</span><span class="dec">D-046 – D-053</span></a></li>
+  </ul>
+
+  <h2>3.5 · Prototip: tri smjera</h2>
+  <ul>
+    <li><a href="directions/index.html"><span class="t">Tri smjera za onboarding i Daily Drop</span><span class="d">Usporedba A, B i C</span><span class="dec">D-042, D-043</span></a></li>
+    <li><a href="directions/a-quiet/index.html"><span class="t">Smjer A · Tiho</span><span class="d">Odbijeno, zapis</span><span class="dec">D-042</span></a></li>
+    <li><a href="directions/b-cards/index.html"><span class="t">Smjer B · Kartice</span><span class="d">Odbijeno, zapis</span><span class="dec">D-042</span></a></li>
+    <li><a href="directions/c-pulse/index.html"><span class="t">Smjer C · Puls (prva verzija)</span><span class="d">Odabrano; dorađena verzija je prototip gore</span><span class="dec">D-042</span></a></li>
+  </ul>
+
+  <h2>3.4 · Design tokeni</h2>
+  <ul>
+    <li><a href="tokens/index.html"><span class="t">Design tokeni: TQ1–TQ4</span><span class="d">Primarna akcija, neutralne površine, stanja, oblik</span><span class="dec">D-038 – D-041</span></a></li>
+  </ul>
+
+  <h2>3.3 · Ključna putovanja</h2>
+  <ul>
+    <li><a href="journeys/index.html"><span class="t">Ključna putovanja: pregled</span><span class="d">Sva četiri pitanja</span><span class="dec">D-034 – D-037</span></a></li>
+    <li><a href="journeys/jq1-visibility-step.html"><span class="t">JQ1 · Izbor vidljivosti</span><span class="d">Može li se preskočiti</span><span class="dec">D-034</span></a></li>
+    <li><a href="journeys/jq2-answer-count.html"><span class="t">JQ2 · Broj odgovora</span><span class="d">Koliko odgovora po pitanju</span><span class="dec">D-035</span></a></li>
+    <li><a href="journeys/jq3-archive.html"><span class="t">JQ3 · Starija pitanja</span><span class="d">Odgovori na arhivirana pitanja</span><span class="dec">D-036</span></a></li>
+    <li><a href="journeys/jq4-suggestions.html"><span class="t">JQ4 · Prijedlozi pitanja</span><span class="d">Povratna informacija predlagaču</span><span class="dec">D-037</span></a></li>
+  </ul>
+
+  <h2>3.2 · Informacijska arhitektura</h2>
+  <ul>
+    <li><a href="ia/index.html"><span class="t">Informacijska arhitektura: pregled</span><span class="d">Sva tri pitanja</span><span class="dec">D-031 – D-033</span></a></li>
+    <li><a href="ia/q1-navigation.html"><span class="t">Q1 · Navigacija</span><span class="d">Modeli navigacije</span><span class="dec">D-031</span></a></li>
+    <li><a href="ia/q2-drop-history.html"><span class="t">Q2 · Povijest Daily Drop odgovora</span><span class="d">Tko vidi povijest na profilu</span><span class="dec">D-032</span></a></li>
+    <li><a href="ia/q3-follower-lists.html"><span class="t">Q3 · Popisi pratitelja</span><span class="d">Tko vidi popise i brojke</span><span class="dec">D-033</span></a></li>
+  </ul>
+</main>
+</body>
+</html>

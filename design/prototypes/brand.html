@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · izvedenice branda (korak 3.7)</title>
+<!-- Step 3.7 review page. Every image is a real file from docs/brand/derived/ (built by docs/brand/derived/tools/).
+     Sections 1 and 2 are technical derivatives (allowed by D-006); sections 3 to 6 are proposals for owner review.
+     Browser tab, home screen and status bar frames are plain mock-ups drawn here in CSS; no third-party app names or icons. -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font-family: var(--gr-font-family-body); }
+  .pg { max-width: 84rem; margin: 0 auto; padding: 32px 24px 96px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2 { font: var(--gr-type-title-2); margin: 0 0 4px; }
+  h3 { font: var(--gr-type-title-3); margin: 20px 0 8px; }
+  p, li { color: var(--gr-color-text-secondary); font: var(--gr-type-body-sm); max-width: 80ch; }
+  b, strong { color: var(--gr-color-text-primary); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .8125rem; color: var(--gr-color-highlight-text); }
+  a { color: var(--gr-color-text-link); }
+  .toc { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 0; background: #07080B; border-bottom: 1px solid var(--gr-color-border-subtle); }
+  .toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 4px 12px; text-decoration: none; font: var(--gr-type-caption); }
+  .toc a:hover { background: var(--gr-color-bg-high); }
+  section { padding-top: 40px; scroll-margin-top: 56px; }
+  .tag { display: inline-block; font: var(--gr-type-caption); padding: 2px 10px; border-radius: 9999px; margin-left: 8px; vertical-align: middle; }
+  .tag.ok { background: #1E2A22; color: #9FE0B0; }
+  .tag.q { background: #2E2416; color: var(--gr-color-highlight-text); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+  .cell { display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 12px; background: var(--gr-color-bg-canvas); border: 1px solid var(--gr-color-border-subtle); }
+  .cell.grow { flex: 1 1 24rem; }
+  .cell > .cap { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin-top: auto; }
+  .cell > .name { font: var(--gr-type-label); color: var(--gr-color-text-primary); }
+  .white { background: #FFFFFF; border-color: #D9DCE3; }
+  .white > .cap { color: #4A5060; } .white > .name { color: #0B0D12; }
+  .pix { image-rendering: pixelated; }
+  .sizes { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .sizes figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .sizes figcaption { font: var(--gr-type-caption); color: var(--gr-color-text-tertiary, #8A90A0); }
+  /* browser tab strips */
+  .tabs { display: flex; gap: 2px; padding: 8px 8px 0; border-radius: 10px 10px 0 0; }
+  .tabs.light { background: #DEE1E6; } .tabs.dark { background: #202124; }
+  .tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; min-width: 190px; border-radius: 8px 8px 0 0; font: 12px/1 system-ui, sans-serif; }
+  .tabs.light .tab { color: #3C4043; } .tabs.light .tab.on { background: #FFFFFF; color: #202124; }
+  .tabs.dark .tab { color: #BDC1C6; } .tabs.dark .tab.on { background: #35363A; color: #E8EAED; }
+  .tab .dot { width: 16px; height: 16px; border-radius: 50%; background: #9AA0A6; }
+  .tab img { width: 16px; height: 16px; }
+  /* home screen */
+  .home { width: 300px; padding: 22px 18px; border-radius: 28px; background: linear-gradient(160deg, #3B4256, #1B1F2A 60%, #2A2230); display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 10px; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font: 11px/1.1 system-ui, sans-serif; color: #F1F3F7; text-align: center; }
+  .app .ic { width: 56px; height: 56px; border-radius: 13px; background: #5D6475; overflow: hidden; }
+  .app .ic.circle { border-radius: 50%; }
+  .app .ic img { width: 100%; height: 100%; display: block; }
+  /* status bar */
+  .status { display: flex; align-items: center; gap: 10px; width: 360px; height: 28px; padding: 0 12px; background: #000; color: #fff; font: 13px/1 system-ui, sans-serif; border-radius: 8px; }
+  .status img { width: 18px; height: 18px; }
+  .status .sp { flex: 1; }
+  .shade { width: 360px; padding: 12px; border-radius: 12px; background: #2B2F38; display: flex; gap: 10px; align-items: flex-start; }
+  .shade .bd { width: 32px; height: 32px; border-radius: 50%; background: #0B0D12; display: grid; place-items: center; flex: none; }
+  .shade .bd img { width: 20px; height: 20px; }
+  .shade .tx { font: 13px/1.35 system-ui, sans-serif; color: #E8EAED; } .shade .tx small { color: #9AA0A6; display: block; }
+  /* light paper */
+  .paper { width: 420px; padding: 32px; background: #FFFFFF; border-radius: 6px; box-shadow: 0 6px 24px #0008; color: #0B0D12; display: flex; flex-direction: column; gap: 14px; }
+  .paper .ln { height: 8px; border-radius: 4px; background: #E6E8EE; }
+  .paper .ln.s { width: 60%; }
+  .boost img { filter: url(#boost); }
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cmp img { width: 100%; display: block; }
+  .wm-live { font-family: var(--gr-font-family-heading); font-weight: 700; letter-spacing: -0.02em; font-size: 40px; line-height: 1; color: var(--gr-color-text-primary); }
+  .wm-live span { color: var(--gr-color-text-accent); }
+  ul.k { margin: 6px 0 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <!-- makes almost-transparent pixels visible: alpha x 40 -->
+  <filter id="boost"><feComponentTransfer><feFuncA type="linear" slope="40"/></feComponentTransfer></filter>
+</svg>
+<main class="pg">
+<header>
+  <h1>Izvedenice branda · korak 3.7</h1>
+  <p>Sve slike na ovoj stranici su prave datoteke iz <code>docs/brand/derived/</code>. Izradila ih je skripta iz
+  <code>docs/brand/derived/tools/</code> samo ugrađenim .NET-om (D-029). Originali u <code>docs/brand/source/</code>
+  nisu dirani: SHA-256 se provjerava prije i poslije svakog pokretanja.</p>
+  <p><b>1 i 2</b> su tehnički dio (dopušten po D-006). <b>3 do 6</b> su prijedlozi koje odobravaš ti.</p>
+</header>
+<nav class="toc" aria-label="Sadržaj">
+  <a href="#master">1 · Očišćeni master</a><a href="#icons">2 · Ikone aplikacije</a><a href="#small">3 · Mala ikona</a>
+  <a href="#badge">4 · Jednobojna značka</a><a href="#light">5 · Svijetla pozadina</a><a href="#wordmark">6 · Privremeni wordmark</a>
+  <a href="index.html">↩ Sve skice</a>
+</nav>
+
+<section id="master" aria-labelledby="h-master">
+  <h2 id="h-master">1 · Očišćeni master <span class="tag ok">tehničko</span></h2>
+  <p>Originalni PNG je imao 1,5 milijuna gotovo prozirnih piksela (ispod 3 % neprozirnosti) iz uklanjanja pozadine:
+  tamnu mrlju, zelenkasti rub i raspršene točkice po praznom dijelu. Na tamnoj pozadini se ne vide, ali smetaju na svijetloj
+  podlozi, pri izrezivanju i pri izradi značke. Skripta ih briše i uklanja 8 sitnih otočića. Svaki piksel iznad 25 % neprozirnosti
+  ostao je <b>bajt po bajt isti</b> (skripta to provjerava), pa su silueta, munje i sjaj netaknuti. Platno je iste veličine: 4844 × 3468.</p>
+  <p>Ispod su obje verzije s neprozirnošću pojačanom 40 puta, da se vidi što je maknuto.</p>
+  <div class="cmp boost">
+    <div class="cell white"><span class="name">Original (pojačano)</span><img src="../../docs/brand/source/grooverift-symbol-original.png" alt="Originalni simbol s pojačanim rubovima: oko simbola se vide raspršene mrlje."></div>
+    <div class="cell white"><span class="name">Očišćeno (pojačano)</span><img src="../../docs/brand/derived/master/grooverift-symbol-clean-1024.png" alt="Očišćeni simbol s pojačanim rubovima: oko simbola nema mrlja."></div>
+  </div>
+  <h3>Kako izgleda normalno</h3>
+  <div class="row">
+    <div class="cell grow"><img src="../../docs/brand/derived/master/grooverift-symbol-clean-1024.png" alt="Očišćeni simbol na tamnoj pozadini." style="width:100%;max-width:560px"><span class="cap"><code>master/grooverift-symbol-clean.png</code> (puna veličina) i umanjenja 2048, 1024, 512 px</span></div>
+  </div>
+</section>
+
+<section id="icons" aria-labelledby="h-icons">
+  <h2 id="h-icons">2 · Ikone aplikacije <span class="tag ok">tehničko</span></h2>
+  <p>Puni simbol na Void Black podlozi. Od 180 px naviše sjaj i munje se lijepo vide. <b>Apple touch</b> je pun kvadrat jer ga iOS sam
+  zaobljuje. <b>PWA „any”</b> ima zaobljene kutove. <b>PWA „maskable”</b> ide do ruba, a vrhovi simbola ostaju u sigurnom krugu od 80 %
+  jer Android ikonu izreže u krug, kapljicu ili kvadrat.</p>
+  <div class="row">
+    <div class="cell"><span class="name">Apple touch · 180</span><img src="../../docs/brand/derived/icons/apple-touch-icon-180.png" width="180" height="180" alt="Ikona 180 px: simbol na tamnom kvadratu."></div>
+    <div class="cell"><span class="name">PWA any · 192</span><img src="../../docs/brand/derived/icons/icon-192.png" width="192" height="192" alt="Ikona 192 px sa zaobljenim kutovima."></div>
+    <div class="cell"><span class="name">Maskable · 192, izrezano u krug</span><img src="../../docs/brand/derived/icons/icon-maskable-192.png" width="192" height="192" style="clip-path:circle(50%)" alt="Maskable ikona izrezana u krug: cijeli simbol stane."></div>
+    <div class="cell"><span class="name">Maskable · 192, sigurna zona</span><img src="../../docs/brand/derived/icons/icon-maskable-192.png" width="192" height="192" style="clip-path:circle(40%)" alt="Maskable ikona izrezana na sigurnu zonu od 80 %."><span class="cap">najmanji mogući izrez</span></div>
+  </div>
+  <h3>Na početnom zaslonu mobitela</h3>
+  <div class="row">
+    <div class="home" aria-label="Primjer početnog zaslona">
+      <div class="app"><div class="ic"></div>Aplikacija</div><div class="app"><div class="ic"></div>Aplikacija</div>
+      <div class="app"><div class="ic"><img src="../../docs/brand/derived/icons/apple-touch-icon-180.png" alt=""></div>GrooveRift</div><div class="app"><div class="ic"></div>Aplikacija</div>
+      <div class="app"><div class="ic circle"></div>Aplikacija</div><div class="app"><div class="ic circle"><img src="../../docs/brand/derived/icons/icon-maskable-192.png" alt=""></div>GrooveRift</div>
+      <div class="app"><div class="ic circle"></div>Aplikacija</div><div class="app"><div class="ic circle"></div>Aplikacija</div>
+    </div>
+    <div class="cell grow"><p>Gornji red: iPhone (zaobljeni kvadrat). Donji red: Android s okruglim izrezom. Sive ikone su samo zamjena za druge aplikacije.</p>
+    <p>Datoteke: <code>icons/apple-touch-icon-180.png</code>, <code>icons/icon-192.png</code>, <code>icons/icon-512.png</code>,
+    <code>icons/icon-maskable-192.png</code>, <code>icons/icon-maskable-512.png</code>. U Fazi 4 idu u javne datoteke aplikacije i u manifest.</p></div>
+  </div>
+</section>
+
+<section id="small" aria-labelledby="h-small">
+  <h2 id="h-small">3 · Mala ikona (favicon) <span class="tag q">prijedlog · biraš</span></h2>
+  <p>Na 16 i 32 px pune munje se stope u mutnu mrlju (prvi red). Zato predlažem pojednostavljenu ikonu, <b>nacrtanu</b> od jednostavnih
+  oblika, a ne precrtanu sa slike (D-029). Svaka veličina ima malo deblje linije da ostane oštra. Slike su u stvarnoj veličini, a pokraj njih su uvećane 4×.</p>
+  <div class="row">
+    <div class="cell grow"><span class="name">Puni detalj (umanjeni master)</span>
+      <div class="sizes">
+        <figure><img src="../../docs/brand/derived/icons/favicon-full-16.png" width="16" height="16" alt="Puni simbol na 16 px."><figcaption>16</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/icons/favicon-full-32.png" width="32" height="32" alt="Puni simbol na 32 px."><figcaption>32</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/icons/favicon-full-48.png" width="48" height="48" alt="Puni simbol na 48 px."><figcaption>48</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/icons/favicon-full-16.png" width="64" height="64" alt="Puni simbol na 16 px, uvećan."><figcaption>16 × 4</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/icons/favicon-full-32.png" width="128" height="128" alt="Puni simbol na 32 px, uvećan."><figcaption>32 × 4</figcaption></figure>
+      </div><span class="cap">Mutno na 16 px: munje i val se ne razaznaju.</span></div>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <div class="cell grow"><span class="name">S1 · Obris</span>
+      <div class="sizes">
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/outline-16.png" width="16" height="16" alt="Obris na 16 px."><figcaption>16</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/outline-32.png" width="32" height="32" alt="Obris na 32 px."><figcaption>32</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/outline-48.png" width="48" height="48" alt="Obris na 48 px."><figcaption>48</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/outline-16.png" width="64" height="64" alt="Obris na 16 px, uvećan."><figcaption>16 × 4</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/outline-32.png" width="128" height="128" alt="Obris na 32 px, uvećan."><figcaption>32 × 4</figcaption></figure>
+      </div><span class="cap">Dvije zagrade rascjepa (Coral lijevo, Amber desno) i tri crtice vala. Najbliže pravom znaku.</span></div>
+    <div class="cell grow"><span class="name">S2 · Val</span>
+      <div class="sizes">
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/wave-16.png" width="16" height="16" alt="Val na 16 px."><figcaption>16</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/wave-32.png" width="32" height="32" alt="Val na 32 px."><figcaption>32</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/wave-48.png" width="48" height="48" alt="Val na 48 px."><figcaption>48</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/wave-16.png" width="64" height="64" alt="Val na 16 px, uvećan."><figcaption>16 × 4</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/wave-32.png" width="128" height="128" alt="Val na 32 px, uvećan."><figcaption>32 × 4</figcaption></figure>
+      </div><span class="cap">Samo val (5 crtica, na 16 px 3). Najčitljivije, ali bez rascjepa izgleda kao bilo koja glazbena aplikacija.</span></div>
+    <div class="cell grow"><span class="name">S3 · Silueta</span>
+      <div class="sizes">
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/solid-16.png" width="16" height="16" alt="Silueta na 16 px."><figcaption>16</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/solid-32.png" width="32" height="32" alt="Silueta na 32 px."><figcaption>32</figcaption></figure>
+        <figure><img src="../../docs/brand/derived/proposals/small-icon/solid-48.png" width="48" height="48" alt="Silueta na 48 px."><figcaption>48</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/solid-16.png" width="64" height="64" alt="Silueta na 16 px, uvećana."><figcaption>16 × 4</figcaption></figure>
+        <figure><img class="pix" src="../../docs/brand/derived/proposals/small-icon/solid-32.png" width="128" height="128" alt="Silueta na 32 px, uvećana."><figcaption>32 × 4</figcaption></figure>
+      </div><span class="cap">Ispunjena zvijezda s izrezanim valom. Najjača silueta, ali teža i manje „električna”.</span></div>
+  </div>
+  <h3>U kartici preglednika (stvarna veličina, 16 px)</h3>
+  <div class="row">
+    <div class="cell grow"><div class="tabs light">
+      <div class="tab on"><img src="../../docs/brand/derived/proposals/small-icon/outline-16.png" alt="">S1 · Obris</div>
+      <div class="tab"><img src="../../docs/brand/derived/proposals/small-icon/wave-16.png" alt="">S2 · Val</div>
+      <div class="tab"><img src="../../docs/brand/derived/proposals/small-icon/solid-16.png" alt="">S3 · Silueta</div>
+      <div class="tab"><img src="../../docs/brand/derived/icons/favicon-full-16.png" alt="">Puni detalj</div>
+    </div><div class="tabs dark">
+      <div class="tab on"><img src="../../docs/brand/derived/proposals/small-icon/outline-16.png" alt="">S1 · Obris</div>
+      <div class="tab"><img src="../../docs/brand/derived/proposals/small-icon/wave-16.png" alt="">S2 · Val</div>
+      <div class="tab"><img src="../../docs/brand/derived/proposals/small-icon/solid-16.png" alt="">S3 · Silueta</div>
+      <div class="tab"><img src="../../docs/brand/derived/icons/favicon-full-16.png" alt="">Puni detalj</div>
+    </div><span class="cap">Svijetla i tamna traka kartica. Tamna pločica drži ikonu vidljivom na obje.</span></div>
+  </div>
+  <p><b>Preporuka: S1 · Obris.</b> Zadržava rascjep i dvije boje, pa se i na 16 px prepoznaje kao isti znak. Odabrana ikona ulazi u
+  <code>favicon.ico</code> (16, 32, 48) i u 64 px verziju.</p>
+</section>
+
+<section id="badge" aria-labelledby="h-badge">
+  <h2 id="h-badge">4 · Jednobojna značka <span class="tag q">prijedlog · biraš</span></h2>
+  <p>Android u traci obavijesti prikazuje samo bijeli oblik na prozirnoj podlozi i boju ne koristi. Puni simbol tu postaje bijela mrlja,
+  pa značka mora biti čisti oblik. Ista tri oblika kao gore:</p>
+  <div class="row">
+    <div class="cell" style="background:#2B2F38"><span class="name">S1 · Obris</span><div class="sizes"><img src="../../docs/brand/derived/proposals/badge/outline-mono-96.png" width="96" height="96" alt="Bijela značka u obliku obrisa."><img class="pix" src="../../docs/brand/derived/proposals/badge/outline-mono-24.png" width="24" height="24" alt="Ista značka na 24 px."></div></div>
+    <div class="cell" style="background:#2B2F38"><span class="name">S2 · Val</span><div class="sizes"><img src="../../docs/brand/derived/proposals/badge/wave-mono-96.png" width="96" height="96" alt="Bijela značka u obliku vala."><img class="pix" src="../../docs/brand/derived/proposals/badge/wave-mono-24.png" width="24" height="24" alt="Ista značka na 24 px."></div></div>
+    <div class="cell" style="background:#2B2F38"><span class="name">S3 · Silueta</span><div class="sizes"><img src="../../docs/brand/derived/proposals/badge/solid-mono-96.png" width="96" height="96" alt="Bijela značka u obliku siluete."><img class="pix" src="../../docs/brand/derived/proposals/badge/solid-mono-24.png" width="24" height="24" alt="Ista značka na 24 px."></div></div>
+  </div>
+  <h3>Kako izgleda na mobitelu</h3>
+  <div class="row">
+    <div class="cell grow">
+      <div class="status"><span>12:30</span><img src="../../docs/brand/derived/proposals/badge/outline-mono-24.png" alt="S1"><img src="../../docs/brand/derived/proposals/badge/wave-mono-24.png" alt="S2"><img src="../../docs/brand/derived/proposals/badge/solid-mono-24.png" alt="S3"><span class="sp"></span><span>▲ ▮ 82 %</span></div>
+      <div class="shade"><div class="bd"><img src="../../docs/brand/derived/proposals/badge/outline-mono-96.png" alt=""></div><div class="tx">grooverift · sada<small>Ana je odgovorila na tvoj Daily Drop.</small></div></div>
+      <span class="cap">Statusna traka s tri značke (S1, S2, S3, slijeva) i obavijest sa S1. Primjer obavijesti je izmišljen.</span>
+    </div>
+  </div>
+  <p><b>Preporuka:</b> značka u istom obliku kao mala ikona (uz S1, Obris).</p>
+</section>
+
+<section id="light" aria-labelledby="h-light">
+  <h2 id="h-light">5 · Simbol na svijetloj pozadini <span class="tag q">prijedlog · biraš</span></h2>
+  <p>Aplikacija je samo tamna (D-063), pa ovo služi za tisak, dokumente, prezentacije i press. Sjaj je svjetlost, a svjetlost na
+  papiru ne postoji. Zato <b>L1 „Tinta”</b> obrće logiku: užarene jezgre munja postaju linija tinte, a sjaj samo blagi trag.
+  Amber na bijelom ima kontrast 1,5:1 i gotovo nestaje, pa desna strana prelazi u <b>tamniji Amber <code>#B87A12</code></b> (3,6:1).
+  To je nova nijansa samo za svijetli papir, nikad u aplikaciji. <b>L2 „Pločica”</b> ne mijenja ništa: originalni znak na tamnoj pločici.</p>
+  <div class="row">
+    <div class="cell white grow"><span class="name">L1 · Tinta</span><img src="../../docs/brand/derived/proposals/light/grooverift-symbol-ink-1024.png" alt="Simbol za svijetlu pozadinu: tanke Coral i tamno-amber munje, val u punoj boji." style="width:100%;max-width:520px"><span class="cap"><code>proposals/light/grooverift-symbol-ink.png</code> (puna veličina), 1024, 512</span></div>
+    <div class="cell white"><span class="name">L2 · Pločica</span><img src="../../docs/brand/derived/proposals/light/tile-192.png" width="192" height="192" alt="Originalni simbol na tamnoj zaobljenoj pločici, na bijeloj pozadini."><span class="cap">i 64 px</span></div>
+  </div>
+  <h3>Na papiru</h3>
+  <div class="row">
+    <div class="paper" aria-label="Primjer naslovnice dokumenta s L1">
+      <img src="../../docs/brand/derived/proposals/light/grooverift-symbol-ink-512.png" alt="" style="width:150px">
+      <img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-light.svg" alt="GrooveRift" style="width:220px">
+      <div class="ln"></div><div class="ln"></div><div class="ln s"></div>
+    </div>
+    <div class="paper" aria-label="Primjer naslovnice dokumenta s L2">
+      <img src="../../docs/brand/derived/proposals/light/tile-192.png" alt="" style="width:96px">
+      <img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-light.svg" alt="GrooveRift" style="width:220px">
+      <div class="ln"></div><div class="ln"></div><div class="ln s"></div>
+    </div>
+  </div>
+  <p><b>Preporuka: oboje.</b> L1 za tisak i dokumente, gdje znak stoji sam na bijelom. L2 za mjesta gdje ne znaš kakva je pozadina
+  (tuđe stranice, prijave, popisi aplikacija). Konačnu svijetlu verziju svejedno radi dizajner uz vektorski znak (X-04).</p>
+</section>
+
+<section id="wordmark" aria-labelledby="h-wordmark">
+  <h2 id="h-wordmark">6 · Privremeni wordmark <span class="tag q">prijedlog · odobravaš</span></h2>
+  <p>Ovo je D-011: „groove” i „rift” složeni u Sori Bold kao u prototipu (razmak −0,02 em), pretvoreni u <b>vektorske oblike</b>, s munjom
+  N2 (D-058) ispod „rift”. Munja je ovdje mirna jer slika ne može treptati; živa ostaje samo u aplikaciji. Oblici slova dolaze
+  iz statične datoteke Sora Bold (ista OFL licenca, isti izvor kao D-028). Položaje slova mjeri Chrome, pa se poklapa s tekstom u
+  aplikaciji. <b>Privremeno:</b> konačni wordmark radi dizajner prije javnog lansiranja (X-04).</p>
+  <div class="row">
+    <div class="cell grow"><span class="name">Za tamnu pozadinu</span>
+      <img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-dark.svg" alt="Wordmark grooverift za tamnu pozadinu" style="width:100%;max-width:520px">
+      <div class="sizes"><img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-dark.svg" alt="" style="height:40px"><img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-dark.svg" alt="" style="height:24px"></div>
+      <span class="cap">SVG plus PNG 1200 i 600 px (za e-mail)</span></div>
+    <div class="cell white grow"><span class="name">Za svijetlu pozadinu</span>
+      <img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-light.svg" alt="Wordmark grooverift za svijetlu pozadinu" style="width:100%;max-width:520px">
+      <div class="sizes"><img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-light.svg" alt="" style="height:40px"><img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-light.svg" alt="" style="height:24px"></div>
+      <span class="cap">„groove” u Void Black. Munja je čista Coral bez sjaja jer se Amber na bijelom ne vidi.</span></div>
+  </div>
+  <h3>Usporedba s tekstom iz aplikacije</h3>
+  <div class="row"><div class="cell grow">
+    <div class="sizes" style="align-items:center"><span class="wm-live">groove<span>rift</span></span><img src="../../docs/brand/derived/wordmark/grooverift-wordmark-interim-dark.svg" alt="Wordmark iste veličine" style="height:49.6px"></div>
+    <span class="cap">Lijevo je živi tekst u Sori (40 px), desno vektorski wordmark iste veličine slova. Oblici i razmaci moraju biti isti.</span>
+  </div></div>
+</section>
+</main>
+</body>
+</html>

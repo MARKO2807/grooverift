@@ -15,8 +15,11 @@ Downloaded on 2026-11-01 from the Google Fonts distribution:
 | `inter/inter-latin-ext.woff2` | `fonts.gstatic.com/s/inter/v20/…` | opsz 14–32, wght 100–900 | latin-ext | `5e6d4fe9d9f4bff8b2a2469d25ab19576bb85331e22c6ed51398e16f95d56a9c` |
 | `inter/inter-italic-latin.woff2` | `fonts.gstatic.com/s/inter/v20/…` | opsz 14–32, wght 100–900, italic | latin | `c58f9d530baa7e96355f444502eca739d5eefa0f328f3d635b73648373214629` |
 | `inter/inter-italic-latin-ext.woff2` | `fonts.gstatic.com/s/inter/v20/…` | opsz 14–32, wght 100–900, italic | latin-ext | `cd92c8740f77f482bcd39e831fa7b1445589e9203cc9edb39fd49435d8976257` |
+| `sora/static/sora-bold.ttf` | `fonts.gstatic.com/s/sora/v17/xMQOuFFYT72X5wkB_18qmnndmSe1mX-K.ttf` (css2 API, `wght@700`, plain user agent; downloaded 2026-11-04) | static 700 | full | `a50f5d254fc0fb83125fceffb72a95d036b8ce964a77fb8cc42ecb9ce16b0427` |
 | `sora/OFL.txt` | `google/fonts` `ofl/sora/OFL.txt` | | | `ba0b9729c9428ba79a0459ab8ec575791b51509dbec213e383d0316d37fec299` |
 | `inter/OFL.txt` | `google/fonts` `ofl/inter/OFL.txt` | | | `5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57` |
+
+`sora/static/sora-bold.ttf` is a build input only: `docs/brand/derived/tools/wordmark.mjs` reads its glyph outlines for the interim wordmark (D-011). It is not served to the app; the OFL in `sora/OFL.txt` covers it.
 
 ## Copyright and license
 - Sora: Copyright 2019 The Sora Project Authors (https://github.com/sora-xor/sora-font). SIL Open Font License 1.1.
