@@ -388,7 +388,7 @@
         ${avatar(a.handle, a.who)}
         <h${hl} class="ans-who" id="h-${a.id}" tabindex="-1">${whoLink(a, 'who-' + a.id)}<span class="sr-only">, </span><span class="handle">@${esc(a.handle)}</span></h${hl}>
         <span class="ans-time"><time>${a.time}</time>${a.edited ? '<span class="edited">uređeno</span>' : ''}</span>
-        ${a.mine ? '' : `<button class="iconbtn ans-more" data-a="more" data-id="${a.id}" data-k="more-${a.id}" aria-label="Više opcija: odgovor korisnika ${esc(a.who)}">${ic('more')}</button>`}
+        ${a.mine ? '' : `<button class="iconbtn ans-more" data-a="more" data-id="${a.id}" data-k="more-${a.id}" aria-label="Više opcija za odgovor: ${esc(a.who)}">${ic('more')}</button>`}
       </header>
       <div class="ans-text${isLong && !open ? ' clamp' : ''}" id="t-${a.id}"${a.lang ? ` lang="${a.lang}"` : ''}><p>${esc(a.text)}</p></div>
       ${isLong ? `<button class="link more-link" data-a="expand" data-id="${a.id}" data-k="exp-${a.id}" aria-controls="t-${a.id}" aria-expanded="${open}">${open ? 'Prikaži manje' : 'Pročitaj više'}</button>` : ''}
@@ -556,11 +556,11 @@
         </li>
         <li class="how-card" style="--d:1">
           <div class="how-vis" aria-hidden="true">${pic('chart-bar-horizontal', 'how-ic')}</div>
-          <div><h2 class="how-t" lang="en">Weekly Poll</h2><p>Tjedna anketa za sve. Rezultate vidiš kad glasaš.</p></div>
+          <div><h2 class="how-t">Tjedna anketa</h2><p>Jedno pitanje za sve, svaki tjedan. Rezultate vidiš kad glasaš.</p></div>
         </li>
         <li class="how-card" style="--d:2">
           <div class="how-vis" aria-hidden="true">${pic('lightbulb-filament', 'how-ic')}</div>
-          <div><h2 class="how-t" lang="en">Did You Know?</h2><p>Dvaput tjedno provjerena glazbena priča, uz izvore.</p></div>
+          <div><h2 class="how-t">Znaš li?</h2><p>Dvaput tjedno provjerena glazbena priča, uz izvore.</p></div>
         </li>
         <li class="how-card" style="--d:3">
           <div class="how-vis" aria-hidden="true">${pic('users-three', 'how-ic')}</div>
@@ -765,13 +765,13 @@
   function hubProgramme() {
     /* .hub-side: display: contents on the phone, the right-hand column from 1280 px (D-080). */
     return `<div class="hub-side"><section class="section" aria-labelledby="h-week"><h2 id="h-week" class="section-title">Ovaj tjedan <span class="soon">od B2, primjer</span></h2>
-        <article class="prog-card" aria-labelledby="h-poll"><p class="prog-tag">${pic('chart-bar-horizontal', 'prog-ic')}<span lang="en">Weekly Poll</span></p>
+        <article class="prog-card" aria-labelledby="h-poll"><p class="prog-tag">${pic('chart-bar-horizontal', 'prog-ic')}<span>Tjedna anketa</span></p>
           <h3 id="h-poll" class="prog-t">Koje desetljeće ima najbolje debitantske albume?</h3><p class="prog-d">Rezultate vidiš kad glasaš. Zatvara se u nedjelju.</p>
-          <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Weekly Poll (HUB-05) stiže u valu B2." data-k="poll">Glasaj</button></article>
-        <article class="prog-card" aria-labelledby="h-dyk"><p class="prog-tag">${pic('lightbulb-filament', 'prog-ic')}<span lang="en">Did You Know?</span></p>
+          <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Tjedna anketa (HUB-05) stiže u valu B2." data-k="poll">Glasaj</button></article>
+        <article class="prog-card" aria-labelledby="h-dyk"><p class="prog-tag">${pic('lightbulb-filament', 'prog-ic')}<span>Znaš li?</span></p>
           <h3 id="h-dyk" class="prog-t">Kind of Blue Milesa Davisa snimljen je u samo dva dana snimanja, 1959.</h3><p class="prog-d">S izvorima. Provjerila redakcija.</p>
-          <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Did You Know? (HUB-07) stiže u valu B2." data-k="dyk">Pročitaj</button></article></section>
-      <section class="section" aria-labelledby="h-arch"><h2 id="h-arch" class="section-title">Arhive</h2><ul class="past">${[['Daily Drop', 'Svako pitanje od prvog dana'], ['Weekly Poll', 'Sve ankete i rezultati'], ['Did You Know?', 'Sve priče s izvorima']].map(([t, d], i) => `<li><button class="past-item" data-a="toast" data-msg="Arhive (HUB-04, HUB-06, HUB-08) nisu dio ove skice." data-k="arch-${i}"><span class="past-q" lang="en">${t}</span><span class="past-date">${d}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul></section>${suggestBtn()}</div>`;
+          <button class="btn btn-secondary btn-sm" data-a="toast" data-msg="Znaš li? (HUB-07) stiže u valu B2." data-k="dyk">Pročitaj</button></article></section>
+      <section class="section" aria-labelledby="h-arch"><h2 id="h-arch" class="section-title">Arhive</h2><ul class="past">${[['Daily Drop', 'Svako pitanje od prvog dana'], ['Tjedna anketa', 'Sve ankete i rezultati'], ['Znaš li?', 'Sve priče s izvorima']].map(([t, d], i) => `<li><button class="past-item" data-a="toast" data-msg="Arhive (HUB-04, HUB-06, HUB-08) nisu dio ove skice." data-k="arch-${i}"><span class="past-q"${i === 0 ? ' lang="en"' : ''}>${t}</span><span class="past-date">${d}</span>${ic('chevron', 'past-ic')}</button></li>`).join('')}</ul></section>${suggestBtn()}</div>`;
   }
 
   /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
@@ -2131,7 +2131,7 @@
       const cs = st.comments[a.id] || [];
       return {
         kind: 'app', tab: 'hub', back: true, topTitle: 'Komentari',
-        body: `<h1 class="sr-only">Komentari na odgovor korisnika ${esc(a.who)}</h1>
+        body: `<h1 class="sr-only">Komentari na odgovor: ${esc(a.who)}</h1>
           <p class="ctx">Na pitanje: ${esc(D.drop.question)}</p>
           <div class="ans-solo">${answerItem(a, { full: true, hl: 2 })}</div>
           <section class="section" aria-labelledby="h-com">
