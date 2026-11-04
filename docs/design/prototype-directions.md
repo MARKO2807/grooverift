@@ -115,7 +115,7 @@ These items should be settled in the chosen direction or in step 3.8.
   - long text and long Croatian names
 - ~~200 % text zoom (320 px reflow is done).~~ Done in session 13 (D-073): a large-text mode, review page `pulse/large-text.html`, check `tools/zoom-check.mjs` (49 screens pass at 100, 150 and 200 %, and at 320 px).
 - ~~Desktop adaptation: rail (D-031) at 600 px and 1024 px, a reading column of 40 rem, and the sheet as a centered dialog on wide screens.~~ Built in session 17 up to 1920 px (D-079, D-080; see §7, "Desktop").
-- Screen reader pass (Narrator is built into Windows; NVDA would need installing, which needs owner approval) and a Windows high-contrast check.
+- ~~Screen reader pass (Narrator is built into Windows; NVDA would need installing, which needs owner approval) and a Windows high-contrast check.~~ Done in session 18 (`docs/design/accessibility-pass.md`, `tools/a11y-check.mjs`): the accessibility tree, the keyboard walk and forced colours on all 123 screens at four widths; seven fixes. The owner's own Narrator listen is a ten-minute script in that document. **The step 3.5 list is complete.**
 - ~~"Smanji pokrete" in the real settings structure~~ Done by D-063 (Settings screen).
 - ~~Catalogue cards in the comment form (D-068)~~ Done in session 13.
 
@@ -383,6 +383,14 @@ Recorded in `DECISIONS.md` (D-070 to D-073) and `HANDOFF.md`; sketches `pulse/ro
   - **1600 px (Full HD, the owner's screen):** a 106.25 % root (17 px at the default setting, still following the browser text size), so everything is about 6 % larger (type, spacing, columns, the rail); 50 + 26 rem columns, a 50 rem single column, a 38 rem onboarding card, a larger question and countdown. The owner reviewed the 1920 px frames and asked for exactly this: fill the space, a little larger, not more.
 - Prototype notes: everything is CSS in the "Desktop" block of `style.css`, keyed on the viewport, `html[data-kind]` (app, onb, bare, pub) and `#app[data-screen]`; the only JS is the settings split (the list is rendered beside the detail from 1280 px, re-rendered on a change across the breakpoint) and the wrappers `.home-side`, `.hub-side`, `.pf-main` / `.pf-side`, `.pm-main` / `.pm-side` (`display: contents` on the phone, grid items on desktop). The rail's wordmark uses its own gradient id. `viewer.html` offers tablet and desktop sizes.
 - Verification: `pulse-smoke.mjs` has eleven desktop runs (the rail and its order, the skip link, Settings and Help marked, mouse drag vs. touch swipe, the two-column Home, Hub, profiles and member profile, the dock at the foot, the compose sheet, the answer menu and the mute dialog as dialogs, the settings split, 1366 one-column geometry, 1024 one column with the dock at the foot, 800 collapsed, 599 unchanged, the onboarding card, the visitor landing, the page's frame count). `zoom-check.mjs` no longer counts the rail as a bar over the content; run at 360 px at 200 % and at 1920×1080 at 100 % and 200 %, 1366×800, 800×800 and 600×800 at 100 %.
+
+### Accessibility pass: the accessibility tree, the keyboard and forced colours (2026-11-04, session 18)
+
+- Scope: the last two §6 items, the screen reader pass and the Windows high-contrast check, on the prototype as built. Full write-up: `docs/design/accessibility-pass.md`.
+- Method: `tools/a11y-check.mjs` reads Chrome's accessibility tree (what Narrator receives) over the DevTools protocol, walks every screen with real Tab presses and, with `--fc`, emulates forced colours and takes screenshots. The screen list moved to `tools/screens.mjs`, shared with `zoom-check.mjs`. Run at 360×740, 800×800, 1366×800 and 1920×1080, with and without forced colours; the forced-colour screenshots were reviewed by eye.
+- Fixed: a dangling `aria-describedby` on the password field; four unnamed Spirala figures; a second `h1` on the in-shell failure block; in forced colours the current tab and rail item, the switches, the open settings row and the skeletons (the Ember marks turned into Canvas and vanished; a forced-colours block at the end of `style.css` draws them with `Highlight` and `ButtonText`).
+- Left as the system's behaviour: green disabled buttons and yellow disclosures in the "High contrast black" theme; the Spirala, the current and the orbit keep their colours as images do. For 3.6: selected chips that rely on border weight get a shape.
+- The owner's own Narrator listen (voice, not markup) is a short script in the document; anything that sounds wrong goes to 3.9.
 
 ### Verification (session 9)
 

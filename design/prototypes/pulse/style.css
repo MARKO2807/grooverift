@@ -1487,3 +1487,17 @@ main:focus { outline: none; box-shadow: none; }
   .ans-list .ans, .ans-solo .ans { padding: var(--gr-space-6) var(--gr-space-6) var(--gr-space-4); }
   .act { padding: var(--gr-space-4) var(--gr-space-3); }
 }
+
+/* Forced colours (Windows high contrast), session 18: the state marks that the system flattens. The block is last in the
+   file so it wins over the desktop rules above (a later rule with the same specificity replaces the Ember colour, which
+   forced colours turn into Canvas, so the mark disappears). Checked by tools/a11y-check.mjs --fc. */
+@media (forced-colors: active) {
+  .tab[aria-current="page"], .rail-item[aria-current="page"] { color: Highlight; }
+  .tab[aria-current="page"]::before, .rail-item[aria-current="page"]::before { background: Highlight; }
+  .switch { border-color: ButtonText; }
+  .switch span { background: ButtonText; }
+  .switch[aria-checked="true"] { border-color: Highlight; }
+  .switch[aria-checked="true"] span { background: Highlight; }
+  .skel span { background: Canvas; border: 1px solid GrayText; }
+  .set-nav [aria-current="page"] { outline: 2px solid Highlight; outline-offset: -2px; color: Highlight; } /* inset: the rounded group clips an outside outline */
+}

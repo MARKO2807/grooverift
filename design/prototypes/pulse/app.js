@@ -119,6 +119,14 @@
   const pwMissing = s => PW_RULES.filter(r => !r[1](s));
   /* "a, b i c" */
   const andList = xs => xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' i ' + xs[xs.length - 1];
+  /* The id only exists while the line shows, so aria-describedby must not point at it otherwise (a11y check). */
+  const pwDesc = () => st.pw && !st.err.pw ? 'pw-need' : '';
+  /* While typing only the meter re-renders, so the input's aria-describedby follows the line by hand. */
+  function pwDescSync(input) {
+    const ids = (input.getAttribute('aria-describedby') || '').split(/\s+/).filter(x => x && x !== 'pw-need');
+    if (root.querySelector('#pw-need')) ids.splice(ids[0] === 'help-pw' ? 1 : 0, 0, 'pw-need');
+    if (ids.length) input.setAttribute('aria-describedby', ids.join(' ')); else input.removeAttribute('aria-describedby');
+  }
   function pwMeter() {
     const miss = pwMissing(st.pw), left = PW_MIN - pwLen(st.pw);
     /* The field error after "Napravi račun" says the same, so the line waits until the member types again. */
@@ -767,7 +775,7 @@
   }
 
   /* Profile page in three arrangements. Counts and the bio are fictional placeholders. */
-  const profDna = h => st.genres.length ? `<figure class="dna-card">${dnaCanvas('profile', h)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>` : '<p class="empty">Još nema odabira.</p>';
+  const profDna = h => st.genres.length ? `<figure class="dna-card" aria-labelledby="h-pdna">${dnaCanvas('profile', h)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>` : '<p class="empty">Još nema odabira.</p>';
   const profArtists = () => st.artists.length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${st.artists.map(a => `<li>${artistTile(a)}<span class="p-name">${esc(a.name)}</span></li>`).join('')}</ul>` : '';
   /* Settings (SET-01). Entered from the gear at the top right of the member's own profile (D-063), as on Instagram,
      TikTok and Spotify (docs/research/2026-11-02-settings-benchmark.md). Round 8 (owner, D-065): no separate "download
@@ -836,7 +844,7 @@
   st.bio = BIO; // editable since round 12d (PROF-08)
   /* Round 12d: the own Music DNA on the profile opens its editor (PROF-09); an emptied DNA (dnamin=b) says so. */
   const profDnaHero = () => st.genres.length
-    ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}<button class="btn btn-secondary btn-sm pf-dna-edit" data-a="setsub" data-s="dna" data-k="pf-dna-edit">${pic('pencil-simple', 'pi-sm')}<span>Uredi Music DNA</span></button></figcaption></figure>`
+    ? `<figure class="pf-c-hero" aria-label="Music DNA">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}<button class="btn btn-secondary btn-sm pf-dna-edit" data-a="setsub" data-s="dna" data-k="pf-dna-edit">${pic('pencil-simple', 'pi-sm')}<span>Uredi Music DNA</span></button></figcaption></figure>`
     : `<div class="empty-b pf-dna-empty">${pic('lightning', 'empty-ic')}<p class="empty-t">Još nema Music DNA.</p><p>Spirala nastaje iz žanrova koje odabereš.</p><button class="btn btn-secondary btn-sm" data-a="setsub" data-s="dna" data-k="pf-dna-add">Dodaj žanrove</button></div>`;
   function profileBody() {
     const name = esc(st.displayName || 'Ti'), handle = esc(st.username || 'ti');
@@ -974,7 +982,7 @@
         <p class="set-note">Poslat ćemo poveznicu na novu adresu. Dok je ne otvoriš, vrijedi stara. Na staru adresu stiže obavijest o promjeni.</p>
         <button class="btn btn-primary btn-block" data-a="toast" data-msg="Poveznica je poslana na novu adresu (simulacija)." data-k="email-save">Pošalji poveznicu</button>`],
     password: ['Lozinka', () => `${field({ id: 'pwold', label: 'Trenutna lozinka', type: 'password', attrs: 'autocomplete="current-password"' })}
-        ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: 'password', value: st.pw, desc: 'pw-need', attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"' })}
+        ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: 'password', value: st.pw, desc: pwDesc(), attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"' })}
         <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
         <label class="age-check sub-check"><input type="checkbox" checked data-k="pw-others"><span>Odjavi i sve druge uređaje</span></label>
         <button class="btn btn-primary btn-block" data-a="pw-save" data-k="pw-save">Promijeni lozinku</button>
@@ -1358,7 +1366,7 @@
     let body = '';
     if (!see) body = privBlock(h);
     else {
-      if (seeDna(h)) body += `<section class="section" aria-labelledby="h-mdna"><h2 id="h-mdna" class="section-title">Music DNA</h2><figure class="dna-card">${dnaFixed('m-' + h, m, 170)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span><p class="sr-only">Žanrovi: ${(m.dna || []).map(esc).join(', ')}.</p></figcaption></figure>${artistsOf(m)}</section>`;
+      if (seeDna(h)) body += `<section class="section" aria-labelledby="h-mdna"><h2 id="h-mdna" class="section-title">Music DNA</h2><figure class="dna-card" aria-labelledby="h-mdna">${dnaFixed('m-' + h, m, 170)}<figcaption><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span><p class="sr-only">Žanrovi: ${(m.dna || []).map(esc).join(', ')}.</p></figcaption></figure>${artistsOf(m)}</section>`;
       if (seeHist(h)) { const ds = dropsOf(h); body += `<section class="section" aria-labelledby="h-mdd"><h2 id="h-mdd" class="section-title">Daily Drop odgovori${ds.length ? ` <span class="count">${ds.length}</span>` : ''}</h2>${ds.length ? `<ul class="hist hist-${HIST_AT}">${ds.slice(0, 3).map(histRow).join('')}</ul>${ds.length > 3 ? `<button class="link" data-a="open-mdrops" data-h="${h}" data-k="all-hist">Svi odgovori (${ds.length})</button>` : ''}` : histEmpty(false)}</section>`; }
     }
     // .pm-main / .pm-side: display: contents on the phone, two columns from 1280 px (D-080)
@@ -1651,7 +1659,7 @@
       <p class="fine">Nije stigla? Pogledaj neželjenu poštu. <button class="link" data-a="reset-again" data-k="reset-again">Pošalji ponovno</button></p></div>
       <p class="meta">Poruka je ista bez obzira postoji li račun, da nitko ne može provjeravati tuđe adrese.</p>`;
   const resetNewBody = () => `<h1>Postavi novu lozinku</h1>
-      ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: 'pw-need', attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"', after: pwEye() })}
+      ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: pwDesc(), attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"', after: pwEye() })}
       <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
       <p class="help ret-line">${ic('info', 'sm')}<span>Nakon promjene ostali uređaji bit će odjavljeni.</span></p>`;
   function resetSave() {
@@ -1875,8 +1883,10 @@
      option c adds an opaque support code. The shell stays (a, c) so the rest of the app is one tap away. */
   const FAIL_SCREENS = ['home', 'hub', 'drop', 'answer', 'activity', 'profile', 'member', 'follows', 'mdrops', 'requests'];
   const failing = () => STATE === 'fail' && !st.loadOk && FAIL_SCREENS.includes(st.screen);
-  function failBody(bare) {
-    return `<div class="sys-na sys-fail"><span class="step-ic" aria-hidden="true">${pic('warning-circle')}</span><h1>Nešto je pošlo po zlu</h1>
+  /* h: the heading level. Inside the shell the top bar may already carry the screen's h1 (the Hub, Activity), so the block takes an h2 there. */
+  function failBody(bare, h) {
+    h = h || 'h1';
+    return `<div class="sys-na sys-fail"><span class="step-ic" aria-hidden="true">${pic('warning-circle')}</span><${h}>Nešto je pošlo po zlu</${h}>
       <p class="lead lead-sm">${bare ? 'Aplikacija se nije uspjela učitati.' : 'Ovaj dio se nije učitao, a ostatak aplikacije radi.'} Nije do tebe.</p>
       <div class="dialog-stack sys-fail-btns"><button class="btn btn-primary" data-a="retry-load" data-k="fail-retry">Pokušaj ponovno</button></div>
       <p class="fine">Ponavlja se? <button class="link" data-a="setsub" data-s="help" data-k="fail-help">Javi nam</button></p>
@@ -1978,7 +1988,7 @@
       kind: 'onb', back: true,
       body: `<h1>Napravi račun</h1>
         ${field({ id: 'email', label: 'E-pošta', help: 'Pozivnica je vezana uz ovu adresu.', type: 'email', value: D.email, attrs: 'readonly autocomplete="email"' })}
-        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: 'pw-need',
+        ${field({ id: 'pw', label: 'Lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: pwDesc(),
           attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"',
           after: `<button type="button" class="input-btn" data-a="showpw" data-k="showpw" aria-label="${st.showPw ? 'Sakrij lozinku' : 'Prikaži lozinku'}">${pic(st.showPw ? 'eye-slash' : 'eye', 'pw-ic')}<span>${st.showPw ? 'Sakrij' : 'Prikaži'}</span></button>` })}
         <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
@@ -2074,8 +2084,8 @@
       body: `<div class="hero hero-done">
         <h1 class="h-hero">Spremno.</h1>
         <p class="lead lead-done">Sad si dio Rifta.<br>Današnje pitanje te već čeka.</p>
-        <figure class="dna-card">${dnaCanvas('done', 200)}
-          <figcaption><span class="dna-cap">Tvoj Music DNA</span><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>
+        <figure class="dna-card" aria-labelledby="dna-cap-done">${dnaCanvas('done', 200)}
+          <figcaption><span class="dna-cap" id="dna-cap-done">Tvoj Music DNA</span><span class="dna-hint" aria-hidden="true">Dodirni spiralu</span>${dnaText()}</figcaption></figure>
         <dl class="facts-grid">
           <div>${ic(st.vis === 'public' ? 'globe' : 'lock', 'ft-ic')}<dt>Profil</dt><dd>${VIS_LABEL[st.vis] || 'Privatni'}</dd></div>
           <div>${ic('pulse', 'ft-ic')}<dt>Music DNA</dt><dd>${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}${st.artists.length ? `, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}` : ''}</dd></div>
@@ -2444,7 +2454,7 @@
     const keep = opt.keep ? snapshot() : null;
     let s = S[st.screen]();
     /* Round 12d, SYS-02: a whole-page failure keeps the shell (a, c) or takes the whole screen (b). */
-    if (failing()) s = FAIL_AT === 'b' ? { kind: 'bare', body: failBody(true) } : Object.assign({}, s, { body: failBody(false), dock: '' });
+    if (failing()) s = FAIL_AT === 'b' ? { kind: 'bare', body: failBody(true) } : Object.assign({}, s, { body: failBody(false, s.topH1 ? 'h2' : 'h1'), dock: '' });
     /* Desktop (D-080): from 1280 px a settings sub-screen shows the settings list beside the detail, the open row marked. */
     if (st.screen === 'setsub' && SPLIT.matches && !failing()) s = Object.assign({}, s, { body: `<div class="set-split"><nav class="set-nav" aria-label="Postavke">${settingsBody().replace(`data-s="${st.sub}"`, `data-s="${st.sub}" aria-current="page"`)}</nav><div class="set-detail">${s.body}</div></div>` });
     const standalone = window.top === window;
@@ -2939,7 +2949,7 @@
   root.addEventListener('input', e => {
     const t = e.target;
     switch (t.id) {
-      case 'f-pw': { st.pw = t.value; clearErr('pw', t); const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); return; }
+      case 'f-pw': { st.pw = t.value; clearErr('pw', t); const m = root.querySelector('#pw-meter'); if (m) m.innerHTML = pwMeter(); pwDescSync(t); return; }
       case 'f-dname': { nameFix(t); st.displayName = t.value; return clearErr('dname', t); }
       case 'f-dname2': { nameFix(t); st.nameDraft = t.value; st.profDirty = true; return clearErr('dname2', t); } // round 12d: a draft until Save
       case 'f-bio': st.bioDraft = t.value; st.profDirty = true; return;
