@@ -117,9 +117,23 @@
       else { ctx.beginPath(); ctx.moveTo(p.x, top); ctx.lineTo(p.x, bot); ctx.lineWidth = g.k === 'swell' ? 1.4 : 2.2; ctx.stroke(); }
     }
     ctx.globalAlpha = 1;
-    // strands: back pieces first, then front pieces with a glow
-    ctx.globalCompositeOperation = 'lighter';
+    // strands: back pieces first (thin, dim), then front pieces (wide, bright, glowing). Between the two passes a dark
+    // edge is drawn under the front strand, so it visibly covers the back strand where it crosses: the depth cue.
+    const DARK = [11, 13, 18];
     for (const front of [false, true]) {
+      if (front) {
+        ctx.globalCompositeOperation = 'source-over';
+        for (let k = 0; k < 2; k++) {
+          for (let i = 1; i <= N; i++) {
+            const p = pts[i - 1], q = pts[i], z = k === 0 ? q.z : -q.z;
+            if (z <= 0) continue;
+            const d = (z + 1) / 2;
+            ctx.beginPath(); ctx.moveTo(p.x, k === 0 ? p.y1 : p.y2); ctx.lineTo(q.x, k === 0 ? q.y1 : q.y2);
+            ctx.strokeStyle = rgba(DARK, 0.7 * Math.min(1, z * 2.5) * q.env); ctx.lineWidth = 2.2 + 2.6 * d + 3; ctx.stroke();
+          }
+        }
+      }
+      ctx.globalCompositeOperation = 'lighter';
       for (let k = 0; k < 2; k++) {
         for (let i = 1; i <= N; i++) {
           const p = pts[i - 1], q = pts[i];
@@ -128,8 +142,8 @@
           const d = (z + 1) / 2, s = q.s;
           const col = k === 0 ? s.col : mix(s.col, HOT, 0.42);
           ctx.beginPath(); ctx.moveTo(p.x, k === 0 ? p.y1 : p.y2); ctx.lineTo(q.x, k === 0 ? q.y1 : q.y2);
-          ctx.strokeStyle = rgba(col, (0.28 + 0.72 * d) * (0.35 + 0.65 * q.env)); ctx.lineWidth = 0.9 + 2 * d; ctx.stroke();
-          if (front && d > 0.5) { ctx.strokeStyle = rgba(col, (0.1 + 0.16 * I) * q.env); ctx.lineWidth = 6 + 4 * I; ctx.stroke(); }
+          ctx.strokeStyle = rgba(col, (0.18 + 0.82 * d) * (0.35 + 0.65 * q.env)); ctx.lineWidth = 0.7 + 2.6 * d; ctx.stroke();
+          if (front && d > 0.5) { ctx.strokeStyle = rgba(col, (0.13 + 0.17 * I) * q.env); ctx.lineWidth = 7 + 4 * I; ctx.stroke(); }
         }
       }
     }

@@ -836,7 +836,7 @@
   st.bio = BIO; // editable since round 12d (PROF-08)
   /* Round 12d: the own Music DNA on the profile opens its editor (PROF-09); an emptied DNA (dnamin=b) says so. */
   const profDnaHero = () => st.genres.length
-    ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}<button class="link-quiet pf-dna-edit" data-a="setsub" data-s="dna" data-k="pf-dna-edit">${pic('pencil-simple', 'pi-sm')}<span>Uredi Music DNA</span></button></figcaption></figure>`
+    ? `<figure class="pf-c-hero">${dnaCanvas('profile', 200)}<figcaption>${dnaText()}<button class="btn btn-secondary btn-sm pf-dna-edit" data-a="setsub" data-s="dna" data-k="pf-dna-edit">${pic('pencil-simple', 'pi-sm')}<span>Uredi Music DNA</span></button></figcaption></figure>`
     : `<div class="empty-b pf-dna-empty">${pic('lightning', 'empty-ic')}<p class="empty-t">Još nema Music DNA.</p><p>Spirala nastaje iz žanrova koje odabereš.</p><button class="btn btn-secondary btn-sm" data-a="setsub" data-s="dna" data-k="pf-dna-add">Dodaj žanrove</button></div>`;
   function profileBody() {
     const name = esc(st.displayName || 'Ti'), handle = esc(st.username || 'ti');

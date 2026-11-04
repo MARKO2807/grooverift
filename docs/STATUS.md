@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-03 (session 17)_
+_Last updated: 2026-11-04 (session 17, the owner's second desktop review)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -101,7 +101,7 @@ _Last updated: 2026-11-03 (session 17)_
 
 ## Next
 1. **Rest of the step 3.5 refinement** (effort: High). Task list: `docs/design/prototype-directions.md` §6.
-   - ~~The desktop adaptation~~ built in session 17 up to 1920 px (D-079, D-080). The owner reviews `pulse/desktop.html` at leisure; changes only if something is really off.
+   - ~~The desktop adaptation~~ built in session 17 up to 1920 px (D-079, D-080). Second owner review 2026-11-04: no top bar on Home from 1024 px, a firmer frame and a stronger depth cue for the Spirala, a narrower Spirala on desktop, "Uredi Music DNA" as a real button (see D-080).
    - Screen reader (Narrator) and high-contrast checks.
 2. **Round 12, all remaining alpha screens (owner: "sve"),** one group at a time, each as a round page and a survey: ~~(a) other members' profiles and lists~~ (done, D-074); ~~(b) member safety~~ (done, D-075); ~~(c) signed-out and sign-in~~ (done, D-076, D-077); ~~(d) the rest~~ (done, D-078). **Round 12 is complete.** What remains of 3.5 is item 1 (desktop, screen reader); then 3.6 to 3.9.
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
@@ -139,8 +139,8 @@ No application code. No dependencies installed.
 - `design/prototypes/pulse/` holds the refined direction C. Desktop (session 17): `desktop.html` is the review page; `app.js` renders a rail for signed-in screens and the settings split, and `style.css` ends with the "Desktop" block (media queries at 600, 1024, 1280 and 1600 px). It includes `wordmark.html` (the D-058 bolt options, with the D-055 rounds archived), `invite-current.html` and `invite-current.js` (the D-058 invite current; the app uses variant I4 "branch"), `invite-layout.html` (the D-059 layouts in phone frames), `round6.html` (the D-060 options in phone frames), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 146/146 (session 17, with eleven desktop runs). The last two CSS edits of session 17 (system-page centring, the relative Full HD root font) are not yet re-verified: the final run was stopped for low system memory (see HANDOFF).
-  - `zoom-check.mjs` checks 123 screens at a raised browser text size (`--scale=2` by default) for sideways scrolling, clipped text and oversized bars; all pass at 200 % (session 17); the round 12d screens also at 100 % and at 320 px; in session 13 the earlier screens also at 150 %. Desktop (session 17): all pass at 1920×1080 at 100 % and 200 % text, at 1366×800, 800×800 and 600×800 at 100 % (`--scale=1 --w=1920 --h=1080` and so on).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 146/146 (2026-11-04, after the second desktop review, exit 0; the earlier interrupted run is closed).
+  - `zoom-check.mjs` checks 123 screens at a raised browser text size (`--scale=2` by default) for sideways scrolling, clipped text and oversized bars; all pass at 200 % (session 17); the round 12d screens also at 100 % and at 320 px; in session 13 the earlier screens also at 150 %. Desktop (session 17; the 1920 runs repeated 2026-11-04 after the second review): all pass at 1920×1080 at 100 % and 200 % text, at 1366×800, 800×800 and 600×800 at 100 % (`--scale=1 --w=1920 --h=1080` and so on).
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.

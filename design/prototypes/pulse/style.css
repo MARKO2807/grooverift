@@ -342,7 +342,8 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .dna-mini { border-radius: var(--gr-radius-sheet); background: radial-gradient(ellipse at 50% 50%, #FF586B12, transparent 70%); }
 .screen-dnavis { gap: var(--gr-space-3); padding-top: var(--gr-space-4); padding-bottom: var(--gr-space-2); }
 .screen-dnavis h1 { font: var(--gr-type-title-2); }
-.dna-card { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--gr-space-2); padding: var(--gr-space-2) 0 var(--gr-space-3); border-radius: var(--gr-radius-sheet); border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); background: radial-gradient(ellipse at 50% 40%, #FF586B17, transparent 65%), var(--gr-color-bg-surface); }
+.dna-card { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--gr-space-2); padding: var(--gr-space-2) 0 var(--gr-space-3); border-radius: var(--gr-radius-card); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); background: radial-gradient(ellipse at 50% 40%, #FF586B17, transparent 65%), var(--gr-color-bg-surface); box-shadow: var(--dna-frame-shadow); }
+:root { --dna-frame-shadow: inset 0 1px 0 #FFFFFF12, 0 14px 28px -14px #000000CC; } /* a light top edge and a soft drop: the frame lifts off the page */
 .dna-card figcaption { display: flex; flex-direction: column; align-items: center; gap: var(--gr-space-2); }
 .dna-cap { font: var(--gr-type-eyebrow); letter-spacing: var(--gr-type-eyebrow-letter-spacing); text-transform: uppercase; color: var(--gr-color-highlight-text); }
 
@@ -1240,8 +1241,9 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 .crop-img { display: block; width: 100%; height: 100%; object-fit: cover; transform-origin: center; }
 .range { width: 100%; accent-color: var(--gr-color-ember-coral); min-height: 32px; }
 /* The own Music DNA on the profile opens the editor (PROF-09). */
-.pf-c-hero figcaption { display: flex; justify-content: flex-end; padding: 0 var(--gr-space-2); margin-top: calc(var(--gr-space-2) * -1); }
-.pf-dna-edit { display: inline-flex; align-items: center; gap: 6px; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); min-height: 36px; }
+.pf-c-hero figcaption { display: flex; justify-content: flex-end; padding: 0 var(--gr-space-3) var(--gr-space-3); margin-top: calc(var(--gr-space-3) * -1); position: relative; z-index: 1; }
+.pf-dna-edit { gap: 6px; min-height: var(--gr-size-target-min); padding-inline: var(--gr-space-3); background: #12151CCC; }
+.pf-dna-edit:hover { background: var(--gr-color-bg-high); }
 .pf-dna-edit .pi { color: var(--gr-color-highlight-text); }
 .pf-dna-empty { margin-bottom: var(--gr-space-2); }
 .pf-dna-empty .btn { margin-top: var(--gr-space-2); }
@@ -1400,6 +1402,7 @@ main:focus { outline: none; box-shadow: none; }
   .rail-brand { display: block; }
   html[data-kind="app"] .topbar > .wordmark { display: none; }
   html[data-kind="app"] .topbar .top-home { display: block; }
+  #app[data-screen="home"] .page > .topbar:not(:has(.net-chip)) { display: none; } /* the rail names Home; a bar with only "Početna" was dead space (owner) */
   html[data-kind="app"] .topbar { min-height: 64px; }
   html[data-kind="app"] .page > .screen { padding-top: var(--gr-space-8); gap: var(--gr-space-6); }
   .section-title { font-size: 1.375rem; }
@@ -1437,6 +1440,7 @@ main:focus { outline: none; box-shadow: none; }
   html[data-kind="app"] .screen-home { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
   .screen-home > * { grid-column: 1; }
   .screen-home > .home-side { grid-column: 2; grid-row: 1 / span 12; position: sticky; top: calc(64px + var(--gr-space-8)); }
+  .page:not(:has(.net-chip)) > .screen-home > .home-side { top: var(--gr-space-8); }
   .screen-home .dd-teaser { border-bottom: 0; padding-bottom: 0; }
   /* Hub: the day and its question on the left, this week and the archives on the right. */
   html[data-kind="app"] .screen-hub { display: grid; grid-template-columns: minmax(0, 1fr) var(--side); column-gap: var(--gap); row-gap: var(--gr-space-6); align-items: start; align-content: start; }
@@ -1448,11 +1452,11 @@ main:focus { outline: none; box-shadow: none; }
   .screen-profile > *, .screen-member > * { grid-column: 1 / -1; }
   .screen-profile > .pf-main, .screen-member > .pm-main { grid-column: 1; position: sticky; top: calc(64px + var(--gr-space-8)); }
   .screen-profile > .pf-side, .screen-member > .pm-side { grid-column: 2; grid-row: span 6; }
-  .screen-profile > .pf-c { grid-column: 1 / -1; justify-self: start; width: 100%; max-width: 60rem; margin: 0; }
-  .screen-profile .pf-c-hero { border-radius: var(--gr-radius-card); overflow: hidden; }
+  .screen-profile > .pf-c { grid-column: 1 / -1; justify-self: start; width: 100%; max-width: 48rem; margin: 0; }
+  .screen-profile .pf-c-hero { border-radius: var(--gr-radius-card); overflow: hidden; border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); background-color: var(--gr-color-bg-surface); box-shadow: var(--dna-frame-shadow); }
   .screen-profile .pf-c-hero canvas, .screen-profile .pf-c-hero { height: auto; }
   .screen-member .pm-head { grid-template-columns: auto 1fr; }
-  .screen-member .pm-side .dna-card, .set-detail .dna-card, .set-detail .dna-hero { max-width: 40rem; }
+  .screen-member .pm-side .dna-card, .set-detail .dna-card { max-width: 36rem; }
   /* Settings sub-screens: the settings list on the left, the open row marked, the detail on the right. */
   .set-split { display: grid; grid-template-columns: 18rem minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
   .set-nav { display: block; position: sticky; top: calc(64px + var(--gr-space-8)); }
