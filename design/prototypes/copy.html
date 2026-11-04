@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · ton i rječnik (korak 3.8): primjeri za odluke</title>
+<!-- Step 3.8 decision page. Four questions (K1 to K4), every option shown on the same real situations in Croatian and
+     English, side by side. Snippets are styled like the prototype (tokens.css) but are static text, not live screens.
+     Names (Ana, Luka, @luka_jazz) and content are fictional. The guide itself is docs/design/copy-guide.md. -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font-family: var(--gr-font-family-body); }
+  .pg { max-width: 90rem; margin: 0 auto; padding: 32px 24px 96px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2 { font: var(--gr-type-title-2); margin: 0 0 6px; }
+  p, li { color: var(--gr-color-text-secondary); font: var(--gr-type-body-sm); max-width: 84ch; }
+  b { color: var(--gr-color-text-primary); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .8125rem; color: var(--gr-color-highlight-text); }
+  .toc { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 0; background: #07080B; border-bottom: 1px solid var(--gr-color-border-subtle); }
+  .toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 4px 12px; text-decoration: none; font: var(--gr-type-caption); }
+  .toc a:hover { background: var(--gr-color-bg-high); }
+  section { padding-top: 40px; scroll-margin-top: 56px; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 14px; margin-top: 14px; }
+  .opt { border: 1px solid var(--gr-color-border-subtle); border-radius: 14px; padding: 16px; background: #0B0D12; display: flex; flex-direction: column; gap: 12px; }
+  .opt.rec { border-color: var(--gr-color-highlight-border); }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; }
+  .opt h3 small { font: var(--gr-type-caption); color: var(--gr-color-highlight-text); margin-left: 6px; }
+  .opt > p { margin: 0; }
+  .sit { font: var(--gr-type-caption); color: var(--gr-color-text-tertiary, #8A90A0); text-transform: uppercase; letter-spacing: .04em; margin-top: 4px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card { background: var(--gr-color-bg-surface); border: 1px solid var(--gr-color-border-subtle); border-radius: 12px; padding: 12px; font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .card .lang { display: block; font: var(--gr-type-caption); color: var(--gr-color-text-tertiary, #8A90A0); margin-bottom: 6px; }
+  .card .ttl { font-weight: 600; display: block; margin-bottom: 4px; }
+  .card .mut { color: var(--gr-color-text-secondary); }
+  .card .btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .card .b { border-radius: 10px; padding: 6px 12px; font: var(--gr-type-label); border: 1px solid var(--gr-color-border-strong); }
+  .card .b.p { background: var(--gr-color-action-primary-bg, #FF586B); color: #0B0D12; border-color: transparent; }
+  .card .b.d { color: #FF586B; }
+  .toast { background: var(--gr-color-bg-high); border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; gap: 10px; }
+  .toast u { color: var(--gr-color-highlight-text); text-decoration: none; font-weight: 600; }
+  .note { border-left: 2px solid var(--gr-color-highlight-border); padding: 2px 0 2px 12px; }
+  .wm { font-family: var(--gr-font-family-heading); font-weight: 700; letter-spacing: -0.02em; }
+  .wm span { color: var(--gr-color-text-accent); }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .av { width: 28px; height: 28px; border-radius: 50%; background: #2A3040; flex: none; display: grid; place-items: center; font: 600 12px/1 var(--gr-font-family-body); }
+  .tabs { display: flex; justify-content: space-between; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .tabs b { color: var(--gr-color-text-primary); }
+  @media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="pg">
+<header>
+  <h1>Ton i rječnik · korak 3.8</h1>
+  <p>Četiri odluke za vodič kroz tekstove (<code>docs/design/copy-guide.md</code>). Svaka opcija je prikazana na <b>istim situacijama</b>,
+  hrvatski lijevo i engleski desno, pa razliku vidiš odmah. Žuti okvir je moja preporuka.</p>
+  <p class="note">Već je odlučeno i ovdje se ne mijenja: obraćanje sa <b>„ti”</b>, ime <b>Daily Drop</b> ostaje (D-047), ime branda se ne sklanja (D-050),
+  odnos dvaju članova koji se međusobno prate zove se <b>„Povezani” / "Connected”</b> (D-074) i mora se jasno razlikovati od načina „Music Connections”.</p>
+</header>
+<nav class="toc" aria-label="Sadržaj">
+  <a href="#k1">K1 · Ton</a><a href="#k2">K2 · Imena značajki</a><a href="#k3">K3 · Odgovor i komentar</a><a href="#k4">K4 · Rod u hrvatskom</a><a href="index.html">↩ Sve skice</a>
+</nav>
+
+<!-- K1 -->
+<section id="k1" aria-labelledby="h-k1">
+  <h2 id="h-k1">K1 · Kakvim glasom aplikacija govori?</h2>
+  <p>Ovo vrijedi za sve sistemske tekstove: gumbe, obavijesti, greške, prazne ekrane, potvrde. Ne odnosi se na pitanja Daily Dropa
+  koja piše urednik (ona smiju imati više karaktera). Sigurnost, privatnost i pravni tekstovi su u svim opcijama ozbiljni.</p>
+  <div class="opts">
+    <div class="opt rec"><h3>A · Miran i izravan <small>preporuka</small></h3>
+      <p>Kratke rečenice, glagol na početku, bez uskličnika i emojija. Toplina dolazi iz jasnoće i pokoje glazbene riječi na velikim trenucima.</p>
+      <div class="sit">Prazna Aktivnost</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Još nema aktivnosti. Kad netko komentira tvoj odgovor ili te zaprati, vidjet ćeš to ovdje.</div>
+      <div class="card"><span class="lang">EN</span>Nothing here yet. When someone comments on your answer or follows you, you'll see it here.</div></div>
+      <div class="sit">Greška pri učitavanju</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Odgovori se nisu učitali. Provjeri vezu i pokušaj ponovno.<div class="btns"><span class="b">Pokušaj ponovno</span></div></div>
+      <div class="card"><span class="lang">EN</span>Answers didn't load. Check your connection and try again.<div class="btns"><span class="b">Try again</span></div></div></div>
+      <div class="sit">Nakon objave</div>
+      <div class="pair"><div class="card toast"><span>Odgovor je objavljen.</span><u>Uredi</u></div><div class="card toast"><span>Answer posted.</span><u>Edit</u></div></div>
+      <div class="sit">Prvi Music DNA (veliki trenutak)</div>
+      <div class="pair"><div class="card"><span class="ttl">Ovo je tvoja Spirala.</span><span class="mut">Raste sa svakim žanrom i izvođačem koje dodaš.</span></div>
+      <div class="card"><span class="ttl">This is your Spiral.</span><span class="mut">It grows with every genre and artist you add.</span></div></div>
+    </div>
+    <div class="opt"><h3>B · Razigran</h3>
+      <p>Glazbeni sleng i šale u svakodnevnim tekstovima, uskličnici i pokoji emoji. Sigurnost i privatnost ostaju ozbiljni.</p>
+      <div class="sit">Prazna Aktivnost</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Ovdje je zasad tišina. Pusti prvi odgovor u eter pa da krene buka! 🎶</div>
+      <div class="card"><span class="lang">EN</span>It's quiet in here. Drop your first answer and let's make some noise! 🎶</div></div>
+      <div class="sit">Greška pri učitavanju</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Ups, ploča je preskočila! Odgovori se nisu učitali.<div class="btns"><span class="b">Pusti opet</span></div></div>
+      <div class="card"><span class="lang">EN</span>Oops, the record skipped! Answers didn't load.<div class="btns"><span class="b">Play it again</span></div></div></div>
+      <div class="sit">Nakon objave</div>
+      <div class="pair"><div class="card toast"><span>Bum! Tvoj odgovor je vani. 🎧</span><u>Uredi</u></div><div class="card toast"><span>Boom! Your answer is out there. 🎧</span><u>Edit</u></div></div>
+      <div class="sit">Prvi Music DNA (veliki trenutak)</div>
+      <div class="pair"><div class="card"><span class="ttl">Evo je, tvoja Spirala! 🔥</span><span class="mut">Što više žanrova, to jači groove.</span></div>
+      <div class="card"><span class="ttl">Here it is, your Spiral! 🔥</span><span class="mut">More genres, more groove.</span></div></div>
+    </div>
+    <div class="opt"><h3>C · Neutralan i službeni</h3>
+      <p>Kao bankovna aplikacija: točno i suho, pasivne rečenice, bez glazbenih riječi. I dalje „ti”.</p>
+      <div class="sit">Prazna Aktivnost</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Nema novih aktivnosti.</div>
+      <div class="card"><span class="lang">EN</span>No activity.</div></div>
+      <div class="sit">Greška pri učitavanju</div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Došlo je do pogreške pri učitavanju sadržaja.<div class="btns"><span class="b">Ponovi</span></div></div>
+      <div class="card"><span class="lang">EN</span>An error occurred while loading content.<div class="btns"><span class="b">Retry</span></div></div></div>
+      <div class="sit">Nakon objave</div>
+      <div class="pair"><div class="card toast"><span>Odgovor je uspješno spremljen.</span><u>Uredi</u></div><div class="card toast"><span>Your answer has been successfully submitted.</span><u>Edit</u></div></div>
+      <div class="sit">Prvi Music DNA (veliki trenutak)</div>
+      <div class="pair"><div class="card"><span class="ttl">Music DNA je kreiran.</span><span class="mut">Podaci se ažuriraju dodavanjem žanrova i izvođača.</span></div>
+      <div class="card"><span class="ttl">Music DNA created.</span><span class="mut">Data is updated as genres and artists are added.</span></div></div>
+    </div>
+  </div>
+  <h3 style="font:var(--gr-type-title-3);margin:24px 0 8px">Ista situacija u svim opcijama: blokiranje (ozbiljno uvijek)</h3>
+  <div class="pair" style="max-width:52rem"><div class="card"><span class="lang">HR</span><span class="ttl">Blokirati @luka_jazz?</span>Ta osoba više neće vidjeti tvoj profil ni odgovore i neće ti moći pisati. Ni ti nećeš vidjeti njezin sadržaj. Ne dobiva obavijest o tome.<div class="btns"><span class="b">Odustani</span><span class="b d">Blokiraj</span></div></div>
+  <div class="card"><span class="lang">EN</span><span class="ttl">Block @luka_jazz?</span>They won't see your profile or answers and can't message you. You won't see their content either. They won't be notified.<div class="btns"><span class="b">Cancel</span><span class="b d">Block</span></div></div></div>
+</section>
+
+<!-- K2 -->
+<section id="k2" aria-labelledby="h-k2">
+  <h2 id="h-k2">K2 · Prevodimo li imena značajki na hrvatski?</h2>
+  <p>„Daily Drop” ostaje (D-047). Pitanje je što s ostalima: <b>Music DNA</b>, <b>Hub</b>, <b>Weekly Poll</b>, <b>Did You Know?</b> i tri načina otkrivanja
+  <b>Music Twins</b>, <b>Music Explorers</b> i <b>Music Connections</b>. Prototip je zasad nedosljedan: „Weekly Poll” piše šest puta, a „Tjedna anketa” jednom.
+  Engleski interfejs koristi engleska imena u svim opcijama.</p>
+  <div class="opts">
+    <div class="opt"><h3>A · Sve na engleskom</h3>
+      <p>Sva imena su vlastita imena proizvoda, ista u oba jezika. Najlakše za brend, ali „Weekly Poll” i „Did You Know?” hrvatskom članu ne znače puno.</p>
+      <div class="card"><div class="tabs"><b>Početna</b><span>Hub</span><span>Aktivnost</span><span>Profil</span></div></div>
+      <div class="card"><span class="ttl">Hub</span>Weekly Poll · Did You Know? · Music Twins · Music Explorers · Music Connections</div>
+      <div class="card">Tvoj Music DNA je spreman. Pogledaj tko su ti Music Twins.</div>
+      <div class="card"><span class="ttl">Weekly Poll</span>Koji album iz 1994. i danas slušaš?</div>
+    </div>
+    <div class="opt rec"><h3>B · Imena ostaju, opisi se prevode <small>preporuka</small></h3>
+      <p>Prava imena značajki ostaju engleska (Daily Drop, Music DNA, Hub, Music Twins, Music Explorers, Music Connections).
+      Vrste sadržaja, koje su opis a ne ime, prevodimo: <b>Tjedna anketa</b>, <b>Znaš li?</b>. „Music Connections” ostaje engleski, pa se ne miješa s „Povezani”.</p>
+      <div class="card"><div class="tabs"><b>Početna</b><span>Hub</span><span>Aktivnost</span><span>Profil</span></div></div>
+      <div class="card"><span class="ttl">Hub</span>Tjedna anketa · Znaš li? · Music Twins · Music Explorers · Music Connections</div>
+      <div class="card">Tvoj Music DNA je spreman. Pogledaj tko su ti Music Twins.</div>
+      <div class="card"><span class="ttl">Tjedna anketa</span>Koji album iz 1994. i danas slušaš?</div>
+    </div>
+    <div class="opt"><h3>C · Sve na hrvatskom (osim Daily Dropa)</h3>
+      <p>Najrazumljivije, ali gubi se ton brenda, a „Glazbene veze” se lako pomiješaju s „Povezani” (D-074 traži da se to dvoje razlikuje).</p>
+      <div class="card"><div class="tabs"><b>Početna</b><span>Središte</span><span>Aktivnost</span><span>Profil</span></div></div>
+      <div class="card"><span class="ttl">Središte</span>Tjedna anketa · Znaš li? · Glazbeni blizanci · Glazbeni istraživači · Glazbene veze</div>
+      <div class="card">Tvoj glazbeni DNK je spreman. Pogledaj tko su ti glazbeni blizanci.</div>
+      <div class="card"><span class="ttl">Tjedna anketa</span>Koji album iz 1994. i danas slušaš?</div>
+    </div>
+  </div>
+</section>
+
+<!-- K3 -->
+<section id="k3" aria-labelledby="h-k3">
+  <h2 id="h-k3">K3 · Odgovor na Daily Drop i ono ispod njega</h2>
+  <p>Na hrvatskom su „answer” i „reply” obje „odgovor”. Član odgovara na pitanje, a drugi članovi pišu ispod tog odgovora. Kako zovemo to drugo?</p>
+  <div class="opts">
+    <div class="opt rec"><h3>A · odgovor / komentar <small>preporuka, već u prototipu</small></h3>
+      <p>Dvije različite riječi, isto u oba jezika (answer / comment). Nema zabune ni u obavijestima ni za čitač zaslona.</p>
+      <div class="pair"><div class="card"><span class="lang">HR</span><div class="row"><span class="av">L</span><span><b>Luka</b> komentira tvoj odgovor</span></div><div class="btns"><span class="b p">Odgovori</span><span class="b">Komentiraj</span></div></div>
+      <div class="card"><span class="lang">EN</span><div class="row"><span class="av">L</span><span><b>Luka</b> commented on your answer</span></div><div class="btns"><span class="b p">Answer</span><span class="b">Comment</span></div></div></div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Svi odgovori (24) · 3 komentara</div><div class="card"><span class="lang">EN</span>All answers (24) · 3 comments</div></div>
+    </div>
+    <div class="opt"><h3>B · odgovor / odgovor</h3>
+      <p>Prirodnije u razgovoru, ali ista riječ za dvije stvari: „Luka odgovara na tvoj odgovor”. Brojevi i gumbi postaju dvosmisleni.</p>
+      <div class="pair"><div class="card"><span class="lang">HR</span><div class="row"><span class="av">L</span><span><b>Luka</b> odgovara na tvoj odgovor</span></div><div class="btns"><span class="b p">Odgovori</span><span class="b">Odgovori na ovo</span></div></div>
+      <div class="card"><span class="lang">EN</span><div class="row"><span class="av">L</span><span><b>Luka</b> replied to your answer</span></div><div class="btns"><span class="b p">Answer</span><span class="b">Reply</span></div></div></div>
+      <div class="pair"><div class="card"><span class="lang">HR</span>Svi odgovori (24) · 3 odgovora</div><div class="card"><span class="lang">EN</span>All answers (24) · 3 replies</div></div>
+    </div>
+    <div class="opt"><h3>C · komentar na hrvatskom, reply na engleskom</h3>
+      <p>Svaki jezik dobiva najprirodniju riječ, ali termini se ne poklapaju 1:1, što otežava uređivanje i prijevod.</p>
+      <div class="pair"><div class="card"><span class="lang">HR</span><div class="row"><span class="av">L</span><span><b>Luka</b> komentira tvoj odgovor</span></div><div class="btns"><span class="b p">Odgovori</span><span class="b">Komentiraj</span></div></div>
+      <div class="card"><span class="lang">EN</span><div class="row"><span class="av">L</span><span><b>Luka</b> replied to your answer</span></div><div class="btns"><span class="b p">Answer</span><span class="b">Reply</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- K4 -->
+<section id="k4" aria-labelledby="h-k4">
+  <h2 id="h-k4">K4 · Kako izbjegavamo pogađanje roda u hrvatskom?</h2>
+  <p>U hrvatskom prošlo vrijeme ima rod: „Luka je komentir<b>ao</b>”, „Ana je komentir<b>ala</b>”, „Objavi<b>o</b> si”. Aplikacija ne zna rod člana i ne
+  smije ga pogađati po imenu. Engleski nema ovaj problem ("they", "you").</p>
+  <div class="opts">
+    <div class="opt rec"><h3>A · Preoblikovanje <small>preporuka, već u prototipu</small></h3>
+      <p>Sadašnje vrijeme, imenice i rečenice u kojima je subjekt stvar, a ne osoba. Ne treba nikakav podatak o članu. Ponekad je rečenica malo drukčija nego u govoru.</p>
+      <div class="card"><div class="row"><span class="av">L</span><span><b>Luka</b> komentira tvoj odgovor</span></div></div>
+      <div class="card"><div class="row"><span class="av">A</span><span><b>Ana</b> te sada prati</span></div></div>
+      <div class="card toast"><span>Odgovor je objavljen.</span><u>Uredi</u></div>
+      <div class="card"><span class="ttl">Dobrodošlica u <span class="wm">groove<span>rift</span></span></span><span class="mut">Drago nam je što si tu.</span></div>
+    </div>
+    <div class="opt"><h3>B · Član bira oblik u postavkama</h3>
+      <p>Novo neobavezno polje „Kako da ti se obraćamo?” (muški, ženski, neutralno). Tekst je prirodniji, ali to je novi osobni podatak, nova postavka i
+      dvostruki tekstovi. Neutralno se vraća na A.</p>
+      <div class="card"><div class="row"><span class="av">L</span><span><b>Luka</b> je komentirao tvoj odgovor</span></div></div>
+      <div class="card"><div class="row"><span class="av">A</span><span><b>Ana</b> te zapratila</span></div></div>
+      <div class="card toast"><span>Objavila si odgovor.</span><u>Uredi</u></div>
+      <div class="card"><span class="ttl">Dobrodošla u <span class="wm">groove<span>rift</span></span></span><span class="mut">Drago nam je što si tu.</span></div>
+    </div>
+    <div class="opt"><h3>C · Kose crte</h3>
+      <p>Uobičajeno u službenim obrascima. Uvijek točno, ali teže se čita i čitač zaslona izgovara kosu crtu.</p>
+      <div class="card"><div class="row"><span class="av">L</span><span><b>Luka</b> je komentirao/la tvoj odgovor</span></div></div>
+      <div class="card"><div class="row"><span class="av">A</span><span><b>Ana</b> te zapratio/la</span></div></div>
+      <div class="card toast"><span>Objavio/la si odgovor.</span><u>Uredi</u></div>
+      <div class="card"><span class="ttl">Dobrodošao/la u <span class="wm">groove<span>rift</span></span></span><span class="mut">Drago nam je što si tu.</span></div>
+    </div>
+  </div>
+</section>
+</main>
+</body>
+</html>
