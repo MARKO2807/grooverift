@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · svi ekrani, od mobitela do desktopa</title>
+<!-- Owner review page (session 17): one row per screen, one link per window size. A link opens the real prototype
+     (index.html) in its own window of that size, so each width is seen at full scale; the last column opens it in a
+     normal tab. The screens are the same ones desktop.html shows scaled down. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 80rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2 { font: var(--gr-type-title-2); margin: 40px 0 8px; }
+  p { color: var(--gr-color-text-secondary); max-width: 80ch; margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #2A2F3B; vertical-align: middle; }
+  th { font: var(--gr-type-label); color: var(--gr-color-text-secondary); white-space: nowrap; }
+  td:first-child { color: var(--gr-color-text-primary); font: var(--gr-type-label); }
+  td a { display: inline-block; padding: 6px 10px; border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; text-decoration: none; color: var(--gr-color-text-primary); font: var(--gr-type-caption); white-space: nowrap; }
+  td a:hover { background: var(--gr-color-bg-raised); }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 12px 16px; max-width: 80ch; margin: 12px 0 0; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Svi ekrani, od mobitela do desktopa</h1>
+  <p>Svaki gumb otvara pravi prototip u <b>vlastitom prozoru te širine</b> (mobitel 360, rub 600, tablet 800, mali laptop 1024, laptop 1366, Full HD 1920). Zadnji stupac otvara ekran u običnoj kartici pa možeš sam sužavati prozor. Podaci su izmišljeni.</p>
+  <div class="note"><p>Ako preglednik blokira skočne prozore, dopusti ih za ovu stranicu (ikona u adresnoj traci). Prozor od 1920 px na ekranu od 1920 px preglednik svede na raspoloživu širinu; to je isti prikaz.</p></div>
+  <nav class="toc" aria-label="Skupine"><a href="#g-app">Prijavljeni</a><a href="#g-set">Postavke</a><a href="#g-dlg">Dijalozi i stanja</a><a href="#g-pub">Posjetitelj</a><a href="#g-onb">Onboarding i račun</a></nav>
+  <div id="groups"></div>
+</div>
+<script>
+(function () {
+  const APP = 'flow=drop&at=';
+  const SIZES = [[360, 780, 'Mobitel 360'], [600, 800, 'Rub 600'], [800, 800, 'Tablet 800'], [1024, 768, 'Laptop 1024'], [1366, 800, 'Laptop 1366'], [1920, 1080, 'Full HD 1920']];
+  const G = [
+    ['g-app', 'Prijavljeni ekrani', [
+      ['Početna', APP + 'home'], ['Početna prije prvog pitanja', APP + 'home&state=first'], ['Hub', APP + 'hub'], ['Pitanje i odgovori', APP + 'drop'], ['Pisanje odgovora', APP + 'drop&open=compose'], ['Daily Drop na pauzi', APP + 'drop&state=paused'],
+      ['Komentari', APP + 'answer'], ['Aktivnost', APP + 'activity'], ['Zahtjevi za praćenje', APP + 'requests'],
+      ['Profil', APP + 'profile'], ['Tuđi profil', APP + 'member&who=petra.zvuk&rel=mut'], ['Privatni profil', APP + 'member&who=mia_vinyl&rel=none'], ['Pratitelji', APP + 'follows&list=followers'], ['Tuđi odgovori', APP + 'mdrops&who=petra.zvuk']]],
+    ['g-set', 'Postavke', [
+      ['Postavke', APP + 'settings'], ['Račun', APP + 'setsub&s=account'], ['Sigurnost', APP + 'setsub&s=security'], ['Privatnost', APP + 'setsub&s=privacy'], ['Blokirani i utišani', APP + 'setsub&s=blocked'],
+      ['Obavijesti', APP + 'setsub&s=notifications'], ['Jezik i regija', APP + 'setsub&s=language'], ['Stanje računa', APP + 'setsub&s=status'], ['Uredi Music DNA', APP + 'setsub&s=dna'], ['Uredi profil', APP + 'setsub&s=profile&pic=sample'], ['Pomoć', APP + 'setsub&s=help'], ['Povratne informacije', APP + 'setsub&s=fbform']]],
+    ['g-dlg', 'Dijalozi i stanja', [
+      ['Prijava odgovora', APP + 'drop&show=report'], ['Odjava', APP + 'settings&show=logout'], ['Blokiranje', APP + 'member&who=mia_vinyl&rel=none&show=block'],
+      ['Nešto je pošlo po zlu', APP + 'hub&state=fail'], ['Nešto je pošlo po zlu (bez okvira)', APP + 'home&state=fail&fail=b'], ['Značajka na pauzi', APP + 'featoff&f=dna'], ['Ograničen račun', 'at=restricted'], ['Suspendiran račun', 'at=suspended']]],
+    ['g-pub', 'Posjetitelj', [
+      ['Početna za posjetitelje', 'at=landing'], ['Podijeljeno pitanje', 'at=share'], ['Zid za prijavu', 'at=share&wallnow=1'], ['Javni profil', 'at=pubprofile&who=nika.rework'], ['Nedostupno', 'at=na']]],
+    ['g-onb', 'Onboarding i račun', [
+      ['Pozivnica', ''], ['Pozivnica, već prijavljen', 'at=invsigned'], ['Pozivnica, druga adresa', 'at=invmail'], ['Prijava', 'at=signin'], ['Dvostruka provjera', 'at=twofa'], ['Zaboravljena lozinka', 'at=reset'], ['Poslan e-mail za lozinku', 'at=resetsent'], ['Nova lozinka', 'at=resetnew'], ['Poveznica ne vrijedi', 'at=linkbad'], ['Adresa potvrđena', 'at=verified'],
+      ['Dob', 'at=age'], ['Jezik sučelja', 'at=uilang'], ['Napravi račun', 'at=account'], ['Korisničko ime', 'at=username'], ['Jezik', 'at=language'], ['Što slušaš', 'at=dna&picks=1'], ['Tko vidi Music DNA', 'at=dnavis'], ['Tko vidi profil', 'at=visibility'], ['Kako radi', 'at=how'], ['Podsjetnik', 'at=reminder'], ['Spremno', 'at=done'], ['Na čekanju', 'at=pending']]]
+  ];
+  const url = q => 'index.html' + (q ? '?' + q : '');
+  const cell = (q, [w, h, l]) => `<td><a href="${url(q)}" data-w="${w}" data-h="${h}" title="${l}, ${w} × ${h}">${w}</a></td>`;
+  document.getElementById('groups').innerHTML = G.map(([id, title, rows]) => `<section aria-labelledby="${id}"><h2 id="${id}">${title}</h2>
+    <table><thead><tr><th>Ekran</th>${SIZES.map(s => `<th>${s[2]}</th>`).join('')}<th>Kartica</th></tr></thead>
+    <tbody>${rows.map(([t, q]) => `<tr><td>${t}</td>${SIZES.map(s => cell(q, s)).join('')}<td><a href="${url(q)}" target="_blank" rel="noopener">otvori</a></td></tr>`).join('')}</tbody></table></section>`).join('');
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[data-w]'); if (!a) return;
+    e.preventDefault();
+    const w = +a.dataset.w, h = +a.dataset.h;
+    const win = window.open(a.href, 'gr-' + w, `popup=yes,width=${w},height=${h},left=${Math.max(0, (screen.availWidth - w) / 2)},top=${Math.max(0, (screen.availHeight - h) / 2)}`);
+    if (win) win.focus();
+  });
+})();
+</script>
+</body>
+</html>
