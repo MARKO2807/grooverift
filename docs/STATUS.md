@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
+_Last updated: 2026-11-04 (session 20, step 3.7: brand derivatives)_
 
 ## Current phase
 **Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
@@ -15,13 +15,13 @@ _Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
 | 3.5 Prototypes ⛳ | ✅ Done (closed in session 18 by the accessibility pass, D-081). Direction **C "Pulse"** (D-042, D-043). Refinement: three owner review rounds in session 9 (D-046 to D-053) and, in session 10, the password rules (D-054), the wordmark accent (D-055) and the reaction (D-056); in session 11, the redone wordmark bolt, the new invite current, the one-screen invite (D-058, D-059) the round 6 review (D-060) the follow-ups (D-061, D-062) and round 7 (D-063); in session 12, the key states and every settings flow (round 10, D-070; notifications look D-071); in session 13, comment cards and 200 % text (D-073); in session 14, round 12a: other members' profiles, lists and follow requests (D-074); in session 15, round 12b: member safety (D-075) and round 12c: signed-out visitors and sign-in (D-076, D-077); in session 16, round 12d: the rest of the alpha screens (D-078); in session 17, **the whole desktop up to 1920 px** (rail, columns, cards, dialogs; D-079, D-080). in session 18, **the accessibility pass** (the accessibility tree, keyboard and forced colours on all 123 screens; D-081, [accessibility-pass](design/accessibility-pass.md)). All in `design/prototypes/pulse/`. Round 12 is complete and the §6 list is done ([prototype-directions](design/prototype-directions.md) §6, §7) |
 | ~~3.4b Light theme tokens~~ | ❌ Cancelled by D-063: dark only |
 | 3.6 Core components spec | ✅ Done (session 19, D-082): [components](design/components.md) and the specimen `design/prototypes/components.html`; component tokens in `design/tokens/` |
-| 3.7 Brand derivatives ⛳ | ⏳ Next |
-| 3.8 HR/EN copy tone guide | ⏳ |
+| 3.7 Brand derivatives ⛳ | ✅ Done (session 20, D-083): `docs/brand/derived/` (cleaned master, app icons, favicon S1, badge, light variants, interim wordmark); review page `design/prototypes/brand.html` |
+| 3.8 HR/EN copy tone guide | ⏳ Next |
 | 3.9 Review and close | ⏳ |
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-082. Key ones:
+- Decisions D-001 to D-083. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -91,6 +91,7 @@ _Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
     - **Desktop (session 17, D-079 and D-080):** the whole desktop up to 1920 px, built from the phone with a free hand (owner instruction, no survey): from 600 px a collapsed rail with Postavke, Pomoć and Alfa in its footer, onboarding and sign-in as a centred card, the visitor sign-in in the top bar, sheets as centred dialogs, a skip link, no tab swipe by mouse; from 1024 px the rail with labels and the wordmark, larger type, a 44 rem column, a three-card landing; from 1280 px two columns where the content has two parts (Home, Hub, profiles, the settings list beside the detail; the question page keeps the dock at the foot); from 1600 px a 17 px root, wider columns and rail, a wider onboarding card, the Spirala capped (the owner's 1920 px review, same day). Review page `pulse/desktop.html` (51 frames at 1920, 1366, 1024, 800, 600 and 599 px).
     - **Accessibility pass (session 18, D-081):** `tools/a11y-check.mjs` reads the accessibility tree Narrator receives, walks every screen with Tab and emulates Windows high contrast; 123 screens at 360, 800, 1366 and 1920 px. Seven fixes (a dangling `aria-describedby`, four unnamed Spirala figures, a second `h1` on the in-shell failure, and the forced-colour marks of the current tab and rail item, the switches, the open settings row and the skeletons). The owner's own Narrator listen is a ten-minute script in `docs/design/accessibility-pass.md`. **Step 3.5 is closed.**
     - **Core components spec (session 19, D-082):** `docs/design/components.md` and the specimen `design/prototypes/components.html` (every component in every state on the real CSS, plus three live overlays in phone frames). Component tokens in `tokens.json` (180 variables, 89 contrast pairs, all pass). Prototype changes: one disabled opacity, the missing hover and pressed states, a bar under the chosen sort option and day (a tick broke D-047), `Highlight` for every selected state and a visible focus outline on hidden radios in forced colours, `scroll-padding` for 2.4.11. Icon mapping to Phosphor for Phase 4. **Step 3.6 is closed.**
+    - **Brand derivatives (session 20, D-083):** cleaned symbol master (silhouette byte-identical), apple-touch/PWA/maskable icons, favicon and badge in the drawn S1 "Obris" shape, light-paper L1 "Tinta" (print-only deep Amber `#B87A12`) and L2 tile, and the interim outlined wordmark (D-011). Tools and provenance in `docs/brand/` (README §5). **All review pages are linked from `design/prototypes/index.html`.**
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -102,7 +103,7 @@ _Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Step 3.7, brand derivatives** ⛳ (effort: Medium; owner gate: each proposal is reviewed). Fresh session. Inputs: `docs/brand/README.md`, the originals in `docs/brand/source/` (never overwritten; SHA-256 re-verified), D-011, D-029 (raster via built-in .NET, no SVG trace), D-058 (wordmark bolt N2). Note: the plan lists a light-background logo variant; the product is dark only (D-063), so ask whether it is still wanted for outside uses (press, documents) before making it.
+1. **Step 3.8, HR/EN copy tone guide** (effort: Medium; owner approves the glossary and tone). Fresh session. Output: `docs/design/copy-guide.md` (voice, glossary: Mutuals/Uzajamni, whether "Daily Drop" is translated; microcopy for notices, errors, empty states; gender-neutral Croatian conventions). Inputs: the copy already in `design/prototypes/pulse/` (drafts marked "for 3.8" in D-076 and others), `docs/design/ux-foundations.md`.
 2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
@@ -126,7 +127,7 @@ _Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
 2. Artwork rights; the design must work without covers or photos (D-017).
 3. Authorization complexity (S-02). Mitigated in part by the resolved visibility rules.
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.
-5. Missing production wordmark and vector logo (B-01, D-011). The wordmark accent brief is settled again (D-058, bolt N2).
+5. Missing production vector logo and final wordmark (B-01, X-04). An interim outlined wordmark and raster icons exist (D-083); the designer brief is D-058 plus `docs/brand/README.md` §5.
 6. Trademark: "RIFT" marks in classes 9/41 (gamigo EU, Meta, LOST RIFT); attorney assessment needed before filing or brand spend.
 7. Accessibility interpretation: large-text headings grow by a step, not to 200 % (D-073, owner-accepted). Confirm in the 3.9 accessibility review.
 8. The visitor sign-in wall (D-076): an undismissable blurred dialog after five seconds is a dark-pattern risk (counsel C.9) and an accessibility item for 3.9; there is no registration behind it, only sign-in and the landing.
@@ -146,6 +147,9 @@ No application code. No dependencies installed.
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
+- `design/prototypes/index.html` (session 20) is the hub: every review and decision page, newest first, with decision numbers. Add each new page there.
+- `design/prototypes/brand.html` (session 20) is the step 3.7 review page.
+- `docs/brand/derived/tools/` (session 20): `build-derivatives.ps1` + `Brand.cs` (PowerShell/.NET) and `wordmark.mjs` (Node + headless Chrome); the build checks the source SHA-256 before and after and is deterministic.
 - `design/prototypes/components.html` (session 19) is the step 3.6 specimen: every component and state on `pulse/style.css`; spec in `docs/design/components.md`.
 - `design/tokens/` holds zero-dependency Node scripts: `build.mjs` generates `tokens.css` (180 variables, incl. the step 3.6 component tokens), and `contrast-check.mjs` checks 89 pairs (all pass; output in `contrast-report.md`).
 - `design/fonts/` holds self-hosted Sora/Inter WOFF2 files with OFL licenses.

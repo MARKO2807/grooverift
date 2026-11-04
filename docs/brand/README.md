@@ -96,8 +96,14 @@ Built on 2026-11-04 by `derived/tools/build-derivatives.ps1` (with `derived/tool
 |---|---|
 | `derived/proposals/small-icon/{outline,wave,solid}-{16,32,48,64}.png` | Reduced-detail small icons **drawn** from simple shapes with GDI+ (not traced): S1 outline (the two rift brackets + three bars), S2 wave (bars only), S3 solid star with the wave cut out. Line weights tuned per size. |
 | `derived/proposals/badge/{outline,wave,solid}-mono-{24,96}.png` | White-on-transparent notification badges in the same three shapes |
-| `derived/proposals/light/grooverift-symbol-ink{,-1024,-512}.png` | L1 "Tinta": light-paper version. Ink density from the whiteness of the bolt cores (the glow becomes a faint tint) and from luminance inside the waveform; colour runs from Coral to a deep Amber `#B87A12` (3.6:1 on white; Amber is 1.5:1). Print and documents only. |
-| `derived/proposals/light/tile-{64,192}.png` | L2 "Pločica": the unchanged mark on a Void tile, for any background |
-| `derived/wordmark/grooverift-wordmark-interim-{dark,light}.svg` and `-{1200,600}.png` | **Interim** wordmark (D-011): "groove" + "rift" in Sora Bold, outlined from `design/fonts/sora/static/sora-bold.ttf`, pen positions measured in Chrome (letter-spacing −0.02em, as the prototype); bolt N2 (D-058) static, as a hairline. Dark: "groove" #F1F3F7, bolt Coral→Amber with core and glow. Light: "groove" Void Black, bolt Coral. Not the final logo (X-04). |
+| `derived/light/grooverift-symbol-ink{,-1024,-512}.png` | **Approved (D-083).** L1 "Tinta": light-paper version. Ink density from the whiteness of the bolt cores (the glow becomes a faint tint) and from luminance inside the waveform; colour runs from Coral to a deep Amber `#B87A12` (3.6:1 on white; Amber is 1.5:1). Print and documents only. |
+| `derived/light/tile-{64,192,512}.png` | **Approved (D-083).** L2 "Pločica": the unchanged mark on a Void tile, for any background |
+| `derived/wordmark/grooverift-wordmark-interim-{dark,light}.svg` and `-{1200,600}.png` | **Approved as interim (D-083).** Wordmark (D-011): "groove" + "rift" in Sora Bold, outlined from `design/fonts/sora/static/sora-bold.ttf`, pen positions measured in Chrome (letter-spacing −0.02em, as the prototype); bolt N2 (D-058) static, as a hairline. Dark: "groove" #F1F3F7, bolt Coral→Amber with core and glow. Light: "groove" Void Black, bolt Coral. Not the final logo (X-04). |
 
-Status of each proposal: see D-083 in `docs/decisions/DECISIONS.md`.
+### Approved set (D-083, 2026-11-04)
+- **Small icon and favicon: S1 "Obris"** → `derived/icons/favicon-{16,32,48,64}.png` and `derived/icons/favicon.ico` (PNG entries 16, 32, 48).
+- **Notification badge: S1 shape, white on transparent** → `derived/icons/badge-mono-{24,48,96}.png`.
+- **Light backgrounds: both** L1 "Tinta" (print and documents) and L2 "Pločica" (unknown backgrounds).
+- **Interim wordmark** approved as built.
+- `#B87A12` (deep Amber) is a **print-only** colour for L1 on light paper. It is not a UI colour or token and never appears in the app (dark only, D-063).
+- The unchosen S2/S3 files stay in `derived/proposals/` as the record.

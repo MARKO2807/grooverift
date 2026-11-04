@@ -10,7 +10,7 @@ function Sha($p) { (Get-FileHash -Algorithm SHA256 $p).Hash.ToLower() }
 if ((Sha $src) -ne $expected) { throw "Source PNG hash mismatch: the original has changed." }
 
 Add-Type -Path (Join-Path $PSScriptRoot 'Brand.cs') -ReferencedAssemblies System.Drawing
-foreach ($d in 'master', 'icons', 'proposals\small-icon', 'proposals\badge', 'proposals\light') { New-Item -ItemType Directory -Force (Join-Path $out $d) | Out-Null }
+foreach ($d in 'master', 'icons', 'light', 'proposals\small-icon', 'proposals\badge') { New-Item -ItemType Directory -Force (Join-Path $out $d) | Out-Null }
 
 # 1. Cleaned master: same canvas (4844 x 3468), same silhouette.
 $master = Join-Path $out 'master\grooverift-symbol-clean.png'
@@ -31,18 +31,24 @@ foreach ($n in 16, 32, 48) { [Brand]::Icon($master, $box, $n, 0.92, '#0B0D12', 0
 foreach ($n in 192, 512) { [Brand]::Icon($master, $box, $n, 0.84, '#0B0D12', 0.22, "$I\icon-$n.png") }
 foreach ($n in 192, 512) { [Brand]::Icon($master, $box, $n, 0.76, '#0B0D12', 0, "$I\icon-maskable-$n.png") }
 
-# 3. Proposals for owner review (D-006): reduced-detail small icons, monochrome badge, light-paper variant.
+# 3. Proposals shown for owner review (D-006); kept as the record of the alternatives (D-083 chose S1).
 $P = Join-Path $out 'proposals'
 foreach ($v in 'outline', 'wave', 'solid') {
   foreach ($n in 16, 32, 48, 64) { [Brand]::Reduced($v, $n, $true, 'color', "$P\small-icon\$v-$n.png") }
   [Brand]::Reduced($v, 96, $false, 'mono', "$P\badge\$v-mono-96.png")
   [Brand]::Reduced($v, 24, $false, 'mono', "$P\badge\$v-mono-24.png")
 }
-# light paper: Coral to a deep Amber (#B87A12, 3.4:1 on white; Amber itself is 1.5:1)
-$ink = "$P\light\grooverift-symbol-ink.png"
+# 4. Approved by the owner (D-083): favicon and badge use S1 "outline"; both light-background variants.
+foreach ($n in 16, 32, 48, 64) { [Brand]::Reduced('outline', $n, $true, 'color', "$I\favicon-$n.png") }
+[Brand]::Ico(@("$I\favicon-16.png", "$I\favicon-32.png", "$I\favicon-48.png"), "$I\favicon.ico")
+foreach ($n in 24, 48, 96) { [Brand]::Reduced('outline', $n, $false, 'mono', "$I\badge-mono-$n.png") }
+# L1 "Tinta" for light paper: Coral to the print-only deep Amber #B87A12 (3.6:1 on white; Amber itself is 1.5:1)
+$L = Join-Path $out 'light'
+$ink = "$L\grooverift-symbol-ink.png"
 [Brand]::Ink($master, $ink, '#FF586B', '#B87A12', 0.08)
-foreach ($w in 1024, 512) { [Brand]::Scale($ink, $w, "$P\light\grooverift-symbol-ink-$w.png") }
-foreach ($n in 64, 192) { [Brand]::Icon($master, $box, $n, 0.84, '#0B0D12', 0.22, "$P\light\tile-$n.png") }
+foreach ($w in 1024, 512) { [Brand]::Scale($ink, $w, "$L\grooverift-symbol-ink-$w.png") }
+# L2 "Pločica": the unchanged mark on a Void tile
+foreach ($n in 64, 192, 512) { [Brand]::Icon($master, $box, $n, 0.84, '#0B0D12', 0.22, "$L\tile-$n.png") }
 
 if ((Sha $src) -ne $expected) { throw "Source PNG hash changed during the run." }
 "source SHA-256 re-verified: $expected"
