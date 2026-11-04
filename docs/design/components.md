@@ -4,7 +4,7 @@ _Step 3.6, session 19 (2026-11-04). Scope confirmed by the owner at the start of
 
 This spec turns the refined prototype (direction C "Pulse", step 3.5) into a component contract for Phase 4. It describes what already exists and has been reviewed by the owner. It adds the missing states, the component tokens, and the keyboard, screen reader and forced-colour behaviour for each component. It adds no new features. Where it changed the prototype, §6 lists the change.
 
-Labels: **CONFIRMED** = an owner decision (D-number). **RECOMMENDED** = the design system's choice in this step, open to the owner. **OPEN** / **DEFERRED** as elsewhere.
+Labels: **CONFIRMED** = an owner decision (D-number). **RECOMMENDED** = a proposal still open to the owner. The owner reviewed the specimen and approved the spec as a whole (D-082, "Sve štima"); the Phosphor mapping in §7 stays RECOMMENDED until the icon package is installed in Phase 4. **OPEN** / **DEFERRED** as elsewhere.
 
 ## 1. Files
 

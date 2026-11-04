@@ -103,10 +103,9 @@ _Last updated: 2026-11-04 (session 19, step 3.6: the core components spec)_
 
 ## Next
 1. **Step 3.7, brand derivatives** ⛳ (effort: Medium; owner gate: each proposal is reviewed). Fresh session. Inputs: `docs/brand/README.md`, the originals in `docs/brand/source/` (never overwritten; SHA-256 re-verified), D-011, D-029 (raster via built-in .NET, no SVG trace), D-058 (wordmark bolt N2). Note: the plan lists a light-background logo variant; the product is dark only (D-063), so ask whether it is still wanted for outside uses (press, documents) before making it.
-2. **Owner, when convenient:** look through `design/prototypes/components.html` (step 3.6, D-082) and say if any component or state looks wrong.
-3. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
-4. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
-5. Open, to raise when convenient:
+2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
+3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
+4. Open, to raise when convenient:
    - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).
    - OQ-32: opt-in social emails, deferred by the owner; decide before DMs (B3) or the beta.
    - OQ-24: music news idea, after the alpha scope.
