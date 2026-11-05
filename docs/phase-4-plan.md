@@ -1,6 +1,24 @@
-# Phase 4 plan: Foundation (PROPOSED)
+# Phase 4 plan: Foundation (APPROVED, D-088)
 
-_Drafted 2026-11-05 at the end of Phase 3 (step 3.9). **Status: PROPOSED, not approved.** Phase 4 starts only after the owner approves Phase 3 acceptance and this plan (CLAUDE.md approval gates). Roadmap scope: [`roadmap.md`](roadmap.md) "Phase 4: Foundation"._
+_Drafted 2026-11-05 at the end of Phase 3 (step 3.9). **Status: APPROVED by the owner on 2026-11-05 (D-088): A1–A6 granted with a free hand; A7 (staging, R2, error tracking, email provider) waits for the owner.** Progress per step is in the table below and in [`STATUS.md`](STATUS.md); the code layout is in [`architecture/app-structure.md`](architecture/app-structure.md). Roadmap scope: [`roadmap.md`](roadmap.md) "Phase 4: Foundation"._
+
+## Progress (session 22, 2026-11-05)
+
+| Step | Status |
+|---|---|
+| 4.0 Kickoff | ✅ D-088, ADR-0003 |
+| 4.1 Scaffold | ✅ Next.js 16 at the repository root, `npm run dev` serves `/` in Croatian and `/en` in English |
+| 4.2 Quality gates and CI | ✅ ESLint (jsx-a11y as errors), Prettier, typecheck, Vitest, Playwright with axe-core, token and message checks, GitHub Actions (three jobs), Claude hook and two review subagents |
+| 4.3 Database and local environment | ✅ Docker Compose PostgreSQL 17, Drizzle schema and two migrations, fictional seed, db test suite |
+| 4.4 Tokens and base components | ✅ `tokens.json` → `src/styles/tokens.css` (checked in CI), self-hosted fonts, `components.css` on the §3.6 contract, button, fields, notices, toast, dialog |
+| 4.5 Authentication | ✅ email and password (D-054, D-061, R-14), verification, reset (D-076 flow), TOTP with recovery codes, lockout (D-077), Google when keys exist (S-09 linking), staff gate needs a second factor. **Owner review of the screens pending** |
+| 4.6 Sessions and revocation | ✅ device list, sign out one or all, password change signs others out (D-072); cookie cache off so revocation is immediate; tests |
+| 4.7 HR/EN messages | ✅ next-intl with ICU plurals; completeness and unused-key check in CI (`scripts/i18n-check.mjs`) |
+| 4.8 Authorization policy module | ✅ `src/lib/authz/policy.ts` with 32 tests (one per matrix row); independent security review run at the close of the session |
+| 4.9 Audit log, flags, admin shell | ✅ append-only `audit_log` (database trigger), feature flags with `paused` (SYS-04), admin shell (overview, members and roles, flags, audit) gated by role and second factor |
+| 4.10 Security baseline | ✅ nonce CSP per request, security headers, Better Auth rate limits, dependency audit in CI, no-store on signed-in pages; error tracking waits for A7 |
+| 4.11 Staging | ⏳ waits for A7 (owner: Render, R2, error tracking, email provider accounts) |
+| 4.12 Review and close | ⏳ security and accessibility subagent reviews run in session 22; the owner reviews the sign-in screens and closes the phase |
 
 ## Goal
 A running, empty, well-guarded application on the approved stack (ADR-0002), with no product features beyond sign-in. The product screens come in Phase 5. Phase 4 builds:

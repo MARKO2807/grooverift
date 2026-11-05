@@ -1,0 +1,70 @@
+# Render Blueprint for staging (step 4.11, A7 / OQ-33). Region: Frankfurt (EU), ADR-0002.
+# Nothing here is created until the owner connects the repository in the Render dashboard
+# ("New → Blueprint"). Secrets are set in the dashboard, never in this file.
+# Runbook: docs/ops/deploy-runbook.md
+services:
+  - type: web
+    name: grooverift-staging
+    runtime: node
+    region: frankfurt
+    plan: starter
+    branch: main
+    buildCommand: npm ci && npm run build
+    preDeployCommand: npm run db:migrate
+    startCommand: npm run start
+    healthCheckPath: /manifest.webmanifest
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_URL
+        value: https://grooverift-staging.onrender.com # change after the first deploy if Render gives another host
+      - key: DATABASE_URL
+        fromDatabase:
+          name: grooverift-staging-db
+          property: connectionString
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: IP_HEADERS
+        value: x-forwarded-for
+      - key: EMAIL_TRANSPORT
+        sync: false # set once the provider is chosen (A7); production refuses to start without one
+      - key: EMAIL_FROM
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+  - type: worker
+    name: grooverift-staging-worker
+    runtime: node
+    region: frankfurt
+    plan: starter
+    branch: main
+    buildCommand: npm ci
+    startCommand: npm run worker
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_URL
+        value: https://grooverift-staging.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: grooverift-staging-db
+          property: connectionString
+      - key: BETTER_AUTH_SECRET
+        sync: false # paste the same value as the web service (the audit IP hash key)
+      - key: EMAIL_TRANSPORT
+        sync: false
+
+databases:
+  - name: grooverift-staging-db
+    region: frankfurt
+    plan: basic-256mb
+    postgresMajorVersion: "17"

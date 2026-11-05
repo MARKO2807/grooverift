@@ -3,6 +3,7 @@
 - **Status:** DRAFT v0.3. Owner answered VQ-01 to VQ-06 on 2026-11-01 (D-019 to D-025) and confirmed the profile-section defaults in step 3.2 (D-032, D-033). Further changes need owner review.
 - Addresses audit finding S-02, the **#1 engineering risk**.
 - This matrix will become the specification for a single server-side policy module and an automated authorization test suite (R-01). Every API, search query, notification, email, share preview, cache and export must go through the same policy.
+- **Implemented (session 22, step 4.8):** `src/lib/authz/policy.ts` is that module (pure functions over facts the data layer loads) and `tests/unit/policy.test.ts` has one test per row below. Changing a cell here means changing the test and the function together.
 
 ## 1. Viewer relationships
 Evaluated in this order. The first match wins for **Block**, and the most permissive non-block relationship applies otherwise.

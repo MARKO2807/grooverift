@@ -8,7 +8,7 @@ Every phase ends with an **owner approval gate**. Approval of one phase does not
 | 1 | Specification audit and documentation foundation | ✅ Done (2026-11-01) |
 | 2 | Architecture, provider research and legal groundwork | ✅ Done (2026-11-01) |
 | 3 | UX research, information architecture and design system | ✅ Done (2026-11-05, D-087; [plan](design/phase-3-plan.md), [closing review](design/phase-3-review.md)) |
-| 4 | Foundation (repo tooling, CI, auth, i18n, security baseline, admin shell) | ⏳ Plan PROPOSED ([phase-4-plan](phase-4-plan.md)), awaiting owner approval |
+| 4 | Foundation (repo tooling, CI, auth, i18n, security baseline, admin shell) | 🔄 In progress (approved D-088, 2026-11-05; steps 4.0–4.10 built in session 22, [phase-4-plan](phase-4-plan.md); 4.11 staging waits for A7; 4.12 close pending the owner's review) |
 | 5 | Alpha vertical slice | ⏳ |
 | 6 | Alpha hardening and operational readiness | ⏳ |
 | **G-A** | **Gate: closed technical alpha invitations** | ⏳ |
