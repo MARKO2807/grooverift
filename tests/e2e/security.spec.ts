@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { insertInvitation } from "./db";
-import { signIn } from "./helpers";
+import { signIn, signOut } from "./helpers";
 
 const BASE = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 
@@ -137,7 +137,7 @@ test.describe("caching and session gates", () => {
     await page.getByLabel("Lozinka", { exact: true }).fill("Prototip-lozinka-1!");
     await page.getByRole("button", { name: "Prijavi se" }).click();
     await expect(page).toHaveURL(/\/home$/);
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await page.goto("/sign-in?returnTo=//evil.example/");
     await page.getByLabel("E-pošta").fill("luka@example.test");
     await page.getByLabel("Lozinka", { exact: true }).fill("Prototip-lozinka-1!");

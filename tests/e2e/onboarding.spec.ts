@@ -12,6 +12,7 @@ import {
   totp,
   uniqueEmail,
   uniqueUsername,
+  signOut,
 } from "./helpers";
 
 // Step 5.4: invitation and onboarding (PUB-05, ONB-01 to ONB-09, J1 with its edge cases) and ADM-03.
@@ -153,15 +154,14 @@ test.describe("invitation and onboarding (J1)", () => {
     await expectNoAxeViolations(page);
     await page.getByRole("link", { name: "Na početnu" }).click();
     await expect(page).toHaveURL(/\/home$/);
-    await expect(page.getByText("Prijavljen si kao Onb Osoba.")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Početna" })).toBeAttached();
     await page.goto("/join/username");
     await expect(page).toHaveURL(/\/home$/);
 
     // E3 (same address): nothing to do; then signed out, the link cannot be used (E1).
     await page.goto(`/invite/${token}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Već imaš račun");
-    await page.goto("/home");
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/$/); // the sign-out response clears the cookie before the next visit
     await page.goto(`/invite/${token}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -197,6 +197,7 @@ test.describe("invitation and onboarding (J1)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Pozivnica je za novu osobu");
     await expect(page.getByText(/@luka/)).toBeVisible();
     expect(await inviteStatus(id)).toBe("sent");
+    // The invite page's own "Odjavi se" (J1 E3), not the Settings one: it returns to the invitation.
     await page.getByRole("button", { name: "Odjavi se" }).click();
     await expect(page).toHaveURL(/\/join$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -288,8 +289,7 @@ test.describe("admin invitations (ADM-03)", () => {
     // Revoke: the link stops working.
     await page.getByRole("button", { name: `Opozovi: ${invitee}` }).click();
     await expect(page.getByRole("row", { name: new RegExp(invitee) })).toContainText("Opozvana");
-    await page.goto("/home");
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/$/);
     await page.goto(firstLink(mail));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(

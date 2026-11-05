@@ -45,6 +45,17 @@ export async function signIn(page: Page, email: string, password = SEED_PASSWORD
   ]);
 }
 
+/**
+ * Signs out through Settings (D-070 (8): "Odjavi se" with a short confirmation; moved off Home in step 5.7) and
+ * waits for the redirect, so the next visit runs without the session cookie.
+ */
+export async function signOut(page: Page) {
+  await page.goto("/settings");
+  await page.getByRole("button", { name: "Odjavi se" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Odjavi se" }).click();
+  await expect(page).toHaveURL(/\/$/);
+}
+
 /** Notices inside the page (not the Next.js dev overlay, not the empty toast region). */
 export const notice = (page: Page) =>
   page.locator("main").getByRole("alert").or(page.locator("main").getByRole("status"));

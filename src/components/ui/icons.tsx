@@ -9,6 +9,7 @@ import {
   CaretUpIcon,
   ChartBarHorizontalIcon,
   ChatCenteredTextIcon,
+  ChatTextIcon,
   CheckIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -62,6 +63,7 @@ export const IconGear = light(GearSixIcon);
 export const IconHelp = light(QuestionIcon);
 export const IconHome = light(HouseIcon);
 export const IconHub = light(ChatCenteredTextIcon);
+export const IconChat = light(ChatTextIcon);
 export const IconLightning = light(LightningIcon);
 export const IconMail = light(EnvelopeSimpleIcon);
 export const IconEye = light(EyeIcon);

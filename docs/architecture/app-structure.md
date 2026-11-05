@@ -27,7 +27,10 @@ src/
   app/[locale]/page.tsx           PUB-01 landing (signed-in members go to /home)
   app/[locale]/legal/[doc], legal/notice, about/alpha, offline   PUB-10 drafts, PUB-11 DSA form, PUB-12, SYS-03
   app/[locale]/not-found.tsx, error.tsx, app/global-error.tsx      SYS-01 (one page, 404), SYS-02
-  app/[locale]/[...rest], drop/[date], p/[id]        404 until their steps (5.7, B1)
+  app/[locale]/[...rest], p/[id]  404 until their steps (B1)
+  app/[locale]/drop/[date]/       HUB-02 signed in, PUB-07 with Open Graph signed out (step 5.7); a/[id] HUB-03 with comments,
+                                  a/[id]/reactions POST-04; only published dates up to today open (U-03)
+  app/[locale]/(app)/home, hub, hub/archive   HOME-01, HUB-01 (seven-day strip), HUB-04 (by month, jump to date)
   app/[locale]/u/[username]/      /@username (step 5.5): the profile (PROF-01/10, PUB-08, the P and B states), followers, following,
                                   drops (PROF-03), dna (PROF-04); src/lib/profile/page.ts gives the viewer and the 404 helper
   app/[locale]/specimen           dev and e2e only (E2E_SPECIMENS=1): the Spirala with fictional picks
@@ -86,7 +89,14 @@ src/
   lib/editorial/publication.ts    runPublication (audit + staff alert emails), dailyCheck (JO4 mail), alertMail (HR/EN)
   lib/editorial/actions.ts        "use server": create, save, the lifecycle moves, delete, withdraw (admin), Publish now
   components/admin/editorial.tsx, editorial-parts.tsx   ADM-04/05/09 forms (client) and server parts (nav, warnings, labels)
-  lib/data/answers.ts             createAnswer (one per member per question), deleteOwnAnswer, visibleAnswers
+  lib/data/answers.ts             answers (one per member per question, edit, delete with placeholder), comments, the reaction,
+                                  questionAnswers (the three sorts, counts of what the viewer may see), answerThread, whoReacted
+  lib/data/drops.ts               published reads for members and visitors: publishedOn/ById, latest, the seven days, archive,
+                                  firstDropState (countdown date only)
+  lib/drop/                       rules.ts (pure: limits, sorts, page size, poll interval), actions.ts ("use server": post, edit,
+                                  delete, comment, react, poll), present.ts (server: views → client props, dates)
+  components/drop/                answer-card, reaction-button, composer (dock + dialog), comments, sort-control, new-answers,
+                                  countdown, parts (Drop head, peeks, late line, first Drop, past list), public-drop, share-button
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)
   lib/data/notices.ts             DSA notice storage
   lib/data/invitations.ts         createInvitation (one open per normalised email), invitationByToken (usable or not, no reason),

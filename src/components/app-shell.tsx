@@ -24,6 +24,7 @@ export async function AppShell({
   bodyHeading = false,
   actions,
   screen,
+  dock,
   children,
 }: {
   title: string;
@@ -37,6 +38,8 @@ export async function AppShell({
   actions?: React.ReactNode;
   /** Adds `screen-<name>` to main for screen-specific layout. */
   screen?: string;
+  /** The answer dock (HUB-02): above the tab bar on the phone, at the foot of the column from 600 px. */
+  dock?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const t = await getTranslations("app");
@@ -76,7 +79,8 @@ export async function AppShell({
           ) : null}
           {children}
         </main>
-        <div className="bottom">
+        <div className={`bottom${dock ? " has-dock" : ""}`}>
+          {dock}
           <TabBar nav={nav} />
         </div>
       </div>

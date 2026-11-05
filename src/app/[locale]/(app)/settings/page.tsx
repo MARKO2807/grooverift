@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
+import { SignOutButton } from "@/components/settings/sign-out";
 import {
   IconChevron,
   IconEye,
@@ -55,6 +56,7 @@ export default async function SettingsIndexPage({
           </li>
         ))}
       </ul>
+      <SignOutButton />
     </AppShell>
   );
 }

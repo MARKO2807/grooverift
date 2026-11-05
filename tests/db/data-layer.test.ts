@@ -251,7 +251,7 @@ describe("invariant (D-035): one answer per member per question among non-delete
       .insert(dailyDropQuestion)
       .values({
         status: "published",
-        publishDate: `2098-01-${10 + (Date.now() % 18)}`,
+        publishDate: `1998-01-${10 + (Date.now() % 18)}`,
         publishedAt: new Date(),
       })
       .returning({ id: dailyDropQuestion.id });
@@ -284,7 +284,7 @@ describe("invariant (D-035): one answer per member per question among non-delete
       .insert(dailyDropQuestion)
       .values({
         status: "published",
-        publishDate: `2097-02-${10 + (Date.now() % 18)}`,
+        publishDate: `1997-02-${10 + (Date.now() % 18)}`,
         publishedAt: new Date(),
       })
       .returning({ id: dailyDropQuestion.id });
@@ -392,7 +392,7 @@ describe("step 5.2 review fixes", () => {
       .insert(dailyDropQuestion)
       .values({
         status: "published",
-        publishDate: `2096-03-${10 + (Date.now() % 18)}`,
+        publishDate: `1996-03-${10 + (Date.now() % 18)}`,
         publishedAt: new Date(),
       })
       .returning({ id: dailyDropQuestion.id });
@@ -444,7 +444,7 @@ describe("step 5.2 review fixes", () => {
       .insert(dailyDropQuestion)
       .values({
         status: "published",
-        publishDate: `2095-04-${10 + (Date.now() % 18)}`,
+        publishDate: `1995-04-${10 + (Date.now() % 18)}`,
         publishedAt: new Date(),
       })
       .returning({ id: dailyDropQuestion.id });
@@ -463,7 +463,7 @@ describe("step 5.2 review fixes", () => {
       .insert(dailyDropQuestion)
       .values({
         status: "published",
-        publishDate: `2094-05-${10 + (Date.now() % 18)}`,
+        publishDate: `1994-05-${10 + (Date.now() % 18)}`,
         publishedAt: new Date(),
       })
       .returning({ id: dailyDropQuestion.id });

@@ -23,6 +23,9 @@ export const LIMITS = {
   profileEdit: { limit: 20, windowSeconds: 3600 }, // profile, username and privacy changes per member (step 5.5)
   graph: { limit: 120, windowSeconds: 3600 }, // unfollow, cancel, accept, decline, remove, block, unblock per member
   editorial: { limit: 300, windowSeconds: 3600 }, // editor and admin writes in ADM-04/05/09 (step 5.6)
+  contentEdit: { limit: 60, windowSeconds: 3600 }, // edits and deletions of own answers and comments (step 5.7)
+  react: { limit: 300, windowSeconds: 3600 }, // reaction toggles per member (step 5.7)
+  dropPoll: { limit: 120, windowSeconds: 3600 }, // the "new answers" check on an open question page (step 5.7)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

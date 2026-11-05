@@ -10,6 +10,7 @@ import {
   signIn,
   totp,
   uniqueEmail,
+  signOut,
 } from "./helpers";
 
 test.describe("sign-in", () => {
@@ -37,9 +38,9 @@ test.describe("sign-in", () => {
   test("signs a seeded member in and out", async ({ page }) => {
     await signIn(page, "ana@example.test");
     await expect(page).toHaveURL(/\/home$/);
-    await expect(page.getByText("Prijavljen si kao Ana Sluša.")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Početna" })).toBeAttached();
     await expectNoAxeViolations(page);
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/$/);
     await page.goto("/home");
     await expect(page).toHaveURL(/\/sign-in\?returnTo=%2Fhome$/);
@@ -68,7 +69,7 @@ test.describe("password reset", () => {
     page,
   }) => {
     const email = await newMember(page, "reset");
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/$/); // the sign-out response must land before the next visit
 
     // The "sent" page is neutral; the link sets a new password.
@@ -93,7 +94,7 @@ test.describe("password reset", () => {
     await expect(page).toHaveURL(/\/home$/);
 
     // A used reset link cannot be used again (R-08).
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await page.goto(firstLink(reset));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Ova poveznica više ne vrijedi",
@@ -181,8 +182,7 @@ test.describe("sessions and two-factor", () => {
     await page.getByRole("button", { name: "Spremio sam kodove" }).click();
     await expect(page).toHaveURL(/\/settings\/security$/);
     await expect(page.getByText("Uključeno. Pri prijavi tražimo kod iz aplikacije.")).toBeVisible();
-    await page.goto("/home");
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
 
     // Sign-in now asks for the second step; a wrong code fails, the app code passes.
     await signIn(page, email, "Totp-Lozinka-2026!");
@@ -197,13 +197,13 @@ test.describe("sessions and two-factor", () => {
     await expect(page).toHaveURL(/\/home$/);
 
     // A recovery code works once.
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await signIn(page, email, "Totp-Lozinka-2026!");
     await page.getByRole("button", { name: /kod za oporavak/ }).click();
     await page.getByLabel("Kod za oporavak").fill(codes[0]!);
     await page.getByRole("button", { name: "Potvrdi" }).click();
     await expect(page).toHaveURL(/\/home$/);
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
     await signIn(page, email, "Totp-Lozinka-2026!");
     await page.getByRole("button", { name: /kod za oporavak/ }).click();
     await page.getByLabel("Kod za oporavak").fill(codes[0]!);
@@ -219,8 +219,7 @@ test.describe("admin shell (4.9)", () => {
     await signIn(page, "ana@example.test");
     await page.goto("/admin");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nemaš pristup");
-    await page.goto("/home");
-    await page.getByRole("button", { name: "Odjavi se" }).click();
+    await signOut(page);
 
     await signIn(page, "admin@example.test");
     await page.goto("/admin");

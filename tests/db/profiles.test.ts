@@ -474,7 +474,7 @@ describe("Daily Drop history on the profile (PROF-03, D-032)", () => {
     const day = 10 + (Number.parseInt(RUN.slice(-2), 36) % 17);
     const [q] = await db()
       .insert(dailyDropQuestion)
-      .values({ status: "published", publishDate: `2097-03-${day}`, publishedAt: new Date() })
+      .values({ status: "published", publishDate: `1997-03-${day}`, publishedAt: new Date() })
       .returning({ id: dailyDropQuestion.id });
     questionIds.push(q!.id);
     await db()
