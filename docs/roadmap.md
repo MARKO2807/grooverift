@@ -8,8 +8,8 @@ Every phase ends with an **owner approval gate**. Approval of one phase does not
 | 1 | Specification audit and documentation foundation | ✅ Done (2026-11-01) |
 | 2 | Architecture, provider research and legal groundwork | ✅ Done (2026-11-01) |
 | 3 | UX research, information architecture and design system | ✅ Done (2026-11-05, D-087; [plan](design/phase-3-plan.md), [closing review](design/phase-3-review.md)) |
-| 4 | Foundation (repo tooling, CI, auth, i18n, security baseline, admin shell) | 🔄 In progress (approved D-088, 2026-11-05; steps 4.0–4.10 built in session 22, [phase-4-plan](phase-4-plan.md); 4.11 staging waits for A7; 4.12 close pending the owner's review) |
-| 5 | Alpha vertical slice | ⏳ |
+| 4 | Foundation (repo tooling, CI, auth, i18n, security baseline, admin shell) | ✅ Done (accepted 2026-11-05, D-091; [phase-4-plan](phase-4-plan.md); 4.11 staging deferred until A7) |
+| 5 | Alpha vertical slice | 🔄 In progress (approved D-092, 2026-11-05; scope and decisions D-093; [phase-5-plan](phase-5-plan.md); step 5.0 done, 5.1 next) |
 | 6 | Alpha hardening and operational readiness | ⏳ |
 | **G-A** | **Gate: closed technical alpha invitations** | ⏳ |
 | 7 | Beta waves B1–B6 (all remaining confirmed features) | ⏳ |
@@ -64,14 +64,14 @@ Every phase ends with an **owner approval gate**. Approval of one phase does not
   - staging environment (if approved and budgeted)
 - **Acceptance:** CI green, auth and authorization tests pass, accessibility baseline checks pass, staging deploy reproducible, security review by an independent subagent.
 
-## Phase 5: Alpha vertical slice (scope per OQ-07)
-- **Deliverables (proposed):**
-  - invites, 18+ attestation, onboarding, profiles (public/private), Music DNA with the catalog
-  - Daily Drop: answers, replies, reactions, sorting, archive, history; editorial calendar, reserve and failure alerts
-  - follow; block, mute and report; moderation queue with statement of reasons
+## Phase 5: Alpha vertical slice (scope approved, D-092; plan: [`phase-5-plan.md`](phase-5-plan.md))
+- **Deliverables (approved):**
+  - invites, 18+ attestation, onboarding, profiles (public/private), Music DNA with the catalog (live MusicBrainz lookups, D-093 (2))
+  - Daily Drop: answers, comments, reactions, sorting, archive (seven-day strip plus the full archive, D-093 (4)), history; editorial calendar, reserve and failure alerts
+  - follow; people search by name or @username on the Profile tab (D-093 (3)); block, mute and report; moderation queue with statement of reasons
   - feedback and bug reports
   - data export and deletion
-  - Daily Drop push (if OQ-08 = yes)
+  - Daily Drop push and the PWA service worker, behind a flag (OQ-08 = yes, D-093 (1))
 - **Acceptance:** end-to-end tests for every journey, authorization test suite green, WCAG 2.2 AA audit of alpha screens, HR/EN complete.
 
 ## Phase 6: Alpha hardening and operational readiness

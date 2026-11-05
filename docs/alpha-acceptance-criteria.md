@@ -4,7 +4,7 @@
 - **Gate G-A** (invitations) requires **every** item below to be checked off with evidence (test reports, drill logs, documents), plus explicit owner approval (§2A).
 
 ## 1. Scope readiness
-- [ ] Alpha feature set approved by the owner (OQ-07). Every enabled feature works end to end; incomplete features are behind flags and inaccessible.
+- [x] Alpha feature set approved by the owner (OQ-07 → **D-092, 2026-11-05**, [`phase-5-plan.md`](phase-5-plan.md) §1). Still to show at G-A: every enabled feature works end to end; incomplete features are behind flags and inaccessible.
 - [ ] HR and EN UI complete for every enabled screen (automated missing-key check passes).
 - [ ] The alpha is clearly labelled as an incomplete technical alpha in the UI and in the tester notice.
 

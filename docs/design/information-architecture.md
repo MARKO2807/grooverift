@@ -456,7 +456,7 @@ Admin screens follow the same L, E and O patterns. Staff areas are **never** off
 | Q1 ⛳ | Navigation model | A (Hub + Activity), B (Messages tab), C (Calm four) | **CONFIRMED: A** (D-031) |
 | Q2 ⛳ | Default visibility of the **Daily Drop history on the profile** (PROF-03) | Same as profile · Followers · Mutuals | **CONFIRMED: same as profile** (D-032). Public profile → all signed-in members; private profile → followers. Individual answers stay visible to all members on the question page (D-021); this setting covers only the aggregated list. |
 | Q3 ⛳ | Default visibility of **follower and following lists** (PROF-07), including their counts | All members · Followers · Mutuals · Only me | **CONFIRMED: followers** (D-033). Lists expose third parties' relationships, and requiring a follow makes viewing visible to the owner. |
-| Q4 | Alpha people search by name/username (DISC-05, α) so testers can find each other | Yes / no (Daily Drop answers only) | RECOMMENDED: yes. Decide with OQ-07 alpha scope. |
+| Q4 ⛳ | Alpha people search by name/username (DISC-05, α) so testers can find each other | Yes / no (Daily Drop answers only) | **CONFIRMED: yes** (D-093 (3), session 24): a search field on the Profile tab, privacy-enforced; no other search types before B4. |
 | Q5 | Signed-out view of public playlists | Minimal public view / members only | RECOMMENDED: members only during the beta (consistent with D-022) |
 | Q6 | Counsel: DSA Art. 16 notice form for non-members (PUB-11) | | Added as B.5 in `questions-for-counsel.md` |
 | Q7 | Status updates for question suggestions (HUB-09) | None · notify if published · status list | **CONFIRMED: notify if published** (D-037) |
