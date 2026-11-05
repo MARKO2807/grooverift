@@ -1,12 +1,14 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { eq } from "drizzle-orm";
 import { closeDb, db } from "@/lib/db/client";
 import { featureFlag } from "@/lib/db/schema";
 import { flagState, isEnabled, setFlag } from "@/lib/flags";
 
 afterAll(() => closeDb());
 
+// Only this test's own key is touched: the seeded flags (sign_up, …) must survive for the e2e suite.
 beforeAll(async () => {
-  await db().delete(featureFlag);
+  await db().delete(featureFlag).where(eq(featureFlag.key, "thing"));
 });
 
 describe("feature flags", () => {
