@@ -1,6 +1,16 @@
 import { test, expect } from "@playwright/test";
 import { expectNoAxeViolations } from "./axe";
-import { SEED_PASSWORD, firstLink, lastMailTo, notice, signIn, totp, uniqueEmail } from "./helpers";
+import {
+  SEED_PASSWORD,
+  createAccountFromInvite,
+  firstLink,
+  lastMailTo,
+  newMember,
+  notice,
+  signIn,
+  totp,
+  uniqueEmail,
+} from "./helpers";
 
 test.describe("sign-in", () => {
   test("the sign-in page is a real form, accessible, and rejects a wrong password", async ({
@@ -43,58 +53,33 @@ test.describe("sign-in", () => {
     await expect(page).toHaveURL(/\/settings\/security$/);
   });
 
-  test("an unverified account cannot sign in", async ({ page }) => {
-    const email = uniqueEmail("unverified");
-    await page.goto("/sign-up");
-    await page.getByLabel("Kako se zoveš?").fill("Test Osoba");
-    await page.getByLabel("E-pošta").fill(email);
-    await page.getByLabel("Lozinka", { exact: true }).fill("Nova-Lozinka-2026!");
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    await expect(page).toHaveURL(/\/check-email/);
-    await signIn(page, email, "Nova-Lozinka-2026!");
-    await expect(notice(page)).toContainText("Adresa još nije potvrđena");
+  test("there is no open sign-up: the old page is gone and sign-in says invitation only", async ({
+    page,
+  }) => {
+    await page.goto("/sign-in");
+    await expect(page.getByText("GrooveRift radi samo uz pozivnicu.")).toBeVisible();
+    const res = await page.goto("/sign-up");
+    expect(res?.status()).toBe(404);
   });
 });
 
-test.describe("sign-up, verification and reset", () => {
-  test("creates an account, confirms the address by the emailed link, then resets the password", async ({
+test.describe("password reset", () => {
+  test("resets the password by the emailed link; the old password and the used link stop working", async ({
     page,
   }) => {
-    const email = uniqueEmail("new");
-    const t0 = Date.now();
-    await page.goto("/sign-up");
-    await expectNoAxeViolations(page);
-
-    // Password policy feedback (D-061) appears as one line while typing.
-    const pw = page.getByLabel("Lozinka", { exact: true });
-    await pw.fill("kratka");
-    await expect(page.getByText(/Lozinci još treba/)).toBeVisible();
-    await pw.fill("Nova-Lozinka-2026!");
-    await expect(page.getByText("Lozinka zadovoljava sva pravila.")).toBeVisible();
-
-    await page.getByLabel("Kako se zoveš?").fill("Nova Osoba");
-    await page.getByLabel("E-pošta").fill(email);
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Provjeri e-poštu");
-
-    const mail = await lastMailTo(email, t0);
-    expect(mail.subject).toContain("potvrdi adresu");
-    await page.goto(firstLink(mail));
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Adresa je potvrđena");
-
-    await signIn(page, email, "Nova-Lozinka-2026!");
-    await expect(page).toHaveURL(/\/home$/);
+    const email = await newMember(page, "reset");
     await page.getByRole("button", { name: "Odjavi se" }).click();
+    await expect(page).toHaveURL(/\/$/); // the sign-out response must land before the next visit
 
-    // Reset: the "sent" page is neutral; the link sets a new password; the old one stops working.
+    // The "sent" page is neutral; the link sets a new password.
     const t1 = Date.now();
     await page.goto("/reset");
+    await expectNoAxeViolations(page);
     await page.getByLabel("E-pošta").fill(email);
     await page.getByRole("button", { name: "Pošalji poveznicu" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Provjeri e-poštu");
     const reset = await lastMailTo(email, t1);
+    expect(reset.subject).toContain("nova lozinka");
     await page.goto(firstLink(reset));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Postavi novu lozinku");
     await page.getByLabel("Nova lozinka").fill("Druga-Lozinka-2026!");
@@ -121,35 +106,16 @@ test.describe("sign-up, verification and reset", () => {
     await page.getByRole("button", { name: "Pošalji poveznicu" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Provjeri e-poštu");
   });
-
-  test("rejects a breached password at sign-up", async ({ page }) => {
-    // "Password123!" is in the HIBP corpus. If the API is unreachable the check fails open (D-054),
-    // so this test is skipped when the sign-up succeeds without an error.
-    await page.goto("/sign-up");
-    await page.getByLabel("Kako se zoveš?").fill("Test");
-    await page.getByLabel("E-pošta").fill(uniqueEmail("hibp"));
-    await page.getByLabel("Lozinka", { exact: true }).fill("Password123!");
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    const err = page.getByText(/curenjima podataka/);
-    const sent = page.getByRole("heading", { level: 1, name: "Provjeri e-poštu" });
-    await expect(err.or(sent)).toBeVisible();
-    test.skip(await sent.isVisible(), "HIBP unreachable: fail-open (D-054)");
-  });
 });
 
 test.describe("lockout (D-077)", () => {
   test("five wrong passwords lock the pair for 15 minutes", async ({ page }) => {
     // A fresh account per run: the lock stages grow with every lock and would outlive a rerun.
     const email = uniqueEmail("lock");
-    const t0 = Date.now();
-    await page.goto("/sign-up");
-    await page.getByLabel("Kako se zoveš?").fill("Zaključana Osoba");
-    await page.getByLabel("E-pošta").fill(email);
-    await page.getByLabel("Lozinka", { exact: true }).fill("Prava-Lozinka-2026!");
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    await page.goto(firstLink(await lastMailTo(email, t0)));
+    await createAccountFromInvite(page, email, "Prava-Lozinka-2026!");
+    await page.goto("/home"); // not onboarded: every app route goes to the next step (J1 E8)
+    await expect(page).toHaveURL(/\/join\/username$/);
+    await page.context().clearCookies(); // signed out mid-onboarding; sign-in still works and resumes
 
     for (let i = 0; i < 5; i++) {
       await signIn(page, email, `Kriva-Lozinka-${i}!`);
@@ -166,18 +132,9 @@ test.describe("sessions and two-factor", () => {
     browser,
     page,
   }) => {
-    const email = uniqueEmail("sess");
-    const t0 = Date.now();
-    await page.goto("/sign-up");
-    await page.getByLabel("Kako se zoveš?").fill("Sesija Test");
-    await page.getByLabel("E-pošta").fill(email);
-    await page.getByLabel("Lozinka", { exact: true }).fill("Sesija-Lozinka-1!");
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    await page.goto(firstLink(await lastMailTo(email, t0)));
+    const email = await newMember(page, "sess", "Sesija-Lozinka-1!");
 
     // Two devices.
-    await signIn(page, email, "Sesija-Lozinka-1!");
     const other = await browser.newContext();
     const otherPage = await other.newPage();
     await signIn(otherPage, email, "Sesija-Lozinka-1!");
@@ -203,16 +160,8 @@ test.describe("sessions and two-factor", () => {
   test("enables TOTP with recovery codes; the second step is required at sign-in", async ({
     page,
   }) => {
-    const email = uniqueEmail("totp");
-    const t0 = Date.now();
-    await page.goto("/sign-up");
-    await page.getByLabel("Kako se zoveš?").fill("Dva Faktora");
-    await page.getByLabel("E-pošta").fill(email);
-    await page.getByLabel("Lozinka", { exact: true }).fill("Totp-Lozinka-2026!");
-    await page.getByLabel("Imam 18 ili više godina.").check();
-    await page.getByRole("button", { name: "Napravi račun" }).click();
-    await page.goto(firstLink(await lastMailTo(email, t0)));
-    await signIn(page, email, "Totp-Lozinka-2026!");
+    test.slow(); // onboarding, the setup, then four sign-ins
+    const email = await newMember(page, "totp", "Totp-Lozinka-2026!");
 
     await page.goto("/settings/security");
     await page.getByRole("button", { name: "Uključi" }).click();

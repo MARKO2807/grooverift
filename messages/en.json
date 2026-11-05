@@ -41,8 +41,7 @@
       "submitting": "Signing in…",
       "or": "or",
       "google": "Continue with Google",
-      "noAccount": "No account yet?",
-      "signUp": "Create one",
+      "noAccount": "No account? GrooveRift works by invitation only.",
       "returnTo": "After sign-in we take you back to the page you opened.",
       "resetDone": "Your password was changed. Sign in with the new one.",
       "verifiedDone": "Your address is confirmed. You can sign in now."
@@ -57,21 +56,6 @@
       "submitting": "Checking…",
       "useRecovery": "No access to the app? Use a recovery code",
       "useTotp": "Back to the app code"
-    },
-    "signUp": {
-      "title": "Create an account",
-      "lead": "Closed alpha. Invitations come in the next phase; this form works only while it is switched on.",
-      "name": "What is your name?",
-      "nameHelp": "Up to three words, written as you type them. You can change it later.",
-      "email": "Email",
-      "password": "Password",
-      "passwordHelp": "At least 12 characters, an upper-case and a lower-case letter and a special character.",
-      "age18": "I am 18 or older.",
-      "submit": "Create account",
-      "submitting": "Saving…",
-      "haveAccount": "Already have an account?",
-      "signIn": "Sign in",
-      "closed": "Account creation is not open at the moment."
     },
     "checkEmail": {
       "title": "Check your email",
@@ -123,14 +107,25 @@
     "policy": "The password needs at least 12 characters, an upper-case and a lower-case letter and a special character.",
     "emailTaken": "An account with this address already exists. Sign in or request a new password.",
     "emailInvalid": "Enter a valid email address.",
-    "nameRequired": "Enter your name.",
-    "age18": "GrooveRift is for adults. Confirm that you are 18 or older.",
     "linkInvalid": "This link no longer works. Request a new one.",
     "badCode": "The code is not right. Check and try again.",
     "freshSession": "Sign in again for this action.",
     "required": "This field is required.",
     "wrongPassword": "The password is not right.",
-    "signUpClosed": "Account creation is not open at the moment."
+    "inviteInvalid": "This invitation can't be used. Ask the person who invited you for a new one.",
+    "accountExists": "You already have an account with this address.",
+    "usernameTaken": "This username isn't available.",
+    "usernameInvalid": "A username has 3 to 30 characters: lower-case letters, digits and underscores.",
+    "displayNameInvalid": "A display name has up to three words and at most 40 characters.",
+    "chooseAge": "Choose one answer.",
+    "chooseVisibility": "Choose who can see your profile.",
+    "chooseAudience": "Choose who sees your Music DNA.",
+    "dnaCount": "Pick at least two genres or skip this step.",
+    "timeZoneInvalid": "We couldn't recognise the time zone. Try again.",
+    "notOnboarding": "This step is no longer available.",
+    "inviteMember": "That address already has an account.",
+    "inviteOpen": "That address already has an open invitation. Revoke it, then send a new one.",
+    "mailFailed": "The message wasn't sent, so no invitation was created. Try again."
   },
   "settings": {
     "security": {
@@ -193,7 +188,8 @@
       "members": "Members",
       "flags": "Features",
       "audit": "Audit log",
-      "label": "Admin menu"
+      "label": "Admin menu",
+      "invites": "Invitations"
     },
     "overview": {
       "role": "Your role: {role}",
@@ -245,6 +241,30 @@
       "role": "This page is for staff.",
       "twoFactor": "Staff must have two-step verification on. Turn it on in the security settings.",
       "toSettings": "To security settings"
+    },
+    "invites": {
+      "title": "Invitations",
+      "lead": "One invitation per address, valid {days} days. The link goes out by email only; only that address can open the account.",
+      "email": "Email of the person you invite",
+      "language": "Message language",
+      "send": "Send invitation",
+      "sending": "Sending…",
+      "sent": "The invitation was sent.",
+      "status": {
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      },
+      "invitedBy": "Invited by",
+      "created": "Sent",
+      "expires": "Valid until",
+      "acceptedOn": "Accepted {date}",
+      "actions": "Actions",
+      "revoke": "Revoke",
+      "revoked": "The invitation was revoked.",
+      "none": "No invitations yet.",
+      "statusHeading": "Status"
     }
   },
   "roles": {
@@ -490,6 +510,211 @@
       "notAllowed": "This account cannot change Music DNA right now.",
       "paused": "Music DNA is paused right now.",
       "generic": "The change was not saved."
+    }
+  },
+  "join": {
+    "progress": "Step {n} of {total}",
+    "invite": {
+      "eyebrow": "Invitation",
+      "title": "You're invited to GrooveRift",
+      "tagline": "Where musical worlds collide.",
+      "lead": "One question a day for everyone. Discover your Music DNA, talk about music and connect with people of different tastes.",
+      "alphaNote": "Closed alpha: some things are still missing and may change.",
+      "moreAlpha": "More about the alpha",
+      "pwa": "<brand></brand> is a web app (PWA). iOS and Android versions may come later.",
+      "install": "Add the app to your home screen: it opens like an app, with reminders.",
+      "accept": "Accept the invitation",
+      "validFor": "The invitation is for {email}.",
+      "badTitle": "This invitation can't be used",
+      "badLead": "Ask the person who invited you for a new one.",
+      "toLanding": "To the start page",
+      "signedSameTitle": "You already have an account",
+      "signedSameLead": "The invitation is for {email}, and you're already signed in with that address. Nothing to do.",
+      "signedOtherTitle": "The invitation is for someone new",
+      "signedOtherLead": "You're signed in as @{username}. To accept an invitation for another account, sign out first. The invitation stays valid.",
+      "signedNote": "The invitation isn't used up until you accept it.",
+      "toHome": "Home",
+      "stay": "Stay in this account",
+      "signOut": "Sign out"
+    },
+    "age": {
+      "title": "Are you 18 or older?",
+      "lead": "<brand></brand> is a community of adult music lovers. We don't ask for a date of birth, only your answer.",
+      "legend": "Choose what applies to you.",
+      "adult": "Yes, I'm 18 or older",
+      "minor": "No, I'm under 18",
+      "next": "Continue"
+    },
+    "minor": {
+      "title": "GrooveRift is for adults only, for now",
+      "lead": "Thanks for the honest answer. We stored nothing, and the invitation is untouched.",
+      "mistake": "If that was a mistake, go back one step.",
+      "rules": "Community guidelines",
+      "back": "Back"
+    },
+    "language": {
+      "title": "Choose your language",
+      "leadEn": "Odaberi jezik",
+      "legend": "Interface language",
+      "fine": "You can change it any time in Settings.",
+      "next": "Continue"
+    },
+    "account": {
+      "title": "Create your account",
+      "email": "Email",
+      "emailHelp": "The invitation is bound to this address.",
+      "password": "Password",
+      "passwordHelp": "At least 12 characters with an upper-case letter, a lower-case letter and a special character.",
+      "submit": "Create account",
+      "submitting": "Saving…",
+      "or": "or",
+      "google": "Continue with Google",
+      "terms": "By continuing you accept the <terms>Terms of Use</terms>.",
+      "privacy": "How we use data is in the <privacy>Privacy Policy</privacy>.",
+      "mismatch": "The invitation is for one address: {email}. The Google account you chose has another address. Open the account with a password for the invitation address, or with a Google account that uses it. Another address needs a new invitation.",
+      "signIn": "Sign in"
+    },
+    "username": {
+      "title": "What's your name?",
+      "displayName": "Display name",
+      "displayNameHelp": "How others see you. Up to three words, written as you like.",
+      "username": "Username",
+      "usernameHelp": "3 to 30 characters: lower-case letters, digits and underscores.",
+      "checking": "Checking…",
+      "free": "@{username} is free.",
+      "taken": "This username isn't available.",
+      "invalid": "Use only lower-case letters, digits and underscores, 3 to 30 characters.",
+      "suggestions": "Free, for example:",
+      "next": "Continue",
+      "submitting": "Saving…"
+    },
+    "reading": {
+      "title": "Which languages do you like reading answers in?",
+      "legend": "Reading languages",
+      "optional": "Optional.",
+      "help": "You see such answers more often in the \"For you\" order. Nothing is hidden.",
+      "next": "Continue",
+      "submitting": "Saving…"
+    },
+    "visibility": {
+      "title": "Who can see your profile?",
+      "lead": "Choose one. You can change it any time.",
+      "legend": "Profile visibility",
+      "public": "Public",
+      "private": "Private",
+      "publicLine": "All members see your profile, Music DNA and answer history. You appear in Discover and compatibility. Signed-out visitors see your name, avatar and bio.",
+      "privateLine": "Only followers you approve see your profile, Music DNA and answer history. You don't appear in Discover. Signed-out visitors see nothing.",
+      "same": "Either way, all members see your answers and comments, and only followers see your follower list.",
+      "compare": "Compare all differences",
+      "row": {
+        "profile": "Profile and Music DNA",
+        "profilePublic": "All members",
+        "profilePrivate": "Followers only",
+        "history": "Answer history",
+        "historyPublic": "All members",
+        "historyPrivate": "Followers only",
+        "answers": "Answers and comments",
+        "answersPublic": "All members",
+        "answersPrivate": "All members",
+        "followers": "Follower list",
+        "followersPublic": "Followers only",
+        "followersPrivate": "Followers only",
+        "discover": "Discover and compatibility",
+        "discoverPublic": "Yes",
+        "discoverPrivate": "No",
+        "visitors": "Signed-out visitors",
+        "visitorsPublic": "Name, avatar, bio",
+        "visitorsPrivate": "Nothing"
+      },
+      "fine": "You can narrow Music DNA further in the next steps.",
+      "next": "Continue",
+      "submitting": "Saving…"
+    },
+    "dna": {
+      "title": "What do you listen to?",
+      "lead": "Pick {min} to {max} genres. They become your Music DNA.",
+      "countNone": "Nothing yet. Pick at least {min} genres.",
+      "count": "{count, plural, one {# genre} other {# genres}} of {max}.",
+      "genres": "Genres",
+      "genresOpt": "{min} to {max}",
+      "more": "More genres",
+      "searchLabel": "Search genres",
+      "searchHint": "There are over 2,000 more. Type a name, e.g. \"heavy metal\".",
+      "noResults": "No such genre. Try another name.",
+      "searchFailed": "Search isn't working right now. Try again.",
+      "moreResults": "These are the best known. Not yours? Keep typing.",
+      "artists": "Artists",
+      "artistsOpt": "optional",
+      "artistsSoon": "You'll be able to add artists soon, in the Music DNA editor.",
+      "skip": "Skip",
+      "next": "Continue",
+      "submitting": "Saving…"
+    },
+    "dnaAudience": {
+      "title": "Who sees your Music DNA?",
+      "legend": "Choose one. Signed-out visitors never see it.",
+      "everyone": {
+        "title": "All members",
+        "desc": "Everyone signed in. Used for Discover and compatibility."
+      },
+      "followers": {
+        "title": "Followers only",
+        "desc": "Only people who follow you see it."
+      },
+      "me": {
+        "title": "Only me",
+        "desc": "No one else, not even in compatibility."
+      },
+      "next": "Continue",
+      "submitting": "Saving…"
+    },
+    "how": {
+      "title": "How GrooveRift works",
+      "dropText": "A new music question every day, the same for everyone. The reminder arrives at 12:00; you can change the time.",
+      "poll": "Weekly poll",
+      "pollText": "One question for everyone, every week. You see the results when you vote.",
+      "know": "Did you know?",
+      "knowText": "Twice a week we uncover the stories behind the music.",
+      "people": "People by taste",
+      "peopleText": "Music DNA shows who shares your taste. No percentages.",
+      "next": "Continue"
+    },
+    "reminder": {
+      "title": "Don't miss the Daily Drop",
+      "lead": "The Daily Drop is the heart of the community. One notification a day, when the new question is out. Nothing else.",
+      "exampleLabel": "Example notification: {title}. {question}",
+      "now": "now",
+      "exampleTitle": "The Daily Drop is here",
+      "exampleQ": "Which song always takes you back to a summer?",
+      "note": "One question a day and the whole Rift community in one place. The reminder gets you there in time.",
+      "timeLabel": "Remind me at",
+      "zone": "Time: {zone}",
+      "install": "Keep GrooveRift at hand",
+      "installText": "Add it to your home screen and it opens like an app. On iPhone, reminders work only then.",
+      "notNow": "Not now",
+      "turnOn": "Turn on",
+      "submitting": "Saving…"
+    },
+    "done": {
+      "title": "Ready.",
+      "lead": "You're part of the Rift now. Today's question is already waiting.",
+      "dnaCaption": "Your Music DNA",
+      "profile": "Profile",
+      "public": "Public",
+      "private": "Private",
+      "genres": "{count, plural, =0 {No genres} one {# genre} other {# genres}}",
+      "dnaAudience": "DNA seen by",
+      "audience": {
+        "everyone": "All members",
+        "followers": "Followers only",
+        "me": "Only me",
+        "mutuals": "Connected"
+      },
+      "reminder": "Reminder",
+      "reminderOn": "Every day at {time}",
+      "reminderOff": "Off",
+      "fine": "You can change all of this in Settings.",
+      "home": "Home"
     }
   }
 }

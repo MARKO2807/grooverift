@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { nextCookies } from "better-auth/next-js";
 import { admin, twoFactor } from "better-auth/plugins";
@@ -6,6 +7,8 @@ import { db } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
 import { env, listFromEnv } from "@/lib/env";
 import { audit } from "@/lib/audit";
+import { acceptInvitation, invitationByToken, invitationMatches } from "@/lib/data/invitations";
+import { INVITE_COOKIE } from "@/lib/onboarding/constants";
 import { breachedPasswordCheck } from "./breached";
 import { sendMailInBackground } from "./email";
 import { clearAccountLock } from "./lockout";
@@ -55,6 +58,9 @@ export const auth = betterAuth({
     autoSignInAfterVerification: false,
     expiresIn: 60 * 60 * 24,
     sendVerificationEmail: async ({ user, url }) => {
+      // JO6 (D-093 (5)): an account made from an email-bound invitation is verified at once (the database hook
+      // below sets it), so no verification mail goes out for it. Email changes still verify the new address.
+      if (user.emailVerified) return;
       sendMailInBackground(
         {
           to: user.email,
@@ -168,8 +174,35 @@ export const auth = betterAuth({
     },
     user: {
       create: {
-        after: async (user) => {
+        // No account without a usable invitation for that very address (step 5.4, R-08), whichever endpoint
+        // creates it: email sign-up (the before hook refused earlier) or a social callback, where this is the
+        // only place that knows the provider's address (J1 E4: a Google account with another address is refused
+        // with INVITE_EMAIL_MISMATCH, which the callback turns into ?error= on the account step).
+        // JO6: accepting an email-bound invitation counts as email verification.
+        before: async (data, context) => {
+          const invite = await invitationMatches(context?.getCookie(INVITE_COOKIE), data.email);
+          if (!invite.usable) {
+            throw new APIError("FORBIDDEN", {
+              code: context?.path?.startsWith("/callback/")
+                ? "INVITE_EMAIL_MISMATCH"
+                : "INVITE_REQUIRED",
+              message: "An invitation for this address is required.",
+            });
+          }
+          return { data: { ...data, emailVerified: true } };
+        },
+        after: async (user, context) => {
           await audit({ actorType: "member", actorId: user.id, action: "auth.user.created" });
+          const invite = await invitationByToken(context?.getCookie(INVITE_COOKIE));
+          if (invite.usable && (await acceptInvitation(invite.id, user.id))) {
+            await audit({
+              actorType: "member",
+              actorId: user.id,
+              action: "invite.accepted",
+              targetType: "invitation",
+              targetId: invite.id,
+            });
+          }
         },
       },
     },

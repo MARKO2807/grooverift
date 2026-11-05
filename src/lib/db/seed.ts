@@ -45,7 +45,11 @@ export const SEED_FLAGS = [
     note: "Music DNA editor and Spirala (step 5.3a); pause for SYS-04",
   },
   { key: "google_sign_in", state: "off", note: "Shown when GOOGLE_CLIENT_ID is set" },
-  { key: "sign_up", state: "on", note: "Open sign-up form (development only; invites in Phase 5)" },
+  {
+    key: "push",
+    state: "off",
+    note: "Daily Drop push and the reminder step in onboarding (step 5.12; D-093 (1))",
+  },
 ] as const;
 
 export async function seed() {
@@ -88,6 +92,8 @@ export async function seed() {
         .values({ key: f.key, state: f.state, note: f.note })
         .onConflictDoUpdate({ target: featureFlag.key, set: { state: f.state, note: f.note } });
     }
+    // Retired in step 5.4: accounts come from invitations only (nothing reads this flag any more).
+    await tx.delete(featureFlag).where(eq(featureFlag.key, "sign_up"));
   });
 
   const genres = await seedGenres(); // reference data, the same in every environment

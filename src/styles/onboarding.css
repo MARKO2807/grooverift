@@ -1,0 +1,612 @@
+/* Onboarding and invitation screens (step 5.4): ported from design/prototypes/pulse/style.css (the onb kind:
+   progress, the visibility rows of D-060 (1), genre chips, the live Spirala, "Kako radi" cards, the reminder
+   example and the "Spremno" facts). Class names follow the prototype so the review pages stay comparable. */
+@layer components {
+  /* ---------- progress (J1: "Korak N od M" text plus a bar) ---------- */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-3);
+    margin-top: calc(var(--gr-space-2) * -1);
+  }
+  .progress-text {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    white-space: nowrap;
+  }
+  .pulse-progress {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    height: 12px;
+  }
+  .pulse-progress i {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gr-color-border-subtle);
+  }
+  .pulse-progress i.done,
+  .pulse-progress i.now {
+    background-image: var(--gr-gradient-brand);
+    background-size: calc(var(--n) * 100%) 100%;
+    background-position: calc(var(--i) / (var(--n) - 1) * 100%) 0;
+  }
+  .pulse-progress i.now {
+    height: 10px;
+  }
+
+  /* ---------- small text pieces ---------- */
+  .lead-sm {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .lead-done {
+    color: var(--gr-color-text-primary);
+    font-size: var(--gr-font-size-lg);
+    line-height: 1.4;
+  }
+  .fine-left {
+    text-align: left;
+  }
+  .fine-terms span {
+    display: block;
+    text-wrap: balance;
+  }
+  .hero-done {
+    padding-top: var(--gr-space-4);
+    gap: var(--gr-space-3);
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .group-title {
+    font: var(--gr-type-title-3);
+    display: flex;
+    align-items: baseline;
+    gap: var(--gr-space-2);
+    flex-wrap: wrap;
+  }
+  .group-title .opt,
+  .opt {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .status-line {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: center;
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+    min-height: 1.5rem;
+  }
+  .status-line svg {
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+    flex: none;
+  }
+  .status-line.ok {
+    color: var(--gr-color-state-success);
+  }
+  .status-line.bad {
+    color: var(--gr-color-state-danger);
+  }
+  .readonly-note {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+
+  /* ---------- choice cards centred (18+, language) and compact with icons (DNA audience) ---------- */
+  .choices-center .choice {
+    justify-content: center;
+    padding-left: var(--gr-space-8);
+    padding-right: var(--gr-space-8);
+  }
+  .choices-center .choice:has(input:checked) {
+    padding-left: calc(var(--gr-space-8) - 1px);
+    padding-right: calc(var(--gr-space-8) - 1px);
+  }
+  .choices-center .choice-title {
+    font-size: var(--gr-font-size-md);
+  }
+  .choices-center .choice-mark {
+    position: absolute;
+    right: var(--gr-space-4);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .choice-ic {
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+    flex: none;
+    color: var(--gr-color-text-primary);
+  }
+  .choice-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+  }
+
+  /* ---------- profile visibility as two rows (D-060 (1), neutral per D-030) ---------- */
+  .vrows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .vrow {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    cursor: pointer;
+  }
+  .vrow input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+  }
+  .vrow:hover {
+    background: var(--gr-color-bg-raised);
+  }
+  .vrow:has(input:checked) {
+    background: linear-gradient(160deg, #ff586b26, #ff586b0d 60%), var(--gr-color-bg-surface);
+    box-shadow: inset 0 0 0 2px var(--gr-color-selected-border);
+    border-color: transparent;
+  }
+  .vrow:has(input:focus-visible) {
+    outline: var(--gr-focus-width) solid var(--gr-color-focus-ring);
+    outline-offset: var(--gr-focus-gap);
+  }
+  .vrows[aria-invalid="true"] .vrow {
+    border-color: var(--gr-color-state-danger);
+  }
+  .vrow-head {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+  }
+  .vis-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--gr-radius-full);
+    display: grid;
+    place-items: center;
+    background: var(--gr-color-bg-raised);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+    flex: none;
+  }
+  .vis-badge svg {
+    width: 17px;
+    height: 17px;
+  }
+  .vis-t {
+    font: var(--gr-type-title-3);
+    font-size: var(--gr-font-size-md);
+    line-height: 1.1;
+  }
+  .vis-mark {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-thick) solid var(--gr-color-border-strong);
+    display: inline-grid;
+    place-items: center;
+    color: var(--gr-color-text-on-accent);
+    flex: none;
+  }
+  .vis-mark svg {
+    width: 11px;
+    height: 11px;
+    visibility: hidden;
+  }
+  .vrow:has(input:checked) .vis-badge {
+    background: var(--gr-gradient-brand);
+    border-color: transparent;
+    color: var(--gr-color-text-on-accent);
+  }
+  .vrow:has(input:checked) .vis-mark {
+    background: var(--gr-color-action-primary);
+    border-color: var(--gr-color-action-primary);
+  }
+  .vrow:has(input:checked) .vis-mark svg {
+    visibility: visible;
+  }
+  .vrow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+    padding-left: calc(30px + var(--gr-space-2));
+  }
+  .vrow-same {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .vrow-same svg {
+    flex: none;
+    margin-top: 2px;
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+  }
+  .vrow-more summary {
+    font: var(--gr-type-label);
+    color: var(--gr-color-text-link);
+    cursor: pointer;
+    min-height: var(--gr-size-target-min);
+    display: flex;
+    align-items: center;
+  }
+  .vrow-table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--gr-type-caption);
+    margin-top: var(--gr-space-1);
+  }
+  .vrow-table th,
+  .vrow-table td {
+    padding: 5px 4px;
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    text-align: center;
+  }
+  .vrow-table th[scope="row"] {
+    text-align: left;
+    color: var(--gr-color-text-secondary);
+    font-weight: var(--gr-font-weight-medium);
+  }
+  .vrow-table thead th {
+    font-weight: var(--gr-font-weight-semibold);
+    border-top: 0;
+  }
+  .vrow-table thead td {
+    border-top: 0;
+  }
+
+  /* ---------- toggle chips (reading languages, genre picks; aria-pressed or a checkbox inside) ---------- */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-2);
+  }
+  .chip-toggle {
+    position: relative;
+  }
+  .chip-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+  }
+  .chip .ck {
+    display: none;
+    width: 16px;
+    height: 16px;
+  }
+  .chip[aria-pressed="true"],
+  .chip-toggle:has(input:checked) {
+    background: var(--gr-color-selected-bg);
+    border: var(--gr-border-width-thick) solid var(--gr-color-selected-border);
+    padding: 0 calc(var(--gr-chip-padding-x) - 1px);
+  }
+  .chip[aria-pressed="true"] .ck,
+  .chip-toggle:has(input:checked) .ck {
+    display: inline-flex;
+  }
+  .chip-toggle:has(input:focus-visible) {
+    outline: var(--gr-focus-width) solid var(--gr-color-focus-ring);
+    outline-offset: var(--gr-focus-gap);
+  }
+  .chip[aria-disabled="true"] {
+    opacity: var(--gr-opacity-disabled);
+    cursor: not-allowed;
+  }
+  .chips-genres .chip {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+  .chip-more {
+    border-style: dashed;
+    border-color: var(--gr-color-highlight-border);
+    color: var(--gr-color-highlight-text);
+  }
+  .chip-more:hover {
+    background: var(--gr-color-highlight-bg);
+  }
+
+  /* ---------- the live Spirala above the picks (ONB-05) ---------- */
+  .dna-live {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gr-space-2);
+    padding: var(--gr-space-2) 0 var(--gr-space-3);
+    border-radius: var(--gr-radius-sheet);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    background:
+      radial-gradient(ellipse at 50% 42%, #ff586b14, transparent 65%), var(--gr-color-bg-surface);
+  }
+  .dna-live .dna-card {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+  .dna-count {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+    text-align: center;
+    padding: 0 var(--gr-space-3);
+  }
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ---------- "Kako radi" (D-086): the Daily Drop card leads, three compact cards follow ---------- */
+  .how {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .how-card {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--gr-space-3);
+    align-items: center;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-sheet);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .how-card p {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .how-t {
+    font: var(--gr-type-title-3);
+    font-size: var(--gr-font-size-md);
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+  .how-vis {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #ff586b14, #ffcb690a), var(--gr-color-bg-canvas);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    display: grid;
+    place-items: center;
+  }
+  .how-ic {
+    width: 30px;
+    height: 30px;
+    color: var(--gr-color-highlight-text);
+  }
+  .how-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    border-color: #ff586b55;
+    background:
+      linear-gradient(160deg, #ff586b1f, #ffcb690d 55%, transparent 80%), var(--gr-color-bg-surface);
+  }
+  .how-main .how-t {
+    font-size: var(--gr-font-size-lg);
+    margin: 0;
+  }
+  .how-main .how-vis {
+    background: var(--gr-gradient-brand);
+    border-color: transparent;
+  }
+  .how-main .how-vis .how-ic {
+    color: var(--gr-color-text-on-accent);
+  }
+  .how-k-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-4);
+  }
+
+  /* ---------- the reminder step (ONB-08, D-063 (5)) ---------- */
+  .notif {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: var(--gr-space-3);
+    align-items: start;
+    padding: var(--gr-space-3);
+    border-radius: 18px;
+    background: var(--gr-color-bg-high);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    box-shadow: var(--gr-shadow-overlay);
+  }
+  .notif-app {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: var(--gr-color-bg-canvas);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: var(--gr-color-highlight-text);
+  }
+  .notif-app svg {
+    width: 26px;
+    height: 26px;
+  }
+  .notif-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .notif-top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gr-space-2);
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .notif-top b {
+    color: var(--gr-color-text-primary);
+    font-weight: var(--gr-font-weight-semibold);
+  }
+  .notif-t {
+    font: var(--gr-type-label);
+  }
+  .notif-q {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .rift-note {
+    font: var(--gr-type-body-sm);
+    padding-left: var(--gr-space-3);
+    border-left: var(--gr-border-width-thick) solid var(--gr-color-highlight-border);
+  }
+  .rem-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gr-space-2) var(--gr-space-3);
+    flex-wrap: wrap;
+    padding: var(--gr-space-2) var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .rem-time {
+    width: auto;
+    min-width: 6.25rem;
+    text-align: center;
+    font: var(--gr-type-label);
+    font-size: var(--gr-font-size-lg);
+    font-variant-numeric: tabular-nums;
+  }
+  .rem-tz {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-1);
+    min-height: var(--gr-size-target-min);
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .install {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--gr-space-3);
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) dashed var(--gr-color-highlight-border);
+    background: var(--gr-color-highlight-bg);
+  }
+  .install-ic {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--gr-color-bg-canvas);
+    color: var(--gr-color-highlight-text);
+  }
+  .install-ic svg {
+    width: 24px;
+    height: 24px;
+  }
+  .install-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .install-t {
+    font: var(--gr-type-label);
+  }
+  .install-d {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+
+  /* ---------- "Spremno" (ONB-09) ---------- */
+  .facts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gr-space-2);
+    width: 100%;
+    text-align: left;
+    margin: 0;
+  }
+  .facts-grid > div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--gr-space-3);
+    align-items: center;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .facts-grid svg {
+    grid-row: span 2;
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+    color: var(--gr-color-highlight-text);
+  }
+  .facts-grid dt {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .facts-grid dd {
+    font: var(--gr-type-label);
+    margin: 0;
+  }
+
+  /* ---------- the invitation page (PUB-05) inside the onboarding card ---------- */
+  .join-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--gr-space-3);
+  }
+  .join-hero .eyebrow {
+    color: var(--gr-color-highlight-text);
+  }
+  .join-hero .lead {
+    max-width: 22rem;
+  }
+  .join-hero .inv-cur {
+    width: 100%;
+  }
+  .readonly-field .input[readonly] {
+    color: var(--gr-color-text-secondary);
+    background: var(--gr-color-bg-surface);
+  }
+}

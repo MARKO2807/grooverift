@@ -37,7 +37,11 @@ export const invitationStatus = pgEnum("invitation_status", [
   "revoked",
 ]);
 
-/** PUB-05: an invite is bound to one normalised email (R-08, J1 E4); only the token's hash is stored. */
+/**
+ * PUB-05: an invite is bound to one normalised email (R-08, J1 E4); only the token's hash is stored. Step 5.4
+ * (review L11): the email is stored trimmed and lower-case (check) and at most one invite per email is open
+ * (partial unique index on status = 'sent').
+ */
 export const invitation = pgTable(
   "invitation",
   {
@@ -46,13 +50,23 @@ export const invitation = pgTable(
     tokenHash: text("token_hash").notNull().unique(),
     invitedBy: userRefNull("invited_by"),
     status: invitationStatus("status").notNull().default("sent"),
+    /** The language of the invitation email; the first suggestion for the interface language (J1 E13). */
+    locale: text("locale").notNull().default("hr"),
     expiresAt: at("expires_at").notNull(),
     acceptedUserId: userRefNull("accepted_user_id"),
     acceptedAt: at("accepted_at"),
     revokedAt: at("revoked_at"),
     createdAt: createdAt(),
   },
-  (t) => [index("invitation_email_idx").on(t.email), index("invitation_status_idx").on(t.status)],
+  (t) => [
+    index("invitation_email_idx").on(t.email),
+    index("invitation_status_idx").on(t.status),
+    uniqueIndex("invitation_open_email_uq")
+      .on(t.email)
+      .where(sql`${t.status} = 'sent'`),
+    check("invitation_email_normalised", sql`${t.email} = lower(btrim(${t.email}))`),
+    check("invitation_locale", sql`${t.locale} in ('hr', 'en')`),
+  ],
 );
 
 /** D-069, U-04: an old username stays reserved for its former owner for 30 days and shows "not available". */

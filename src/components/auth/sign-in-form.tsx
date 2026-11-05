@@ -11,12 +11,10 @@ import { ErrorSummary, SubmitButton, useFormErrorFocus } from "@/components/ui/f
 export function SignInForm({
   returnTo,
   googleEnabled,
-  signUpOpen,
   notice,
 }: {
   returnTo: string;
   googleEnabled: boolean;
-  signUpOpen: boolean;
   notice?: "reset" | "verified";
 }) {
   const t = useTranslations("auth.signIn");
@@ -79,14 +77,7 @@ export function SignInForm({
           </form>
         </>
       ) : null}
-      {signUpOpen ? (
-        <p className="fine">
-          {t("noAccount")}{" "}
-          <Link href="/sign-up" className="link">
-            {t("signUp")}
-          </Link>
-        </p>
-      ) : null}
+      <p className="fine">{t("noAccount")}</p>
     </>
   );
 }

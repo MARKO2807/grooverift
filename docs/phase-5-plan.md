@@ -10,7 +10,7 @@ _Drafted 2026-11-05 (session 24) after Phase 4 was accepted (D-091). **Status: A
 | 5.1 App shell and public pages | ✅ session 25: shell (tab bar, rail, columns, large text, motion), Spirala and invite current on canvas (D-094), PUB-01/10/11/12, SYS-01–05; 80-view screenshot pass, axe, no-store and 404 tests green |
 | 5.2 Data model and data-access layer ⛳ | ✅ built session 25 (D-095): 35 tables, migrations 0002/0003 with tested down files, `src/lib/data` loaders and writes through the policy, rate limiter, notices stored; independent review fixed (`docs/security/review-5.2-data-layer.md`); owner review open |
 | 5.3 Catalogue and Music DNA | 🔶 **5.3a done** session 26 (D-096): genre table seeded from the CC0 list (2,210, families reviewed), Music DNA editor `/me/dna`, audience sheet, the Spirala on the profile from the member's genres; **5.3b** (artist lookup, typeahead, CAT-01) waits for A4 |
-| 5.4 Invitations and onboarding ⛳ | ⏳ |
+| 5.4 Invitations and onboarding ⛳ | ✅ built session 27 (D-097): invitations only (the `sign_up` flag retired), ADM-03 at `/admin/invites`, `/invite/<token>` → httpOnly cookie → `/join` (U-05), ONB-01–09 on the onb card with progress and resume (J1 E1–E14 as far as the alpha allows; Google E4 waits for A7), JO6 (no verification mail), review L11 closed; db and e2e tests green; **owner walks the flow** |
 | 5.5 Profiles, follow and people search | ⏳ |
 | 5.6 Daily Drop editorial ⛳ | ⏳ |
 | 5.7 Daily Drop for members ⛳ | ⏳ |

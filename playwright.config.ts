@@ -6,7 +6,9 @@ export default defineConfig({
   testDir: "./tests/e2e",
   globalSetup: "./tests/e2e/global-setup.ts",
   fullyParallel: true,
-  timeout: 60_000, // the dev server compiles routes on first use
+  // The dev server compiles routes on first use, and every test that needs a member walks the whole onboarding
+  // (step 5.4) before its own steps; two workers share one dev server.
+  timeout: 120_000,
   expect: { timeout: 10_000 },
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

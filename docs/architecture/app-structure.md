@@ -28,7 +28,10 @@ src/
   app/[locale]/not-found.tsx, error.tsx, app/global-error.tsx      SYS-01 (one page, 404), SYS-02
   app/[locale]/[...rest], u/[username], drop/[date], p/[id]        404 until their steps (5.5, 5.7, B1)
   app/[locale]/specimen           dev and e2e only (E2E_SPECIMENS=1): the Spirala with fictional picks
-  app/[locale]/(auth)/            sign-in, sign-in/second-step, sign-up, check-email, reset, reset/sent, reset/new, verified
+  app/[locale]/(auth)/            sign-in, sign-in/second-step, check-email, reset, reset/sent, reset/new, verified
+  app/[locale]/(auth)/join/       PUB-05 and onboarding (step 5.4): /join (invite, E1, E3), age, minor, language, account, username,
+                                  reading, visibility, dna, dna-audience, how, reminder (push flag), done
+  app/[locale]/invite/[token]/route.ts   the emailed link: token → httpOnly cookie → 303 /join (U-05); consumes nothing
   app/[locale]/(app)/home, hub, activity, me   the four tabs (placeholders in the real shell until 5.5–5.8)
   app/[locale]/(app)/settings, settings/help   minimal index and help (5.10 builds them out)
   app/[locale]/(app)/settings/    security (password, two-factor, devices), account (email)
@@ -59,12 +62,21 @@ src/
   lib/data/answers.ts             createAnswer (one per member per question), deleteOwnAnswer, visibleAnswers
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)
   lib/data/notices.ts             DSA notice storage
+  lib/data/invitations.ts         createInvitation (one open per normalised email), invitationByToken (usable or not, no reason),
+                                  invitationMatches (the auth hooks), acceptInvitation (once, idempotent per member), revoke, list
+  lib/data/onboarding.ts          onboardingState (the pointer), createOnboardingProfile, visibility, reading languages, DNA
+                                  audience, reminder, finishOnboarding; usernameSuggestions
+  lib/onboarding/                 steps.ts (pure order, progress, resume rule), constants.ts, cookies.ts (gr_invite, gr_join_adult),
+                                  page.ts (stepPage: who may open a step), actions.ts ("use server"), username.ts (reserved names),
+                                  invite-mail.ts (the HR/EN invitation mail)
+  components/onboarding/          the step forms (account, username with the live check, reading, visibility, dna-picker,
+                                  dna-audience, reminder, choice-form)
   lib/http/client-ip.ts           client IP from IP_HEADERS
   lib/db/migrate.ts, seed.ts      migrations; fictional seed (refuses production)
   lib/auth/auth.ts                Better Auth configuration (see below)
   lib/auth/actions.ts             "use server": every credential form posts here
   lib/auth/session.ts             getSession (cached per request), requireSession, requireRole (role AND second factor for staff), staffGate for pages
-  lib/auth/hooks.ts               the one before/after middleware pair: password policy, sign-up gate + 18+, locale, closed admin endpoints + second factor + audit, lockout
+  lib/auth/hooks.ts               the one before/after middleware pair: password policy, sign-up only with the invitation cookie for that address + 18+, locale, closed admin endpoints + second factor + audit, lockout
   lib/auth/constants.ts           SETUP_DONE_COOKIE and the signed recovery-code marker
   components/admin/gate.tsx       adminPageGate: every admin page runs it (a layout check alone is not a guard)
   components/focus-on-navigate.tsx  navigation focuses the new page's h1
@@ -77,7 +89,8 @@ src/
   lib/authz/policy.ts             THE policy module (visibility matrix v0.3); pure, tested row by row
   lib/audit/index.ts              append-only writer; redacts credential-like keys; keyed IP hash, never a raw IP
   lib/flags/index.ts              on | off | paused (SYS-04), audience by role or user id, audited writes
-  lib/admin/actions.ts            setRole, setFlag (admin only, re-checked server-side)
+  lib/admin/actions.ts            setRole, setFlag, createInvite (50/day, mails the link), revokeInvite (admin only, re-checked server-side)
+  lib/auth/member-page.ts         memberPage: signed-in pages; a member who has not finished onboarding is sent to their next step
   worker.ts                       pg-boss: auth.throttle.prune daily (Phase 5 adds the Daily Drop job)
 tests/unit/                       Vitest (policy 32, password, recovery codes, i18n)
 tests/db/                         Vitest against the database (lockout, audit trigger, flags, worker, data layer and invariants, migrations up/down)
@@ -91,7 +104,7 @@ scripts/spirala-perf.mjs          Spirala frame times with the CPU throttled
 1. **Authorization is server-side and in one place.** Pages and actions call `getSession`/`requireSession`/`requireRole`; object decisions go through `src/lib/authz`. The proxy only routes locales. Staff roles need a second factor (`requireRole`). **Product tables are read and written only in `src/lib/data`** (ESLint `no-restricted-imports` outside it), which builds the policy facts and returns one "not-available" shape for every hidden reason.
 2. **Credential forms are real `<form>` elements** posting to server actions (`useActionState`); errors come back as message keys, the typed values stay, focus moves to the error notice.
 3. **Sessions:** 30 days, refreshed daily, `freshAge` 15 min for sensitive endpoints, **no cookie cache** (a revoked session stops at once). Better Auth re-issues the session after a password change and after two-factor setup, so those actions end with a redirect (the page must load with the new cookie).
-4. **Email:** verification required before sign-in; reset links 30 min single use; the email change is confirmed from the current address first (`sendChangeEmailConfirmation`), then the new address verifies. Production refuses to start without a transport (A7).
+4. **Email:** verification required before sign-in, except that an account made from an email-bound invitation is verified at once (JO6, step 5.4) and gets no verification mail; reset links 30 min single use; the email change is confirmed from the current address first (`sendChangeEmailConfirmation`), then the new address verifies. Production refuses to start without a transport (A7).
 5. **Audit:** sign-in failures and locks, sessions created, users created, password reset/changed, two-factor enabled/disabled/codes regenerated, role changes, flag changes, breach-check skips. `audit_log` rejects UPDATE/DELETE/TRUNCATE (trigger).
 6. **Personal data:** the audit log stores a keyed hash of the IP and a trimmed user agent; `sign_in_throttle` keys are hashes; the devices list shows a derived label, never the raw user agent.
 7. **Headers:** CSP with a per-request nonce (`script-src 'self' 'nonce-…' 'strict-dynamic'`; `form-action` allows Google for sign-in), `frame-ancestors 'none'`, nosniff, referrer policy, COOP, permissions policy, HSTS in production. Signed-in pages are dynamic (`no-store`).
@@ -99,7 +112,7 @@ scripts/spirala-perf.mjs          Spirala frame times with the CPU throttled
 
 ## Running locally
 
-See `README.md` (Setup). Seeded members (all fictional, `@example.test`): ana, luka, mia (members), editor, mod, admin; password `Prototip-lozinka-1!`. The `sign_up` feature flag opens the sign-up form in development; invites arrive in Phase 5. The e2e suite reads security email from `.mail-outbox.jsonl` (file transport).
+See `README.md` (Setup). Seeded members (all fictional, `@example.test`): ana, luka, mia (members), editor, mod, admin; password `Prototip-lozinka-1!`. There is no open sign-up: a new member needs an invitation (`/admin/invites` as a seeded admin with a second factor, or a row inserted the way `tests/e2e/db.ts` does it); the link is printed by the console mail transport. The e2e suite reads security email from `.mail-outbox.jsonl` (file transport).
 
 ## Known gaps carried into Phase 5 and A7
 

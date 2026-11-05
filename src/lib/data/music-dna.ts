@@ -300,6 +300,38 @@ export async function addDnaGenre(
 }
 
 /**
+ * Onboarding (ONB-05, step 5.4): the member's genre picks written in one go, in the order picked, replacing what the
+ * step saved before (Back and forth keeps earlier answers). Unknown or inactive ids are refused as a whole; the
+ * count must be 0 (nothing kept) or between the minimum and the maximum. Artists are untouched (5.3b).
+ */
+export async function replaceDnaGenres(
+  userId: string,
+  genreIds: readonly string[],
+  locale: Locale,
+): Promise<{ ok: true; dna: MusicDna } | { ok: false; reason: "not-found" | "count" }> {
+  const unique = [...new Set(genreIds)];
+  if (unique.length && (unique.length < GENRE_MIN || unique.length > GENRE_MAX))
+    return { ok: false, reason: "count" };
+  const cat = await catalogue();
+  const rows = unique.map((id) => (UUID.test(id) ? cat.rows.get(id) : undefined));
+  if (rows.some((g) => !g || !g.active)) return { ok: false, reason: "not-found" };
+  await db().transaction(async (tx) => {
+    await lockMember(tx, userId);
+    await tx
+      .delete(musicDnaEntry)
+      .where(and(eq(musicDnaEntry.userId, userId), eq(musicDnaEntry.kind, "genre")));
+    if (rows.length) {
+      await tx
+        .insert(musicDnaEntry)
+        .values(
+          rows.map((g, position) => ({ userId, kind: "genre" as const, genreId: g!.id, position })),
+        );
+    }
+  });
+  return { ok: true, dna: await readDna(userId, locale) };
+}
+
+/**
  * Removes one of the member's own entries. A genre cannot go below two (D-078 (2): D-046 holds after onboarding).
  * Returns what was removed so the editor can offer Undo.
  */

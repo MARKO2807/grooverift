@@ -5,7 +5,6 @@ import { AuthScreen } from "@/components/auth/auth-screen";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { getSession } from "@/lib/auth/session";
 import { env } from "@/lib/env";
-import { isEnabled } from "@/lib/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -35,14 +34,12 @@ export default async function SignInPage({
       : "/home";
   const e = env();
   const googleEnabled = Boolean(e.GOOGLE_CLIENT_ID && e.GOOGLE_CLIENT_SECRET);
-  const signUpOpen = await isEnabled("sign_up", { role: "member" });
 
   return (
     <AuthScreen title={t("title")}>
       <SignInForm
         returnTo={returnTo}
         googleEnabled={googleEnabled}
-        signUpOpen={signUpOpen}
         notice={sp.reset ? "reset" : sp.verified ? "verified" : undefined}
       />
     </AuthScreen>

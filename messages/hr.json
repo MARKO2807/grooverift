@@ -41,8 +41,7 @@
       "submitting": "Prijavljujem…",
       "or": "ili",
       "google": "Nastavi s Google računom",
-      "noAccount": "Nemaš račun?",
-      "signUp": "Napravi ga",
+      "noAccount": "Nemaš račun? GrooveRift radi samo uz pozivnicu.",
       "returnTo": "Nakon prijave vraćamo te na stranicu koju si otvorio.",
       "resetDone": "Lozinka je promijenjena. Prijavi se novom lozinkom.",
       "verifiedDone": "Adresa je potvrđena. Sad se možeš prijaviti."
@@ -57,21 +56,6 @@
       "submitting": "Provjeravam…",
       "useRecovery": "Nemaš pristup aplikaciji? Upotrijebi kod za oporavak",
       "useTotp": "Natrag na kod iz aplikacije"
-    },
-    "signUp": {
-      "title": "Napravi račun",
-      "lead": "Zatvorena alfa. Pozivnice stižu u sljedećoj fazi; ovaj obrazac radi samo dok je uključen.",
-      "name": "Kako se zoveš?",
-      "nameHelp": "Do tri riječi, kako ih napišeš. Možeš promijeniti kasnije.",
-      "email": "E-pošta",
-      "password": "Lozinka",
-      "passwordHelp": "Najmanje 12 znakova, veliko i malo slovo te poseban znak.",
-      "age18": "Imam 18 ili više godina.",
-      "submit": "Napravi račun",
-      "submitting": "Spremam…",
-      "haveAccount": "Već imaš račun?",
-      "signIn": "Prijavi se",
-      "closed": "Izrada računa trenutačno nije otvorena."
     },
     "checkEmail": {
       "title": "Provjeri e-poštu",
@@ -123,14 +107,25 @@
     "policy": "Lozinci treba najmanje 12 znakova, veliko i malo slovo te poseban znak.",
     "emailTaken": "S ovom adresom već postoji račun. Prijavi se ili zatraži novu lozinku.",
     "emailInvalid": "Upiši ispravnu adresu e-pošte.",
-    "nameRequired": "Upiši kako se zoveš.",
-    "age18": "GrooveRift je za punoljetne. Potvrdi da imaš 18 ili više godina.",
     "linkInvalid": "Ova poveznica više ne vrijedi. Zatraži novu.",
     "badCode": "Kod nije točan. Provjeri pa pokušaj ponovno.",
     "freshSession": "Za ovu radnju prijavi se ponovno.",
     "required": "Ovo polje je obavezno.",
     "wrongPassword": "Lozinka nije točna.",
-    "signUpClosed": "Izrada računa trenutačno nije otvorena."
+    "inviteInvalid": "Pozivnica se ne može iskoristiti. Zatraži novu od osobe koja te pozvala.",
+    "accountExists": "S ovom adresom već imaš račun.",
+    "usernameTaken": "Ovo korisničko ime nije dostupno.",
+    "usernameInvalid": "Korisničko ime ima 3 do 30 znakova: mala slova, brojke i donja crta.",
+    "displayNameInvalid": "Ime za prikaz ima do tri riječi i najviše 40 znakova.",
+    "chooseAge": "Odaberi jedan odgovor.",
+    "chooseVisibility": "Odaberi tko može vidjeti tvoj profil.",
+    "chooseAudience": "Odaberi tko vidi tvoj Music DNA.",
+    "dnaCount": "Odaberi barem dva žanra ili preskoči ovaj korak.",
+    "timeZoneInvalid": "Vremensku zonu nismo prepoznali. Pokušaj ponovno.",
+    "notOnboarding": "Ovaj korak više nije dostupan.",
+    "inviteMember": "Ta adresa već ima račun.",
+    "inviteOpen": "Za tu adresu već postoji otvorena pozivnica. Opozovi je pa pošalji novu.",
+    "mailFailed": "Poruka nije poslana, pa pozivnica nije stvorena. Pokušaj ponovno."
   },
   "settings": {
     "security": {
@@ -193,7 +188,8 @@
       "members": "Članovi",
       "flags": "Značajke",
       "audit": "Dnevnik",
-      "label": "Administracijski izbornik"
+      "label": "Administracijski izbornik",
+      "invites": "Pozivnice"
     },
     "overview": {
       "role": "Tvoja uloga: {role}",
@@ -245,6 +241,30 @@
       "role": "Ova stranica je za osoblje.",
       "twoFactor": "Osoblje mora imati uključenu dvostruku provjeru. Uključi je u postavkama sigurnosti.",
       "toSettings": "Na postavke sigurnosti"
+    },
+    "invites": {
+      "title": "Pozivnice",
+      "lead": "Jedna pozivnica po adresi, vrijedi {days} dana. Poveznica odlazi samo e-poštom; račun može otvoriti samo ta adresa.",
+      "email": "E-pošta osobe koju pozivaš",
+      "language": "Jezik poruke",
+      "send": "Pošalji pozivnicu",
+      "sending": "Šaljem…",
+      "sent": "Pozivnica je poslana.",
+      "status": {
+        "sent": "Poslana",
+        "accepted": "Prihvaćena",
+        "expired": "Istekla",
+        "revoked": "Opozvana"
+      },
+      "invitedBy": "Pozvao/la",
+      "created": "Poslano",
+      "expires": "Vrijedi do",
+      "acceptedOn": "Prihvaćena {date}",
+      "actions": "Radnje",
+      "revoke": "Opozovi",
+      "revoked": "Pozivnica je opozvana.",
+      "none": "Još nema pozivnica.",
+      "statusHeading": "Status"
     }
   },
   "roles": {
@@ -490,6 +510,211 @@
       "notAllowed": "Ovaj račun trenutačno ne može mijenjati Music DNA.",
       "paused": "Music DNA je trenutačno pauziran.",
       "generic": "Promjena nije spremljena."
+    }
+  },
+  "join": {
+    "progress": "Korak {n} od {total}",
+    "invite": {
+      "eyebrow": "Pozivnica",
+      "title": "Imaš pozivnicu za GrooveRift",
+      "tagline": "Where musical worlds collide.",
+      "lead": "Svaki dan jedno pitanje za sve. Otkrij svoj Music DNA, raspravljaj o glazbi i poveži se s ljudima različitih ukusa.",
+      "alphaNote": "Zatvorena alfa: neke stvari još nedostaju i mogu se promijeniti.",
+      "moreAlpha": "Više o alfi",
+      "pwa": "<brand></brand> je web-aplikacija (PWA). Verzije za iOS i Android možda stignu kasnije.",
+      "install": "Dodaj app na početni zaslon: otvara se kao aplikacija, uz podsjetnike.",
+      "accept": "Prihvati pozivnicu",
+      "validFor": "Pozivnica vrijedi za {email}.",
+      "badTitle": "Pozivnica se ne može iskoristiti",
+      "badLead": "Zatraži novu od osobe koja te pozvala.",
+      "toLanding": "Na početnu",
+      "signedSameTitle": "Već imaš račun",
+      "signedSameLead": "Pozivnica je za {email}, a s tom adresom već imaš račun i u njemu si. Ništa ne trebaš napraviti.",
+      "signedOtherTitle": "Pozivnica je za novu osobu",
+      "signedOtherLead": "Trenutačno si u računu @{username}. Da prihvatiš pozivnicu za drugi račun, prvo se odjavi. Pozivnica ostaje valjana.",
+      "signedNote": "Pozivnica se ne troši dok je ne prihvatiš.",
+      "toHome": "Na početnu",
+      "stay": "Ostani u ovom računu",
+      "signOut": "Odjavi se"
+    },
+    "age": {
+      "title": "Imaš li 18 ili više godina?",
+      "lead": "<brand></brand> je zajednica punoljetnih ljubitelja glazbe. Ne tražimo datum rođenja, samo tvoj odgovor.",
+      "legend": "Odaberi što vrijedi za tebe.",
+      "adult": "Da, imam 18 ili više",
+      "minor": "Ne, imam manje od 18",
+      "next": "Nastavi"
+    },
+    "minor": {
+      "title": "GrooveRift je zasad samo za punoljetne",
+      "lead": "Hvala na iskrenom odgovoru. Ništa nismo spremili, a pozivnica je ostala netaknuta.",
+      "mistake": "Ako je odgovor bio greška, vrati se korak natrag.",
+      "rules": "Pravila zajednice",
+      "back": "Natrag"
+    },
+    "language": {
+      "title": "Odaberi jezik",
+      "leadEn": "Choose your language",
+      "legend": "Jezik sučelja",
+      "fine": "Možeš ga promijeniti bilo kad u postavkama.",
+      "next": "Nastavi"
+    },
+    "account": {
+      "title": "Napravi račun",
+      "email": "E-pošta",
+      "emailHelp": "Pozivnica je vezana uz ovu adresu.",
+      "password": "Lozinka",
+      "passwordHelp": "Najmanje 12 znakova, veliko i malo slovo te poseban znak.",
+      "submit": "Napravi račun",
+      "submitting": "Spremam…",
+      "or": "ili",
+      "google": "Nastavi s Google računom",
+      "terms": "Nastavkom prihvaćaš <terms>Uvjete korištenja</terms>.",
+      "privacy": "Kako koristimo podatke piše u <privacy>Pravilima privatnosti</privacy>.",
+      "mismatch": "Pozivnica vrijedi za jednu adresu: {email}. Odabrani Google račun ima drugu adresu. Otvori račun lozinkom s adresom iz pozivnice, ili Google računom koji koristi tu adresu. Za drugu adresu treba nova pozivnica.",
+      "signIn": "Prijavi se"
+    },
+    "username": {
+      "title": "Kako se zoveš?",
+      "displayName": "Ime za prikaz",
+      "displayNameHelp": "Tako te drugi vide. Do tri riječi, onako kako ih pišeš.",
+      "username": "Korisničko ime",
+      "usernameHelp": "3 do 30 znakova: mala slova, brojke i donja crta.",
+      "checking": "Provjeravam…",
+      "free": "@{username} je slobodno.",
+      "taken": "Ovo korisničko ime nije dostupno.",
+      "invalid": "Koristi samo mala slova, brojke i donju crtu, 3 do 30 znakova.",
+      "suggestions": "Slobodna su, na primjer:",
+      "next": "Nastavi",
+      "submitting": "Spremam…"
+    },
+    "reading": {
+      "title": "Na kojim jezicima rado čitaš odgovore?",
+      "legend": "Jezici čitanja",
+      "optional": "Neobavezno.",
+      "help": "Takve odgovore češće vidiš u poretku „Za tebe”. Ništa se ne skriva.",
+      "next": "Nastavi",
+      "submitting": "Spremam…"
+    },
+    "visibility": {
+      "title": "Tko vidi tvoj profil?",
+      "lead": "Odaberi jedno. Možeš promijeniti bilo kad.",
+      "legend": "Vidljivost profila",
+      "public": "Javno",
+      "private": "Privatno",
+      "publicLine": "Profil, Music DNA i povijest odgovora vide svi članovi. Pojavljuješ se u Otkrivanju i kompatibilnosti. Neprijavljeni vide ime, avatar i bio.",
+      "privateLine": "Profil, Music DNA i povijest odgovora vide samo pratitelji koje odobriš. Ne pojavljuješ se u Otkrivanju. Neprijavljeni ne vide ništa.",
+      "same": "U oba slučaja odgovore i komentare vide svi članovi, a popis pratitelja samo pratitelji.",
+      "compare": "Usporedi sve razlike",
+      "row": {
+        "profile": "Profil i Music DNA",
+        "profilePublic": "Svi članovi",
+        "profilePrivate": "Samo pratitelji",
+        "history": "Povijest odgovora",
+        "historyPublic": "Svi članovi",
+        "historyPrivate": "Samo pratitelji",
+        "answers": "Odgovori i komentari",
+        "answersPublic": "Svi članovi",
+        "answersPrivate": "Svi članovi",
+        "followers": "Popis pratitelja",
+        "followersPublic": "Samo pratitelji",
+        "followersPrivate": "Samo pratitelji",
+        "discover": "Otkrivanje i kompatibilnost",
+        "discoverPublic": "Da",
+        "discoverPrivate": "Ne",
+        "visitors": "Neprijavljeni",
+        "visitorsPublic": "Ime, avatar, bio",
+        "visitorsPrivate": "Ništa"
+      },
+      "fine": "Music DNA možeš dodatno suziti u sljedećim koracima.",
+      "next": "Nastavi",
+      "submitting": "Spremam…"
+    },
+    "dna": {
+      "title": "Što slušaš?",
+      "lead": "Odaberi {min} do {max} žanrova. Od toga nastaje tvoj Music DNA.",
+      "countNone": "Još ništa. Odaberi barem {min} žanra.",
+      "count": "{count, plural, one {# žanr} few {# žanra} other {# žanrova}} od {max}.",
+      "genres": "Žanrovi",
+      "genresOpt": "{min} do {max}",
+      "more": "Još žanrova",
+      "searchLabel": "Traži žanr",
+      "searchHint": "Ima ih još preko 2.000. Upiši naziv, npr. „heavy metal”.",
+      "noResults": "Nema takvog žanra. Pokušaj drugi naziv.",
+      "searchFailed": "Pretraga trenutačno ne radi. Pokušaj ponovno.",
+      "moreResults": "Ovo su najpoznatiji. Nema tvog? Nastavi pisati.",
+      "artists": "Izvođači",
+      "artistsOpt": "neobavezno",
+      "artistsSoon": "Izvođače ćeš moći dodati uskoro, u uređivaču Music DNA.",
+      "skip": "Preskoči",
+      "next": "Nastavi",
+      "submitting": "Spremam…"
+    },
+    "dnaAudience": {
+      "title": "Tko vidi tvoj Music DNA?",
+      "legend": "Odaberi jedno. Neprijavljeni ga nikad ne vide.",
+      "everyone": {
+        "title": "Svi članovi",
+        "desc": "Svi prijavljeni. Koristi se za Otkrivanje i kompatibilnost."
+      },
+      "followers": {
+        "title": "Samo pratitelji",
+        "desc": "Vide ga samo ljudi koji te prate."
+      },
+      "me": {
+        "title": "Samo ja",
+        "desc": "Nitko drugi, ni u kompatibilnosti."
+      },
+      "next": "Nastavi",
+      "submitting": "Spremam…"
+    },
+    "how": {
+      "title": "Kako GrooveRift radi",
+      "dropText": "Svaki dan novo glazbeno pitanje, isto za sve. Podsjetnik stiže u 12:00, a vrijeme možeš promijeniti.",
+      "poll": "Tjedna anketa",
+      "pollText": "Jedno pitanje za sve, svaki tjedan. Rezultate vidiš kad glasaš.",
+      "know": "Znaš li?",
+      "knowText": "Dvaput tjedno otkrivamo priče iza glazbe.",
+      "people": "Ljudi po ukusu",
+      "peopleText": "Music DNA pokazuje s kim dijeliš ukus. Bez postotaka.",
+      "next": "Nastavi"
+    },
+    "reminder": {
+      "title": "Ne propusti Daily Drop",
+      "lead": "Daily Drop je srce zajednice. Jedna obavijest dnevno, kad izađe novo pitanje. Ništa drugo.",
+      "exampleLabel": "Primjer obavijesti: {title}. {question}",
+      "now": "sada",
+      "exampleTitle": "Daily Drop je stigao",
+      "exampleQ": "Koja te pjesma uvijek vrati u neko ljeto?",
+      "note": "Svaki dan jedno pitanje i cijela Rift zajednica na istom mjestu. Podsjetnik te dovede na vrijeme.",
+      "timeLabel": "Podsjetnik u",
+      "zone": "Vrijeme: {zone}",
+      "install": "Drži GrooveRift pri ruci",
+      "installText": "Dodaj ga na početni zaslon pa se otvara kao aplikacija. Na iPhoneu podsjetnici rade tek tada.",
+      "notNow": "Ne sada",
+      "turnOn": "Uključi",
+      "submitting": "Spremam…"
+    },
+    "done": {
+      "title": "Spremno.",
+      "lead": "Sad si dio Rifta. Današnje pitanje te već čeka.",
+      "dnaCaption": "Tvoj Music DNA",
+      "profile": "Profil",
+      "public": "Javni",
+      "private": "Privatni",
+      "genres": "{count, plural, =0 {Bez žanrova} one {# žanr} few {# žanra} other {# žanrova}}",
+      "dnaAudience": "DNA vide",
+      "audience": {
+        "everyone": "Svi članovi",
+        "followers": "Samo pratitelji",
+        "me": "Samo ja",
+        "mutuals": "Povezani"
+      },
+      "reminder": "Podsjetnik",
+      "reminderOn": "Svaki dan u {time}",
+      "reminderOff": "Isključen",
+      "fine": "Sve ovo možeš promijeniti u postavkama.",
+      "home": "Na početnu"
     }
   }
 }

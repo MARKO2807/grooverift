@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { insertInvitation } from "./db";
 import { signIn } from "./helpers";
 
 const BASE = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
@@ -68,7 +69,7 @@ test.describe("caching and session gates", () => {
     expect(await res.text()).toMatch(/^null$|^\s*$/);
   });
 
-  test("the public auth API enforces the password policy, the 18+ confirmation and the sign-up flag", async ({
+  test("the public auth API enforces the password policy, the 18+ confirmation and the invitation", async ({
     request,
   }) => {
     const base = { Origin: BASE, "Content-Type": "application/json" };
@@ -79,14 +80,30 @@ test.describe("caching and session gates", () => {
     });
     expect(weak.status()).toBe(400);
     expect((await weak.json()).code).toBe("PASSWORD_POLICY");
-    const noAge = await request.post("/api/auth/sign-up/email", {
+    // No invitation cookie: refused before anything else is looked at (step 5.4, R-08).
+    const noInvite = await request.post("/api/auth/sign-up/email", {
       headers: base,
+      data: { name: "Api", email, password: "Jaka-Lozinka-2026!", age18: true },
+    });
+    expect(noInvite.status()).toBe(403);
+    expect((await noInvite.json()).code).toBe("INVITE_REQUIRED");
+    // An invitation for another address does not help either.
+    const other = await insertInvitation(`other-${email}`);
+    const wrongAddress = await request.post("/api/auth/sign-up/email", {
+      headers: { ...base, cookie: `gr_invite=${other.token}` },
+      data: { name: "Api", email, password: "Jaka-Lozinka-2026!", age18: true },
+    });
+    expect(wrongAddress.status()).toBe(403);
+    const { token } = await insertInvitation(email);
+    const withInvite = { ...base, cookie: `gr_invite=${token}` };
+    const noAge = await request.post("/api/auth/sign-up/email", {
+      headers: withInvite,
       data: { name: "Api", email, password: "Jaka-Lozinka-2026!" },
     });
     expect(noAge.status()).toBe(400);
     expect((await noAge.json()).code).toBe("AGE_18_REQUIRED");
     const badLocale = await request.post("/api/auth/sign-up/email", {
-      headers: base,
+      headers: withInvite,
       data: { name: "Api", email, password: "Jaka-Lozinka-2026!", age18: true, locale: "../x" },
     });
     expect(badLocale.status()).toBe(400);

@@ -13,7 +13,7 @@ const scratchUrl = (() => {
   u.pathname = `/${scratchName}`;
   return u.toString();
 })();
-const DOWN = ["0003_alpha_constraints", "0002_alpha_model"];
+const DOWN = ["0004_invitations", "0003_alpha_constraints", "0002_alpha_model"];
 
 async function admin<T>(fn: (c: Client) => Promise<T>) {
   const c = new Client({ connectionString: base });
@@ -55,9 +55,9 @@ describe("migrations up and down", () => {
     for (const name of DOWN) {
       await pool.query(readFileSync(`./drizzle/down/${name}.down.sql`, "utf8"));
     }
-    // Forget the reverted migrations in drizzle's journal (the two newest entries).
+    // Forget the reverted migrations in drizzle's journal (the newest entries, one per down file).
     await pool.query(
-      "delete from drizzle.__drizzle_migrations where id in (select id from drizzle.__drizzle_migrations order by created_at desc limit 2)",
+      `delete from drizzle.__drizzle_migrations where id in (select id from drizzle.__drizzle_migrations order by created_at desc limit ${DOWN.length})`,
     );
     const foundation = await tables();
     expect(foundation).not.toContain("profile");

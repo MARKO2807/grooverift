@@ -1,6 +1,7 @@
 import { APIError, createAuthMiddleware, getSessionFromCtx } from "better-auth/api";
 import { audit } from "@/lib/audit";
-import { isEnabled } from "@/lib/flags";
+import { invitationMatches } from "@/lib/data/invitations";
+import { INVITE_COOKIE } from "@/lib/onboarding/constants";
 import { locales } from "@/i18n/routing";
 import { lockoutAfter, lockoutBefore } from "./lockout";
 import { passwordMissing, PASSWORD_MAX } from "./password-policy";
@@ -8,7 +9,8 @@ import { passwordMissing, PASSWORD_MAX } from "./password-policy";
 // Better Auth takes ONE before and ONE after middleware; these compose the project's rules so that
 // the public API routes enforce them too, not only the server actions (security review M1, M4):
 // - D-061 password policy on every endpoint that sets a password
-// - sign-up only while the `sign_up` flag is on and with the 18+ confirmation (D-051)
+// - sign-up only with a usable invitation for that very address (step 5.4, R-08) and with the 18+
+//   confirmation (D-051); the database hook in auth.ts repeats the invitation check for every provider
 // - `locale` limited to the supported locales
 // - Better Auth's admin endpoints need a second factor, and only the ones a screen uses are open;
 //   every admin call is audited
@@ -45,10 +47,18 @@ export const beforeHook = createAuthMiddleware(async (ctx) => {
     }
   }
 
-  // 2. Sign-up gate and the 18+ confirmation.
+  // 2. Sign-up only with the invitation cookie for exactly this address (R-08, J1 E4), and the 18+ confirmation.
   if (ctx.path === "/sign-up/email") {
-    if (!(await isEnabled("sign_up", { role: "member" }))) {
-      throw new APIError("FORBIDDEN", { code: "SIGN_UP_CLOSED", message: "Sign-up is closed." });
+    const email = body(ctx).email;
+    const invite = await invitationMatches(
+      ctx.getCookie(INVITE_COOKIE),
+      typeof email === "string" ? email : "",
+    );
+    if (!invite.usable) {
+      throw new APIError("FORBIDDEN", {
+        code: "INVITE_REQUIRED",
+        message: "An invitation for this address is required.",
+      });
     }
     if (body(ctx).age18 !== true) {
       throw new APIError("BAD_REQUEST", {

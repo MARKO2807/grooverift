@@ -18,6 +18,7 @@ export const LIMITS = {
   invite: { limit: 50, windowSeconds: 86400 }, // per admin
   dna: { limit: 300, windowSeconds: 3600 }, // Music DNA changes per member (step 5.3a)
   genreSearch: { limit: 8, windowSeconds: 1 }, // genre typeahead per member (in-memory list, debounced)
+  username: { limit: 30, windowSeconds: 60 }, // the live username check in onboarding (step 5.4)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

@@ -2,19 +2,25 @@
 // The mapping from the prototype's provisional icons is in docs/design/components.md §7.
 import {
   BellIcon,
+  CalendarDotsIcon,
   CaretDownIcon,
   CaretLeftIcon,
   CaretRightIcon,
   CaretUpIcon,
+  ChartBarHorizontalIcon,
   ChatCenteredTextIcon,
   CheckIcon,
   CheckCircleIcon,
+  ClockIcon,
+  DeviceMobileIcon,
   EnvelopeSimpleIcon,
   EyeIcon,
   EyeSlashIcon,
   GearSixIcon,
+  GlobeHemisphereEastIcon,
   HouseIcon,
   InfoIcon,
+  LightbulbFilamentIcon,
   LightningIcon,
   LockIcon,
   LockSimpleIcon,
@@ -23,6 +29,7 @@ import {
   PauseCircleIcon,
   PencilSimpleIcon,
   PlusIcon,
+  PlusSquareIcon,
   PulseIcon,
   QuestionIcon,
   ShieldCheckIcon,
@@ -71,3 +78,10 @@ export const IconCaretDown = light(CaretDownIcon);
 export const IconPlus = light(PlusIcon);
 export const IconSearch = light(MagnifyingGlassIcon);
 export const IconPencil = light(PencilSimpleIcon);
+export const IconGlobe = light(GlobeHemisphereEastIcon);
+export const IconClock = light(ClockIcon);
+export const IconCalendar = light(CalendarDotsIcon);
+export const IconChart = light(ChartBarHorizontalIcon);
+export const IconBulb = light(LightbulbFilamentIcon);
+export const IconPlusSquare = light(PlusSquareIcon);
+export const IconDevice = light(DeviceMobileIcon);

@@ -6,7 +6,7 @@ import { flagState, isEnabled, setFlag } from "@/lib/flags";
 
 afterAll(() => closeDb());
 
-// Only this test's own key is touched: the seeded flags (sign_up, …) must survive for the e2e suite.
+// Only this test's own key is touched: the seeded flags (music_dna, push, …) must survive for the e2e suite.
 beforeAll(async () => {
   await db().delete(featureFlag).where(eq(featureFlag.key, "thing"));
 });

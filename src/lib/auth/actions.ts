@@ -13,7 +13,6 @@ import { normalizeRecoveryCode } from "./recovery-codes";
 import { audit } from "@/lib/audit";
 import { redirect } from "@/i18n/navigation";
 import { env } from "@/lib/env";
-import { isEnabled } from "@/lib/flags";
 
 // Server actions for the credential forms. Every form is a real <form> that posts here (Phase 3 rule),
 // so Enter, password managers and progressive enhancement work. Errors come back as message keys;
@@ -22,9 +21,9 @@ import { isEnabled } from "@/lib/flags";
 // Message keys returned by these actions (read dynamically by the forms through t(state.error)):
 // i18n-keys: authErrors.generic authErrors.badCredentials authErrors.locked authErrors.lockedReset
 // i18n-keys: authErrors.tooMany authErrors.emailNotVerified authErrors.banned authErrors.compromised
-// i18n-keys: authErrors.policy authErrors.emailTaken authErrors.emailInvalid authErrors.nameRequired
-// i18n-keys: authErrors.age18 authErrors.linkInvalid authErrors.badCode authErrors.freshSession
-// i18n-keys: authErrors.required authErrors.wrongPassword authErrors.signUpClosed
+// i18n-keys: authErrors.policy authErrors.emailTaken authErrors.emailInvalid
+// i18n-keys: authErrors.linkInvalid authErrors.badCode authErrors.freshSession
+// i18n-keys: authErrors.required authErrors.wrongPassword
 export type FormState = {
   error?: string; // message key under "authErrors"
   fieldErrors?: Record<string, string>; // field name → message key under "authErrors"
@@ -172,56 +171,7 @@ export async function secondStepAction(_prev: FormState, form: FormData): Promis
   return { ok: true };
 }
 
-export async function signUpAction(_prev: FormState, form: FormData): Promise<FormState> {
-  const open = await isEnabled("sign_up", { role: "member" });
-  if (!open) return { error: "signUpClosed" };
-  const values = {
-    name: String(form.get("name") ?? ""),
-    email: String(form.get("email") ?? ""),
-  };
-  const schema = z.object({
-    name: z.string().trim().min(1).max(60),
-    email: emailSchema,
-    password: z.string().max(PASSWORD_MAX),
-    age18: z.literal("on"),
-  });
-  const parsed = schema.safeParse({
-    name: form.get("name"),
-    email: form.get("email"),
-    password: form.get("password"),
-    age18: form.get("age18"),
-  });
-  if (!parsed.success) {
-    const fieldErrors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const field = String(issue.path[0] ?? "");
-      if (field === "age18") fieldErrors.age18 = "age18";
-      else if (field === "email") fieldErrors.email = "emailInvalid";
-      else if (field === "name") fieldErrors.name = "nameRequired";
-    }
-    return { fieldErrors, values };
-  }
-  if (passwordMissing(parsed.data.password).length) {
-    return { fieldErrors: { password: "policy" }, values };
-  }
-  const locale = await getLocale();
-  try {
-    const body = {
-      name: parsed.data.name,
-      email: parsed.data.email,
-      password: parsed.data.password,
-      locale,
-      // Read by the before hook (hooks.ts): the 18+ confirmation is enforced on the API too.
-      age18: true,
-      callbackURL: `${env().APP_URL}${locale === "hr" ? "" : `/${locale}`}/verified`,
-    };
-    await auth.api.signUpEmail({ body, headers: await reqHeaders() });
-  } catch (error) {
-    return { ...mapError(error), values };
-  }
-  redirect({ href: { pathname: "/check-email", query: { email: parsed.data.email } }, locale });
-  return { ok: true };
-}
+// Account creation lives in src/lib/onboarding/actions.ts (step 5.4): invitations only, no open sign-up.
 
 export async function requestResetAction(_prev: FormState, form: FormData): Promise<FormState> {
   const parsed = emailSchema.safeParse(form.get("email"));
