@@ -10,7 +10,7 @@ import {
   TwoFactorSection,
   type SessionRow,
 } from "@/components/settings/security-forms";
-import { SETUP_DONE_COOKIE } from "@/lib/auth/constants";
+import { SETUP_DONE_COOKIE, verifySetupMarker } from "@/lib/auth/constants";
 import { auth } from "@/lib/auth/auth";
 import { STAFF_ROLES } from "@/lib/auth/roles";
 import { getSession, roleOf } from "@/lib/auth/session";
@@ -64,16 +64,15 @@ export default async function SecurityPage({
   const f = await getFormatter();
   const list = await auth.api.listSessions({ headers: await headers() });
 
-  // Recovery codes right after setup: only with the one-time marker the verify action set, and
-  // only for the signed-in member's own row (the endpoint is server-only).
+  // Recovery codes right after setup: only with the signed one-time marker the verify action set for
+  // THIS session (constants.ts), and only for the signed-in member's own row (server-only endpoint).
   let setupCodes: string[] | null = null;
-  const jar = await cookies();
+  const marker = (await cookies()).get(SETUP_DONE_COOKIE)?.value;
   if (
     sp.setup === "done" &&
-    jar.get(SETUP_DONE_COOKIE)?.value === "1" &&
-    session!.user.twoFactorEnabled
+    session!.user.twoFactorEnabled &&
+    verifySetupMarker(marker, session!.session.token)
   ) {
-    // (A server component cannot delete the cookie; the "I saved the codes" action does.)
     try {
       const res = await auth.api.viewBackupCodes({ body: { userId: session!.user.id } });
       setupCodes = res.backupCodes;
@@ -81,10 +80,11 @@ export default async function SecurityPage({
       setupCodes = null;
     }
   }
+  // The page only ever sees session ids, never the bearer tokens (security review M2).
   const sessions: SessionRow[] = list
     .map((s) => ({
-      token: s.token,
-      current: s.token === session!.session.token,
+      id: s.id,
+      current: s.id === session!.session.id,
       device: deviceLabel(s.userAgent, t("unknownDevice")),
       lastSeen: f.dateTime(s.updatedAt, { dateStyle: "medium", timeStyle: "short" }),
     }))
@@ -113,7 +113,7 @@ export default async function SecurityPage({
         )}
       </section>
       <section className="form-stack" aria-labelledby="h-sess">
-        <h2 id="h-sess" className="set-t">
+        <h2 id="h-sess" className="set-t" tabIndex={-1}>
           {t("sessions")}
         </h2>
         <SessionsList sessions={sessions} />

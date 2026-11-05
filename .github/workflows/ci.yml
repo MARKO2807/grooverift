@@ -97,6 +97,8 @@ jobs:
       - run: npm run test:e2e
         env:
           CI: true
+          EMAIL_TRANSPORT: file
+          E2E_EMAIL_FILE: "1"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

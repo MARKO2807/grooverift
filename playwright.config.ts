@@ -31,10 +31,11 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       ...process.env,
-      PORT: "3000",
+      PORT: process.env.PORT ?? "3000",
       // Security email goes to a local file so the tests can follow the links.
       EMAIL_TRANSPORT: "file",
       EMAIL_FILE: ".mail-outbox.jsonl",
+      E2E_EMAIL_FILE: "1", // the only way the file transport is accepted in production mode (CI)
     },
   },
 });

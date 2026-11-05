@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { IconCheck, IconEye, IconEyeSlash, IconWarning, IconX } from "./icons";
 import { passwordMissing, type PasswordRule } from "@/lib/auth/password-policy";
@@ -76,7 +76,8 @@ export function FieldError({ id, text }: { id: string; text: string }) {
   );
 }
 
-/** Password field with a "Prikaži / Sakrij" toggle; with `rules`, the D-062 one-line meter for new passwords. */
+/** Password field with a "Prikaži / Sakrij" toggle; with `rules`, the D-062 one-line meter for new passwords.
+ *  The meter's live region is always in the DOM (empty until typing) so its first text is announced. */
 export function PasswordField({
   name,
   label,
@@ -84,12 +85,17 @@ export function PasswordField({
   error,
   autoComplete,
   rules = false,
+  focusOnMount = false,
   className = "",
-}: BaseProps & { rules?: boolean }) {
+}: BaseProps & { rules?: boolean; focusOnMount?: boolean }) {
   const t = useTranslations("fields");
   const id = useId();
   const [shown, setShown] = useState(false);
   const [value, setValue] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (focusOnMount) input.current?.focus();
+  }, [focusOnMount]);
   const missing = rules ? passwordMissing(value) : [];
   const showNeed = rules && value.length > 0;
   const describedBy = [
@@ -113,6 +119,7 @@ export function PasswordField({
       ) : null}
       <div className="input-wrap has-after">
         <input
+          ref={input}
           className="input"
           id={id}
           name={name}
@@ -126,10 +133,10 @@ export function PasswordField({
           aria-describedby={describedBy || undefined}
           aria-invalid={error ? true : undefined}
         />
+        {/* The name changes with the state ("Prikaži lozinku" ↔ "Sakrij lozinku"); no aria-pressed on top. */}
         <button
           type="button"
           className="input-btn"
-          aria-pressed={shown}
           aria-controls={id}
           aria-label={shown ? t("hidePassword") : t("showPassword")}
           onClick={() => setShown((s) => !s)}
@@ -138,12 +145,23 @@ export function PasswordField({
           <span>{shown ? t("hide") : t("show")}</span>
         </button>
       </div>
-      {showNeed ? (
-        <p className={`pw-need${missing.length ? "" : " ok"}`} id={`${id}-need`} aria-live="polite">
-          {missing.length ? <IconX /> : <IconCheck />}
-          <span>
-            {missing.length ? t("pwNeed", { rules: missing.map(ruleName).join(", ") }) : t("pwOk")}
-          </span>
+      {rules ? (
+        <p
+          className={`pw-need${missing.length ? "" : " ok"}`}
+          id={`${id}-need`}
+          aria-live="polite"
+          hidden={!showNeed}
+        >
+          {showNeed ? (
+            <>
+              {missing.length ? <IconX /> : <IconCheck />}
+              <span>
+                {missing.length
+                  ? t("pwNeed", { rules: missing.map(ruleName).join(", ") })
+                  : t("pwOk")}
+              </span>
+            </>
+          ) : null}
         </p>
       ) : null}
       {error ? <FieldError id={`${id}-err`} text={error} /> : null}
@@ -151,7 +169,7 @@ export function PasswordField({
   );
 }
 
-/** One-time or recovery code: spaces and hyphens allowed as typed (WCAG 3.3.8), stripped server-side. */
+/** One-time or recovery code: spaces and hyphens allowed as typed (WCAG 3.3.8), normalised server-side. */
 export function CodeField({
   name,
   label,

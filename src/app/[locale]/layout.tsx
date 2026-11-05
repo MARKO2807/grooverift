@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/toast";
+import { FocusOnNavigate } from "@/components/focus-on-navigate";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -67,7 +68,10 @@ export default async function LocaleLayout({
           {t("skipToContent")}
         </a>
         <NextIntlClientProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <FocusOnNavigate />
+            {children}
+          </ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -41,3 +41,21 @@ export async function requireRole(...roles: Role[]): Promise<Session> {
     throw new Forbidden("TWO_FACTOR_REQUIRED");
   return session;
 }
+
+export type StaffGate =
+  | { ok: true; session: Session; role: Role }
+  | { ok: false; reason: "UNAUTHENTICATED" | "ROLE" | "TWO_FACTOR_REQUIRED" };
+
+/** The same gate for PAGES: every admin page calls this itself. Next.js may render a page without
+ *  its layout (the client-supplied router state decides), so a layout check alone is not a guard. */
+export async function staffGate(...roles: Role[]): Promise<StaffGate> {
+  try {
+    const session = await requireRole(...roles);
+    return { ok: true, session, role: roleOf(session) };
+  } catch (error) {
+    if (error instanceof Unauthenticated) return { ok: false, reason: "UNAUTHENTICATED" };
+    if (error instanceof Forbidden)
+      return { ok: false, reason: error.reason as "ROLE" | "TWO_FACTOR_REQUIRED" };
+    throw error;
+  }
+}

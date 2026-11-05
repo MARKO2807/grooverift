@@ -30,7 +30,7 @@ export async function AppShell({
         <LocaleSwitch />
       </header>
       <main id="main" tabIndex={-1} className="screen-onb">
-        <h1>{title}</h1>
+        <h1 tabIndex={-1}>{title}</h1>
         {children}
       </main>
     </>

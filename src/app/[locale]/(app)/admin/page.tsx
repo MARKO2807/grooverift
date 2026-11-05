@@ -2,12 +2,18 @@ import { count } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db/client";
 import { auditLog, featureFlag, user } from "@/lib/db/schema";
-import { getSession, roleOf } from "@/lib/auth/session";
+import { adminPageGate } from "@/components/admin/gate";
 
-export default async function AdminOverviewPage() {
+export default async function AdminOverviewPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const gate = await adminPageGate(locale, "/admin", "editor", "moderator", "admin");
+  if (!gate.ok) return gate.element;
   const t = await getTranslations("admin.overview");
   const tr = await getTranslations("roles");
-  const session = await getSession();
   const d = db();
   const [[members], [flags], [entries]] = await Promise.all([
     d.select({ n: count() }).from(user),
@@ -15,8 +21,9 @@ export default async function AdminOverviewPage() {
     d.select({ n: count() }).from(auditLog),
   ]);
   return (
-    <section className="form-stack" aria-label={t("role", { role: tr(roleOf(session)) })}>
-      <p className="meta">{t("role", { role: tr(roleOf(session)) })}</p>
+    <section className="form-stack">
+      <h2 className="set-t">{t("title")}</h2>
+      <p className="meta">{t("role", { role: tr(gate.role) })}</p>
       <ul className="set-list">
         <li className="set-row">
           <span className="set-txt">

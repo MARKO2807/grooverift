@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { signIn } from "./helpers";
 
+const BASE = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+
 // Security baseline (step 4.10): headers checked by a test, personalised pages never cacheable,
 // the policy and session gates answer the same way on every channel.
 
@@ -66,17 +68,63 @@ test.describe("caching and session gates", () => {
     expect(await res.text()).toMatch(/^null$|^\s*$/);
   });
 
+  test("the public auth API enforces the password policy, the 18+ confirmation and the sign-up flag", async ({
+    request,
+  }) => {
+    const base = { Origin: BASE, "Content-Type": "application/json" };
+    const email = `api-${Date.now()}@example.test`;
+    const weak = await request.post("/api/auth/sign-up/email", {
+      headers: base,
+      data: { name: "Api", email, password: "aaaaaaaaaaaa", age18: true },
+    });
+    expect(weak.status()).toBe(400);
+    expect((await weak.json()).code).toBe("PASSWORD_POLICY");
+    const noAge = await request.post("/api/auth/sign-up/email", {
+      headers: base,
+      data: { name: "Api", email, password: "Jaka-Lozinka-2026!" },
+    });
+    expect(noAge.status()).toBe(400);
+    expect((await noAge.json()).code).toBe("AGE_18_REQUIRED");
+    const badLocale = await request.post("/api/auth/sign-up/email", {
+      headers: base,
+      data: { name: "Api", email, password: "Jaka-Lozinka-2026!", age18: true, locale: "../x" },
+    });
+    expect(badLocale.status()).toBe(400);
+    expect((await badLocale.json()).code).toBe("LOCALE_INVALID");
+  });
+
+  test("unused Better Auth admin endpoints are closed", async ({ request }) => {
+    const headers = { Origin: BASE, "Content-Type": "application/json" };
+    const list = await request.get("/api/auth/admin/list-users?limit=10", { headers });
+    expect(list.status()).toBe(404);
+    const setPw = await request.post("/api/auth/admin/set-user-password", {
+      headers,
+      data: { userId: "11111111-1111-4111-8111-111111111111", newPassword: "Jaka-Lozinka-2026!" },
+    });
+    expect(setPw.status()).toBe(404);
+  });
+
+  test("an empty sign-in names the missing field instead of blaming the credentials", async ({
+    page,
+  }) => {
+    await page.goto("/sign-in");
+    await page.getByRole("button", { name: "Prijavi se" }).click();
+    await expect(page.getByLabel("E-pošta")).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByLabel("E-pošta")).toBeFocused();
+    await expect(page.getByText("Ovo polje je obavezno.").first()).toBeVisible();
+  });
+
   test("open redirects are refused: returnTo must be a same-site path", async ({ page }) => {
     await page.goto("/sign-in?returnTo=https://evil.example/");
     await page.getByLabel("E-pošta").fill("luka@example.test");
     await page.getByLabel("Lozinka", { exact: true }).fill("Prototip-lozinka-1!");
     await page.getByRole("button", { name: "Prijavi se" }).click();
-    await expect(page).toHaveURL(/localhost:3000\/home$/);
+    await expect(page).toHaveURL(/\/home$/);
     await page.getByRole("button", { name: "Odjavi se" }).click();
     await page.goto("/sign-in?returnTo=//evil.example/");
     await page.getByLabel("E-pošta").fill("luka@example.test");
     await page.getByLabel("Lozinka", { exact: true }).fill("Prototip-lozinka-1!");
     await page.getByRole("button", { name: "Prijavi se" }).click();
-    await expect(page).toHaveURL(/localhost:3000\/home$/);
+    await expect(page).toHaveURL(/\/home$/);
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import {
   requestResetAction,
@@ -11,17 +11,24 @@ import {
 import { Link } from "@/i18n/navigation";
 import { PasswordField, TextField } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
-import { SubmitButton } from "@/components/ui/form-status";
+import { ErrorSummary, SubmitButton, useFormErrorFocus } from "@/components/ui/form-status";
 import { IconInfo } from "@/components/ui/icons";
 
 export function RequestResetForm({ email }: { email?: string }) {
   const t = useTranslations("auth.reset");
   const te = useTranslations("authErrors");
   const [state, action] = useActionState<FormState, FormData>(requestResetAction, {});
+  const formRef = useRef<HTMLFormElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  useFormErrorFocus(state, formRef, summaryRef);
   return (
-    <form action={action} className="form-stack" noValidate>
+    <form ref={formRef} action={action} className="form-stack" noValidate>
       <p className="lead">{t("lead")}</p>
-      {state.error ? <Notice kind="error">{te(state.error)}</Notice> : null}
+      {state.error ? (
+        <ErrorSummary summaryRef={summaryRef}>
+          <Notice kind="error">{te(state.error)}</Notice>
+        </ErrorSummary>
+      ) : null}
       <TextField
         name="email"
         label={t("email")}
@@ -44,16 +51,15 @@ export function NewPasswordForm({ token }: { token: string }) {
   const t = useTranslations("auth.reset");
   const te = useTranslations("authErrors");
   const [state, action] = useActionState<FormState, FormData>(resetPasswordAction, {});
-  const errorRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (state.error) errorRef.current?.focus();
-  }, [state]);
+  const formRef = useRef<HTMLFormElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  useFormErrorFocus(state, formRef, summaryRef);
   return (
-    <form action={action} className="form-stack" noValidate>
+    <form ref={formRef} action={action} className="form-stack" noValidate>
       {state.error ? (
-        <div ref={errorRef} tabIndex={-1} className="outline-none">
+        <ErrorSummary summaryRef={summaryRef}>
           <Notice kind="error">{te(state.error)}</Notice>
-        </div>
+        </ErrorSummary>
       ) : null}
       <input type="hidden" name="token" value={token} />
       <PasswordField

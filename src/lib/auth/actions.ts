@@ -7,7 +7,8 @@ import { APIError } from "better-auth/api";
 import QRCode from "qrcode";
 import { auth } from "./auth";
 import { passwordMissing, PASSWORD_MAX } from "./password";
-import { SETUP_DONE_COOKIE } from "./constants";
+import { SETUP_DONE_COOKIE, signSetupMarker } from "./constants";
+import { revalidatePath } from "next/cache";
 import { normalizeRecoveryCode } from "./recovery-codes";
 import { audit } from "@/lib/audit";
 import { redirect } from "@/i18n/navigation";
@@ -102,7 +103,17 @@ export async function signInAction(_prev: FormState, form: FormData): Promise<Fo
     .object({ email: emailSchema, password: z.string().min(1).max(PASSWORD_MAX) })
     .safeParse({ email: form.get("email"), password: form.get("password") });
   const values = { email: String(form.get("email") ?? "") };
-  if (!parsed.success) return { error: "badCredentials", values };
+  if (!parsed.success) {
+    // Name the field that is missing (WCAG 3.3.1) instead of claiming the credentials are wrong.
+    const fieldErrors: Record<string, string> = {};
+    if (!String(form.get("email") ?? "").trim()) fieldErrors.email = "required";
+    else if (parsed.error.issues.some((i) => i.path[0] === "email"))
+      fieldErrors.email = "emailInvalid";
+    if (!String(form.get("password") ?? "")) fieldErrors.password = "required";
+    return Object.keys(fieldErrors).length
+      ? { fieldErrors, values }
+      : { error: "badCredentials", values };
+  }
   const returnTo = safeReturnTo(form.get("returnTo"));
   const locale = await getLocale();
   let twoFactor = false;
@@ -195,16 +206,16 @@ export async function signUpAction(_prev: FormState, form: FormData): Promise<Fo
   }
   const locale = await getLocale();
   try {
-    await auth.api.signUpEmail({
-      body: {
-        name: parsed.data.name,
-        email: parsed.data.email,
-        password: parsed.data.password,
-        locale,
-        callbackURL: `${env().APP_URL}${locale === "hr" ? "" : `/${locale}`}/verified`,
-      },
-      headers: await reqHeaders(),
-    });
+    const body = {
+      name: parsed.data.name,
+      email: parsed.data.email,
+      password: parsed.data.password,
+      locale,
+      // Read by the before hook (hooks.ts): the 18+ confirmation is enforced on the API too.
+      age18: true,
+      callbackURL: `${env().APP_URL}${locale === "hr" ? "" : `/${locale}`}/verified`,
+    };
+    await auth.api.signUpEmail({ body, headers: await reqHeaders() });
   } catch (error) {
     return { ...mapError(error), values };
   }
@@ -293,7 +304,7 @@ export async function signOutAction(): Promise<void> {
 export async function changePasswordAction(_prev: FormState, form: FormData): Promise<FormState> {
   const current = String(form.get("current") ?? "");
   const next = String(form.get("password") ?? "");
-  const revokeOthers = form.get("revokeOthers") !== "off"; // D-072: on by default
+  const revokeOthers = form.get("revokeOthers") === "on"; // D-072: ticked by default, may be unticked (R-17)
   if (!current) return { fieldErrors: { current: "required" } };
   if (passwordMissing(next).length || next.length > PASSWORD_MAX) {
     return { fieldErrors: { password: "policy" } };
@@ -323,21 +334,29 @@ export async function changePasswordAction(_prev: FormState, form: FormData): Pr
 }
 
 export async function revokeSessionAction(_prev: FormState, form: FormData): Promise<FormState> {
-  const token = String(form.get("token") ?? "");
+  // The page only ever sees session ids; the bearer tokens stay on the server (security review M2).
+  const id = String(form.get("id") ?? "");
   const all = form.get("all") === "1";
   try {
     const h = await reqHeaders();
     const session = await auth.api.getSession({ headers: h });
     if (all) await auth.api.revokeOtherSessions({ headers: h });
-    else if (token) await auth.api.revokeSession({ body: { token }, headers: h });
+    else if (id) {
+      const own = (await auth.api.listSessions({ headers: h })).find((s) => s.id === id);
+      if (!own) return { error: "generic" };
+      await auth.api.revokeSession({ body: { token: own.token }, headers: h });
+    }
     await audit({
       actorType: "member",
       actorId: session?.user.id,
       action: all ? "auth.sessions.revoked_others" : "auth.session.revoked",
+      targetType: id ? "session" : null,
+      targetId: id || null,
     });
   } catch (error) {
     return mapError(error);
   }
+  revalidatePath("/[locale]/settings/security", "page");
   return { ok: true, values: { all: all ? "1" : "0" } };
 }
 
@@ -418,7 +437,14 @@ export async function verifyTwoFactorSetupAction(
   // Verification signs the member in again (new session cookie), so the page is reloaded through a
   // redirect. A short-lived marker lets the security page show the recovery codes once; the
   // "I saved the codes" button clears it.
-  (await cookies()).set(SETUP_DONE_COOKIE, "1", {
+  // The marker is signed over the NEW session's token (verifyTOTP re-issued it), so a stale or
+  // attacker-set cookie cannot reveal the codes (security review M6).
+  // The new session cookie was just set by nextCookies on this response; its value is `<token>.<signature>`.
+  const jar = await cookies();
+  const sessionCookie = jar.getAll().find((c) => c.name.endsWith("session_token"))?.value ?? "";
+  const newToken = sessionCookie.split(".")[0] ?? "";
+  if (!newToken) return { error: "freshSession" };
+  jar.set(SETUP_DONE_COOKIE, signSetupMarker(newToken), {
     httpOnly: true,
     sameSite: "lax",
     secure: env().NODE_ENV === "production",

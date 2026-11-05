@@ -263,6 +263,7 @@ describe("§2 content", () => {
   it("reactions (who reacted): own, members; blocked filtered; ANON no", () => {
     expect(canViewContent("reactions", MEMBER, { ...pub, threadVisible: true }).allowed).toBe(true);
     expect(canViewContent("reactions", MEMBER, pub, asBlocked).allowed).toBe(false);
+    expect(canViewContent("reactions", MEMBER, pub).allowed).toBe(false); // thread fact missing → deny
     expect(canViewContent("reactions", ANON, pub).allowed).toBe(false);
     expect(canViewContent("reactions", ADMIN, pub).allowed).toBe(true);
   });
@@ -300,7 +301,10 @@ describe("§2 content", () => {
     expect(
       canViewContent("media", MEMBER, { ...pub, parentPublic: false }, asBlocked).allowed,
     ).toBe(false);
-    expect(canViewContent("media", MEMBER, { ...pub, parentPublic: false }).allowed).toBe(true);
+    expect(
+      canViewContent("media", MEMBER, { ...pub, parentPublic: false, parentVisible: true }).allowed,
+    ).toBe(true);
+    expect(canViewContent("media", MEMBER, { ...pub, parentPublic: false }).allowed).toBe(false); // parent fact missing → deny
     expect(canViewContent("media", MOD, { ...pub, parentPublic: false }).allowed).toBe(false);
     expect(
       canViewContent("media", MOD, { ...pub, parentPublic: false }, noGraph, CASE).allowed,

@@ -169,7 +169,9 @@
       "signOutOthers": "Odjavi sve druge uređaje",
       "revoked": "Uređaj je odjavljen.",
       "revokedAll": "Svi drugi uređaji su odjavljeni.",
-      "unknownDevice": "Nepoznat uređaj"
+      "unknownDevice": "Nepoznat uređaj",
+      "signingOut": "Odjavljujem…",
+      "qrLabel": "QR kod za aplikaciju za autentifikaciju; ključ za ručni unos je ispod"
     },
     "account": {
       "title": "Račun",
@@ -188,13 +190,15 @@
       "overview": "Pregled",
       "members": "Članovi",
       "flags": "Značajke",
-      "audit": "Dnevnik"
+      "audit": "Dnevnik",
+      "label": "Administracijski izbornik"
     },
     "overview": {
       "role": "Tvoja uloga: {role}",
       "members": "Članovi",
       "flags": "Značajke",
-      "audit": "Zapisi u dnevniku"
+      "audit": "Zapisi u dnevniku",
+      "title": "Pregled"
     },
     "members": {
       "title": "Članovi",
@@ -208,7 +212,10 @@
       "active": "Aktivan",
       "setRole": "Promijeni ulogu",
       "roleChanged": "Uloga je promijenjena.",
-      "cannotSelf": "Vlastitu ulogu ne možeš mijenjati."
+      "cannotSelf": "Vlastitu ulogu ne možeš mijenjati.",
+      "yes": "Da",
+      "no": "Ne",
+      "hidden": "skriveno"
     },
     "flags": {
       "title": "Značajke",

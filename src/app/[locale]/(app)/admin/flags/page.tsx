@@ -1,13 +1,21 @@
+import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { listFlags } from "@/lib/flags";
-import { getSession, roleOf } from "@/lib/auth/session";
+import { adminPageGate } from "@/components/admin/gate";
 import { FlagForm } from "@/components/admin/forms";
 
-export default async function AdminFlagsPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.flags");
+  return { title: t("title") };
+}
+
+export default async function AdminFlagsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const gate = await adminPageGate(locale, "/admin/flags", "editor", "moderator", "admin");
+  if (!gate.ok) return gate.element;
   const t = await getTranslations("admin.flags");
   const f = await getFormatter();
-  const session = await getSession();
-  const isAdmin = roleOf(session) === "admin";
+  const isAdmin = gate.role === "admin";
   const flags = await listFlags();
   return (
     <section className="form-stack">

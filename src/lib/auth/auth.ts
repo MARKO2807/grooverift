@@ -4,16 +4,19 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
-import { env } from "@/lib/env";
+import { env, listFromEnv } from "@/lib/env";
 import { audit } from "@/lib/audit";
 import { breachedPasswordCheck } from "./breached";
-import { sendMail } from "./email";
-import { clearAccountLock, lockoutAfter, lockoutBefore } from "./lockout";
+import { sendMailInBackground } from "./email";
+import { clearAccountLock } from "./lockout";
+import { afterHook, beforeHook } from "./hooks";
 import { hashPassword, PASSWORD_MAX, PASSWORD_MIN, verifyPassword } from "./password";
 import { roles, ac } from "./roles";
 import { generateRecoveryCodes } from "./recovery-codes";
 
 const e = env();
+// The end-to-end suite creates many accounts from one address; only its explicit flag relaxes the limits.
+const limitScale = e.E2E_EMAIL_FILE === "1" ? 10 : 1;
 
 export const auth = betterAuth({
   appName: "GrooveRift",
@@ -24,7 +27,7 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: PASSWORD_MIN, // D-061; the composition rules are checked by the sign-up action
+    minPasswordLength: PASSWORD_MIN, // D-061; the composition rules are enforced in hooks.ts on every endpoint
     maxPasswordLength: PASSWORD_MAX,
     requireEmailVerification: true,
     autoSignIn: false,
@@ -32,11 +35,14 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 30, // 30 minutes (RESET_MIN in the prototype)
     revokeSessionsOnPasswordReset: true, // D-072
     sendResetPassword: async ({ user, url }) => {
-      void sendMail({
-        to: user.email,
-        subject: "GrooveRift: nova lozinka / new password",
-        text: `Postavi novu lozinku (vrijedi 30 minuta) / Set a new password (valid 30 minutes):\n${url}\n\nAko ovo nisi zatražio/la, zanemari poruku. / If you did not ask for this, ignore this message.`,
-      });
+      sendMailInBackground(
+        {
+          to: user.email,
+          subject: "GrooveRift: nova lozinka / new password",
+          text: `Postavi novu lozinku (vrijedi 30 minuta) / Set a new password (valid 30 minutes):\n${url}\n\nAko ovo nisi zatražio/la, zanemari poruku. / If you did not ask for this, ignore this message.`,
+        },
+        "reset",
+      );
     },
     onPasswordReset: async ({ user }) => {
       await clearAccountLock(user.email);
@@ -49,11 +55,14 @@ export const auth = betterAuth({
     autoSignInAfterVerification: false,
     expiresIn: 60 * 60 * 24,
     sendVerificationEmail: async ({ user, url }) => {
-      void sendMail({
-        to: user.email,
-        subject: "GrooveRift: potvrdi adresu / confirm your address",
-        text: `Potvrdi svoju e-mail adresu / Confirm your email address:\n${url}\n\nPoveznica vrijedi 24 sata. / The link is valid for 24 hours.`,
-      });
+      sendMailInBackground(
+        {
+          to: user.email,
+          subject: "GrooveRift: potvrdi adresu / confirm your address",
+          text: `Potvrdi svoju e-mail adresu / Confirm your email address:\n${url}\n\nPoveznica vrijedi 24 sata. / The link is valid for 24 hours.`,
+        },
+        "verify",
+      );
     },
   },
 
@@ -70,9 +79,9 @@ export const auth = betterAuth({
 
   account: {
     accountLinking: {
-      // Link a Google identity to an existing email only when Google verified it (S-09).
+      // Link a Google identity to an existing account only when Google verified the email (S-09):
+      // no trustedProviders, so Better Auth insists on emailVerified from Google.
       enabled: true,
-      trustedProviders: ["google"],
       allowDifferentEmails: false,
     },
   },
@@ -88,6 +97,7 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
+      // Validated against the supported locales in hooks.ts.
       locale: { type: "string", required: false, defaultValue: "hr", input: true },
     },
     changeEmail: {
@@ -95,11 +105,14 @@ export const auth = betterAuth({
       // R-16 / D-072: the change is confirmed from the current address first (this message),
       // then Better Auth sends the verification link to the new address (emailVerification above).
       sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
-        void sendMail({
-          to: user.email,
-          subject: "GrooveRift: potvrdi promjenu adrese / confirm the address change",
-          text: `Zatražena je promjena adrese tvog računa na ${newEmail}. Ako si to ti, potvrdi:\n${url}\n\nAko to nisi ti, zanemari poruku i promijeni lozinku. / A change of your account address to ${newEmail} was requested. If that was you, confirm with the link above; if not, ignore this message and change your password.`,
-        });
+        sendMailInBackground(
+          {
+            to: user.email,
+            subject: "GrooveRift: potvrdi promjenu adrese / confirm the address change",
+            text: `Zatražena je promjena adrese tvog računa na ${newEmail}. Ako si to ti, potvrdi:\n${url}\n\nAko to nisi ti, zanemari poruku i promijeni lozinku. / A change of your account address to ${newEmail} was requested. If that was you, confirm with the link above; if not, ignore this message and change your password.`,
+          },
+          "change-email",
+        );
       },
     },
     deleteUser: { enabled: false }, // the deletion workflow is a Phase 5 feature (grace period, D-070)
@@ -111,12 +124,12 @@ export const auth = betterAuth({
     window: 60,
     max: 60,
     customRules: {
-      "/sign-in/email": { window: 60, max: 10 },
-      "/sign-up/email": { window: 600, max: 5 },
-      "/request-password-reset": { window: 600, max: 5 },
-      "/send-verification-email": { window: 600, max: 5 },
-      "/two-factor/verify-totp": { window: 60, max: 5 },
-      "/two-factor/verify-backup-code": { window: 60, max: 5 },
+      "/sign-in/email": { window: 60, max: 10 * limitScale },
+      "/sign-up/email": { window: 600, max: 5 * limitScale },
+      "/request-password-reset": { window: 600, max: 5 * limitScale },
+      "/send-verification-email": { window: 600, max: 5 * limitScale },
+      "/two-factor/verify-totp": { window: 60, max: 5 * limitScale },
+      "/two-factor/verify-backup-code": { window: 60, max: 5 * limitScale },
       "/get-session": false,
     },
   },
@@ -125,15 +138,14 @@ export const auth = betterAuth({
     database: { generateId: "uuid" },
     useSecureCookies: e.NODE_ENV === "production",
     ipAddress: {
-      ipAddressHeaders: e.IP_HEADERS.split(",")
-        .map((h) => h.trim().toLowerCase())
-        .filter(Boolean),
+      ipAddressHeaders: listFromEnv(e.IP_HEADERS),
+      trustedProxies: listFromEnv(e.TRUSTED_PROXIES),
     },
   },
 
   hooks: {
-    before: lockoutBefore,
-    after: lockoutAfter,
+    before: beforeHook,
+    after: afterHook,
   },
 
   databaseHooks: {

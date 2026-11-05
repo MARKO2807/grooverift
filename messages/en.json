@@ -169,7 +169,9 @@
       "signOutOthers": "Sign out all other devices",
       "revoked": "The device was signed out.",
       "revokedAll": "All other devices were signed out.",
-      "unknownDevice": "Unknown device"
+      "unknownDevice": "Unknown device",
+      "signingOut": "Signing out…",
+      "qrLabel": "QR code for your authenticator app; the key for manual entry is below"
     },
     "account": {
       "title": "Account",
@@ -188,13 +190,15 @@
       "overview": "Overview",
       "members": "Members",
       "flags": "Features",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "label": "Admin menu"
     },
     "overview": {
       "role": "Your role: {role}",
       "members": "Members",
       "flags": "Feature flags",
-      "audit": "Audit entries"
+      "audit": "Audit entries",
+      "title": "Overview"
     },
     "members": {
       "title": "Members",
@@ -208,7 +212,10 @@
       "active": "Active",
       "setRole": "Change role",
       "roleChanged": "The role was changed.",
-      "cannotSelf": "You cannot change your own role."
+      "cannotSelf": "You cannot change your own role.",
+      "yes": "Yes",
+      "no": "No",
+      "hidden": "hidden"
     },
     "flags": {
       "title": "Features",

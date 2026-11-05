@@ -19,7 +19,7 @@ export default async function LandingPage() {
         <LocaleSwitch />
       </header>
       <main id="main" tabIndex={-1} className="screen-onb">
-        <h1>{t("title")}</h1>
+        <h1 tabIndex={-1}>{t("title")}</h1>
         <p className="lead">{t("lead")}</p>
         <Link href={session ? "/home" : "/sign-in"} className="btn btn-primary btn-block">
           {t("signIn")}

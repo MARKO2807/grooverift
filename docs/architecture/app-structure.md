@@ -38,7 +38,11 @@ src/
   lib/db/migrate.ts, seed.ts      migrations; fictional seed (refuses production)
   lib/auth/auth.ts                Better Auth configuration (see below)
   lib/auth/actions.ts             "use server": every credential form posts here
-  lib/auth/session.ts             getSession (cached per request), requireSession, requireRole (role AND second factor for staff)
+  lib/auth/session.ts             getSession (cached per request), requireSession, requireRole (role AND second factor for staff), staffGate for pages
+  lib/auth/hooks.ts               the one before/after middleware pair: password policy, sign-up gate + 18+, locale, closed admin endpoints + second factor + audit, lockout
+  lib/auth/constants.ts           SETUP_DONE_COOKIE and the signed recovery-code marker
+  components/admin/gate.tsx       adminPageGate: every admin page runs it (a layout check alone is not a guard)
+  components/focus-on-navigate.tsx  navigation focuses the new page's h1
   lib/auth/lockout.ts             D-077 (pair 5/15 min → 15 min, 1 h, 24 h; account 100 → reset only); hashed keys
   lib/auth/breached.ts            HIBP k-anonymity, FAIL-OPEN with an audit event (D-054)
   lib/auth/password.ts            Argon2id (R-14); password-policy.ts is the isomorphic D-061 policy

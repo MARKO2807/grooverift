@@ -19,9 +19,9 @@ _Last updated: 2026-11-05 (session 22: **Phase 4 Foundation built, steps 4.0–4
 | 4.9 Audit log, flags, admin shell | ✅ append-only audit log, flags with `paused`, admin shell gated by role + second factor |
 | 4.10 Security baseline | ✅ nonce CSP, headers, rate limits, audit in CI; error tracking waits for A7 |
 | 4.11 Staging ⛳ | ⏳ **A7 (OQ-33)**: owner accounts and about $20/month |
-| 4.12 Review and close | ⏳ subagent reviews done in session 22 (findings folded in or listed in HANDOFF); owner review and acceptance |
+| 4.12 Review and close | 🔄 independent security review (3 high, 6 medium, 7 low) and WCAG 2.2 AA review (3 must, 11 should) done in session 22 and **every finding fixed** (HANDOFF "Review findings"); what remains is the owner's review of the screens and the acceptance |
 
-**Checks on 2026-11-05 (session 22, all green):** `npm run check` (format, lint, typecheck, tokens 180 variables / 89 contrast pairs, i18n 197 keys, 40 unit tests), `npm run test:db` 13 tests, `npm run test:e2e` 46 tests on phone and desktop (axe-core clean on every screen), `npm run build`, `npm audit --omit=dev` 0 findings, migrations current. **Not yet run:** GitHub Actions on the hosted runner (needs the owner's push).
+**Checks on 2026-11-05 (session 22, end, all green):** `npm run check` (format, lint, typecheck, tokens 180 variables / 89 contrast pairs, i18n 204 keys, 40 unit tests incl. 32 policy rows), `npm run test:db` 13 tests, `npm run test:e2e` **52 tests** on phone and desktop against the dev server and again against the production server (`npm run build` + `next start`, the CI path), axe-core clean on every screen, `npm audit --omit=dev` 0 findings, migrations current. **Not yet run:** GitHub Actions on the hosted runner (needs the owner's push).
 
 ## Done
 - Phases 0–3 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087).

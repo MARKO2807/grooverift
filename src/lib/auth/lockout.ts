@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { and, eq, lt, or, sql } from "drizzle-orm";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware, getIP } from "better-auth/api";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db/client";
 import { signInThrottle } from "@/lib/db/schema";
@@ -10,7 +10,8 @@ import { env } from "@/lib/env";
 // - per (account, device/IP) pair: 5 failures within 15 minutes lock the pair for 15 min, then 1 h, then 24 h;
 // - per account: 100 consecutive failures in total, then only a password reset unlocks it.
 // Keys are keyed SHA-256 hashes, so the table never stores an email or an IP in clear.
-// Better Auth's own rate limiter (3 requests / 10 s on /sign-in/email) throttles bursts in front of this.
+// Better Auth's own rate limiter (10 requests / minute on /sign-in/email) throttles bursts in front of this.
+// The IP comes from Better Auth's own resolver (advanced.ipAddress), so the limiter and the lockout agree.
 
 export const PAIR_WINDOW_MS = 15 * 60 * 1000;
 export const PAIR_MAX_FAILURES = 5;
@@ -18,6 +19,8 @@ export const PAIR_LOCK_MS = [15 * 60 * 1000, 60 * 60 * 1000, 24 * 60 * 60 * 1000
 export const ACCOUNT_MAX_FAILURES = 100;
 
 const SIGN_IN_PATHS = new Set(["/sign-in/email"]);
+/** Failures that say nothing about the password: not counted (an unverified member retrying, a ban). */
+const NOT_A_GUESS = new Set(["EMAIL_NOT_VERIFIED", "BANNED_USER", "TOO_MANY_REQUESTS"]);
 
 const keyOf = (scope: "pair" | "account", parts: string[]) =>
   createHash("sha256")
@@ -25,20 +28,6 @@ const keyOf = (scope: "pair" | "account", parts: string[]) =>
     .digest("hex");
 
 export const normalizeEmail = (email: string) => email.trim().toLowerCase();
-
-/** The client IP from the configured proxy headers; "local" when none applies. */
-export function clientIp(headers: Headers | undefined): string {
-  if (!headers) return "local";
-  const names = env()
-    .IP_HEADERS.split(",")
-    .map((h) => h.trim().toLowerCase())
-    .filter(Boolean);
-  for (const name of names) {
-    const value = headers.get(name);
-    if (value) return value.split(",")[0]!.trim();
-  }
-  return "local";
-}
 
 export type LockState =
   { locked: true; until: Date; reason: "pair" | "account" } | { locked: false };
@@ -65,7 +54,8 @@ export async function lockState(email: string, ip: string, now = new Date()): Pr
   return { locked: false };
 }
 
-/** Records one failed sign-in; returns the lock that it caused, if any. */
+/** Records one failed sign-in; returns the lock that it caused, if any. Both counters are atomic
+ *  (one upsert each), so parallel guesses cannot be lost (TOCTOU). */
 export async function recordFailure(
   email: string,
   ip: string,
@@ -90,41 +80,39 @@ export async function recordFailure(
       set: { failures: sql`${signInThrottle.failures} + 1`, updatedAt: now },
     });
 
-  // Pair counter: 5 failures within a 15-minute window → lock; the stage grows with each lock.
-  const [pair] = await d.select().from(signInThrottle).where(eq(signInThrottle.key, pairKey));
-  let failures = 1;
-  let stage = pair?.stage ?? 0;
-  let windowStartedAt = now;
-  if (pair) {
-    const inWindow = now.getTime() - pair.windowStartedAt.getTime() < PAIR_WINDOW_MS;
-    failures = inWindow ? pair.failures + 1 : 1;
-    windowStartedAt = inWindow ? pair.windowStartedAt : now;
-  }
-  let lockedUntil: Date | null = null;
-  if (failures >= PAIR_MAX_FAILURES) {
-    const ms = PAIR_LOCK_MS[Math.min(stage, PAIR_LOCK_MS.length - 1)]!;
-    lockedUntil = new Date(now.getTime() + ms);
-    stage += 1;
-    failures = 0;
-    windowStartedAt = now;
-  }
-  await d
+  // Pair counter: one atomic upsert decides window, count, lock and stage in the database.
+  const windowStart = new Date(now.getTime() - PAIR_WINDOW_MS);
+  const [row] = await d
     .insert(signInThrottle)
     .values({
       key: pairKey,
       scope: "pair",
-      failures,
-      stage,
-      windowStartedAt,
-      lockedUntil,
+      failures: 1,
+      stage: 0,
+      windowStartedAt: now,
       updatedAt: now,
     })
     .onConflictDoUpdate({
       target: signInThrottle.key,
-      set: { failures, stage, windowStartedAt, lockedUntil, updatedAt: now },
-    });
+      set: {
+        // Inside the window the count grows; outside it starts again at 1.
+        failures: sql`case when ${signInThrottle.windowStartedAt} > ${windowStart} then ${signInThrottle.failures} + 1 else 1 end`,
+        windowStartedAt: sql`case when ${signInThrottle.windowStartedAt} > ${windowStart} then ${signInThrottle.windowStartedAt} else ${now} end`,
+        updatedAt: now,
+      },
+    })
+    .returning();
+  if (!row) return lockState(email, ip, now);
 
-  if (lockedUntil) return { locked: true, until: lockedUntil, reason: "pair" };
+  if (row.failures >= PAIR_MAX_FAILURES) {
+    const ms = PAIR_LOCK_MS[Math.min(row.stage, PAIR_LOCK_MS.length - 1)]!;
+    const lockedUntil = new Date(now.getTime() + ms);
+    await d
+      .update(signInThrottle)
+      .set({ failures: 0, stage: row.stage + 1, windowStartedAt: now, lockedUntil, updatedAt: now })
+      .where(eq(signInThrottle.key, pairKey));
+    return { locked: true, until: lockedUntil, reason: "pair" };
+  }
   return lockState(email, ip, now);
 }
 
@@ -175,28 +163,42 @@ export const lockoutError = (state: Extract<LockState, { locked: true }>) => {
   );
 };
 
+type HookCtx = Parameters<Parameters<typeof createAuthMiddleware>[0]>[0];
+
+/** The email of a sign-in request, only when it is a plain string (hooks run before validation). */
+function signInEmail(ctx: HookCtx): string | null {
+  if (!SIGN_IN_PATHS.has(ctx.path)) return null;
+  const email = (ctx.body as { email?: unknown } | undefined)?.email;
+  return typeof email === "string" && email.trim() ? email : null;
+}
+
+/** The same client IP Better Auth's limiter uses; "unknown" when no trusted header carries one. */
+export function requestIp(ctx: HookCtx): string {
+  if (!ctx.headers) return "unknown";
+  return getIP(ctx.headers, ctx.context.options) ?? "unknown";
+}
+
 /** Before hook: refuse a sign-in while the pair or the account is locked. */
 export const lockoutBefore = createAuthMiddleware(async (ctx) => {
-  if (!SIGN_IN_PATHS.has(ctx.path)) return;
-  const email = (ctx.body as { email?: string } | undefined)?.email;
+  const email = signInEmail(ctx);
   if (!email) return;
-  const state = await lockState(email, clientIp(ctx.headers));
+  const state = await lockState(email, requestIp(ctx));
   if (state.locked) throw lockoutError(state);
 });
 
 /** After hook: count the failure or clear the counters on success. */
 export const lockoutAfter = createAuthMiddleware(async (ctx) => {
-  if (!SIGN_IN_PATHS.has(ctx.path)) return;
-  const email = (ctx.body as { email?: string } | undefined)?.email;
+  const email = signInEmail(ctx);
   if (!email) return;
-  const ip = clientIp(ctx.headers);
+  const ip = requestIp(ctx);
   const returned = ctx.context.returned;
   const failed = returned instanceof APIError;
   if (!failed) {
     await recordSuccess(email, ip);
     return;
   }
-  if (returned.status === "TOO_MANY_REQUESTS") return; // already locked: do not count again
+  const code = (returned.body as { code?: string } | undefined)?.code ?? "";
+  if (returned.status === "TOO_MANY_REQUESTS" || NOT_A_GUESS.has(code)) return;
   const state = await recordFailure(email, ip);
   await audit({
     actorType: "system",

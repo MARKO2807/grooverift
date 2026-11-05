@@ -23,9 +23,7 @@ export async function AuthScreen({
           <Link href="/" className="no-underline" aria-label="GrooveRift">
             <Wordmark />
           </Link>
-          <span className="pill" aria-label={t("alpha")}>
-            {t("alpha")}
-          </span>
+          <span className="pill">{t("alpha")}</span>
         </div>
         <LocaleSwitch />
       </header>
@@ -37,10 +35,10 @@ export async function AuthScreen({
                 {icon}
               </span>
             ) : null}
-            <h1>{title}</h1>
+            <h1 tabIndex={-1}>{title}</h1>
           </div>
         ) : (
-          <h1>{title}</h1>
+          <h1 tabIndex={-1}>{title}</h1>
         )}
         {children}
       </main>

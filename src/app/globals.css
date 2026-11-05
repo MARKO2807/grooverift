@@ -47,6 +47,14 @@
     outline: var(--gr-focus-width) solid var(--gr-color-focus-ring);
     outline-offset: var(--gr-focus-gap);
   }
+  /* Headings that take focus after navigation get an Amber underline instead of the ring (§3.1). */
+  h1[tabindex="-1"]:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-decoration-color: var(--gr-color-focus-ring);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *,

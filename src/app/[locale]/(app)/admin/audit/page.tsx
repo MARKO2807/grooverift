@@ -1,24 +1,22 @@
+import type { Metadata } from "next";
 import { desc } from "drizzle-orm";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { AppShell } from "@/components/app-shell";
-import { Notice } from "@/components/ui/notice";
 import { db } from "@/lib/db/client";
 import { auditLog } from "@/lib/db/schema";
-import { getSession, roleOf } from "@/lib/auth/session";
+import { adminPageGate } from "@/components/admin/gate";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.audit");
+  return { title: t("title") };
+}
 
 /** Audit log, admin only (visibility matrix: "Audit log: Admin read-only"). */
-export default async function AdminAuditPage() {
+export default async function AdminAuditPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const gate = await adminPageGate(locale, "/admin/audit", "admin");
+  if (!gate.ok) return gate.element;
   const t = await getTranslations("admin.audit");
-  const tf = await getTranslations("admin.forbidden");
   const f = await getFormatter();
-  const session = await getSession();
-  if (roleOf(session) !== "admin") {
-    return (
-      <AppShell title={tf("title")} backHref="/admin">
-        <Notice kind="warning">{tf("role")}</Notice>
-      </AppShell>
-    );
-  }
   const rows = await db().select().from(auditLog).orderBy(desc(auditLog.at)).limit(100);
   return (
     <section className="form-stack">

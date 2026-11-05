@@ -186,7 +186,7 @@ test.describe("sessions and two-factor", () => {
     await page.goto("/settings/security");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sigurnost");
     await expect(page.getByText("Ovaj uređaj")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Odjavi", exact: true })).toHaveCount(1);
+    await expect(page.getByRole("button", { name: /^Odjavi: / })).toHaveCount(1);
     await expectNoAxeViolations(page);
 
     await page.getByLabel("Trenutačna lozinka").fill("Sesija-Lozinka-1!");

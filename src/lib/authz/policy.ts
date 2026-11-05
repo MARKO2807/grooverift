@@ -207,8 +207,10 @@ export type ContentFacts = {
   threadVisible?: boolean;
   /** For polls: the viewer already voted, or the poll is closed. */
   votedOrClosed?: boolean;
-  /** For media: the parent object is public. */
+  /** For media: the parent object is public (a share preview may load it signed out). */
   parentPublic?: boolean;
+  /** For media: the viewer may see the parent object (decided by the caller through this policy). */
+  parentVisible?: boolean;
 };
 
 export function canViewContent(
@@ -250,12 +252,12 @@ export function canViewContent(
   if (rel === "SELF") return allow();
 
   if (kind === "media") {
-    // Follows the parent object; non-public parents use signed, short-lived URLs (caller).
+    // Follows the parent object: the caller decides the parent first and passes the result;
+    // non-public parents are served through signed, short-lived URLs (caller).
     if (facts.parentPublic) return allow();
     if (staff) return throughCase(ctx);
-    return rel === "ANON" || rel === "BLOCKED"
-      ? deny(rel === "ANON" ? "anon" : "blocked")
-      : allow();
+    if (rel === "ANON" || rel === "BLOCKED") return deny(rel === "ANON" ? "anon" : "blocked");
+    return facts.parentVisible === true ? allow() : deny("private");
   }
 
   switch (kind) {
@@ -285,7 +287,8 @@ export function canViewContent(
       if (staff) return allow();
       if (rel === "ANON") return deny("anon");
       if (rel === "BLOCKED") return deny("blocked", "hidden"); // filtered out of "who reacted"
-      return facts.threadVisible === false ? deny("private") : allow();
+      // Default-deny: a caller that forgets the thread fact must not leak "who reacted".
+      return facts.threadVisible === true ? allow() : deny("private");
     }
     default:
       return deny("never");

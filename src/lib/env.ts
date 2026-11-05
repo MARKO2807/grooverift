@@ -6,15 +6,23 @@ const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   APP_URL: z.url().default("http://localhost:3000"),
   DATABASE_URL: z.string().min(1),
-  BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters")
+    .refine((v) => !/^change-me/i.test(v), "BETTER_AUTH_SECRET still holds the placeholder"),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   EMAIL_FROM: z.string().default("GrooveRift <no-reply@localhost>"),
   EMAIL_TRANSPORT: z.enum(["console", "file", "none"]).default("console"),
   EMAIL_FILE: z.string().default(".mail-outbox.jsonl"),
-  // Comma-separated list of request headers that carry the client IP, in order of trust.
-  // Render sets X-Forwarded-For; locally there is no proxy and the header is ignored.
+  // The file transport is for end-to-end tests only; CI and the Playwright config set this flag.
+  E2E_EMAIL_FILE: z.string().optional(),
+  // Comma-separated request headers that carry the client IP, in order of trust (Better Auth
+  // `advanced.ipAddress.ipAddressHeaders`). Empty locally (no proxy); REQUIRED in production, or every
+  // client would share one rate-limit bucket and one lockout pair.
   IP_HEADERS: z.string().default(""),
+  // Proxy addresses that append to X-Forwarded-For (Better Auth `trustedProxies`), comma-separated.
+  TRUSTED_PROXIES: z.string().default(""),
 });
 
 export type Env = z.infer<typeof schema>;
@@ -28,8 +36,38 @@ export function env(): Env {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     throw new Error(`Invalid environment: ${issues}`);
   }
-  cached = parsed.data;
+  const data = parsed.data;
+  // `next build` evaluates the modules with NODE_ENV=production to collect route data; the
+  // production guards apply to the running server, not to the build.
+  const building = process.env.NEXT_PHASE === "phase-production-build";
+  if (data.NODE_ENV === "production" && !building) {
+    // Security email must never be silently dropped (A7): only a real provider, or the test file
+    // transport when the end-to-end suite says so explicitly.
+    const testFile = data.EMAIL_TRANSPORT === "file" && data.E2E_EMAIL_FILE === "1";
+    if (data.EMAIL_TRANSPORT === "console" || (data.EMAIL_TRANSPORT === "file" && !testFile)) {
+      throw new Error(
+        `EMAIL_TRANSPORT=${data.EMAIL_TRANSPORT} is not allowed in production: configure a provider (A7).`,
+      );
+    }
+    if (!data.IP_HEADERS.trim() && data.E2E_EMAIL_FILE !== "1") {
+      throw new Error(
+        "IP_HEADERS must name the client-IP header in production (e.g. x-forwarded-for).",
+      );
+    }
+    if (data.BETTER_AUTH_SECRET.length < 43) {
+      throw new Error(
+        "BETTER_AUTH_SECRET must be at least 43 characters (32 random bytes) in production.",
+      );
+    }
+  }
+  cached = data;
   return cached;
 }
 
 export const isProduction = () => env().NODE_ENV === "production";
+
+export const listFromEnv = (value: string) =>
+  value
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
