@@ -1,10 +1,247 @@
 {
   "app": {
     "description": "GrooveRift: a place for people who live music.",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "alpha": "Alpha",
+    "language": "Language",
+    "back": "Back"
   },
   "home": {
     "title": "Coming soon",
-    "lead": "The app is being built. There is nothing to see here yet."
+    "lead": "The app is being built. There is nothing to see here yet.",
+    "signIn": "Sign in",
+    "signedInAs": "You are signed in as {name}.",
+    "settings": "Settings",
+    "admin": "Admin",
+    "signOut": "Sign out"
+  },
+  "fields": {
+    "show": "Show",
+    "hide": "Hide",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "pwNeed": "The password still needs: {rules}.",
+    "pwOk": "The password meets every rule.",
+    "pwRule": {
+      "len": "12 characters",
+      "up": "an upper-case letter",
+      "low": "a lower-case letter",
+      "sym": "a special character"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "forgot": "Forgot your password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "or": "or",
+      "google": "Continue with Google",
+      "noAccount": "No account yet?",
+      "signUp": "Create one",
+      "returnTo": "After sign-in we take you back to the page you opened.",
+      "resetDone": "Your password was changed. Sign in with the new one.",
+      "verifiedDone": "Your address is confirmed. You can sign in now."
+    },
+    "secondStep": {
+      "title": "One more step",
+      "leadTotp": "Enter the code from your authenticator app.",
+      "leadRecovery": "Enter one of your recovery codes. Each works once.",
+      "code": "Code (6 digits)",
+      "recoveryCode": "Recovery code",
+      "submit": "Confirm",
+      "submitting": "Checking…",
+      "useRecovery": "No access to the app? Use a recovery code",
+      "useTotp": "Back to the app code"
+    },
+    "signUp": {
+      "title": "Create an account",
+      "lead": "Closed alpha. Invitations come in the next phase; this form works only while it is switched on.",
+      "name": "What is your name?",
+      "nameHelp": "Up to three words, written as you type them. You can change it later.",
+      "email": "Email",
+      "password": "Password",
+      "passwordHelp": "At least 12 characters, an upper-case and a lower-case letter and a special character.",
+      "age18": "I am 18 or older.",
+      "submit": "Create account",
+      "submitting": "Saving…",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "closed": "Account creation is not open at the moment."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "lead": "We sent a confirmation link to {email}. It is valid for 24 hours.",
+      "notArrived": "Nothing arrived? Check your spam folder.",
+      "resend": "Send again",
+      "resent": "We sent a new link.",
+      "toSignIn": "To sign-in"
+    },
+    "reset": {
+      "title": "New password",
+      "lead": "Enter the email address of your account. We will send you a link for a new password.",
+      "email": "Email",
+      "submit": "Send the link",
+      "submitting": "Sending…",
+      "backToSignIn": "Back to sign-in",
+      "sentTitle": "Check your email",
+      "sentLead": "If an account with {email} exists, we sent a link. It is valid for 30 minutes and works once.",
+      "sentAgain": "Nothing arrived? Check your spam folder.",
+      "newTitle": "Set a new password",
+      "newPassword": "New password",
+      "newHelp": "At least 12 characters, an upper-case and a lower-case letter and a special character.",
+      "revokeNote": "After the change your other devices will be signed out.",
+      "save": "Save password",
+      "saving": "Saving…"
+    },
+    "verified": {
+      "title": "Address confirmed",
+      "lead": "You can sign in now.",
+      "signIn": "Sign in"
+    },
+    "linkInvalid": {
+      "title": "This link no longer works",
+      "reset": "Links for a new password are valid for 30 minutes and work once.",
+      "verify": "Confirmation links are valid for 24 hours. You can request a new one at sign-in.",
+      "requestNew": "Request a new one",
+      "toSignIn": "To sign-in"
+    }
+  },
+  "authErrors": {
+    "generic": "Something went wrong. Please try again.",
+    "badCredentials": "The email or password is not right. Check and try again.",
+    "locked": "Too many sign-in attempts. Wait {minutes, plural, one {# minute} other {# minutes}} or set a new password.",
+    "lockedReset": "Too many failed sign-ins. Set a new password to continue.",
+    "tooMany": "Too many requests in a short time. Wait a moment and try again.",
+    "emailNotVerified": "The address is not confirmed yet. We sent a new confirmation link.",
+    "banned": "This account is suspended. The statement of reasons was sent by email.",
+    "compromised": "This password has appeared in known data breaches, so attackers try it first. Choose a different one.",
+    "policy": "The password needs at least 12 characters, an upper-case and a lower-case letter and a special character.",
+    "emailTaken": "An account with this address already exists. Sign in or request a new password.",
+    "emailInvalid": "Enter a valid email address.",
+    "nameRequired": "Enter your name.",
+    "age18": "GrooveRift is for adults. Confirm that you are 18 or older.",
+    "linkInvalid": "This link no longer works. Request a new one.",
+    "badCode": "The code is not right. Check and try again.",
+    "freshSession": "Sign in again for this action.",
+    "required": "This field is required.",
+    "wrongPassword": "The password is not right.",
+    "signUpClosed": "Account creation is not open at the moment."
+  },
+  "settings": {
+    "security": {
+      "title": "Security",
+      "password": "Password",
+      "passwordLead": "Change your password. You can sign out your other devices in the same step.",
+      "current": "Current password",
+      "new": "New password",
+      "newHelp": "At least 12 characters, an upper-case and a lower-case letter and a special character.",
+      "revokeOthers": "Sign out all other devices",
+      "change": "Change password",
+      "changing": "Changing…",
+      "changed": "Your password was changed.",
+      "twoFactor": "Two-step verification",
+      "twoFactorOn": "On. We ask for the app code at sign-in.",
+      "twoFactorOff": "Off. We recommend turning it on.",
+      "twoFactorStaff": "Required for editor, moderator and admin accounts.",
+      "enable": "Turn on",
+      "disable": "Turn off",
+      "enterPassword": "Confirm with your password",
+      "scanLead": "Scan the code with an authenticator app (for example Aegis, 2FAS, Google Authenticator) or enter the key by hand.",
+      "manualKey": "Key for manual entry",
+      "enterCode": "Enter the code from the app",
+      "code": "Code (6 digits)",
+      "confirm": "Confirm",
+      "confirming": "Checking…",
+      "codesTitle": "Recovery codes",
+      "codesLead": "Keep them somewhere safe. Each works once and replaces the app code if you lose your phone.",
+      "codesDone": "I saved the codes",
+      "regenerate": "New recovery codes",
+      "regenerateHelp": "The old codes stop working.",
+      "disabled": "Two-step verification is off.",
+      "sessions": "Devices",
+      "sessionsLead": "Where you are signed in. Sign out any device you do not recognise.",
+      "thisDevice": "This device",
+      "lastSeen": "Last: {date}",
+      "signOutDevice": "Sign out",
+      "signOutOthers": "Sign out all other devices",
+      "revoked": "The device was signed out.",
+      "revokedAll": "All other devices were signed out.",
+      "unknownDevice": "Unknown device"
+    },
+    "account": {
+      "title": "Account",
+      "email": "Email",
+      "emailLead": "You confirm the change from your current address, then from the new one.",
+      "newEmail": "New address",
+      "change": "Send the link",
+      "changing": "Sending…",
+      "sent": "We sent a confirmation link to your current address."
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "lead": "Staff tools. Every action is recorded.",
+    "nav": {
+      "overview": "Overview",
+      "members": "Members",
+      "flags": "Features",
+      "audit": "Audit log"
+    },
+    "overview": {
+      "role": "Your role: {role}",
+      "members": "Members",
+      "flags": "Feature flags",
+      "audit": "Audit entries"
+    },
+    "members": {
+      "title": "Members",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "twoFactor": "2FA",
+      "created": "Created",
+      "banned": "Suspended",
+      "active": "Active",
+      "setRole": "Change role",
+      "roleChanged": "The role was changed.",
+      "cannotSelf": "You cannot change your own role."
+    },
+    "flags": {
+      "title": "Features",
+      "key": "Key",
+      "state": "State",
+      "note": "Note",
+      "updated": "Updated",
+      "on": "on",
+      "off": "off",
+      "paused": "paused",
+      "set": "Save",
+      "saved": "Saved."
+    },
+    "audit": {
+      "title": "Audit log",
+      "lead": "Read-only. Entries cannot be changed or deleted.",
+      "at": "Time",
+      "actor": "Who",
+      "action": "Action",
+      "target": "Target",
+      "empty": "No entries yet."
+    },
+    "forbidden": {
+      "title": "No access",
+      "role": "This page is for staff.",
+      "twoFactor": "Staff must have two-step verification on. Turn it on in the security settings.",
+      "toSettings": "To security settings"
+    }
+  },
+  "roles": {
+    "member": "member",
+    "editor": "editor",
+    "moderator": "moderator",
+    "admin": "admin"
   }
 }

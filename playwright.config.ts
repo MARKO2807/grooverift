@@ -5,6 +5,8 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
+  timeout: 60_000, // the dev server compiles routes on first use
+  expect: { timeout: 10_000 },
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
@@ -27,6 +29,12 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: { ...process.env, PORT: "3000" },
+    env: {
+      ...process.env,
+      PORT: "3000",
+      // Security email goes to a local file so the tests can follow the links.
+      EMAIL_TRANSPORT: "file",
+      EMAIL_FILE: ".mail-outbox.jsonl",
+    },
   },
 });

@@ -43,3 +43,7 @@ next-env.d.ts
 *.tsbuildinfo
 .env.local
 
+
+# --- Local mail outbox for the file transport (tests) ---
+.mail-outbox.jsonl
+

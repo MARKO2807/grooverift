@@ -10,7 +10,8 @@ const schema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   EMAIL_FROM: z.string().default("GrooveRift <no-reply@localhost>"),
-  EMAIL_TRANSPORT: z.enum(["console", "none"]).default("console"),
+  EMAIL_TRANSPORT: z.enum(["console", "file", "none"]).default("console"),
+  EMAIL_FILE: z.string().default(".mail-outbox.jsonl"),
   // Comma-separated list of request headers that carry the client IP, in order of trust.
   // Render sets X-Forwarded-For; locally there is no proxy and the header is ignored.
   IP_HEADERS: z.string().default(""),

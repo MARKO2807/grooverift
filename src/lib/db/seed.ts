@@ -24,6 +24,7 @@ export const SEED_FLAGS = [
   { key: "comments", state: "on", note: "Comments on answers" },
   { key: "music_dna", state: "paused", note: "Paused example for SYS-04" },
   { key: "google_sign_in", state: "off", note: "Shown when GOOGLE_CLIENT_ID is set" },
+  { key: "sign_up", state: "on", note: "Open sign-up form (development only; invites in Phase 5)" },
 ] as const;
 
 export async function seed() {

@@ -11,6 +11,7 @@ import { sendMail } from "./email";
 import { clearAccountLock, lockoutAfter, lockoutBefore } from "./lockout";
 import { hashPassword, PASSWORD_MAX, PASSWORD_MIN, verifyPassword } from "./password";
 import { roles, ac } from "./roles";
+import { generateRecoveryCodes } from "./recovery-codes";
 
 const e = env();
 
@@ -80,7 +81,9 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // refresh once a day
     freshAge: 60 * 15, // sensitive actions need a sign-in within 15 minutes
-    cookieCache: { enabled: true, maxAge: 60 * 5 },
+    // No cookie cache: a revoked session must stop working at once (D-072, step 4.6), so every
+    // request reads the session from the database.
+    cookieCache: { enabled: false },
   },
 
   user: {
@@ -163,7 +166,11 @@ export const auth = betterAuth({
     twoFactor({
       issuer: "GrooveRift",
       totpOptions: { digits: 6, period: 30 },
-      backupCodeOptions: { amount: 10, length: 10, storeBackupCodes: "encrypted" },
+      backupCodeOptions: {
+        amount: 10,
+        storeBackupCodes: "encrypted",
+        customBackupCodesGenerate: generateRecoveryCodes,
+      },
       // Second-factor failures also lock (10 in a row → 15 min), on top of D-077 for passwords.
       accountLockout: { enabled: true, maxFailedAttempts: 10, durationSeconds: 15 * 60 },
       // No "remember this device" (D-076): the cookie lives only as long as the challenge.

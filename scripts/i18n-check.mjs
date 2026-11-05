@@ -45,30 +45,37 @@ const walk = (dir) => {
 walk(srcDir);
 
 const used = new Set();
-const NS_RE =
-  /(?:useTranslations|getTranslations|createTranslator)\s*\(\s*(?:\{[^}]*?namespace:\s*)?["'`]([\w.]+)["'`]/g;
-const KEY_RE = /\bt(?:\.(?:rich|markup|raw|has))?\s*\(\s*["'`]([\w.]+)["'`]/g;
+// `const t = useTranslations("ns")`, `const tl = await getTranslations("ns")`,
+// `getTranslations({ locale, namespace: "ns" })`: the variable name is bound to the namespace.
+const BIND_RE =
+  /const\s+(\w+)\s*=\s*(?:await\s+)?(?:useTranslations|getTranslations|createTranslator)\s*\(\s*(?:\{[^}]*?namespace:\s*)?["'`]([\w.]+)["'`]/g;
 const DECL_RE = /i18n-keys:\s*([\w.\s]+)/g;
-const GLOBAL_RE = /\bt\s*\(\s*["'`]([\w.]+)["'`]/g;
 
 for (const file of files) {
   const text = readFileSync(file, "utf8");
-  const namespaces = [...text.matchAll(NS_RE)].map((m) => m[1]);
-  const keys = [...text.matchAll(KEY_RE)].map((m) => m[1]);
   for (const m of text.matchAll(DECL_RE)) for (const k of m[1].trim().split(/\s+/)) used.add(k);
-  if (namespaces.length === 0 && keys.length > 0) {
-    // `t` without a namespace in this file: keys are full paths.
-    for (const m of text.matchAll(GLOBAL_RE)) used.add(m[1]);
-    continue;
+  // One file may bind the same name (usually `t`) to several namespaces in different components;
+  // a key counts as found when it exists under any of them.
+  const bindings = new Map();
+  for (const m of text.matchAll(BIND_RE)) {
+    if (!bindings.has(m[1])) bindings.set(m[1], new Set());
+    bindings.get(m[1]).add(m[2]);
   }
-  for (const key of keys) {
-    const candidates = namespaces.map((ns) => `${ns}.${key}`);
-    const hit = candidates.find((c) => baseKeys.has(c)) ?? (baseKeys.has(key) ? key : undefined);
-    if (hit) used.add(hit);
-    else
-      findings.push(
-        `${relative(root, file)}: key "${key}" not found under ${namespaces.join(", ")}`,
-      );
+  for (const [name, namespaces] of bindings) {
+    const keyRe = new RegExp(
+      `\\b${name}(?:\\.(?:rich|markup|raw|has))?\\s*\\(\\s*["'\`]([\\w.]+)["'\`]`,
+      "g",
+    );
+    for (const m of text.matchAll(keyRe)) {
+      const key = m[1];
+      const hit = [...namespaces].map((ns) => `${ns}.${key}`).find((k) => baseKeys.has(k));
+      if (hit) used.add(hit);
+      else if (baseKeys.has(key)) used.add(key);
+      else
+        findings.push(
+          `${relative(root, file)}: key "${key}" not found under ${[...namespaces].join(", ")}`,
+        );
+    }
   }
 }
 

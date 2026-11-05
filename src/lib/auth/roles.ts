@@ -27,6 +27,7 @@ export const roles = {
   }),
 };
 
+// Role names shown through t(`roles.${role}`): i18n-keys: roles.member roles.editor roles.moderator roles.admin
 export type Role = keyof typeof roles;
 export const ROLES = Object.keys(roles) as Role[];
 export const STAFF_ROLES: Role[] = ["editor", "moderator", "admin"];

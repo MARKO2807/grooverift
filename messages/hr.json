@@ -1,10 +1,247 @@
 {
   "app": {
     "description": "GrooveRift: mjesto za ljude koji žive glazbu.",
-    "skipToContent": "Preskoči na sadržaj"
+    "skipToContent": "Preskoči na sadržaj",
+    "alpha": "Alfa",
+    "language": "Jezik",
+    "back": "Natrag"
   },
   "home": {
     "title": "Uskoro",
-    "lead": "Aplikacija se gradi. Zasad ovdje nema ničega za vidjeti."
+    "lead": "Aplikacija se gradi. Zasad ovdje nema ničega za vidjeti.",
+    "signIn": "Prijavi se",
+    "signedInAs": "Prijavljen si kao {name}.",
+    "settings": "Postavke",
+    "admin": "Administracija",
+    "signOut": "Odjavi se"
+  },
+  "fields": {
+    "show": "Prikaži",
+    "hide": "Sakrij",
+    "showPassword": "Prikaži lozinku",
+    "hidePassword": "Sakrij lozinku",
+    "pwNeed": "Lozinci još treba: {rules}.",
+    "pwOk": "Lozinka zadovoljava sva pravila.",
+    "pwRule": {
+      "len": "12 znakova",
+      "up": "veliko slovo",
+      "low": "malo slovo",
+      "sym": "poseban znak"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Prijava",
+      "email": "E-pošta",
+      "password": "Lozinka",
+      "forgot": "Zaboravljena lozinka?",
+      "submit": "Prijavi se",
+      "submitting": "Prijavljujem…",
+      "or": "ili",
+      "google": "Nastavi s Google računom",
+      "noAccount": "Nemaš račun?",
+      "signUp": "Napravi ga",
+      "returnTo": "Nakon prijave vraćamo te na stranicu koju si otvorio.",
+      "resetDone": "Lozinka je promijenjena. Prijavi se novom lozinkom.",
+      "verifiedDone": "Adresa je potvrđena. Sad se možeš prijaviti."
+    },
+    "secondStep": {
+      "title": "Još jedan korak",
+      "leadTotp": "Upiši kod iz aplikacije za autentifikaciju.",
+      "leadRecovery": "Upiši jedan od kodova za oporavak. Svaki vrijedi jednom.",
+      "code": "Kod (6 znamenki)",
+      "recoveryCode": "Kod za oporavak",
+      "submit": "Potvrdi",
+      "submitting": "Provjeravam…",
+      "useRecovery": "Nemaš pristup aplikaciji? Upotrijebi kod za oporavak",
+      "useTotp": "Natrag na kod iz aplikacije"
+    },
+    "signUp": {
+      "title": "Napravi račun",
+      "lead": "Zatvorena alfa. Pozivnice stižu u sljedećoj fazi; ovaj obrazac radi samo dok je uključen.",
+      "name": "Kako se zoveš?",
+      "nameHelp": "Do tri riječi, kako ih napišeš. Možeš promijeniti kasnije.",
+      "email": "E-pošta",
+      "password": "Lozinka",
+      "passwordHelp": "Najmanje 12 znakova, veliko i malo slovo te poseban znak.",
+      "age18": "Imam 18 ili više godina.",
+      "submit": "Napravi račun",
+      "submitting": "Spremam…",
+      "haveAccount": "Već imaš račun?",
+      "signIn": "Prijavi se",
+      "closed": "Izrada računa trenutačno nije otvorena."
+    },
+    "checkEmail": {
+      "title": "Provjeri e-poštu",
+      "lead": "Na adresu {email} poslali smo poveznicu za potvrdu. Vrijedi 24 sata.",
+      "notArrived": "Nije stigla? Pogledaj neželjenu poštu.",
+      "resend": "Pošalji ponovno",
+      "resent": "Poslali smo novu poveznicu.",
+      "toSignIn": "Na prijavu"
+    },
+    "reset": {
+      "title": "Nova lozinka",
+      "lead": "Upiši adresu e-pošte svog računa. Poslat ćemo ti poveznicu za novu lozinku.",
+      "email": "E-pošta",
+      "submit": "Pošalji poveznicu",
+      "submitting": "Šaljem…",
+      "backToSignIn": "Natrag na prijavu",
+      "sentTitle": "Provjeri e-poštu",
+      "sentLead": "Ako račun s adresom {email} postoji, poslali smo poveznicu. Vrijedi 30 minuta i koristi se jednom.",
+      "sentAgain": "Nije stigla? Pogledaj neželjenu poštu.",
+      "newTitle": "Postavi novu lozinku",
+      "newPassword": "Nova lozinka",
+      "newHelp": "Najmanje 12 znakova, veliko i malo slovo te poseban znak.",
+      "revokeNote": "Nakon promjene ostali uređaji bit će odjavljeni.",
+      "save": "Spremi lozinku",
+      "saving": "Spremam…"
+    },
+    "verified": {
+      "title": "Adresa je potvrđena",
+      "lead": "Sad se možeš prijaviti.",
+      "signIn": "Prijavi se"
+    },
+    "linkInvalid": {
+      "title": "Ova poveznica više ne vrijedi",
+      "reset": "Poveznice za novu lozinku vrijede 30 minuta i koriste se jednom.",
+      "verify": "Poveznice za potvrdu adrese vrijede 24 sata. Novu možeš zatražiti pri prijavi.",
+      "requestNew": "Zatraži novu",
+      "toSignIn": "Na prijavu"
+    }
+  },
+  "authErrors": {
+    "generic": "Nešto je pošlo po zlu. Pokušaj ponovno.",
+    "badCredentials": "E-pošta ili lozinka nisu točni. Provjeri pa pokušaj ponovno.",
+    "locked": "Previše pokušaja prijave. Pričekaj {minutes, plural, one {# minutu} few {# minute} other {# minuta}} ili postavi novu lozinku.",
+    "lockedReset": "Previše neuspjelih prijava. Postavi novu lozinku da nastaviš.",
+    "tooMany": "Previše zahtjeva u kratkom vremenu. Pričekaj malo pa pokušaj ponovno.",
+    "emailNotVerified": "Adresa još nije potvrđena. Poslali smo novu poveznicu za potvrdu.",
+    "banned": "Ovaj račun je suspendiran. Obrazloženje je stiglo e-poštom.",
+    "compromised": "Ova se lozinka pojavila u javno poznatim curenjima podataka, pa je napadači isprobavaju među prvima. Odaberi drugu.",
+    "policy": "Lozinci treba najmanje 12 znakova, veliko i malo slovo te poseban znak.",
+    "emailTaken": "S ovom adresom već postoji račun. Prijavi se ili zatraži novu lozinku.",
+    "emailInvalid": "Upiši ispravnu adresu e-pošte.",
+    "nameRequired": "Upiši kako se zoveš.",
+    "age18": "GrooveRift je za punoljetne. Potvrdi da imaš 18 ili više godina.",
+    "linkInvalid": "Ova poveznica više ne vrijedi. Zatraži novu.",
+    "badCode": "Kod nije točan. Provjeri pa pokušaj ponovno.",
+    "freshSession": "Za ovu radnju prijavi se ponovno.",
+    "required": "Ovo polje je obavezno.",
+    "wrongPassword": "Lozinka nije točna.",
+    "signUpClosed": "Izrada računa trenutačno nije otvorena."
+  },
+  "settings": {
+    "security": {
+      "title": "Sigurnost",
+      "password": "Lozinka",
+      "passwordLead": "Promijeni lozinku. Druge uređaje možeš odjaviti istim potezom.",
+      "current": "Trenutačna lozinka",
+      "new": "Nova lozinka",
+      "newHelp": "Najmanje 12 znakova, veliko i malo slovo te poseban znak.",
+      "revokeOthers": "Odjavi sve druge uređaje",
+      "change": "Promijeni lozinku",
+      "changing": "Mijenjam…",
+      "changed": "Lozinka je promijenjena.",
+      "twoFactor": "Dvostruka provjera",
+      "twoFactorOn": "Uključeno. Pri prijavi tražimo kod iz aplikacije.",
+      "twoFactorOff": "Isključeno. Preporučujemo da je uključiš.",
+      "twoFactorStaff": "Obavezno za uredničke, moderatorske i administratorske račune.",
+      "enable": "Uključi",
+      "disable": "Isključi",
+      "enterPassword": "Potvrdi lozinkom",
+      "scanLead": "Skeniraj kod aplikacijom za autentifikaciju (npr. Aegis, 2FAS, Google Authenticator) ili upiši ključ ručno.",
+      "manualKey": "Ključ za ručni unos",
+      "enterCode": "Upiši kod iz aplikacije",
+      "code": "Kod (6 znamenki)",
+      "confirm": "Potvrdi",
+      "confirming": "Provjeravam…",
+      "codesTitle": "Kodovi za oporavak",
+      "codesLead": "Spremi ih na sigurno. Svaki vrijedi jednom i zamjenjuje kod iz aplikacije ako izgubiš telefon.",
+      "codesDone": "Spremio sam kodove",
+      "regenerate": "Novi kodovi za oporavak",
+      "regenerateHelp": "Stari kodovi prestaju vrijediti.",
+      "disabled": "Dvostruka provjera je isključena.",
+      "sessions": "Uređaji",
+      "sessionsLead": "Ovdje si prijavljen. Odjavi uređaj koji ne prepoznaješ.",
+      "thisDevice": "Ovaj uređaj",
+      "lastSeen": "Zadnje: {date}",
+      "signOutDevice": "Odjavi",
+      "signOutOthers": "Odjavi sve druge uređaje",
+      "revoked": "Uređaj je odjavljen.",
+      "revokedAll": "Svi drugi uređaji su odjavljeni.",
+      "unknownDevice": "Nepoznat uređaj"
+    },
+    "account": {
+      "title": "Račun",
+      "email": "E-pošta",
+      "emailLead": "Promjenu potvrđuješ s trenutačne adrese, a zatim s nove.",
+      "newEmail": "Nova adresa",
+      "change": "Pošalji poveznicu",
+      "changing": "Šaljem…",
+      "sent": "Poslali smo poveznicu za potvrdu na trenutačnu adresu."
+    }
+  },
+  "admin": {
+    "title": "Administracija",
+    "lead": "Alat za osoblje. Svaka radnja se bilježi.",
+    "nav": {
+      "overview": "Pregled",
+      "members": "Članovi",
+      "flags": "Značajke",
+      "audit": "Dnevnik"
+    },
+    "overview": {
+      "role": "Tvoja uloga: {role}",
+      "members": "Članovi",
+      "flags": "Značajke",
+      "audit": "Zapisi u dnevniku"
+    },
+    "members": {
+      "title": "Članovi",
+      "name": "Ime",
+      "email": "E-pošta",
+      "role": "Uloga",
+      "status": "Status",
+      "twoFactor": "2FA",
+      "created": "Stvoren",
+      "banned": "Suspendiran",
+      "active": "Aktivan",
+      "setRole": "Promijeni ulogu",
+      "roleChanged": "Uloga je promijenjena.",
+      "cannotSelf": "Vlastitu ulogu ne možeš mijenjati."
+    },
+    "flags": {
+      "title": "Značajke",
+      "key": "Ključ",
+      "state": "Stanje",
+      "note": "Napomena",
+      "updated": "Promijenjeno",
+      "on": "uključeno",
+      "off": "isključeno",
+      "paused": "na pauzi",
+      "set": "Spremi",
+      "saved": "Spremljeno."
+    },
+    "audit": {
+      "title": "Dnevnik",
+      "lead": "Samo za čitanje. Zapisi se ne mogu mijenjati ni brisati.",
+      "at": "Vrijeme",
+      "actor": "Tko",
+      "action": "Radnja",
+      "target": "Cilj",
+      "empty": "Još nema zapisa."
+    },
+    "forbidden": {
+      "title": "Nemaš pristup",
+      "role": "Ova stranica je za osoblje.",
+      "twoFactor": "Osoblje mora imati uključenu dvostruku provjeru. Uključi je u postavkama sigurnosti.",
+      "toSettings": "Na postavke sigurnosti"
+    }
+  },
+  "roles": {
+    "member": "član",
+    "editor": "urednik",
+    "moderator": "moderator",
+    "admin": "administrator"
   }
 }
