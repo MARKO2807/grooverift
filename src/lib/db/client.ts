@@ -1,7 +1,13 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from "./schema";
+// The relational query API (db().query.*) knows only the auth and foundation tables: product tables are
+// reached through the query builder inside src/lib/data, never through db().query (step 5.2 review M5).
+import * as authSchema from "./schema/auth";
+import * as appSchema from "./schema/app";
+
 import { env } from "@/lib/env";
+
+const schema = { ...authSchema, ...appSchema };
 
 export type Db = NodePgDatabase<typeof schema>;
 

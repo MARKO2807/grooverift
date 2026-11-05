@@ -99,6 +99,8 @@ export const auth = betterAuth({
     additionalFields: {
       // Validated against the supported locales in hooks.ts.
       locale: { type: "string", required: false, defaultValue: "hr", input: true },
+      // Account status (policy AccountStatus); never set by the member through the auth API.
+      status: { type: "string", required: false, defaultValue: "active", input: false },
     },
     changeEmail: {
       enabled: true,

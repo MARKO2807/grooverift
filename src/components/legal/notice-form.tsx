@@ -11,6 +11,7 @@ import { IconCheck } from "@/components/ui/icons";
 
 // i18n-keys: notice.categories.csam notice.categories.hate notice.categories.threat notice.categories.privacy
 // i18n-keys: notice.categories.copyright notice.categories.fraud notice.categories.other
+// i18n-keys: notice.errors.generic notice.errors.tooMany
 
 /** PUB-11: the DSA Art. 16 notice form, usable without an account (components §4.2, §4.4). */
 export function NoticeForm() {
@@ -58,7 +59,9 @@ export function NoticeForm() {
     >
       {state.fieldErrors || state.error ? (
         <ErrorSummary summaryRef={summaryRef}>
-          <Notice kind="error">{state.error ? t("errors.generic") : t("errors.summary")}</Notice>
+          <Notice kind="error">
+            {state.error ? t(`errors.${state.error}`) : t("errors.summary")}
+          </Notice>
         </ErrorSummary>
       ) : null}
       <fieldset

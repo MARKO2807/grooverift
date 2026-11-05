@@ -3,20 +3,22 @@
 import { headers } from "next/headers";
 import { audit } from "@/lib/audit";
 import { getSession } from "@/lib/auth/session";
+import { logDbError } from "@/lib/data/db-errors";
+import { storeNotice } from "@/lib/data/notices";
+import { consume } from "@/lib/data/rate-limit";
+import { clientIp } from "@/lib/http/client-ip";
 import { validateNotice, type NoticeErrorKey } from "./notice";
 
 export type NoticeFormState = {
   done?: boolean;
-  error?: "generic";
+  error?: "generic" | "tooMany";
   fieldErrors?: Record<string, NoticeErrorKey>;
   values?: Record<string, string>;
 };
 
 /**
- * PUB-11 submission. STEP 5.1 SCOPE: validates and writes an audit entry only (category, no personal data).
- * The `notice` table and the moderation queue arrive in steps 5.2 and 5.9; until then the form is not linked
- * to any member-facing invitation, and STATUS records that submissions are not stored. The rate limiter for
- * public forms arrives with the general limiter in 5.2.
+ * PUB-11 submission: validate, rate-limit per client IP (5 per hour), store in `notice` for the moderation queue
+ * (step 5.9) and audit the category only (no personal data in the audit log).
  */
 export async function submitNoticeAction(
   _prev: NoticeFormState,
@@ -27,24 +29,29 @@ export async function submitNoticeAction(
     const v = form.get(key);
     if (typeof v === "string") raw[key] = v;
   }
+  const { goodFaith: _omit, ...values } = raw;
   const result = validateNotice(raw);
   if (!result.ok) {
-    const { goodFaith: _omit, ...values } = raw;
     return { fieldErrors: result.errors as Record<string, NoticeErrorKey>, values };
   }
   try {
-    const session = await getSession();
     const h = await headers();
+    const rate = await consume("notice", clientIp(h));
+    if (!rate.allowed) return { error: "tooMany", values };
+    const session = await getSession();
+    const id = await storeNotice(result.value, session?.user.id ?? null);
     await audit({
       actorType: session ? "member" : "system",
       actorId: session?.user.id ?? null,
       action: "legal.notice.received",
       targetType: "notice",
-      metadata: { category: result.value.category, channel: "public_form", stored: false },
+      targetId: id,
+      metadata: { category: result.value.category, channel: "public_form" },
       userAgent: h.get("user-agent"),
     });
     return { done: true };
-  } catch {
-    return { error: "generic", values: raw };
+  } catch (e) {
+    logDbError("submitNoticeAction", e); // never the message: it carries the notifier's text (review M1)
+    return { error: "generic", values };
   }
 }

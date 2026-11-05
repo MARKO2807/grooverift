@@ -45,3 +45,5 @@ Create the project, copy the DSN. Claude then adds the SDK with `sendDefaultPii:
 ## 6. After everything is set
 
 Claude: close step 4.11 (STATUS, DECISIONS: the chosen providers as a decision), add the provider transports, run the clean-deploy-twice check, and note the monthly cost against D-010.
+
+**Client-IP check (review 5.2 M6), before any invite:** send a request with a forged `X-Forwarded-For: 203.0.113.9` and confirm in a throwaway debug log (removed afterwards) that `src/lib/http/client-ip.ts` sees the real client address, not the forged one. If Render appends instead of replacing, switch to the entry the proxy appended (rightmost) or to a header the edge overwrites. Lockout and every rate limit depend on it.

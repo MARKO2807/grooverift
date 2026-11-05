@@ -54,10 +54,10 @@ export async function audit(event: AuditEvent): Promise<void> {
         metadata: redact(event.metadata),
       });
   } catch (error) {
-    console.error(
-      "[audit] failed to write",
-      event.action,
-      error instanceof Error ? error.message : error,
-    );
+    // Only the action and the PostgreSQL code: the driver message carries the parameters (review M1).
+    const code =
+      (error as { code?: string; cause?: { code?: string } })?.code ??
+      (error as { cause?: { code?: string } })?.cause?.code;
+    console.error("[audit] failed to write", event.action, code ?? "unknown");
   }
 }

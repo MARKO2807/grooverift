@@ -29,6 +29,9 @@ export const user = pgTable("user", {
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   locale: text("locale").default("hr"),
+  // Account status (domain model §1; src/lib/authz/policy.ts AccountStatus). Not writable through the auth API
+  // (additionalFields input: false); changed only by the account and moderation workflows.
+  status: text("status").default("active").notNull(),
 });
 
 export const session = pgTable(

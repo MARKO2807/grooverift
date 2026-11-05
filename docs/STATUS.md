@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public pages, D-094; the owner asked Claude to continue with every step that needs no owner input; next is step 5.2)_
+_Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-095; the owner asked Claude to continue with every step that needs no owner input; next is a fresh session for 5.3a and 5.4)_
 
 ## Current phase
 **Phase 5: Alpha vertical slice, IN PROGRESS (approved D-092, 2026-11-05, with a free hand as in D-088).** Plan and step acceptance: [`docs/phase-5-plan.md`](phase-5-plan.md). Scope decisions: D-093 (push in the alpha behind a flag; live MusicBrainz lookups; people search on the Profile tab; seven-day strip plus the full archive; JO2–JO6). Code layout and rules: [`docs/architecture/app-structure.md`](architecture/app-structure.md). Step 4.11 (staging) stays deferred until A7 (OQ-33) and is done in whichever step is current when A7 arrives.
@@ -9,8 +9,8 @@ _Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public p
 |---|---|
 | 5.0 Kickoff | ✅ plan approved (D-092), decisions D-093, `web-push` 3.6 and `archiver` 8 installed with types, `readdir-glob` minimatch override (audit 0 findings), OQ-07/08/16/28 closed |
 | 5.1 App shell and public pages | ✅ session 25: tab bar, rail, columns, large text, motion; Spirala and invite current on canvas (D-094); PUB-01, PUB-10 drafts, PUB-11 (validates and audits, stores from 5.2), PUB-12, SYS-01–05 |
-| 5.2 Data model and data-access layer ⛳ | ⏳ **next** (High) |
-| 5.3 Catalogue and Music DNA | ⏳ needs the owner's MetaBrainz registration and the project mailbox (A4) |
+| 5.2 Data model and data-access layer ⛳ | ✅ session 25 (D-095): schema and migrations (down tested), `src/lib/data`, rate limiter, notices stored; independent review: 1 high, 6 medium fixed or carried (`docs/security/review-5.2-data-layer.md`); **owner review open** |
+| 5.3 Catalogue and Music DNA | ⏳ **5.3a next** (genres from the CC0 list, no API needed); the artist lookup needs the owner's MetaBrainz registration and the project mailbox (A4) |
 | 5.4 Invitations and onboarding ⛳ | ⏳ |
 | 5.5 Profiles, follow and people search | ⏳ |
 | 5.6 Daily Drop editorial ⛳ | ⏳ High |
@@ -23,7 +23,9 @@ _Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public p
 | 5.13 Copy and owner review ⛳ | ⏳ |
 | 5.14 Review and close | ⏳ High |
 
-**Checks on 2026-11-05 (session 25, after step 5.1, all green):** `npm run check` (format, lint, typecheck, tokens 180 / 89 pairs, i18n 327 keys, 59 unit tests); e2e **101 passed** on the dev server and **101 passed** on the production build (`CI=1 PORT=3100`); `scripts/screens.mjs` 80 views (180/360/800/1366/1920 px) with no sideways scroll, one h1, one visible main navigation; Spirala at 360 px with the CPU 4x slower: median 16.7 ms, p95 33.4 ms per frame. Not rerun: `npm run test:db` (no database code changed).
+**Checks on 2026-11-05 (session 25, after step 5.1, all green):** `npm run check` (format, lint, typecheck, tokens 180 / 89 pairs, i18n 327 keys, 59 unit tests); e2e **101 passed** on the dev server and **101 passed** on the production build (`CI=1 PORT=3100`); `scripts/screens.mjs` 80 views (180/360/800/1366/1920 px) with no sideways scroll, one h1, one visible main navigation; Spirala at 360 px with the CPU 4x slower: median 16.7 ms, p95 33.4 ms per frame. 
+
+**Checks after step 5.2 (session 25, all green):** `npm run check` (61 unit tests, i18n 328 keys); `npm run test:db` **38 passed** (data layer, invariants, review fixes, migrations up-down-up on a scratch database); e2e **101 passed** on the dev server; `db:generate` reports no schema drift.
 
 ## Done
 - Phases 0–4 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087; Foundation, accepted D-091).
@@ -38,9 +40,10 @@ _Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public p
 
 ## Next
 1. **Owner:** `! git push` (the session 25 commits).
-2. **Claude (continuing on the owner's instruction, session 25):** step 5.2 data model and data-access layer (High). Then the steps that need no owner input: 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.12 (flagged), in plan order; each ⛳ point is prepared for the owner's review, not decided.
-3. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (project mailbox and MetaBrainz for 5.3; A7 accounts; counsel). OQ-34 (alpha data after the alpha) before invitations.
-4. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
+2. **Claude, next session (fresh, standing instruction from session 25: continue without waiting):** step **5.3a** (genre table from the CC0 list with families, the Music DNA editor for genres; artist lookup waits for A4), then **5.4** (invitations and onboarding; ⛳ the owner walks the flow later), then 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.12 (flagged) in plan order. Each ⛳ point is prepared for the owner's review, not decided.
+3. **Owner, when back:** review ⛳ 5.2 (D-095, the review record) and 5.1 on the running app; `! git push`.
+4. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (project mailbox and MetaBrainz for 5.3; A7 accounts; counsel). OQ-34 (alpha data after the alpha) before invitations.
+5. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 
 ## Owner actions outside Claude
 - `git push` after each session (Claude's push is blocked).
@@ -64,7 +67,7 @@ _Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public p
 11. iOS Web Push needs an installed PWA over HTTPS and a real-device check (T-04); push is flagged (D-093 (1)) so the alpha can ship without it.
 12. The Spirala port: measured in 5.1 (D-094), within budget at 4x CPU throttle; recheck on a real mid-range phone with staging.
 13. **New:** the 404 page renders through the client in Next.js 16 (status 404 is right; without JavaScript the page is blank). Revisit with `global-not-found` or a framework update (D-094 (6)).
-14. **New:** DSA notices are validated and audited but not stored until step 5.2 adds the `notice` table; no invitation goes out before then.
+14. **New:** the client IP behind Render must be checked with a forged `X-Forwarded-For` on the first deploy (review 5.2 M6, runbook §6); lockout and every rate limit depend on it.
 
 ## Code
 - **Application (session 22):** see [`docs/architecture/app-structure.md`](architecture/app-structure.md). Commands: `npm run dev`, `npm run check`, `npm run test:db`, `npm run build && npm run test:e2e`, `npm run worker`, `npm run db:migrate`, `npm run db:seed`, `npm run tokens`, `npm run i18n:check`. New dependencies (session 24, unused until 5.10 and 5.12): `web-push`, `archiver`.

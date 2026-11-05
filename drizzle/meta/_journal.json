@@ -15,6 +15,20 @@
       "when": 1793841317224,
       "tag": "0001_audit_append_only",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793896351929,
+      "tag": "0002_alpha_model",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793896354018,
+      "tag": "0003_alpha_constraints",
+      "breakpoints": true
     }
   ]
 }

@@ -351,7 +351,8 @@
       "emailRequired": "Upiši e-poštu.",
       "emailInvalid": "Provjeri e-poštu, na primjer ime@primjer.hr.",
       "goodFaithRequired": "Potvrdi da su podaci točni.",
-      "generic": "Prijava nije poslana zbog greške kod nas. Pokušaj ponovno za minutu."
+      "generic": "Prijava nije poslana zbog greške kod nas. Pokušaj ponovno za minutu.",
+      "tooMany": "Previše prijava s ove mreže u kratkom vremenu. Pokušaj ponovno za sat."
     }
   },
   "alphaPage": {

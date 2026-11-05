@@ -1,7 +1,7 @@
 import "@/lib/load-env";
 import { sql } from "drizzle-orm";
 import { closeDb, db } from "./client";
-import { account, featureFlag, memberSettings, user } from "./schema";
+import { account, featureFlag, memberSettings, privacySettings, profile, user } from "./schema";
 import { hashPassword } from "@/lib/auth/password";
 import { env } from "@/lib/env";
 
@@ -48,6 +48,18 @@ export async function seed() {
         .values({ userId: id, accountId: id, providerId: "credential", password: passwordHash })
         .onConflictDoNothing();
       await tx.insert(memberSettings).values({ userId: id }).onConflictDoNothing();
+      // A finished profile (step 5.2): username from the address, Mia private so both kinds exist.
+      await tx
+        .insert(profile)
+        .values({
+          userId: id,
+          username: u.email.split("@")[0]!,
+          displayName: u.name,
+          visibility: u.email.startsWith("mia@") ? "private" : "public",
+          onboardedAt: new Date(),
+        })
+        .onConflictDoNothing();
+      await tx.insert(privacySettings).values({ userId: id }).onConflictDoNothing();
     }
     for (const f of SEED_FLAGS) {
       await tx

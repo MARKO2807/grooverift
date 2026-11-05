@@ -8,7 +8,7 @@ _Drafted 2026-11-05 (session 24) after Phase 4 was accepted (D-091). **Status: A
 |---|---|
 | 5.0 Kickoff | ✅ plan approved (D-092), decisions D-093, `web-push` and `archiver` installed with their types, OQ-07/08/16/28 closed |
 | 5.1 App shell and public pages | ✅ session 25: shell (tab bar, rail, columns, large text, motion), Spirala and invite current on canvas (D-094), PUB-01/10/11/12, SYS-01–05; 80-view screenshot pass, axe, no-store and 404 tests green |
-| 5.2 Data model and data-access layer ⛳ | ⏳ |
+| 5.2 Data model and data-access layer ⛳ | ✅ built session 25 (D-095): 35 tables, migrations 0002/0003 with tested down files, `src/lib/data` loaders and writes through the policy, rate limiter, notices stored; independent review fixed (`docs/security/review-5.2-data-layer.md`); owner review open |
 | 5.3 Catalogue and Music DNA | ⏳ needs the owner's MetaBrainz registration and the project mailbox (A4) |
 | 5.4 Invitations and onboarding ⛳ | ⏳ |
 | 5.5 Profiles, follow and people search | ⏳ |

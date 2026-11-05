@@ -1,23 +1,23 @@
 # Session handoff
 
-_Session 25, 2026-11-05 (**step 5.1 done**, D-094). The owner asked Claude to keep going with every step that needs no owner input and will review later ("nastavi sa svim sljedećim zadatcima za koje ne trebaš moju izravnu pomoć"). Next: read `docs/STATUS.md`, this file, `docs/phase-5-plan.md` §3 row 5.2 and §4, and build **step 5.2** (High: data model and data-access layer)._
+_Session 25, 2026-11-05 (**steps 5.1 and 5.2 done**, D-094, D-095). The owner asked Claude to keep going with every step that needs no owner input and will review later ("nastavi sa svim sljedećim zadatcima za koje ne trebaš moju izravnu pomoć"). **That instruction stands for the next session: do not wait for a go.** Next: read `docs/STATUS.md`, this file, `docs/phase-5-plan.md` §3 rows 5.3 and 5.4, and build **step 5.3a** (genres, no API), then **5.4**._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed the session 25 commits? If yes, check the GitHub Actions result (three jobs: checks, database, e2e; the run on `9485d72` was fully green). The Actions summary page is readable in the owner's Chrome through the browser tools; logs need a sign-in.
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Effort: session 25 ran on **Opus 5.5, Medium** (the owner switched with `/model` and `/effort`). 5.2 is a High step: recommend High (Fable or Opus) and check `/effort`.
+3. Effort: session 25 ran on **Opus 5.5, Medium** (the owner switched with `/model` and `/effort`); step 5.2 was built at Medium with an independent High review. 5.3a and 5.4 are Medium steps; 5.6, 5.9, 5.10 and 5.12 are High (recommend and check `/effort` before them).
 4. Local environment: Docker Desktop must be running (`docker compose up -d`), then `npm run db:migrate`, `npm run db:seed`, `npm run dev`. `.env.local` exists on the owner's machine (ignored; a generated `BETTER_AUTH_SECRET`). Session 24 started no server. If port 3000 is busy, find it with `netstat -ano | findstr :3000` and stop it before `npm run dev`. **Start the dev server from PowerShell** (`Start-Process cmd "/c npx next dev > $env:TEMP\grooverift-dev.log 2>&1" -WindowStyle Hidden`), stop it through `Get-NetTCPConnection -LocalPort 3000` and `Stop-Process`; confirm with `netstat`. Remind the owner about an open port in every reply while one is open.
 
 ## Where we are
 - **Step 5.1 is done** (session 25): the signed-in shell (`src/components/app-shell.tsx`, rail from 600 px, glass tab bar, swipe, large text, `html[data-motion]` from `member_settings.reduce_motion`), the public shell, the Spirala and the invite current on canvas (D-094 (1)), PUB-01, PUB-10 drafts, PUB-11, PUB-12, SYS-01 to SYS-05, the four tab routes as honest placeholders, minimal Settings and Help. Implementation choices are D-094; the alpha-data question is OQ-34.
 - **The owner's standing instruction (session 25):** continue with the steps that need no owner input; prepare everything for the owner to check later; the owner does the registrations (`docs/ops/owner-setup-checklist.md`). ⛳ points are prepared, summarised for review and left open where they need a decision.
+- **Step 5.2 is done** (session 25, D-095): `src/lib/db/schema/product.ts` (35 tables, migrations 0002/0003, down files in `drizzle/down/` tested on a scratch database), `src/lib/data/` (facts for the policy, graph writes with a pair lock, profiles with one "not-available", catalogue redirects, answers, rate limiter, notices, safe DB error logging). ESLint forbids product tables outside `src/lib/data` and any database import in pages and components (Phase 4 admin pages excepted). Seeded members now have finished profiles (Mia private). Independent review and the carried items: `docs/security/review-5.2-data-layer.md` (L4, L7, L8 in 5.5; L10 in 5.9; L11 in 5.4; M6 at the first deploy).
 - **Phase 5 rules unchanged (D-092):** free hand inside the plan; stop at CLAUDE.md gates (no installs, accounts, deploys, spending).
 
-## What step 5.2 needs (read before building)
-- Plan §3 row 5.2 and §4 (entities); `docs/architecture/domain-model.md`; `docs/architecture/visibility-matrix.md` §4 checklist; `src/lib/authz/policy.ts` (the loaders build `Viewer`, `Owner`, `Graph` and the facts for it).
-- **Wire the DSA notice into storage:** `src/lib/legal/actions.ts` validates and audits only; add the `notice` table and store submissions (personal data minimised, retention per B.3 once counsel answers); remove the "not stored" line from STATUS risks and D-094 (4).
-- The general rate limiter for public forms and posting (the notice form has none yet).
-- Profile URLs: `/@username` is rewritten to `src/app/[locale]/u/[username]`, which answers 404 today; 5.5 fills it.
+## What steps 5.3a and 5.4 need (read before building)
+- **5.3a, genres without the API:** the CC0 genre list is in `design/prototypes/pulse/genres-mb.js` (with `data.js` `moreGenres` for the local ones); seed `genre` with slug, HR/EN names, family (D-062 mapping, exceptions kept, "no family" instead of Folk) and rank; the Music DNA editor for genres (J2 E1–E11 where they concern genres), the per-section visibility sheet, the Spirala fed from `music_dna_entry` (`src/components/motifs/spirala.tsx` takes genre names; map families through `src/lib/music/genre-traits.ts`). The artist typeahead and `MUSICBRAINZ_CONTACT` wait for A4; build the client behind a stub so 5.3 closes quickly once the owner registers.
+- **5.4 invitations and onboarding:** ADM-03 (create, list, revoke, email with the link; `invite` limit 50/day per admin in `LIMITS`), PUB-05 token exchange for an httpOnly cookie and a clean URL (U-05), ONB-01–09 on the `onb` card structure (session 23 lesson), the `sign_up` flag retired, resume logic (J1 E8), JO6 (invite acceptance verifies the email). Fix review L11 (normalised email, one open invite per email) in the same step. The onboarding writes `profile` (username, display name, the D-025 visibility choice, `onboarded_at`) and `privacy_settings` through `src/lib/data`.
+- Pages get the viewer with `loadViewer({ id: session.user.id, role: roleOf(session) })`; never pass the session's role to the policy directly.
 
 ## Lessons (session 25)
 - **`npm run build` while `next dev` runs breaks the dev server** (they share `.next`): flaky "document-title" axe findings followed. Stop dev, delete `.next`, start again after a build.
@@ -28,6 +28,9 @@ _Session 25, 2026-11-05 (**step 5.1 done**, D-094). The owner asked Claude to ke
 - A rewrite in the proxy bypasses next-intl's middleware, so it must set `X-NEXT-INTL-LOCALE` itself.
 - Run `node scripts/screens.mjs <scratchpad>/shots` after shell changes: it caught the 200 % zoom overflow (180 px width) that the 360 px pass missed.
 - **Never put backticks inside a double-quoted `node -e` in Bash**: the shell runs them as commands. Write doc edits with the Edit tool or a script file.
+- Uncommitted migrations can be regenerated cleanly: run the `drizzle/down/` files on the local database, delete the journal rows, remove the SQL and snapshot files and the journal entries, then `db:generate` again. Never do this for a migration that has been pushed.
+- drizzle-orm's `DrizzleQueryError` message includes the query parameters: log only `src/lib/data/db-errors.ts` summaries.
+- `/tmp` in Git Bash is not `C:\tmp` for Node: pass Windows paths (`cygpath -w`) to `node` when a script reads a file there.
 
 ## Lessons (session 24)
 - New dependencies can reintroduce an advisory the project already closed through `overrides`; add the override for the new nested package (`readdir-glob` here) rather than ignoring a moderate finding. `npm install` applied the override to a freshly added package without a clean install.

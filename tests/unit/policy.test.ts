@@ -534,3 +534,34 @@ describe("§3 interaction permissions", () => {
     expect(canInteract("follow", MEMBER, owner({ status: "deactivated" })).allowed).toBe(false);
   });
 });
+
+describe("unfinished onboarding (step 5.2 review M4)", () => {
+  const fresh = {
+    id: "o",
+    status: "active",
+    profile: "public",
+    musicDna: "everyone",
+    lists: "everyone",
+    dropHistory: "everyone",
+    onboarded: false,
+  } as const;
+  it("hides the member from others but not from themselves or staff", () => {
+    expect(canViewProfileSection("identity", { id: "v", role: "member" }, fresh).allowed).toBe(
+      false,
+    );
+    expect(canViewProfileSection("identity", { id: "o", role: "member" }, fresh).allowed).toBe(
+      true,
+    );
+    expect(canViewProfileSection("identity", { id: "a", role: "admin" }, fresh).allowed).toBe(true);
+  });
+  it("refuses interactions both ways", () => {
+    const active = { ...fresh, id: "v", onboarded: true };
+    expect(
+      canInteract("follow", { id: "v", role: "member", status: "active" }, fresh).allowed,
+    ).toBe(false);
+    expect(
+      canInteract("follow", { id: "o", role: "member", status: "active", onboarded: false }, active)
+        .allowed,
+    ).toBe(false);
+  });
+});

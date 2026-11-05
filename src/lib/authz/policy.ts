@@ -18,6 +18,8 @@ export type Viewer = {
   id: string | null;
   role: Role;
   status?: AccountStatus;
+  /** False while the member has not finished onboarding: they may read but not write (step 5.2 review M4). */
+  onboarded?: boolean;
 };
 
 export type Owner = {
@@ -27,6 +29,8 @@ export type Owner = {
   musicDna: SectionVisibility;
   lists: SectionVisibility;
   dropHistory: SectionVisibility;
+  /** False until onboarding is finished: the member is hidden from others like a deactivated account. */
+  onboarded?: boolean;
 };
 
 export type Graph = {
@@ -64,7 +68,7 @@ export function relationship(viewer: Viewer, owner: Owner, graph: Graph): Relati
 
 /** Matrix §1: deactivated, suspended, banned and deleted accounts are invisible to non-staff. */
 export function ownerVisibleAtAll(rel: Relationship, owner: Owner): boolean {
-  if (owner.status === "active") return true;
+  if (owner.status === "active" && owner.onboarded !== false) return true;
   return rel === "SELF" || rel === "MOD" || rel === "ADMIN";
 }
 
@@ -418,11 +422,13 @@ export function canInteract(
 ): InteractionDecision {
   if (!viewer.id) return { allowed: false, reason: "anon" };
   if (viewer.status && viewer.status !== "active") return { allowed: false, reason: "status" };
+  if (viewer.onboarded === false) return { allowed: false, reason: "status" };
   const rel = relationship(viewer, target, graph);
   if (rel === "SELF" && action !== "votePoll" && action !== "react") {
     return { allowed: false, reason: "not-owner" };
   }
-  if (target.status !== "active") return { allowed: false, reason: "owner-hidden" };
+  if (target.status !== "active" || target.onboarded === false)
+    return { allowed: false, reason: "owner-hidden" };
   if (graph.blocked) return { allowed: false, reason: "blocked" };
   const mutual = rel === "MUTUAL";
 
