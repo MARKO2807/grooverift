@@ -48,11 +48,15 @@ html[data-motion="reduced"] .wm-bolt .bolt, html[data-motion="reduced"] .wm-bolt
 html[data-motion="reduced"] .wm-bolt .bolt { opacity: 1; }
 @media (forced-colors: active) { .wm-bolt .bolt { filter: none; } .wm-bolt .bolt-line { stroke: CanvasText; } .wm-bolt .bolt-core, .wm-bolt .spark { display: none; } }
 .wm { font-family: var(--gr-font-family-heading); font-weight: var(--gr-font-weight-bold); letter-spacing: -0.02em; white-space: nowrap; }
-.top-title { flex: 1; min-width: 0; font: var(--gr-type-title-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-title { flex: 1; min-width: 0; font: var(--gr-type-title-3); line-height: 1.25; padding: 4px 0; overflow-wrap: break-word; } /* step 3.9: the page h1 wraps instead of an ellipsis (1.4.12: no lost words with wider text spacing) */
 .top-right { margin-left: auto; display: flex; align-items: center; gap: var(--gr-space-1); }
 .alpha-tag { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); border-radius: 6px; padding: 0 var(--gr-space-2); }
 .lang-btn { min-width: var(--gr-size-target-min); min-height: var(--gr-size-target-min); border: 0; background: none; color: var(--gr-color-text-primary); font: var(--gr-type-label); border-radius: var(--gr-radius-control); }
 .lang-btn:hover, .iconbtn:hover { background: var(--gr-color-bg-high); }
+/* Step 3.9 (smo=b): the pause button before sign-in; pressed = motion stopped. */
+.top-calm .pi { width: 22px; height: 22px; }
+.top-calm[aria-pressed="true"] { color: var(--gr-color-text-accent); background: var(--gr-color-bg-high); }
+@media (forced-colors: active) { .top-calm[aria-pressed="true"] { color: Highlight; outline: 2px solid Highlight; outline-offset: -2px; } }
 .iconbtn { width: var(--gr-size-target-min); height: var(--gr-size-target-min); display: inline-grid; place-items: center; flex: none; border: 0; background: none; color: var(--gr-color-text-primary); border-radius: var(--gr-radius-control); }
 .iconbtn.sm { width: 32px; height: 32px; }
 
@@ -164,6 +168,9 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .choice-title { display: flex; align-items: center; gap: var(--gr-space-2); font: var(--gr-type-title-3); padding-right: 2rem; }
 .choice-desc { display: block; font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+.choice.is-off { cursor: not-allowed; } /* step 3.9: an option that cannot be chosen now; its line says why and keeps full contrast */
+.choice.is-off .choice-title, .choice.is-off .choice-mark { opacity: var(--gr-opacity-disabled); }
+@media (forced-colors: active) { .choice.is-off .choice-title { color: GrayText; } }
 .choice .choice-ic { width: var(--gr-size-icon-lg); height: var(--gr-size-icon-lg); color: var(--gr-color-text-primary); }
 .choice-mark { position: absolute; top: var(--gr-space-4); right: var(--gr-space-4); width: 26px; height: 26px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-thick) solid var(--gr-color-border-strong); display: grid; place-items: center; color: var(--gr-color-text-on-accent); }
 .choice-mark svg { width: 16px; height: 16px; stroke-width: 2.6; visibility: hidden; }
@@ -220,6 +227,8 @@ h1 { font: var(--gr-type-title-1); letter-spacing: var(--gr-type-title-1-letter-
 .p-name { font: var(--gr-type-caption); text-align: center; overflow-wrap: anywhere; }
 .p-x { position: absolute; top: -6px; right: 0; width: 28px; height: 28px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-thick) solid var(--gr-color-bg-canvas); background: var(--gr-color-bg-high); color: var(--gr-color-text-primary); display: grid; place-items: center; padding: 0; }
 .p-x:hover { background: var(--gr-color-border-subtle); }
+.p-x:focus-visible { border-color: var(--gr-color-focus-ring); box-shadow: inset 0 0 0 1px var(--gr-color-focus-gap); } /* step 3.9: the scrolling row clips an outside ring */
+@media (forced-colors: active) { .p-x:focus-visible { outline-offset: -2px; } }
 
 /* notices */
 .info, .notice { display: flex; gap: var(--gr-space-2); align-items: flex-start; border-radius: var(--gr-radius-card); padding: var(--gr-space-3); font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
@@ -248,8 +257,9 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .inv-cur { max-width: 16rem; }
 .inv-wide { max-width: none; width: calc(100% + 2 * var(--gr-space-4)); } /* centred overflow reaches both screen edges */
 .inv-foot { max-width: none; margin-bottom: calc(-1 * var(--gr-space-1)); }
-@media (max-height: 700px) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.875rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; font-size: 0.8125rem; line-height: 1.4; } .screen-invite .info-stack > p + p { padding-top: 6px; } }
-@media (max-height: 600px) { .screen-invite .h-hero { font-size: 1.5rem; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; } .screen-invite .info-stack > p + p { padding-top: 6px; } .screen-invite .info-stack { font-size: 0.75rem; line-height: 1.35; } .screen-invite .info-stack .wm-lg { font-size: 1.1em; } .screen-invite .hero .eyebrow { display: none; } }
+/* Step 3.9: short phone screens only, never zoomed or large text (WCAG 1.4.4; see the "Kako radi" rules below). */
+@media (max-height: 700px) and (min-width: 17.5em) and (max-width: 599px) and (orientation: portrait) { .screen-invite { gap: 10px; padding-top: var(--gr-space-2); padding-bottom: var(--gr-space-2); } .screen-invite .hero { gap: 6px; } .screen-invite .h-hero { font-size: 1.875rem; } .screen-invite .hero .lead { font: var(--gr-type-body-sm); margin-top: 0; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; font-size: 0.8125rem; line-height: 1.4; } .screen-invite .info-stack > p + p { padding-top: 6px; } }
+@media (max-height: 600px) and (min-width: 17.5em) and (max-width: 599px) and (orientation: portrait) { .screen-invite .h-hero { font-size: 1.5rem; } .screen-invite .info-stack { padding: var(--gr-space-2) var(--gr-space-3); gap: 6px; } .screen-invite .info-stack > p + p { padding-top: 6px; } .screen-invite .info-stack { font-size: 0.75rem; line-height: 1.35; } .screen-invite .info-stack .wm-lg { font-size: 1.1em; } .screen-invite .hero .eyebrow { display: none; } }
 .dd-current { max-width: 14rem; margin-top: var(--gr-space-1); }
 @media (forced-colors: active) { canvas.current, canvas.ic, canvas.dna { forced-color-adjust: none; } }
 
@@ -365,11 +375,13 @@ canvas.current, canvas.ic, canvas.dna { display: block; width: 100%; touch-actio
 .screen-how .how-card { grid-template-columns: 44px 1fr; padding: 10px var(--gr-space-3); }
 .screen-how .how-vis { width: 44px; height: 44px; border-radius: 12px; }
 .screen-how .how-ic { width: 24px; height: 24px; }
-@media (max-height: 700px) { .screen-how h1 { font-size: 1.625rem; } .screen-how .how-card p { line-height: 1.4; } }
+/* Step 3.9: the compact sizes are for short phone screens in portrait only. Browser zoom also shortens the viewport
+   (200 % on a 1366 x 800 window is 683 x 400), and there the shrunk text reached only 161-187 % (WCAG 1.4.4). */
+@media (max-height: 700px) and (min-width: 17.5em) and (max-width: 599px) and (orientation: portrait) { .screen-how h1 { font-size: 1.625rem; } .screen-how .how-card p { line-height: 1.4; } }
 /* D-062: the four cards share the free height, so there is no empty band under them, with larger tiles and text.
    Each card stops growing at 9.5rem; short screens keep the compact sizes above. */
 .screen-how .how-fill { flex: 1; }
-@media (min-height: 701px) {
+@media not ((max-height: 700px) and (min-width: 17.5em) and (max-width: 599px) and (orientation: portrait)) {
   .screen-how .how-fill .how-card { flex: 1 1 auto; max-height: 9.5rem; grid-template-columns: 60px 1fr; gap: var(--gr-space-4); padding: var(--gr-space-3) var(--gr-space-4); }
   .screen-how .how-fill .how-vis { width: 60px; height: 60px; border-radius: 16px; }
   .screen-how .how-fill .how-ic { width: 34px; height: 34px; }
@@ -757,6 +769,9 @@ html[data-motion="reduced"] .dd-live::before { animation: none; }
 .set-list > li + li { border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle); }
 .set-row { width: 100%; display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: var(--gr-space-3); min-height: 56px; padding: var(--gr-space-2) var(--gr-space-3); border: 0; background: none; color: var(--gr-color-text-primary); text-align: left; }
 button.set-row:hover { background: var(--gr-color-bg-raised); }
+/* Step 3.9: the rounded group clips an outside ring (overflow: hidden), which left one ambiguous line between two rows,
+   so a focused row draws its ring inside its own box. */
+.set-list .set-row:focus-visible { box-shadow: inset 0 0 0 var(--gr-focus-width) var(--gr-color-focus-ring), inset 0 0 0 calc(var(--gr-focus-width) + var(--gr-focus-gap)) var(--gr-color-focus-gap); border-radius: calc(var(--gr-radius-card) - 1px); }
 .set-ic-wrap { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--gr-color-bg-canvas); color: var(--gr-color-highlight-text); }
 .set-ic { width: 20px; height: 20px; }
 .set-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
@@ -1069,6 +1084,12 @@ html[data-motion="reduced"] .load-line span { animation: none; width: 100%; opac
 .vbadge { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--gr-gradient-brand); color: var(--gr-color-text-on-accent); flex: none; cursor: pointer; }
 .vbadge svg { width: 13px; height: 13px; stroke-width: 3; }
 @media (forced-colors: active) { .vbadge { background: CanvasText; color: Canvas; } }
+/* Step 3.9 (owner, session 21): the verified explanation is a small bubble above the mark, with a tail pointing at it.
+   placeTip() in app.js sets left, top and the tail position (--ax) and keeps it inside the window. */
+.pm-id { position: relative; }
+.vtip { position: absolute; z-index: calc(var(--gr-z-sticky) + 1); width: max-content; max-width: min(15rem, calc(100vw - 24px)); margin: 0; padding: var(--gr-space-2) var(--gr-space-3); border-radius: var(--gr-radius-card); background: var(--gr-color-bg-raised); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); box-shadow: var(--gr-shadow-overlay); font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+.vtip::after { content: ""; position: absolute; top: 100%; left: calc(var(--ax, 50%) - 7px); border: 7px solid transparent; border-top-color: var(--gr-color-border-strong); }
+@media (forced-colors: active) { .vtip { border-color: CanvasText; } .vtip::after { border-top-color: CanvasText; } }
 .rel-chip { display: inline-flex; align-items: center; gap: 4px; min-height: 22px; padding: 0 8px; border-radius: var(--gr-radius-full); border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong); font: var(--gr-type-caption); color: var(--gr-color-text-secondary); white-space: nowrap; }
 .rel-chip svg { width: 14px; height: 14px; }
 .rel-chip.is-mut { border-color: var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); color: var(--gr-color-highlight-text); }
@@ -1471,9 +1492,12 @@ main:focus { outline: none; box-shadow: none; }
   .screen-member .pm-side .dna-card, .set-detail .dna-card { max-width: 36rem; }
   /* Settings sub-screens: the settings list on the left, the open row marked, the detail on the right. */
   .set-split { display: grid; grid-template-columns: 18rem minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
-  .set-nav { display: block; position: sticky; top: calc(64px + var(--gr-space-8)); }
+  .set-nav { display: flex; flex-direction: column; gap: var(--gr-space-5); position: sticky; top: calc(64px + var(--gr-space-8)); } /* the same gaps as the Settings screen (step 3.9: the status pill overlapped the first heading) */
   .set-nav .set-row[aria-current="page"], .set-nav .set-me[aria-current="page"] { background: var(--gr-color-bg-raised); box-shadow: inset var(--gr-border-width-thick) 0 0 var(--gr-color-text-accent); }
   .set-nav .set-row[aria-current="page"] .set-t { color: var(--gr-color-text-accent); }
+  /* Step 3.9: the open row keeps its Coral mark and still shows the focus ring when it has focus. */
+  .set-nav .set-row[aria-current="page"]:focus-visible { box-shadow: inset var(--gr-border-width-thick) 0 0 var(--gr-color-text-accent), inset 0 0 0 var(--gr-focus-width) var(--gr-color-focus-ring), inset 0 0 0 calc(var(--gr-focus-width) + var(--gr-focus-gap)) var(--gr-color-focus-gap); }
+  .set-nav .set-me[aria-current="page"]:focus-visible { box-shadow: inset var(--gr-border-width-thick) 0 0 var(--gr-color-text-accent), 0 0 0 var(--gr-focus-gap) var(--gr-color-focus-gap), 0 0 0 calc(var(--gr-focus-gap) + var(--gr-focus-width)) var(--gr-color-focus-ring); }
   .set-detail { display: flex; flex-direction: column; gap: var(--gr-space-5); min-width: 0; }
   #app[data-screen="setsub"] .topbar .iconbtn[data-a="back"] { display: none; } /* the list on the left is the way back */
   /* System pages (something went wrong, a paused feature) sit in the middle of the window, whatever the screen's grid. */
@@ -1503,6 +1527,62 @@ main:focus { outline: none; box-shadow: none; }
 /* Forced colours (Windows high contrast), session 18: the state marks that the system flattens. The block is last in the
    file so it wins over the desktop rules above (a later rule with the same specificity replaces the Ember colour, which
    forced colours turn into Canvas, so the mark disappears). Checked by tools/a11y-check.mjs --fc. */
+
+/* "Kako radi" (owner, session 21): the Daily Drop card leads, the other three are compact. The lead card takes the free
+   height (D-062 shared it between all four); its icon is a choice (how-drop.html). */
+.screen-how .how-fill.how-lead { gap: var(--gr-space-2); }
+.screen-how .how-fill.how-lead .how-main { flex: 1 1 auto; max-height: 17rem; grid-template-columns: 1fr; align-content: center; gap: var(--gr-space-3); padding: var(--gr-space-4) var(--gr-space-5); }
+.screen-how .how-fill.how-lead .how-main .how-vis { width: 76px; height: 76px; border-radius: 20px; }
+.screen-how .how-fill.how-lead .how-main .how-ic { width: 54px; height: 54px; }
+.screen-how .how-fill.how-lead .how-main .hv-name { font-size: 1.625rem; }
+.screen-how .how-fill.how-lead .how-main p { font: var(--gr-type-body); color: var(--gr-color-text-primary); }
+.screen-how .how-fill.how-lead .how-card:not(.how-main) { flex: 0 0 auto; max-height: none; grid-template-columns: 40px 1fr; gap: var(--gr-space-3); padding: 10px var(--gr-space-3); }
+.screen-how .how-fill.how-lead .how-card:not(.how-main) .how-vis { width: 40px; height: 40px; border-radius: 12px; }
+.screen-how .how-fill.how-lead .how-card:not(.how-main) .how-ic { width: 22px; height: 22px; }
+.screen-how .how-fill.how-lead .how-card:not(.how-main) .how-t { font-size: var(--gr-font-size-md); margin-bottom: 0; }
+.screen-how .how-fill.how-lead .how-card:not(.how-main) p { font: var(--gr-type-body-sm); line-height: 1.4; }
+/* a: the microphone falls once and lands (0.9 s, after the card rises); none under reduced motion (D-049). */
+.how-ic-a .mic-fall { animation: mic-drop 0.9s cubic-bezier(0.5, 0, 0.75, 0) 0.35s both; }
+@keyframes mic-drop { 0% { transform: translateY(-70px); opacity: 0; } 15% { opacity: 1; } 78% { transform: translateY(8px); } 90% { transform: translateY(-4px); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .how-ic-a .mic-fall { animation: none; } }
+html[data-motion="reduced"] .how-ic-a .mic-fall { animation: none; }
+/* D-086: the chosen Daily Drop card on "Kako radi": icon and name in one row, the sentence under them; the tile is dark
+   with a brand-gradient edge so the bolt can glow; every 5 s a calendar page drops and the note's halves snap together
+   along the rift (WCAG 2.2.2: stops with "Smanji pokrete" or the system setting, D-085). */
+.screen-how .how-fill.how-lead .how-main.how-k { display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: var(--gr-space-3); }
+.how-k-row { display: flex; align-items: center; gap: var(--gr-space-4); }
+.how-k-row .how-t { margin: 0; }
+.screen-how .how-fill.how-lead .how-main .how-vis.how-k-tile, .how-main .how-vis.how-k-tile { width: 76px; height: 76px; border-radius: 22px; background: linear-gradient(var(--gr-color-bg-canvas), var(--gr-color-bg-canvas)) padding-box, var(--gr-gradient-brand) border-box; border: 2px solid transparent; }
+.screen-how .how-fill.how-lead .how-main .how-k-tile .how-ic { width: 62px; height: 62px; overflow: visible; }
+/* Short phone screens keep "Kako radi" on one screen (session 11): a smaller tile, name and sentence. */
+@media (max-height: 700px) and (min-width: 17.5em) and (max-width: 599px) and (orientation: portrait) {
+  .screen-how .how-fill.how-lead .how-main.how-k { gap: var(--gr-space-2); padding: var(--gr-space-3) var(--gr-space-4); }
+  .screen-how .how-fill.how-lead .how-main .how-vis.how-k-tile { width: 56px; height: 56px; border-radius: 17px; }
+  .screen-how .how-fill.how-lead .how-main .how-k-tile .how-ic { width: 46px; height: 46px; }
+  .screen-how .how-fill.how-lead .how-main .hv-name { font-size: 1.375rem; }
+  .screen-how .how-fill.how-lead .how-main p { font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .screen-how .how-fill.how-lead .how-card:not(.how-main) { padding: 6px var(--gr-space-3); }
+  .screen-how .how-fill.how-lead .how-card:not(.how-main) p { font-size: 0.8125rem; line-height: 1.3; }
+}
+
+  .hk .hk-bolt, .hk .hk-sparks { opacity: 0; }
+  .hk .hk-bolt { stroke: #FFF4E6; filter: drop-shadow(0 0 2px #FFCB69) drop-shadow(0 0 5px #FF586B); }
+  .hk .hk-sparks { stroke: #FFCB69; transform-box: fill-box; transform-origin: 50% 50%; }
+  .hk.hk-play .hk-l { animation: hk-snap-l .55s cubic-bezier(.3,1.3,.5,1) .3s both, hk-jolt-l 3s ease-in-out 1.4s infinite; }
+  .hk.hk-play .hk-r { animation: hk-snap-r .55s cubic-bezier(.3,1.3,.5,1) .3s both, hk-jolt-r 3s ease-in-out 1.4s infinite; }
+  .hk.hk-play .hk-bolt { animation: hk-zap .7s linear .75s both, hk-zap-loop 3s linear 1.4s infinite; }
+  .hk.hk-play .hk-sparks { animation: hk-spark .6s ease-out .75s both, hk-spark-loop 3s ease-out 1.4s infinite; }
+  @keyframes hk-snap-l { from { transform: translate(-20px, 12px); opacity: 0; } 30% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes hk-snap-r { from { transform: translate(20px, -12px); opacity: 0; } 30% { opacity: 1; } to { transform: none; opacity: 1; } }
+  @keyframes hk-jolt-l { 0%, 20%, 100% { transform: none; } 7% { transform: translate(-5px, 3px); } }
+  @keyframes hk-jolt-r { 0%, 20%, 100% { transform: none; } 7% { transform: translate(5px, -3px); } }
+  @keyframes hk-zap { 0% { opacity: 0; } 12% { opacity: 1; } 24% { opacity: .2; } 36% { opacity: 1; } 60% { opacity: .9; } 100% { opacity: 0; } }
+  @keyframes hk-zap-loop { 0%, 3% { opacity: 0; } 6% { opacity: 1; } 9% { opacity: .2; } 12% { opacity: 1; } 20% { opacity: .8; } 28%, 100% { opacity: 0; } }
+  @keyframes hk-spark { 0% { opacity: 0; transform: scale(.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(1.35); } }
+  @keyframes hk-spark-loop { 0%, 4% { opacity: 0; transform: scale(.4); } 9% { opacity: 1; } 25%, 100% { opacity: 0; transform: scale(1.35); } }
+  @media (prefers-reduced-motion: reduce) { .hk.hk-play .hk-l, .hk.hk-play .hk-r, .hk.hk-play .hk-bolt, .hk.hk-play .hk-sparks { animation: none; } }
+  html[data-motion="reduced"] .hk.hk-play .hk-l, html[data-motion="reduced"] .hk.hk-play .hk-r, html[data-motion="reduced"] .hk.hk-play .hk-bolt, html[data-motion="reduced"] .hk.hk-play .hk-sparks { animation: none; }
+
 @media (forced-colors: active) {
   .tab[aria-current="page"], .rail-item[aria-current="page"] { color: Highlight; }
   .tab[aria-current="page"]::before, .rail-item[aria-current="page"]::before { background: Highlight; }
@@ -1512,6 +1592,10 @@ main:focus { outline: none; box-shadow: none; }
   .switch[aria-checked="true"] span { background: Highlight; }
   .skel span { background: Canvas; border: 1px solid GrayText; }
   .set-nav [aria-current="page"] { outline: 2px solid Highlight; outline-offset: -2px; color: Highlight; } /* inset: the rounded group clips an outside outline */
+  /* Step 3.9: rows inside a rounded group draw the focus outline inside (an outside one is clipped); the open row in focus
+     swaps its Highlight outline for a thicker CanvasText one, so focus and "open" differ. */
+  .set-list .set-row:focus-visible { outline: 2px solid CanvasText; outline-offset: -2px; }
+  .set-nav [aria-current="page"]:focus-visible { outline: 4px double CanvasText; outline-offset: -4px; }
   /* Step 3.6: every selected or chosen state is Highlight as well as its shape (tick, bar, thick border). */
   .chip[aria-pressed="true"], .sort input:checked + span, .day[aria-pressed="true"], .react[aria-pressed="true"], .choice:has(input:checked) { border-color: Highlight; }
   .chip[aria-pressed="true"] .ck { color: Highlight; }

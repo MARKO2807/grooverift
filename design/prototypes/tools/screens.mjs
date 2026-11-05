@@ -25,5 +25,7 @@ export const SCREENS = [
   'flow=drop&at=setsub&s=profile&pic=sample', 'flow=drop&at=setsub&s=profile&pic=sample&photo=b', 'flow=drop&at=setsub&s=profile&pic=sample&show=photo', 'flow=drop&at=setsub&s=profile&show=crop', 'flow=drop&at=setsub&s=profile&show=badfile', 'flow=drop&at=profile&pic=sample',
   'flow=drop&at=setsub&s=help', 'flow=drop&at=setsub&s=help&fb=b', 'flow=drop&at=setsub&s=help&shot=1&type=bug', 'flow=drop&at=setsub&s=help&show=sent',
   'flow=drop&at=hub&state=fail', 'flow=drop&at=hub&state=fail&fail=b', 'flow=drop&at=hub&state=fail&fail=c', 'flow=drop&at=home&state=paused', 'flow=drop&at=drop&state=paused', 'flow=drop&at=drop&state=paused&paused=b', 'flow=drop&at=featoff&f=dna',
-  'flow=drop&at=hub&state=first', 'flow=drop&at=hub&state=first&first=b', 'flow=drop&at=home&state=first', 'flow=drop&at=invsigned', 'flow=drop&at=invsigned&same=1', 'at=invmail'
+  'flow=drop&at=hub&state=first', 'flow=drop&at=hub&state=first&first=b', 'flow=drop&at=home&state=first', 'flow=drop&at=invsigned', 'flow=drop&at=invsigned&same=1', 'at=invmail',
+  // step 3.9: the options put to the owner (review39.html)
+  'smo=b', 'at=landing&smo=b', 'at=share&wall=none', 'at=share&wall=soft&wallnow=1', 'flow=drop&at=setsub&s=profile&nm=b'
 ];

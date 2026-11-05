@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · korak 3.9: završni pregled pristupačnosti</title>
+<!-- Owner decision sketch (session 21, step 3.9): the three findings of the closing accessibility review that need the
+     owner (the visitor sign-in wall, motion before sign-in, the display name rules), then the fixes made without a choice.
+     Every frame is the real prototype (index.html) with URL options. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .sel { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-coral); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+  .fixes { margin: 12px 0 0; padding-left: 20px; }
+  .fixes li { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Korak 3.9: završni pregled pristupačnosti</h1>
+  <p>Neovisni pregled (WCAG 2.2 AA) i ponovljene provjere našli su tri stvari koje traže tvoju odluku jer diraju ranije odluke (D-076, D-049, D-067), i niz popravaka koji ne traže izbor. Okviri su prava aplikacija; podaci su izmišljeni.</p>
+  <div class="note"><p><b>Zašto ovo uopće dolazi na stol.</b> WCAG 2.2 AA je baseline iz Master Prompta (§14). Kod tri stvari ispod trenutni dizajn izravno pada jedan kriterij razine A, pa je to rizik za audit i za EU Akt o pristupačnosti, ne stvar ukusa. Zato ih ne mijenjam sam.</p></div>
+  <nav class="toc" aria-label="Teme">
+    <a href="#t-wall">1. Zid za prijavu posjetitelja</a><a href="#t-smo">2. Pokreti prije prijave</a><a href="#t-nm">3. Ime za prikaz</a><a href="#t-done">Popravljeno bez izbora</a>
+  </nav>
+  <div id="sections"></div>
+  <h2 class="part" id="t-done">Popravljeno bez izbora</h2>
+  <p>Ovo su greške prema WCAG-u ili prema našoj specifikaciji komponenti (D-082); popravljene su u prototipu i upisane u specifikaciju za Fazu 4.</p>
+  <ul class="fixes">
+    <li><b>Fokus u Postavkama.</b> Okvir fokusa na retku liste bio je odrezan (vidjela se samo jedna crta između dva retka, nije se znalo koji je redak). Sad je okvir unutar retka. Na desktopu otvoreni redak u listi i fokus više ne izgledaju isto. Probaj: otvori Postavke i pritišći Tab.</li>
+    <li><b>Utišavanje.</b> Nakon „Utišaj” fokus je skakao na naslov na vrhu stranice (izvan ekrana). Sad ostaje na sklopljenom retku „Utišani odgovor”; „Poništi” vraća fokus na odgovor. Obavijest s „Poništi” ne nestaje dok je miš ili fokus na njoj.</li>
+    <li><b>Natrag.</b> Povratak na prethodni ekran vraća fokus na gumb kojim se otišlo dalje, ne na naslov na vrhu.</li>
+    <li><b>Kratke obavijesti (2 s) koje su bile jedino objašnjenje.</b> Značenje oznake „verificirano” sad se otvara u malom oblačiću iznad oznake i ostaje dok se ne zatvori (D-086); opcija „Svi članovi” za popise je ugašena dok je profil privatan (s razlogom ispod), a povratak na javni profil vraća tvoj raniji izbor; granica od 10 izvođača čuje se i čitačem zaslona; ugašeni gumb „ukloni” pokazuje na rečenicu koja kaže zašto.</li>
+    <li><b>„N novih odgovora”</b> se sad i izgovara čitačem zaslona (prije se samo pojavio gumb).</li>
+    <li><b>Kod za dvostruku provjeru</b> prima i zalijepljeni „123 456” s razmakom (prije se odrezao).</li>
+    <li><b>Enter</b> u polju za e-poštu, lozinku ili kod sad šalje obrazac (prijava, račun, nova lozinka, dvostruka provjera).</li>
+    <li><b>Zaboravljena lozinka</b> preuzima adresu upisanu na prijavi; kriva adresa dobiva poruku kako je popraviti.</li>
+    <li><b>Naslov u gornjoj traci</b> se lomi u dva reda umjesto „…”, pa se riječi ne gube uz veći razmak teksta.</li>
+    <li><b>Desktop Postavke:</b> „Račun je u redu” više ne prekriva naslov „RAČUN”, a ikona „Smanji pokrete” stoji u stupcu s ostalima.</li>
+    <li><b>Zoom preglednika 200 %:</b> pozivnica i „Kako radi” su se na kratkom prozoru smanjivale da stanu na ekran, pa je tekst rastao samo do 161–187 %. Sada to rade samo na pravom mobitelu.</li>
+    <li><b>Sitno:</b> gumbi „Odblokiraj”, „Poništi” i „Prikaži” u popisima kažu i čije ime; dan „danas” u Hubu čita se onim redom kojim se vidi; rečenica odbrojavanja za čitač zaslona prati sat; lozinka u Postavkama ima „Prikaži”; izrez slike u aplikaciji ima i gumbe sa strelicama, ne samo povlačenje.</li>
+  </ul>
+  <div id="done"></div>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-wall', '1. Zid za prijavu posjetitelja (D-076)', 'Posjetitelj otvori podijeljeno pitanje. Sada nakon 5 sekundi iskoči prozor „Prijavi se da nastaviš” koji se ne može zatvoriti, a stranica iza se zamuti. Problem: to je vremensko ograničenje od 5 s za čitanje, bez načina da se isključi ili produlji, a to WCAG 2.2.1 (razina A) ne dopušta. Osoba koja čita čitačem zaslona ili sporije čita izgubi stranicu usred rečenice; pravni linkovi (i DSA obrazac za prijavu sadržaja) ostaju iza zida. Uz to je u STATUS-u već zapisan rizik manipulativnog dizajna (rizik 8, odvjetnik C.9). U okviru zid iskače odmah, da se vidi.', 'at=share&wallnow=1', 'wall', [
+      ['none', 'A. Bez zida', 'Stranica sama poziva: pitanje, jedna rečenica o GrooveRiftu i trajni gumb „Prijavi se” na dnu. Ništa ne iskače. Prolazi WCAG, nema rizika manipulativnog dizajna, a posjetitelj ionako vidi samo pitanje (D-022).', 'rec'],
+      ['soft', 'B. Mekani zid', 'Nakon 5 s s dna izađe list „Prijavi se da nastaviš”, ali se može zatvoriti (X, Escape, dodir pokraj) i više se ne vraća. Formalno prolazi 2.2.1 (može se isključiti), ali i dalje prekida čitanje usred rečenice.', ''],
+      ['hard', 'C. Tvrdi zid (sadašnje)', 'Ostaje kako je odlučeno u D-076. Pada WCAG 2.2.1 (razina A) i nosi rizik manipulativnog dizajna; to bi trebalo zapisati kao svjesno prihvaćen rizik i pitati odvjetnika.', '']
+    ]],
+    ['t-smo', '2. Pokreti prije prijave (D-049, WCAG 2.2.2)', 'Struja na pozivnici, iskra u wordmarku i struja kod imena Daily Drop kreću se bez kraja. Nakon prijave to gasi „Smanji pokrete” u Postavkama, ali prije prijave (pozivnica, onboarding, posjetitelji) toga nema, a WCAG 2.2.2 (razina A) traži da se pokret koji traje dulje od 5 s može zaustaviti. Postavka sustava (Windows, iOS) radi i sada, ali je auditori ne priznaju uvijek kao dovoljnu. U okvirima je pozivnica.', '', 'smo', [
+      ['b', 'B. Gumb za pauzu u gornjoj traci', 'Na svakom ekranu prije prijave, pokraj „HR”, mala ikona pauze „Zaustavi pokrete”. Isti prekidač kao „Smanji pokrete” u Postavkama, pamti se na uređaju. Pokreti ostaju živi, a tko želi mir ima ga jednim dodirom.', 'rec'],
+      ['c', 'C. Pokreti sami stanu nakon 5 s', 'Prije prijave sve se kreće 5 sekundi pa se smiri (struja ostane nacrtana, mirna). Nakon prijave pokreti se vraćaju. Nema novog gumba, ali pozivnica nakon 5 s izgleda mirnije.', ''],
+      ['a', 'A. Samo postavka sustava (sadašnje)', 'Ništa se ne mijenja; pokret gasi samo postavka „Smanji pokrete” u Windowsu ili na telefonu. Rizik da audit to ne prizna kao WCAG 2.2.2.', '']
+    ]],
+    ['t-nm', '3. Ime za prikaz (D-067)', 'Sada: najviše tri riječi i svaka riječ automatski dobiva veliko slovo. Pregled je upozorio da to kvari stvarna imena: „van der Berg” postane „Van Der Berg”, „bell hooks” (namjerno malim slovima) postane „Bell Hooks”, a „Maria José da Silva” se ne može ni upisati. To nije WCAG greška nego pitanje uključivosti, zato je na tebi. Upiši u polje „Ime za prikaz” i probaj.', 'flow=drop&at=setsub&s=profile', 'nm', [
+      ['b', 'B. Slobodno, do 40 znakova', 'Bez ograničenja broja riječi i bez automatskih velikih slova; ime ostaje kako ga je osoba napisala. Razmaci na početku i kraju se brišu. Najuključivije, a 40 znakova i dalje čuva izgled.', 'rec'],
+      ['c', 'C. Do tri riječi, kako je napisano', 'Ograničenje od tri riječi ostaje, ali bez automatskih velikih slova. Čuva kratka imena; duža imena i dalje ne prolaze.', ''],
+      ['a', 'A. Kao sada (D-067)', 'Do tri riječi, svaka s velikim slovom. Uredno izgleda, ali mijenja tuđa imena i odbija duža.', '']
+    ]]
+  ];
+  const DONE = [
+    ['Popravci za pogledati', 'Isti popravci kao gore, otvoreni u okviru. U Postavkama pritisni Tab da vidiš okvir fokusa.', [
+      ['Postavke (Tab)', 'flow=drop&at=settings'], ['Oznaka verificirano: dodirni kvačicu', 'flow=drop&at=member&who=nika.rework'], ['Privatni profil: popisi', 'flow=drop&at=setsub&s=privacy&private=1'], ['Lozinka s „Prikaži”', 'flow=drop&at=setsub&s=password'], ['Dvostruka provjera: zalijepi „123 456”', 'at=twofa'], ['Kako radi', 'at=how']]]
+  ];
+  const CHOSEN = { wall: 'none', smo: 'a', nm: 'c' }; // D-085
+  const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${CHOSEN[key] === v ? ' <span class="sel">odabrano</span>' : ''}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
+      ${frame(title + ': ' + t, `${base}${base ? '&' : ''}${key}=${v}`)}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
+    <div class="grid">${frames.map(([t, src]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src)}</div>`).join('')}</div></section>`).join('') +
+    '<p style="margin-top:24px">Desktop: <a href="index.html?flow=drop&amp;at=setsub&amp;s=privacy" target="_blank">Postavke na širokom prozoru</a> (otvori i pritišći Tab).</p>';
+})();
+</script>
+</body>
+</html>

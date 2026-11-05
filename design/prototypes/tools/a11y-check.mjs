@@ -30,7 +30,7 @@ const W = +opt('w', '360'), H = +opt('h', '740'), shots = opt('shots', ''), FC =
 const queries = args.filter(a => !a.startsWith('--'));
 const list = queries.length ? queries : SCREENS;
 
-const port = 9337;
+const port = +(process.env.PORT || 9337); // PORT=<n> lets two runs go side by side
 const profile = mkdtempSync(join(tmpdir(), 'gr-a11y-'));
 const proc = spawn(chrome, ['--headless=new', '--disable-gpu', '--hide-scrollbars', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--window-size=800,900', 'about:blank'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));

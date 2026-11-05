@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · „Kako radi”: ikona i rečenica za Daily Drop</title>
+<!-- Owner decision sketch (session 21, after the step 3.9 review): the Daily Drop card on "Kako radi" leads, with a
+     musical icon (?howic=a..e) and the time line (?howt=a..c). Every frame is the real prototype (index.html). -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 48px 0 6px; }
+  h2.part { font: var(--gr-type-title-1); margin: 64px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 80ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; align-items: flex-start; }
+  .opt { width: 376px; display: flex; flex-direction: column; gap: 8px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p { font: var(--gr-type-body-sm); margin: 0; }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .sel { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-coral); border-radius: 9999px; padding: 1px 8px; }
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: max-content; }
+  iframe { display: block; border: 0; border-radius: 22px; background: #0B0D12; width: 360px; height: 740px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 80ch; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>„Kako radi”: Daily Drop u prvom planu</h1>
+  <p>Tvoje napomene iz sesije 21, već ugrađene u svim okvirima: kartica Daily Drop je velika i prva, ostale tri su manje; „Znaš li?” sad kaže „Dvaput tjedno otkrivamo priče iza glazbe.”; oznaka „verificirano” otvara mali oblačić iznad sebe s kraćim tekstom. Otvorena su još dva izbora ispod. Okviri su prava aplikacija; osvježi okvir da ponovno vidiš pokret.</p>
+  <div class="note"><p><b>Važno za rečenicu o vremenu.</b> Master Prompt (§4) kaže da Daily Drop izlazi u 00:00 UTC za cijeli svijet, isto pitanje za sve (u Zagrebu je to 01:00 zimi, 02:00 ljeti). Vrijeme koje član može mijenjati je <b>podsjetnik</b>. Zato preporuka piše „podsjetnik u 12:00”, a ne „pitanje u 12:00”.</p></div>
+  <div id="sections"></div>
+  <h2 class="part" id="t-done">Već promijenjeno</h2>
+  <div id="done"></div>
+</div>
+<script>
+(function () {
+  const T = [
+    ['t-ic', '1. Ikona za Daily Drop', 'Kalendar govori „svaki dan”, ali nije glazbeno. Četiri nova crteža u istom tankom stilu kao ostale ikone (nacrtani za GrooveRift, nisu iz biblioteke), i kalendar za usporedbu.', 'at=how&howt=a', 'howic', [
+      ['a', 'A. Mic drop', 'Mikrofon koji pada: jednom „upadne” u kvadrat i udari o pod (manje od sekunde, kad se kartica pojavi; uz „Smanji pokrete” stoji mirno). Najjasnije „drop”, glazbeno i malo drsko.', 'rec'],
+      ['b', 'B. Kalendar s mikrofonom', 'Kalendar ostaje (svaki dan), a umjesto točkica je mikrofon. Najjasnije govori „svaki dan nešto glazbeno”, ali je mirnije.', ''],
+      ['c', 'C. Kap s notom', '„Drop” kao kap, u njoj nota. Jednostavno i mekano; manje se čita kao „pitanje”.', ''],
+      ['d', 'D. Mikrofon na podu', 'Mikrofon je pao i još „zvoni” (dva vala). Isti mic drop, ali kao trenutak nakon, bez pokreta.', ''],
+      ['e', 'E. Kalendar (kao prije)', 'Postojeća ikona, za usporedbu.', '']
+    ]],
+    ['t-time', '2. Rečenica o vremenu', 'Tvoja napomena: „po defaultu svaki dan u 12:00, jedino ako oni budu htjeli promijeniti vrijeme”. Pitanje izlazi u 00:00 UTC za sve, pa je ono što član mijenja vrijeme podsjetnika. Okviri su s ikonom A.', 'at=how&howic=a', 'howt', [
+      ['a', 'A. Podsjetnik u 12:00', '„Svaki dan novo glazbeno pitanje, isto za sve. Podsjetnik stiže u 12:00, a vrijeme možeš promijeniti.” Zadano vrijeme podsjetnika postaje 12:00 (bilo je 09:00). Točno i bez sukoba s Master Promptom.', 'rec'],
+      ['b', 'B. „Svaki dan u 12:00”', 'Doslovno iz napomene. To bi značilo da pitanje izlazi u 12:00, a to mijenja potvrđeno pravilo (00:00 UTC, Master Prompt §4), odbrojavanje i plan objave. Treba posebnu odluku.', ''],
+      ['c', 'C. Kao prije (01:00)', '„Svaki dan u 01:00 jedno glazbeno pitanje, isto za sve.” Točno, ali 01:00 zvuči kao usred noći.', '']
+    ]]
+  ];
+  const DONE = [
+    ['Oblačić „verificirano”', 'Dodirni kvačicu pokraj imena. Zatvara se novim dodirom, tipkom Escape ili dodirom bilo gdje drugdje.', [['Profil s oznakom', 'flow=drop&at=member&who=nika.rework']]]
+  ];
+  const CHOSEN = { howt: 'a' }; // D-086; the icon was settled on drop-card.html (round 4, K2 with the page turning)
+  const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
+  document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
+    <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>
+    <div class="grid">${opts.map(([v, t, d, tag]) => `<div class="opt">
+      <h3>${t}${CHOSEN[key] === v ? ' <span class="sel">odabrano</span>' : ''}${tag === 'rec' ? ' <span class="rec">preporuka</span>' : ''}</h3>
+      ${frame(title + ': ' + t, `${base}&${key}=${v}`)}
+      <p>${d}</p></div>`).join('')}</div></section>`).join('');
+  document.getElementById('done').innerHTML = DONE.map(([title, desc, frames]) => `<section><h2 class="sec">${title}</h2><p>${desc}</p>
+    <div class="grid">${frames.map(([t, src]) => `<div class="opt"><h3>${t}</h3>${frame(title + ': ' + t, src)}</div>`).join('')}</div></section>`).join('');
+})();
+</script>
+</body>
+</html>

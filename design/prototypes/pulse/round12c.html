@@ -40,7 +40,7 @@
 <body>
 <div class="page">
   <h1>Runda 12c: odjavljeni posjetitelji i prijava</h1>
-  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-076 i D-077, sesija 15).</b> Početna sa strujom, prijava u podnožju, podijeljeno pitanje bez struje ispod datuma, nova lozinka vodi natrag na prijavu, drugi korak samo s kodom, zid za prijavu nakon 5 sekundi koji se ne može zatvoriti (C), zaključavanje nakon 5 promašaja (15 min, pa 1 h, pa 24 h).</p>
+  <p id="chosen" style="color:var(--gr-color-text-primary)"><b>Odlučeno (D-076 i D-077, sesija 15).</b> Početna sa strujom, prijava u podnožju, podijeljeno pitanje bez struje ispod datuma, nova lozinka vodi natrag na prijavu, drugi korak samo s kodom, zid za prijavu nakon 5 sekundi koji se ne može zatvoriti (C), zaključavanje nakon 5 promašaja (15 min, pa 1 h, pa 24 h). <b>Promijenjeno u koraku 3.9 (D-085):</b> bez zida, jer je zid od 5 sekundi vremensko ograničenje koje WCAG 2.2.1 ne dopušta.</p>
   <p>Okviri su prava aplikacija. U prvom dijelu nisi prijavljena: ovo vidi netko tko dobije poveznicu ili dođe na grooverift.com. Prijava prolazi s bilo kojom lozinkom („kriva” pokazuje grešku). Sve adrese, kodovi i podaci su izmišljeni; pravni tekstovi (Uvjeti, Privatnost) pišu se s pravnikom.</p>
   <div class="note"><p><b>Pravila koja vrijede u svim verzijama</b> (D-022, IA8, U-05, U-08, R-08, Master Prompt §3, nisu izbor):</p>
     <ul>
@@ -99,7 +99,7 @@
     ['Odjavljeni posjetitelj (PUB-07, PUB-08, SYS-01)', 'Poveznica na odgovor pokazuje isto što i poveznica na pitanje. Javni profil u najmanjem obliku; verificirani izvođač ima oznaku. Privatni profil i nepostojeća stranica izgledaju isto.', [
       ['Poveznica na odgovor', 'at=share&a=1'], ['Starije pitanje', 'at=share&day=2026-10-30'], ['Javni profil', 'at=pubprofile&who=petra.zvuk'], ['Verificirani profil', 'at=pubprofile&who=nika.rework'], ['Privatni profil', 'at=pubprofile&who=mia_vinyl'], ['Nije dostupno', 'at=na']]]
   ];
-  const CHOSEN = { land: 'b', pub: 'b', share: 'a', reset: 'b', tfa: 'a', wall: 'hard' };
+  const CHOSEN = { land: 'b', pub: 'b', share: 'a', reset: 'b', tfa: 'a', wall: 'none' }; // wall: hard in D-076, none since D-085 (step 3.9, WCAG 2.2.1)
   const frame = (title, src) => `<div class="phone"><iframe title="${title}" loading="lazy" src="index.html?${src}"></iframe></div>`;
   document.getElementById('sections').innerHTML = T.map(([id, title, desc, base, key, opts]) => `<section aria-labelledby="${id}">
     <h2 class="sec" id="${id}">${title}</h2><p>${desc}</p>

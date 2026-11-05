@@ -166,8 +166,8 @@
     const err = st.err[name];
     return `<fieldset class="choices${cls ? ' ' + cls : ''}"${err ? ` aria-describedby="err-${name}"` : ''}>
       <legend class="choices-legend">${legend}</legend>
-      ${opts.map(o => `<label class="choice">
-        <input type="radio" name="${name}" value="${o.v}" data-k="${name}-${o.v}"${val === o.v ? ' checked' : ''}>
+      ${opts.map(o => `<label class="choice${o.off ? ' is-off' : ''}">
+        <input type="radio" name="${name}" value="${o.v}" data-k="${name}-${o.v}"${val === o.v ? ' checked' : ''}${o.off ? ' disabled' : ''}>
         <span class="choice-mark" aria-hidden="true">${ic('check')}</span>
         <span class="choice-body">
           <span class="choice-title">${o.icon ? ic(o.icon, 'choice-ic') : ''}<span${o.lang ? ` lang="${o.lang}"` : ''}>${o.t}</span></span>
@@ -381,7 +381,7 @@
     /* Muted (SAFE-03): the answer collapses to one line the member can open. Nothing else changes. */
     if (st.muted.has(a.handle) && !st.showMuted.has(a.id) && !o.full) return `<article class="ans ans-muted" aria-labelledby="h-${a.id}">
       <p class="ans-muted-t" id="h-${a.id}">${ic('bell', 'sm')}<span>Utišani odgovor: @${esc(a.handle)}</span></p>
-      <button class="link" data-a="show-muted" data-id="${a.id}" data-k="showm-${a.id}">Prikaži</button></article>`;
+      <button class="link" data-a="show-muted" data-id="${a.id}" data-h="${esc(a.handle)}" data-k="showm-${a.id}" aria-describedby="h-${a.id}">Prikaži</button></article>`;
     return `<article class="ans${a.mine ? ' ans-mine' : ''}${a.refs.length ? ' has-ref' : ''}" aria-labelledby="h-${a.id}">
       ${a.mine && !o.full ? '<p class="ans-label">Tvoj odgovor</p>' : ''}
       <header class="ans-head">
@@ -547,12 +547,51 @@
       <p class="fine fine-left">Music DNA možeš dodatno suziti u sljedećim koracima.</p>`;
   }
 
+  /* "Kako radi" (owner, session 21): the Daily Drop card leads and the other three are smaller. Its icon is a choice
+     (how-drop.html): ?howic=a the mic drop (a microphone that falls once and lands), b a calendar with a microphone,
+     c a drop with a note, d a microphone landed with a sound burst, e the calendar (before). Drawn for GrooveRift in the
+     Phosphor light line (12 on a 256 grid); not Phosphor icons. */
+  const HOWIC_AT = ['a', 'b', 'c', 'd', 'e', 'k'].includes(P.get('howic')) ? P.get('howic') : 'k'; // chosen: k (owner, D-086; drop-card.html). pick() is defined further down
+  /* k: the Daily Drop tile of drop-card.html round 4, K2 (D-086, final): a dark tile with a brand-gradient edge, a calendar
+     page, a note whose halves snap together along a rift once, then every 3 s the rift jolts and a bolt flickers. */
+  const HOW_K = (k, cls) => {
+    const g = 'url(#hkg-' + k + ')';
+    const note = fill => '<g transform="translate(-2 9)"><g fill="' + fill + '" stroke="none"><ellipse cx="100" cy="182" rx="17" ry="12.5" transform="rotate(-22 100 182)"/><ellipse cx="160" cy="170" rx="17" ry="12.5" transform="rotate(-22 160 170)"/><path d="M110 112L180 98V118L110 132Z"/></g><path d="M114 180V122M174 168V108" stroke="' + fill + '" stroke-width="10"/></g>';
+    const seam = 'M138 100L120 134 142 152 116 182 132 214';
+    return '<svg class="' + cls + '" viewBox="8 8 240 240" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><defs>'
+      + '<linearGradient id="hkg-' + k + '" gradientUnits="userSpaceOnUse" x1="36" y1="48" x2="220" y2="216"><stop offset="0" stop-color="#FF586B"/><stop offset="1" stop-color="#FFCB69"/></linearGradient>'
+      + '<clipPath id="hkl-' + k + '" clipPathUnits="userSpaceOnUse"><path d="M0 0H138V100L120 134 142 152 116 182 132 214V256H0Z"/></clipPath><clipPath id="hkr-' + k + '" clipPathUnits="userSpaceOnUse"><path d="M256 0H138V100L120 134 142 152 116 182 132 214V256H256Z"/></clipPath></defs>'
+      + '<rect x="36" y="48" width="184" height="168" rx="16" stroke="' + g + '"/><path d="M36 92h184" stroke="' + g + '"/>'
+      + '<g class="hk-l"><g clip-path="url(#hkl-' + k + ')">' + note(g) + '</g></g><g class="hk-r"><g clip-path="url(#hkr-' + k + ')">' + note(g) + '</g></g>'
+      + '<path class="hk-bolt" d="' + seam + '" stroke-width="6"/><path class="hk-sparks" d="M152 140l16-9M150 162l18 5M108 138l-15-10M110 164l-17 7M134 120l4-16" stroke-width="7"/>'
+      + '<path d="M84 28v36M172 28v36" stroke="' + g + '"/></svg>';
+  };
+  const SVG = inner => `<svg class="pi how-ic" viewBox="8 8 240 240" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${inner}</svg>`;
+  const MIC = '<rect x="94" y="22" width="68" height="88" rx="34"/><path d="M94 70h68"/><path d="M104 110l13 104a11 11 0 0 0 22 0l13-104"/>';
+  const HOW_ICONS = {
+    a: SVG(`<path d="M36 238h184"/><path d="M60 224l-16-12M196 224l16-12"/><g class="mic-fall"><path d="M184 20v26M210 34v26M236 20v22"/><g transform="rotate(-34 128 128)">${MIC}</g></g>`),
+    b: SVG('<rect x="36" y="48" width="184" height="168" rx="16"/><path d="M36 92h184M84 28v36M172 28v36"/><rect x="113" y="110" width="30" height="46" rx="15"/><path d="M98 146a30 30 0 0 0 60 0M128 176v18M112 194h32"/>'),
+    c: SVG('<path d="M128 22C128 22 54 108 54 158a74 74 0 0 0 148 0C202 108 128 22 128 22Z"/><path d="M142 116v62"/><ellipse cx="126" cy="180" rx="16" ry="12"/><path d="M142 116c14 4 24 14 24 30"/>'),
+    d: SVG(`<path d="M24 236h208"/><g transform="translate(-18 66) rotate(90 128 128)">${MIC}</g><path d="M142 128a44 44 0 0 1 64 0M126 100a72 72 0 0 1 96 0"/>`),
+    e: null
+  };
+  /* The Daily Drop line (owner, session 21: "u 12:00, unless they change the time"). The question itself publishes at
+     00:00 UTC for everyone (Master Prompt §4), so ?howt=a names the reminder (default 12:00, changeable); b is the
+     owner's words as written; c the line before. */
+  const HOWT_AT = ['a', 'b', 'c'].includes(P.get('howt')) ? P.get('howt') : 'a'; // chosen: a (owner, D-086)
+  const HOW_DROP_LINE = { a: 'Svaki dan novo glazbeno pitanje, isto za sve. Podsjetnik stiže u 12:00, a vrijeme možeš promijeniti.', b: 'Svaki dan u 12:00 jedno glazbeno pitanje, isto za sve.', c: 'Svaki dan u 01:00 jedno glazbeno pitanje, isto za sve.' }[HOWT_AT];
+  if (HOWT_AT === 'a' && st.remTime === '09:00') st.remTime = '12:00';
   function howStep() {
+    const dropIc = HOWIC_AT === 'k' ? HOW_K('how', 'how-ic') : HOW_ICONS[HOWIC_AT] || pic('calendar-dots', 'how-ic');
+    /* D-086: the icon and the name share one row, the sentence goes under them. */
+    const main = HOWIC_AT === 'k'
+      ? `<li class="how-card how-main how-k hk hk-play" style="--d:0"><div class="how-k-row"><div class="how-vis how-k-tile" aria-hidden="true">${dropIc}</div><h2 class="how-t"><span class="hv-name">Daily Drop</span></h2></div><p>${HOW_DROP_LINE}</p>`
+      : `<li class="how-card how-main" style="--d:0">
+          <div class="how-vis" aria-hidden="true">${dropIc}</div>
+          <div><h2 class="how-t"><span class="hv-name">Daily Drop</span></h2><p>${HOW_DROP_LINE}</p></div>`;
     return `<h1>Kako ${wm()} radi</h1>
-      <ol class="how how-fill">
-        <li class="how-card how-main" style="--d:0">
-          <div class="how-vis" aria-hidden="true">${pic('calendar-dots', 'how-ic')}</div>
-          <div><h2 class="how-t"><span class="hv-name">Daily Drop</span></h2><p>Svaki dan u 01:00 jedno glazbeno pitanje, isto za sve.</p></div>
+      <ol class="how how-fill how-lead how-ic-${HOWIC_AT}">
+        ${main}
         </li>
         <li class="how-card" style="--d:1">
           <div class="how-vis" aria-hidden="true">${pic('chart-bar-horizontal', 'how-ic')}</div>
@@ -560,7 +599,7 @@
         </li>
         <li class="how-card" style="--d:2">
           <div class="how-vis" aria-hidden="true">${pic('lightbulb-filament', 'how-ic')}</div>
-          <div><h2 class="how-t">Znaš li?</h2><p>Dvaput tjedno provjerena glazbena priča, uz izvore.</p></div>
+          <div><h2 class="how-t">Znaš li?</h2><p>Dvaput tjedno otkrivamo priče iza glazbe.</p></div>
         </li>
         <li class="how-card" style="--d:3">
           <div class="how-vis" aria-hidden="true">${pic('users-three', 'how-ic')}</div>
@@ -751,7 +790,7 @@
     if (HUB_AT === 'c' || HUB_AT === 'e') {
       const days = [{ date: D.drop.date, q: D.drop.question, today: true }].concat(D.pastDrops).slice(0, 7).reverse();
       const sel = days.find(d => d.date === st.hubDay) || days[days.length - 1];
-      return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${longDate(d.date)}${d.today ? ', danas' : ''}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
+      return `<div class="day-strip" role="group" aria-label="Zadnjih sedam dana" data-noswipe>${days.map(d => { const p = dparts(d.date); return `<button class="day" data-a="hub-day" data-d="${d.date}" data-k="day-${d.date}" aria-pressed="${d === sel}" aria-label="${d.today ? 'danas, ' : ''}${longDate(d.date)}"><span class="day-wd">${d.today ? 'danas' : p.wd3}</span><span class="day-n">${p.day}</span></button>`; }).join('')}</div>
         ${sel.today ? (STATE === 'nodrop' ? noDropBlock() : STATE === 'loading' ? skelDrop() : PAUSED ? pausedBlock(true) : hubDrop()) : `<section class="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser"><div class="dd-top">${ddName()}<p class="dd-date"><time datetime="${sel.date}">${longDate(sel.date)}</time></p></div>
           <h2 id="h-teaser" class="dd-q">${esc(sel.q)}</h2>${pastMeta(sel)}<p class="dd-still">Još uvijek možeš odgovoriti.</p>
           <div class="dd-actions dd-actions-inline"><button class="btn btn-primary btn-cta" data-a="toast" data-msg="${PAST_MSG}" data-k="past-answer">Odgovori</button><button class="link read-link" data-a="toast" data-msg="${PAST_MSG}" data-k="past-read">Pročitaj odgovore</button></div></section>`}
@@ -812,7 +851,7 @@
   const SUBKEY = { 'Uredi profil': 'profile', 'Račun': 'account', 'Sigurnost': 'security', 'Privatnost': 'privacy', 'Blokirani i utišani': 'blocked', 'Obavijesti': 'notifications', 'Jezik i regija': 'language', 'Pomoć i povratne informacije': 'help', 'Pravila zajednice': 'rules', 'Uvjeti, privatnost i kolačići': 'terms', 'O GrooveRiftu': 'about' };
   function setRow(r, k) {
     const [i, t, d, id] = r;
-    if (i === 'motion') return `<li class="set-row set-row-switch"><span class="set-ic-wrap" aria-hidden="true">${pic('sliders-horizontal', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="calm-l">Smanji pokrete</span><span class="set-d" id="calm-d">Pristupačnost. Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</span></span>
+    if (i === 'motion') return `<li class="set-row set-row-switch set-row-ic"><span class="set-ic-wrap" aria-hidden="true">${pic('sliders-horizontal', 'set-ic')}</span><span class="set-txt"><span class="set-t" id="calm-l">Smanji pokrete</span><span class="set-d" id="calm-d">Pristupačnost. Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.</span></span>
         <button type="button" class="switch" role="switch" aria-checked="${MOT.calm()}" aria-labelledby="calm-l" aria-describedby="calm-d" data-a="calm" data-k="calm"><span></span></button></li>`;
     return `<li><button class="set-row" data-a="setsub" data-s="${SUBKEY[t]}" data-k="set-${k}"><span class="set-ic-wrap" aria-hidden="true">${setIcon(i)}</span><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
   }
@@ -982,7 +1021,7 @@
         <p class="set-note">Poslat ćemo poveznicu na novu adresu. Dok je ne otvoriš, vrijedi stara. Na staru adresu stiže obavijest o promjeni.</p>
         <button class="btn btn-primary btn-block" data-a="toast" data-msg="Poveznica je poslana na novu adresu (simulacija)." data-k="email-save">Pošalji poveznicu</button>`],
     password: ['Lozinka', () => `${field({ id: 'pwold', label: 'Trenutna lozinka', type: 'password', attrs: 'autocomplete="current-password"' })}
-        ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: 'password', value: st.pw, desc: pwDesc(), attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"' })}
+        ${field({ id: 'pw', label: 'Nova lozinka', help: `Najmanje ${PW_MIN} znakova, veliko i malo slovo te poseban znak.`, type: st.showPw ? 'text' : 'password', value: st.pw, desc: pwDesc(), attrs: 'autocomplete="new-password" autocapitalize="none" spellcheck="false"', after: pwEye() })}
         <div class="pw-meter" id="pw-meter">${pwMeter()}</div>
         <label class="age-check sub-check"><input type="checkbox" checked data-k="pw-others"><span>Odjavi i sve druge uređaje</span></label>
         <button class="btn btn-primary btn-block" data-a="pw-save" data-k="pw-save">Promijeni lozinku</button>
@@ -1006,7 +1045,7 @@
       : `<ol class="steps">
           <li><p class="set-t">Otvori aplikaciju za jednokratne kodove</p><p class="set-d">Bilo koju koja podržava TOTP. Možda je već imaš za neki drugi račun.</p></li>
           <li><p class="set-t">Skeniraj kod</p><div class="qr" aria-hidden="true">${qrFake()}</div><p class="set-d">Ne možeš skenirati? Upiši ključ <code>JBSW Y3DP EHPK 3PXP</code></p></li>
-          <li>${field({ id: 'otp', label: 'Upiši kod od 6 znamenki', attrs: 'inputmode="numeric" autocomplete="one-time-code" maxlength="6"' })}</li>
+          <li>${field({ id: 'otp', label: 'Upiši kod od 6 znamenki', attrs: 'inputmode="numeric" autocomplete="one-time-code" maxlength="9"' })}</li>
         </ol>
         <button class="btn btn-primary btn-block" data-a="otp-ok" data-k="otp-ok">Uključi</button>
         <p class="meta">Primjer: kod i ključ nisu pravi. U skici prolazi bilo kojih 6 znamenki.</p>`],
@@ -1130,7 +1169,7 @@
 
   /* Settings helpers. */
   const subRow = (k, t, d, s) => `<li><button class="set-row set-row-plain" data-a="setsub" data-s="${s}" data-k="${k}"><span class="set-txt"><span class="set-t">${t}</span>${d ? `<span class="set-d">${d}</span>` : ''}</span>${ic('chevron', 'sm set-go')}</button></li>`;
-  const blRow = (h, btn, act) => { const m = D.members[h] || { who: h }; return `<li class="set-row set-row-bl">${avatar(h, m.who, 'sm')}<span class="set-txt"><span class="set-t">${esc(m.who)}</span><span class="set-d">@${esc(h)}</span></span><button class="btn btn-secondary btn-sm" data-a="${act}" data-h="${h}" data-k="bl-${h}">${btn}</button></li>`; };
+  const blRow = (h, btn, act) => { const m = D.members[h] || { who: h }; return `<li class="set-row set-row-bl">${avatar(h, m.who, 'sm')}<span class="set-txt"><span class="set-t">${esc(m.who)}</span><span class="set-d">@${esc(h)}</span></span><button class="btn btn-secondary btn-sm" data-a="${act}" data-h="${h}" data-k="bl-${h}" aria-label="${act === 'unmute' ? 'Poništi utišavanje' : btn} @${esc(h)}">${btn}</button></li>`; };
   function u2Status() {
     const u = st.newUser == null ? st.username : st.newUser;
     if (!u || u === st.username) return '';
@@ -1160,7 +1199,7 @@
     ['vis2', 'Profil', 'Tko vidi tvoj profil?', [{ v: 'public', icon: 'globe', t: 'Javno', d: 'Profil, Music DNA i povijest odgovora vide svi članovi. Pojavljuješ se u Otkrivanju.' }, { v: 'private', icon: 'lock', t: 'Privatno', d: 'Vide ih samo pratitelji koje odobriš. Ne pojavljuješ se u Otkrivanju.' }], st.vis, VIS_LABEL],
     ['dnaVis2', 'Music DNA', 'Tko vidi tvoj Music DNA?', [{ v: 'all', icon: 'users', t: 'Svi članovi', d: 'Koristi se i za Otkrivanje i kompatibilnost.' }, { v: 'followers', icon: 'user', t: 'Samo pratitelji' }, { v: 'me', icon: 'lock', t: 'Samo ja', d: 'Nitko drugi, ni u kompatibilnosti.' }], st.dnaVis, DNA_LABEL],
     ['hist2', 'Povijest odgovora na profilu', 'Tko vidi povijest tvojih odgovora na profilu?', [{ v: 'same', t: 'Kao profil', d: st.vis === 'private' ? 'Sad: samo pratitelji.' : 'Sad: svi članovi.' }, { v: 'followers', t: 'Samo pratitelji' }, { v: 'me', t: 'Samo ja' }], st.histVis || 'same', HIST_LABEL],
-    ['lists2', 'Pratitelji i praćeni', 'Tko vidi popise pratitelja i praćenih te njihove brojeve?', [{ v: 'all', t: 'Svi članovi', d: st.vis === 'private' ? 'Nije moguće dok je profil privatan.' : '' }, { v: 'followers', t: 'Samo pratitelji' }, { v: 'me', t: 'Samo ja' }], st.lists || 'followers', LISTS_LABEL]
+    ['lists2', 'Pratitelji i praćeni', 'Tko vidi popise pratitelja i praćenih te njihove brojeve?', [{ v: 'all', t: 'Svi članovi', d: st.vis === 'private' ? 'Nije moguće dok je profil privatan.' : '', off: st.vis === 'private' }, { v: 'followers', t: 'Samo pratitelji' }, { v: 'me', t: 'Samo ja' }], st.lists || 'followers', LISTS_LABEL]
   ];
   function privacyBody() {
     const same = `<p class="vrow-same">${ic('users', 'sm')}<span>Odgovore na Daily Drop i komentare uvijek vide svi članovi, i kad je profil privatan.</span></p>`;
@@ -1311,7 +1350,11 @@
   const whoLink = (a, k) => a.mine || isMe(a.handle) ? `<span class="name">${esc(a.who)}</span>` : `<button class="who-link" data-a="open-member" data-h="${esc(a.handle)}" data-k="${k}"><span class="name">${esc(a.who)}</span></button>`;
   const dnaFixed = (key, m, h) => `<canvas class="dna" data-dna="${key}" data-genres="${esc((m.dna || []).join('|'))}" data-artists="${esc((m.artists || []).join('|'))}" data-h="${h}" aria-hidden="true"></canvas>`;
   const artistsOf = m => (m.artists || []).length ? `<ul class="portraits portraits-sm" aria-label="Izvođači">${m.artists.map(n => `<li>${artistTile(fx(n) || { name: n })}<span class="p-name">${esc(n)}</span></li>`).join('')}</ul>` : '';
-  const vbadge = () => `<button class="vbadge" data-a="toast" data-msg="Verificirano: administratori su ručno potvrdili da je ovo pravi izvođač ili glazbeni profesionalac. Nije plaćeni status ni rang." data-k="vbadge" aria-label="Verificirani račun, što to znači?">${ic('check')}</button>`;
+  /* Step 3.9: the meaning of the verified mark opens in a small bubble above the mark (owner, session 21) and stays until
+     the mark is pressed again, Escape or a click elsewhere (it was a 2 s toast, the only place that explained it). The
+     bubble sits after the h1, not inside it, so it is not part of the heading; afterRender() places it over the mark. */
+  const vbadge = () => `<button class="vbadge" data-a="vtip" data-k="vbadge" aria-expanded="${!!st.vtip}" aria-controls="vtip" aria-label="Verificirani račun, što to znači?">${ic('check')}</button>`;
+  const vtip = () => `<p id="vtip" class="vtip"${st.vtip ? '' : ' hidden'}>Provjereno: pravi izvođač ili glazbeni profesionalac. Ne može se kupiti.</p>`;
   /* The relationship button names its state; unfollow and cancel are separate, confirmed actions (J4). */
   function relBtn(h, cls) {
     const m = member(h), r = rel(h), c = `btn${cls ? ' ' + cls : ''}`;
@@ -1359,7 +1402,7 @@
     /* D-075: a quiet mark that the viewer muted this member. Only the viewer sees it; the member never does. */
     const muted = !isMe(h) && st.muted.has(h) ? `<span class="rel-chip is-muted">${ic('bell', 'sm')}Utišano<span class="sr-only">, vidiš samo ti</span></span>` : '';
     const withBtn = see || PST_AT !== 'c';
-    const head = `<div class="pm-head${RBTN_AT === 'b' ? ' pm-head-b' : ''}">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>
+    const head = `<div class="pm-head${RBTN_AT === 'b' ? ' pm-head-b' : ''}">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>${m.verified ? vtip() : ''}
       <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}${chip ? `<span aria-hidden="true">·</span>${chip}` : ''}${muted ? `<span aria-hidden="true">·</span>${muted}` : ''}</p></div>${RBTN_AT === 'b' && withBtn ? relBtn(h, 'btn-sm') : ''}</div>`;
     const bio = m.bio ? `<p class="pf-bio">${esc(m.bio)}</p>` : '';
     const relRow = RBTN_AT === 'a' && withBtn ? `<div class="rel-row">${relBtn(h)}${pmenuBtn(h)}</div>` : '';
@@ -1485,12 +1528,31 @@
     const alsoReport = st.blkReport; st.blkReport = false; st.overlay = null; st.rep = null;
     const gone = (st.screen === 'answer' || st.screen === 'report') && st.ctx && !findAnswer(st.ctx);
     if (alsoReport) { if (gone) back(); return openReport({ t: 'profile', h }); }
-    if (gone) back(); else { render(); focusH1(); }
+    if (gone) back(); else { render(); focusH1(true); }
     toast(`Blokirano. @${h} više ne vidi tvoj profil ni odgovore.`);
   }
-  /* Mute (SAFE-03): one-way, silent, with Undo. */
-  function doMute(h) { st.muted.add(h); st.overlay = null; st.rep = null; render(); focusH1(); toast(`Utišano: @${h}. Ta osoba to ne zna.`, { label: 'Poništi', fn: () => doUnmute(h) }); }
-  function doUnmute(h) { st.muted.delete(h); st.overlay = null; render(); focusH1(); toast('Utišavanje je poništeno.'); }
+  /* Mute (SAFE-03): one-way, silent, with Undo. Step 3.9: focus stays where the reader was: on the collapsed line that
+     replaced the answer (the one nearest the middle of the window), else on the menu button that opened the mute, else
+     on the page title, scrolled into view. Undo puts focus back on the answer. */
+  function focusNear(sel) {
+    const els = [...root.querySelectorAll(sel)].filter(e => e.getClientRects().length);
+    if (!els.length) return false;
+    const mid = innerHeight / 2, d = e => Math.abs(e.getBoundingClientRect().top - mid);
+    els.sort((a, b) => d(a) - d(b)); els[0].focus(); return true;
+  }
+  function doMute(h) {
+    const ret = st.overlay && st.overlay.ret;
+    st.muted.add(h); st.overlay = null; st.rep = null; render();
+    const place = () => { if (focusNear(`[data-a="show-muted"][data-h="${CSS.escape(h)}"]`)) return; const r = ret && root.querySelector(`[data-k="${CSS.escape(ret)}"]`); if (r) r.focus(); else focusH1(true); };
+    place();
+    const at = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.id : null;
+    toast(`Utišano: @${h}. Ta osoba to ne zna.`, { label: 'Poništi', fn: () => doUnmute(h, at) });
+  }
+  function doUnmute(h, aid) {
+    st.muted.delete(h); st.overlay = null; render();
+    if (aid && root.querySelector(`#h-${CSS.escape(aid)}`)) focusSel(`#h-${CSS.escape(aid)}`); else focusH1(true);
+    toast('Utišavanje je poništeno.');
+  }
   /* Account status (SAFE-04 to SAFE-07). */
   function statusBody() {
     const ns = allNotices(), rs = st.reports;
@@ -1565,7 +1627,20 @@
   /* The sign-in wall for visitors (owner idea, session 15): none = the page itself is the invitation; soft = a sheet
      after a few seconds that can be closed; hard = a dialog after a few seconds that cannot be closed, with the page
      blurred behind it. Never on the landing. ?wallnow=1 skips the wait, for the review frames. */
-  const WALL_AT = pick('wall', ['none', 'soft', 'hard'], 'hard'); // chosen: hard, after 5 s (owner, D-076)
+  const WALL_AT = pick('wall', ['none', 'soft', 'hard'], 'none'); // D-085 (step 3.9): no wall. The hard wall (D-076) was a 5 s time limit that WCAG 2.2.1 does not allow
+  /* Step 3.9 (review39.html), motion before sign-in (WCAG 2.2.2): the invite current, the wordmark bolt and the Daily Drop
+     name move without end, and the "Smanji pokrete" setting is only reachable after sign-in. a: the system setting only
+     (as before); b: a pause button in the top bar of every screen before sign-in, beside HR; c: motion before sign-in
+     rests by itself after 5 s (and comes back after sign-in). */
+  const SMO_AT = pick('smo', ['a', 'b', 'c'], 'a'); // D-085: a, the system setting only; the owner accepts the WCAG 2.2.2 risk (to confirm with an auditor)
+  /* Step 3.9, the display name (D-067): a at most three words, each starting with a capital (as before); b free, up to
+     40 characters, written as typed; c at most three words, written as typed. */
+  const NM_AT = pick('nm', ['a', 'b', 'c'], 'c'); // D-085: c, at most three words, written as typed (amends D-067)
+  const NAME_HELP = { a: 'Do tri riječi, svaka počinje velikim slovom.', b: 'Do 40 znakova, onako kako ga pišeš.', c: 'Do tri riječi, onako kako ih pišeš.' }[NM_AT];
+  function scheduleRest() {
+    if (SMO_AT !== 'c' || st.restTimer || MOT.calm() || !['onb', 'bare', 'pub'].includes(document.documentElement.dataset.kind)) return;
+    st.restTimer = setTimeout(() => { st.restTimer = null; if (['onb', 'bare', 'pub'].includes(document.documentElement.dataset.kind) && !MOT.calm()) { st.autoCalm = true; MOT.setCalm(true); } }, 5000);
+  }
   const WALL_MS = P.get('wallnow') === '1' ? 0 : 5000;
   const PUB_AT = pick('pub', ['a', 'b'], 'b');            // signed-out shell: a "Prijavi se" in the top bar, b a sticky foot
   const SHARE_AT = pick('share', ['a', 'b'], 'a');        // PUB-07: a the question only, b plus a short introduction
@@ -1629,7 +1704,7 @@
   /* PUB-08: username, display name, avatar and bio of a public profile. Nothing else, and no hint of what is hidden. */
   function pubProfileBody(h) {
     const m = D.members[h];
-    return `<div class="pm-head">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>
+    return `<div class="pm-head">${avatar(h, m.who, 'lg')}<div class="pm-id"><h1 class="prof-name pm-name"><span>${esc(m.who)}</span>${m.verified ? vbadge() : ''}</h1>${m.verified ? vtip() : ''}
         <p class="meta">@${esc(h)}${m.verified ? '<span aria-hidden="true">·</span><span>Verificirano</span>' : ''}</p></div></div>
       ${m.bio ? `<p class="pf-bio">${esc(m.bio)}</p>` : ''}
       <p class="pub-more">${ic('lock', 'sm')}<span>Kao član vidiš više, ovisno o postavkama te osobe.</span></p>
@@ -1645,7 +1720,7 @@
         <p class="lead">${rec ? 'Upiši jedan od kodova za oporavak. Svaki vrijedi jednom.' : 'Upiši kod iz aplikacije za autentifikaciju.'}</p></div>
       <div class="tfa-field">${rec
         ? field({ id: 'rcode', label: 'Kod za oporavak', attrs: 'autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="11"' })
-        : field({ id: 'code', label: 'Kod (6 znamenki)', attrs: 'inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6"' })}</div>
+        : field({ id: 'code', label: 'Kod (6 znamenki)', attrs: 'inputmode="numeric" autocomplete="one-time-code" maxlength="9"' })}</div>
       ${TFA_AT === 'b' && !rec ? '<label class="age-check tfa-rem"><input type="checkbox" id="f-tfarem" data-k="f-tfarem"><span>Zapamti ovaj uređaj 30 dana</span></label>' : ''}
       <button class="link signin-forgot" data-a="tfa-toggle" data-k="tfa-toggle">${rec ? 'Natrag na kod iz aplikacije' : 'Nemaš pristup aplikaciji? Upotrijebi kod za oporavak'}</button>
       <p class="meta">Skica: prolazi svaki kod osim 000000.</p>`;
@@ -1722,7 +1797,7 @@
     const key = esc(dnaKey(kind, item)), name = esc(dnaName(kind, item));
     const minLock = kind === 'genre' && DNAMIN_AT === 'a' && n <= D.genreMin;
     return `<li class="dna-row"${kind === 'genre' ? ` style="--g:${DNA.colorOf(item)}"` : ''}>${kind === 'artist' ? artistTile(item, 'sm') : '<span class="dna-swatch" aria-hidden="true"></span>'}<span class="dna-pos" aria-hidden="true">${i + 1}</span><span class="dna-name">${name}<span class="sr-only">, ${i + 1}. mjesto</span></span>
-      <span class="dna-btns"><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="-1" data-k="up-${kind}-${key}" aria-label="Pomakni ${name} gore"${i === 0 ? ' disabled' : ''}>${pic('caret-up', 'pi-sm')}</button><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="1" data-k="down-${kind}-${key}" aria-label="Pomakni ${name} dolje"${i === n - 1 ? ' disabled' : ''}>${pic('caret-down', 'pi-sm')}</button><button type="button" class="iconbtn sm dna-x" data-a="dna-remove" data-kind="${kind}" data-n="${key}" data-k="rm-${kind}-${key}" aria-label="Ukloni ${name}"${minLock ? ' aria-disabled="true"' : ''}>${ic('x')}</button></span></li>`;
+      <span class="dna-btns"><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="-1" data-k="up-${kind}-${key}" aria-label="Pomakni ${name} gore"${i === 0 ? ' disabled' : ''}>${pic('caret-up', 'pi-sm')}</button><button type="button" class="iconbtn sm" data-a="dna-move" data-kind="${kind}" data-n="${key}" data-d="1" data-k="down-${kind}-${key}" aria-label="Pomakni ${name} dolje"${i === n - 1 ? ' disabled' : ''}>${pic('caret-down', 'pi-sm')}</button><button type="button" class="iconbtn sm dna-x" data-a="dna-remove" data-kind="${kind}" data-n="${key}" data-k="rm-${kind}-${key}" aria-label="Ukloni ${name}"${minLock ? ' aria-disabled="true" aria-describedby="dna-min-hint"' : ''}>${ic('x')}</button></span></li>`;
   }
   /* The add-a-genre panel (editor a): the same search as onboarding (D-062), without the main-genre grid. */
   function dnaAddGenre() {
@@ -1743,7 +1818,7 @@
     const title = kind === 'genre' ? 'Žanrovi' : 'Izvođači';
     const order = kind === 'genre' ? `<p class="hint dna-order">${DNAE_AT === 'a' ? 'Prva tri žanra najviše oblikuju Spiralu.' : 'Redoslijed odabira: prvi odabrani najviše oblikuju Spiralu.'}</p>` : '';
     const full = n >= cap ? `<p class="hint">Najviše ${cap} ${kind === 'genre' ? 'žanrova' : 'izvođača'}. Ukloni ${kind === 'genre' ? 'jedan da dodaš drugi' : 'jednog da dodaš drugog'}.</p>` : '';
-    const minHint = kind === 'genre' && DNAMIN_AT === 'a' && n && n <= D.genreMin ? `<p class="hint">Music DNA ima najmanje ${D.genreMin} žanra, pa prvo dodaj novi.</p>` : '';
+    const minHint = kind === 'genre' && DNAMIN_AT === 'a' && n && n <= D.genreMin ? `<p class="hint" id="dna-min-hint">Music DNA ima najmanje ${D.genreMin} žanra, pa prvo dodaj novi.</p>` : '';
     let body;
     if (DNAE_AT === 'b') {
       body = kind === 'genre'
@@ -1813,7 +1888,7 @@
       : `<div class="foot-row equal photo-btns"><button type="button" class="btn btn-secondary btn-sm" data-a="photo-pick" data-k="sub-photo">${cam}${has ? 'Promijeni sliku' : 'Dodaj sliku'}</button>${has ? '<button type="button" class="btn btn-secondary btn-sm" data-a="photo-remove" data-k="sub-photo-rm">Ukloni</button>' : ''}</div>`;
     return `<div class="sub-avatar">${avatar(st.username, st.displayName || 'T', 'xl')}${act}
         ${st.photoErr ? `<p class="field-err" id="photo-err" role="alert" tabindex="-1">${ic('alert')}<span>${st.photoErr}</span></p>` : '<p class="help">Slika nije obavezna. Vide je svi, i bez prijave ako je profil javan.</p>'}</div>
-      ${field({ id: 'dname2', label: 'Ime za prikaz', help: 'Do tri riječi. Svaka počinje velikim slovom.', value: st.nameDraft == null ? st.displayName : st.nameDraft, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
+      ${field({ id: 'dname2', label: 'Ime za prikaz', help: NAME_HELP, value: st.nameDraft == null ? st.displayName : st.nameDraft, attrs: `autocomplete="nickname" autocapitalize="${NM_AT === 'a' ? 'words' : 'off'}" maxlength="40"` })}
       <div class="field"><label class="label" for="f-bio">Bio <span class="opt">neobavezno</span></label><textarea class="textarea textarea-sm" id="f-bio" data-k="f-bio" rows="3" maxlength="160" aria-describedby="help-bio">${esc(st.bioDraft == null ? st.bio : st.bioDraft)}</textarea><p class="help" id="help-bio">Do 160 znakova. Vidi se i bez prijave ako je profil javan.</p></div>
       ${grp('', subRow('sub-dna', 'Uredi Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'dna'))}
       <button class="btn btn-primary btn-block" data-a="prof-save" data-k="sub-save">Spremi</button>`;
@@ -1918,15 +1993,18 @@
     const h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), s = left % 60, two = n => String(n).padStart(2, '0');
     return `<span class="first-n">${h}</span><span class="first-u">h</span><span class="first-n">${two(m)}</span><span class="first-u">min</span>${calm ? '' : `<span class="first-n">${two(s)}</span><span class="first-u">s</span>`}`;
   }
+  /* Step 3.9: the screen-reader sentence (not a live region, so never read out by itself) follows the clock, and at zero
+     the count gives way to a sentence. */
+  const firstSr = () => firstLeft() ? `Još oko ${Math.floor(firstLeft() / 3600)} sati i ${Math.floor(firstLeft() % 3600 / 60)} minuta do prvog pitanja.` : 'Prvo pitanje stiže svakog trena.';
   function firstTick() {
     clearInterval(st.firstTimer);
     const el = root.querySelector('.first-count'); if (!el) return;
     const calm = document.documentElement.dataset.motion === 'reduced';
-    st.firstTimer = setInterval(() => { const e = root.querySelector('.first-count'); if (!e) return clearInterval(st.firstTimer); e.innerHTML = firstCount(); }, calm ? 60000 : 1000);
+    st.firstTimer = setInterval(() => { const e = root.querySelector('.first-count'); if (!e) return clearInterval(st.firstTimer); if (!firstLeft()) { clearInterval(st.firstTimer); e.textContent = 'Stiže svakog trena.'; e.removeAttribute('aria-hidden'); } else e.innerHTML = firstCount(); const sr = root.querySelector('.first-sr'); if (sr) sr.textContent = firstLeft() ? firstSr() : ''; }, calm ? 60000 : 1000);
   }
   function firstBlock(where) {
     const p = dparts(D.drop.date), d = new Date(D.drop.date + 'T12:00:00Z');
-    const count = FIRST_AT === 'b' ? `<p class="first-count" aria-hidden="true">${firstCount()}</p><p class="sr-only">Još oko ${Math.floor(firstLeft() / 3600)} sati i ${Math.floor(firstLeft() % 3600 / 60)} minuta do prvog pitanja.</p>` : '';
+    const count = FIRST_AT === 'b' ? `<p class="first-count" aria-hidden="true">${firstCount()}</p><p class="sr-only first-sr">${firstSr()}</p>` : '';
     const rows = `<section class="section" aria-labelledby="h-while"><h2 id="h-while" class="section-title">Dok čekaš</h2><ul class="set-list">
         ${subRow('fw-dna', 'Dopuni Music DNA', `${st.genres.length} ${pl(st.genres.length, 'žanr', 'žanra', 'žanrova')}, ${st.artists.length} ${pl(st.artists.length, 'izvođač', 'izvođača', 'izvođača')}`, 'dna')}
         ${subRow('fw-rem', 'Podsjetnik za novo pitanje', st.reminder === 'on' ? `Uključen, u ${st.remTime}` : 'Isključen', 'notifications')}
@@ -2001,7 +2079,7 @@
     username: () => ({
       kind: 'onb',
       body: `<h1>Kako se zoveš?</h1>
-        ${field({ id: 'dname', label: 'Ime za prikaz', help: 'Tako te drugi vide. Do tri riječi, svaka počinje velikim slovom.', value: st.displayName, attrs: 'autocomplete="nickname" autocapitalize="words" maxlength="40"' })}
+        ${field({ id: 'dname', label: 'Ime za prikaz', help: 'Tako te drugi vide. ' + NAME_HELP, value: st.displayName, attrs: `autocomplete="nickname" autocapitalize="${NM_AT === 'a' ? 'words' : 'off'}" maxlength="40"` })}
         ${field({ id: 'uname', label: 'Korisničko ime', help: '3 do 20 znakova: mala slova, brojke, točka i donja crta.', value: st.username, prefix: '@', attrs: 'autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20"' })}
         <div id="uname-status" class="status" aria-live="polite">${userStatusHtml()}</div>`,
       foot: nextBtn()
@@ -2137,7 +2215,7 @@
           <section class="section" aria-labelledby="h-com">
             <h2 id="h-com" class="section-title">Komentari</h2>
             ${cs.length ? `<ul class="com-list">${cs.map((c, i) => (STATE === 'blocked' && i === 0) || st.blocked.has(c.handle) ? '<li><p class="com-gone">Ovaj komentar nije dostupan.</p></li>'
-              : st.muted.has(c.handle) && !st.showMuted.has('c' + a.id + i) ? `<li><p class="com-gone com-muted"><span>Utišani komentar: @${esc(c.handle)}</span><button class="link" data-a="show-muted" data-id="c${a.id}${i}" data-k="showm-c${i}">Prikaži</button></p></li>`
+              : st.muted.has(c.handle) && !st.showMuted.has('c' + a.id + i) ? `<li><p class="com-gone com-muted"><span>Utišani komentar: @${esc(c.handle)}</span><button class="link" data-a="show-muted" data-id="c${a.id}${i}" data-h="${esc(c.handle)}" data-k="showm-c${i}" aria-label="Prikaži komentar @${esc(c.handle)}">Prikaži</button></p></li>`
               : `<li><article class="com" aria-labelledby="hc-${i}">
               <header class="ans-head">${avatar(c.handle, c.who, 'sm')}
               <h3 class="ans-who" id="hc-${i}" tabindex="-1">${whoLink(c, 'who-c' + i)}<span class="sr-only">, </span><span class="handle">@${esc(c.handle)}</span></h3><span class="ans-time"><time>${c.time}</time></span></header>
@@ -2278,7 +2356,7 @@
     else if (s.topTitle) mid = s.topH1 ? `<h1 class="top-title">${esc(s.topTitle)}</h1>` : `<span class="top-title">${esc(s.topTitle)}</span>`;
     else mid = `<span class="wordmark">groove<span class="wm-rift">rift${bolt()}</span></span>${s.kind === 'app' ? '<span class="top-title top-home" aria-hidden="true">Početna</span>' : ''}`; // the desktop rail carries the wordmark, so Home's top bar shows its name (aria-hidden: the sr-only h1 already names it)
     const onb = s.kind === 'onb' || s.kind === 'bare' || s.kind === 'pub';
-    return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}${netChip()}<span class="alpha-tag">Alfa</span>${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
+    return `<header class="topbar">${left}${mid}<div class="top-right">${s.topActions || ''}${netChip()}<span class="alpha-tag">Alfa</span>${onb && SMO_AT === 'b' ? `<button type="button" class="iconbtn top-calm" data-a="calm" data-k="top-calm" aria-pressed="${MOT.calm()}" aria-label="Zaustavi pokrete">${pic('pause-circle')}</button>` : ''}${onb ? '<button class="lang-btn" data-a="lang" data-k="lang" aria-label="HR, promijeni jezik">HR</button>' : ''}</div></header>`;
   }
   function tabbar(active) {
     const T = [['home', 'Početna', 'home'], ['hub', 'Hub', 'hub'], ['activity', 'Aktivnost', 'bell'], ['profile', 'Profil', 'user']];
@@ -2409,7 +2487,7 @@
         <div class="sheet-head"><h2 id="ov-title" class="sheet-title">Namjesti sliku</h2><button class="iconbtn" data-a="overlay-close" data-k="ov-x" aria-label="Zatvori">${ic('x')}</button></div>
         <div class="crop-wrap"><div class="crop-circ">${d === 'sample' ? `<span class="crop-img av-sample" style="transform:scale(${st.photoZoom})"></span>` : `<img class="crop-img" src="${d}" alt="" style="transform:scale(${st.photoZoom})">`}</div></div>
         <div class="field"><label class="label" for="f-zoom">Povećanje</label><input type="range" class="range" id="f-zoom" data-k="f-zoom" min="1" max="2.5" step="0.05" value="${st.photoZoom}"></div>
-        <p class="help">Vidi se ono u krugu. U aplikaciji sliku možeš i pomaknuti prstom; u skici samo povećanje.</p>
+        <p class="help">Vidi se ono u krugu. U aplikaciji sliku pomičeš povlačenjem ili gumbima sa strelicama (i tipkama sa strelicama); u skici samo povećanje.</p>
         <div class="dialog-actions"><button class="btn btn-secondary" data-a="overlay-close" data-k="ov-cancel">Odustani</button><button class="btn btn-primary" data-a="crop-save" data-k="ov-ok">Spremi</button></div></div>`;
     }
     if (o.type === 'discard') return dlg('Odbaciti promjene?', 'Ime i bio vraćaju se na spremljeno.', 'Nastavi uređivati', 'prof-discard', 'Odbaci', true);
@@ -2442,9 +2520,18 @@
   }
 
   /* Motifs after each render: mount the current, the dock orbit and the Music DNA canvases. */
+  function placeTip() {
+    const tip = root.querySelector('#vtip:not([hidden])'), mark = root.querySelector('.vbadge');
+    if (!tip || !mark || !tip.offsetParent) return;
+    const b = mark.getBoundingClientRect(), host = tip.offsetParent.getBoundingClientRect(), w = tip.offsetWidth;
+    const left = Math.max(12, Math.min(innerWidth - 12 - w, b.left + b.width / 2 - w / 2));
+    tip.style.left = (left - host.left) + 'px';
+    tip.style.top = (b.top - host.top - tip.offsetHeight - 10) + 'px';
+    tip.style.setProperty('--ax', (b.left + b.width / 2 - left) + 'px');
+  }
   function afterRender() {
     CUR.scan(root); INV.scan(root); DNA.scan(root);
-    scheduleWall(); firstTick();
+    scheduleWall(); firstTick(); scheduleRest(); placeTip();
     // review pages in iframes (invite-layout.html) ask whether the screen fits without scrolling
     if (window.parent !== window) setTimeout(() => parent.postMessage({ gr: 'fit', screen: st.screen, over: document.documentElement.scrollHeight - window.innerHeight }, '*'), 250);
   }
@@ -2486,14 +2573,15 @@
   }
 
   function focusSel(sel) { const el = root.querySelector(sel); if (el) { if (!el.hasAttribute('tabindex') && !/^(BUTTON|INPUT|TEXTAREA|SELECT|A)$/.test(el.tagName)) el.setAttribute('tabindex', '-1'); el.focus(); } }
-  function focusH1() { const h = root.querySelector('.shell h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
+  /* scroll = true after an action in place (step 3.9): focus on a title above the window is a lost reading position. */
+  function focusH1(scroll) { const h = root.querySelector('.shell h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: !scroll }); } }
 
   function go(screen, o) {
     o = o || {};
     /* The sub-screen and its subject travel with the history entry (round 12b), so Back from one settings sub-screen to
        another, or from one member to another, restores the right one. New values are passed in o, applied after the push. */
     if (o.reset) st.hist = [];
-    else st.hist.push({ screen: st.screen, y: window.scrollY, sub: st.sub, noticeId: st.noticeId, reportId: st.reportId, who: st.who, ctx: st.ctx, listOf: st.listOf, list: st.list });
+    else st.hist.push({ screen: st.screen, y: window.scrollY, k: document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null, sub: st.sub, noticeId: st.noticeId, reportId: st.reportId, who: st.who, ctx: st.ctx, listOf: st.listOf, list: st.list });
     ['sub', 'noticeId', 'reportId', 'who', 'listOf', 'list'].forEach(k => { if (o[k] !== undefined) st[k] = o[k]; });
     st.screen = screen; st.err = {}; st.overlay = null;
     CUR.reset(); INV.reset(); DNA.reset();
@@ -2506,11 +2594,15 @@
     st.screen = h.screen; st.err = {}; st.overlay = null;
     ['sub', 'noticeId', 'reportId', 'who', 'ctx', 'listOf', 'list'].forEach(k => { if (h[k] !== undefined) st[k] = h[k]; });
     CUR.reset(); INV.reset(); DNA.reset();
-    render(); window.scrollTo(0, h.y || 0); focusH1();
+    render(); window.scrollTo(0, h.y || 0);
+    /* Step 3.9: Back returns focus to the control that opened the screen, where the reader left off. */
+    const k = h.k && root.querySelector(`.shell [data-k="${CSS.escape(h.k)}"]`);
+    if (k && k.getClientRects().length) k.focus({ preventScroll: true }); else focusH1();
   }
 
   /* Round 10: sign in and out. Signing in fills the same fictional member as ?flow=drop. */
   function signedIn() {
+    if (st.autoCalm) { st.autoCalm = false; MOT.setCalm(false); } // step 3.9, smo=c: motion comes back after sign-in
     Object.assign(st, { displayName: st.displayName || 'Ana', username: st.username || 'ana.slusa', userState: 'ok', vis: st.vis || 'public', dnaVis: st.dnaVis || 'all', reminder: st.reminder || 'off', err: {}, pwIn: '' });
     if (!st.genres.length) { st.genres = ['Jazz', 'Soul', 'Kantautorska', 'Elektronika']; st.artists = [fx('Nina Simone'), fx('Arsen Dedić'), fx('Massive Attack')]; }
     if (st.acctPending) return go('pending', { reset: true });
@@ -2529,16 +2621,26 @@
   }
 
   let toastTimer;
-  /* act = { label, fn }: an action in the toast, used for Undo after a mute (SAFE-03). */
+  /* act = { label, fn }: an action in the toast, used for Undo after a mute (SAFE-03). Step 3.9: the toast never closes
+     while the pointer or the focus is in it (WCAG 2.2.1), so focus is never dropped to the page body; the time starts
+     again when they leave. */
   function toast(m, act) {
     clearTimeout(toastTimer);
     toastEl.innerHTML = '';
+    const ms = act ? 5000 : 2000;
+    const close = () => { if (toastEl.contains(document.activeElement) || toastEl.querySelector('.toast-in:hover')) return arm(); toastEl.innerHTML = ''; };
+    const arm = () => { clearTimeout(toastTimer); toastTimer = setTimeout(close, ms); };
     setTimeout(() => {
       toastEl.innerHTML = `<div class="toast-in${act ? ' has-act' : ''}"><span>${esc(m)}</span>${act ? `<button type="button" class="toast-btn" data-k="toast-act">${esc(act.label)}</button>` : ''}</div>`;
+      const t = toastEl.firstElementChild;
+      t.addEventListener('mouseenter', () => clearTimeout(toastTimer));
+      t.addEventListener('focusin', () => clearTimeout(toastTimer));
+      t.addEventListener('mouseleave', () => { if (!t.contains(document.activeElement)) arm(); });
+      t.addEventListener('focusout', e => { if (!t.contains(e.relatedTarget) && !t.matches(':hover')) arm(); });
       if (act) toastEl.querySelector('.toast-btn').onclick = () => { clearTimeout(toastTimer); toastEl.innerHTML = ''; act.fn(); };
     }, 40);
     /* D-078 (owner): a toast with a button stays 5 s (WCAG 2.2.1, J2), one without a button 2 s. */
-    toastTimer = setTimeout(() => { toastEl.innerHTML = ''; }, act ? 5000 : 2000);
+    arm();
   }
 
   function openOverlay(o, opener) { st.overlay = Object.assign({ ret: opener && opener.dataset.k }, o); render(); }
@@ -2552,9 +2654,11 @@
     if (st.newTimer) return;
     st.newTimer = setTimeout(() => {
       st.pending = D.laterAnswers.map(cloneAnswer);
-      if (st.screen === 'drop' && !st.overlay) render({ keep: true });
+      if (st.screen === 'drop' && !st.overlay) { render({ keep: true }); say(`${st.pending.length} ${pl(st.pending.length, 'novi odgovor', 'nova odgovora', 'novih odgovora')}. Gumb za prikaz je iznad popisa.`); }
     }, 20000);
   }
+  /* Step 3.9: a polite announcement that is not a toast (index.html #sr-live), for changes that appear without a request. */
+  function say(m) { const el = document.getElementById('sr-live'); if (!el) return; el.textContent = ''; setTimeout(() => { el.textContent = m; }, 60); }
 
   function focusFirstError() {
     const el = root.querySelector('[aria-invalid="true"], fieldset[aria-describedby^="err-"] input, [role="group"][aria-describedby^="err-"] .chip');
@@ -2688,6 +2792,7 @@
   root.addEventListener('pointercancel', e => swEnd(e, true));
 
   root.addEventListener('click', e => {
+    if (st.vtip && !e.target.closest('.vbadge, #vtip')) { st.vtip = false; render({ keep: true }); } // the bubble closes on a click elsewhere
     const b = e.target.closest('[data-a]');
     if (!b || !root.contains(b)) return;
     const a = b.dataset.a;
@@ -2697,7 +2802,7 @@
       case 'back': if (st.profDirty && st.screen === 'setsub' && st.sub === 'profile') return openOverlay({ type: 'discard' }, b); return back();
       case 'lang': return toast('U skici je samo hrvatski tekst. U aplikaciji se jezik mijenja ovdje na svakom koraku.');
       case 'toast': return toast(b.dataset.msg);
-      case 'showpw': st.showPw = !st.showPw; return render({ keep: true });
+      case 'showpw': { const old = root.querySelector('#f-pwold'), ov = old ? old.value : ''; st.showPw = !st.showPw; render({ keep: true }); const o2 = root.querySelector('#f-pwold'); if (o2) o2.value = ov; return; } // step 3.9: the password change has Prikaži too; the current password survives the redraw
       case 'google': toast('Simulacija: Google račun s istom adresom kao pozivnica. Račun je napravljen.'); return go('username', { reset: true });
       case 'pickuser': st.username = b.dataset.u; st.userState = 'ok'; delete st.err.uname; render(); return focusSel('#f-uname');
       case 'readlang': { const l = b.dataset.l; st.readLangs.has(l) ? st.readLangs.delete(l) : st.readLangs.add(l); return b.setAttribute('aria-pressed', st.readLangs.has(l)); }
@@ -2706,7 +2811,7 @@
       case 'artist-add': {
         const item = st.artistRes.items.find(x => x.id === b.dataset.id);
         if (!item || st.artists.some(x => x.id === item.id)) return;
-        if (st.artists.length >= D.artistMax) return toast(`Najviše ${D.artistMax} izvođača. Makni jednog da dodaš drugog.`);
+        if (st.artists.length >= D.artistMax) { const m = `Najviše ${D.artistMax} izvođača. Makni jednog da dodaš drugog.`, al = root.querySelector('#artist-live'); if (al) al.textContent = m; return toast(m); } // step 3.9: also read out
         st.artists.push(Object.assign({}, item));
         if (dnaEdit()) { render({ keep: true }); DNA.refresh(); dnaLive(`Dodano: ${item.name}.`); return focusSel('#f-artist'); }
         updateDnaStep(); return focusSel('#f-artist');
@@ -2768,6 +2873,7 @@
       case 'mute': { const h = b.dataset.h; if (MUTE_AT === 'b') return openOverlay({ type: 'mute', h, ret: (st.overlay && st.overlay.ret) || b.dataset.k }, b); return doMute(h); }
       case 'mute-confirm': return doMute(st.overlay.h);
       case 'unmute': return doUnmute(b.dataset.h);
+      case 'vtip': st.vtip = !st.vtip; render({ keep: true }); return focusSel('.vbadge');
       case 'show-muted': st.showMuted.add(b.dataset.id); render(); return focusSel(`#h-${CSS.escape(b.dataset.id)}, main h1`);
       case 'block': return openOverlay({ type: 'block', h: b.dataset.h, ret: (st.overlay && st.overlay.ret) || b.dataset.k }, b);
       case 'block-confirm': return doBlock(st.overlay.h);
@@ -2819,14 +2925,14 @@
       case 'pub-signin': st.ret = st.pubRet || null; return go('signin');
       case 'to-landing': st.ret = null; return go('landing', { reset: true });
       case 'to-signin2': st.pwIn = ''; st.showPw = false; return go('signin', { reset: true });
-      case 'to-reset': return go('reset');
-      case 'reset-send': { st.err = {}; const v = (st.remail || '').trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { st.err.remail = 'Upiši adresu e-pošte.'; render(); return focusSel('#f-remail'); } st.remail = v; return go('resetsent'); }
+      case 'to-reset': { const e = st.screen === 'signin' && root.querySelector('#f-email'); if (e && e.value.trim()) st.remail = e.value.trim(); return go('reset'); } // step 3.9: the address typed at sign-in comes along (3.3.7)
+      case 'reset-send': { st.err = {}; const v = (st.remail || '').trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { st.err.remail = v ? 'Adresa nije potpuna. Treba izgledati kao ime@primjer.hr.' : 'Upiši adresu e-pošte.'; render(); return focusSel('#f-remail'); } st.remail = v; return go('resetsent'); }
       case 'reset-again': return toast('Poslano ponovno. Sljedeće slanje moguće je za minutu.');
       case 'reset-save': return resetSave();
       case 'tfa-toggle': st.tfaRec = !st.tfaRec; st.err = {}; render(); return focusSel(st.tfaRec ? '#f-rcode' : '#f-code');
       case 'tfa-ok': {
         st.err = {};
-        const id = st.tfaRec ? 'rcode' : 'code', el = root.querySelector('#f-' + id), v = el ? el.value.trim() : '';
+        const id = st.tfaRec ? 'rcode' : 'code', el = root.querySelector('#f-' + id), v = el ? (st.tfaRec ? el.value.trim() : el.value.replace(/[\s-]/g, '')) : ''; // step 3.9: a pasted "123 456" works (3.3.8)
         if (st.tfaRec ? v.length < 8 : !/^\d{6}$/.test(v)) st.err[id] = st.tfaRec ? 'Upiši cijeli kod za oporavak.' : 'Upiši 6 znamenki.';
         else if (v === '000000') st.err[id] = 'Kod nije točan. Provjeri vrijeme na telefonu i pokušaj ponovno.';
         if (st.err[id]) { render(); return focusSel('#f-' + id); }
@@ -2853,11 +2959,11 @@
         if (!/ok/.test(u2Status())) { st.err.uname2 = 'Odaberi slobodno korisničko ime.'; render({ keep: true }); return focusSel('#f-uname2'); }
         st.newUser = u; return openOverlay({ type: 'uname' }, b);
       }
-      case 'uname-confirm': st.oldUser = st.username; st.username = st.newUser; st.newUser = null; st.userChanged = true; st.overlay = null; render(); focusH1(); return toast(`Sad si @${st.username}.`);
+      case 'uname-confirm': st.oldUser = st.username; st.username = st.newUser; st.newUser = null; st.userChanged = true; st.overlay = null; render(); focusH1(true); return toast(`Sad si @${st.username}.`);
       case 'otp-ok': {
         const f = root.querySelector('#f-otp');
-        if (!f || !/^\d{6}$/.test(f.value)) { st.err.otp = 'Upiši 6 znamenki iz aplikacije.'; render(); return focusSel('#f-otp'); }
-        st.twofa = true; delete st.err.otp; render(); focusH1(); return toast('Dvostruka provjera je uključena.');
+        if (!f || !/^\d{6}$/.test(f.value.replace(/[\s-]/g, ''))) { st.err.otp = 'Upiši 6 znamenki iz aplikacije.'; render(); return focusSel('#f-otp'); }
+        st.twofa = true; delete st.err.otp; render(); focusH1(true); return toast('Dvostruka provjera je uključena.');
       }
       /* Round 12a: following, lists and requests. */
       case 'follow': { const h = b.dataset.h; if (member(h).vis === 'private') { st.req.add(h); render({ keep: true }); return toast('Zahtjev je poslan. Vidjet ćeš kad ga ta osoba odobri.'); } setFollow(ME_H, h, true); render({ keep: true }); return toast(`Pratiš @${h}.`); }
@@ -2926,10 +3032,11 @@
      The rest of each word is left as typed (McCartney, DJ). */
   function nameFix(el) {
     const v = el.value, pos = el.selectionStart;
+    if (NM_AT === 'b') return; // step 3.9 option b: written as typed (spaces are trimmed on save)
     let w = v.replace(/^\s+/, '').replace(/\s+/g, ' ').split(' ');
     const cut = w.length > 4 || (w.length === 4 && w[3] !== '');
     if (cut) { w = w.slice(0, 3).concat(''); toast('Ime za prikaz može imati najviše tri riječi.'); }
-    const out = w.map(x => x.replace(/(^|-)(\p{Ll})/gu, (m, a, c) => a + c.toLocaleUpperCase('hr'))).join(' ');
+    const out = NM_AT === 'c' ? w.join(' ') : w.map(x => x.replace(/(^|-)(\p{Ll})/gu, (m, a, c) => a + c.toLocaleUpperCase('hr'))).join(' ');
     if (out === v) return;
     el.value = out;
     const p = Math.max(0, Math.min(out.length, pos - (v.length - out.length)));
@@ -2984,8 +3091,11 @@
       if (n === 'vis2') st.vis = t.value; else if (n === 'dnaVis2') st.dnaVis = t.value; else if (n === 'lang2') st.lang = t.value; else if (n === 'del') st.del = t.value;
       else if (n === 'hist2') st.histVis = t.value; else if (n === 'lists2') st.lists = t.value;
       /* D-033: a private profile caps the follower lists at followers. */
-      if (n === 'vis2' && t.value === 'private' && (st.lists || 'followers') === 'all') st.lists = 'followers';
-      if (n === 'lists2' && t.value === 'all' && st.vis === 'private') { st.lists = 'followers'; toast('Dok je profil privatan, popise vide najviše pratitelji.'); }
+      /* Step 3.9: the 'Svi članovi' option is disabled while the profile is private (its line says why), and going public
+         again restores the member's earlier choice instead of leaving the silent change in place. */
+      if (n === 'vis2' && t.value === 'private' && (st.lists || 'followers') === 'all') { st.lists = 'followers'; st.listsWas = 'all'; }
+      if (n === 'vis2' && t.value === 'public' && st.listsWas) { st.lists = st.listsWas; st.listsWas = null; }
+      if (n === 'lists2') st.listsWas = null;
       if (['vis2', 'dnaVis2', 'hist2', 'lists2'].includes(n)) { render({ keep: true }); }
       if (n === 'age') st.age = t.value;
       else if (n === 'vis') st.vis = t.value;
@@ -2999,7 +3109,18 @@
     else if (t.id === 'f-file') fileChosen(t.files && t.files[0]);
   });
 
+  /* Step 3.9: Enter in a credential field submits, as in a real form (components.md §4.2). The prototype's sign-in,
+     account, reset, two-step and password screens are not <form>s, so Enter presses the primary button of the dialog or
+     screen. Phase 4 builds these as real forms with the submit button inside. */
   document.addEventListener('keydown', e => {
+    const t = e.target;
+    if (e.key !== 'Enter' || e.isComposing || !t.matches || !t.matches('input[autocomplete~="email"], input[autocomplete~="username"], input[autocomplete~="current-password"], input[autocomplete~="new-password"], input[autocomplete~="one-time-code"]')) return;
+    const scope = t.closest('.dialog, .sheet') || root.querySelector('.shell') || root;
+    const btn = [...scope.querySelectorAll('.btn-primary')].find(b => b.getClientRects().length && !b.disabled && b.getAttribute('aria-disabled') !== 'true');
+    if (btn) { e.preventDefault(); btn.click(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && st.vtip && !st.overlay) { st.vtip = false; render({ keep: true }); return focusSel('.vbadge'); }
     if (e.key !== 'Escape' || !st.overlay || st.overlay.type === 'perm' || (st.overlay.type === 'wall' && WALL_AT === 'hard')) return;
     if (st.overlay.type === 'sheet') cancelCompose(); else closeOverlay();
   });

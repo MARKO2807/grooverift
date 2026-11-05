@@ -80,7 +80,7 @@ const FLOW = `(async () => {${HELPERS}
   await type('#f-pw', 'Ovo je duga lozinka, 7 nota!'); await click('[data-a="next"]'); expect(scr() === 'username', 'username');
   expect($('main h1').textContent === 'Kako se zoveš?', 'name question');
   await click('[data-a="next"]'); expect($('#err-dname') && $('#err-uname'), 'username errors');
-  await type('#f-dname', 'ana mari horvat kovač'); expect($('#f-dname').value === 'Ana Mari Horvat ', 'name: three words, each capitalised (D-067)');
+  await type('#f-dname', 'ana van der berg'); expect($('#f-dname').value === 'ana van der ', 'name: three words, written as typed (D-085, amends D-067)');
   await type('#f-dname', 'Ana'); await type('#f-uname', 'ana'); await sleep(600);
   expect($('[data-a="pickuser"]'), 'username suggestions');
   await click('[data-a="pickuser"]'); await click('[data-a="next"]'); expect(scr() === 'language', 'language');
@@ -124,7 +124,8 @@ const FLOW = `(async () => {${HELPERS}
   await click('[data-a="back"]'); expect(scr() === 'dna' && $('[data-g="Jazz"]').getAttribute('aria-pressed') === 'true', 'back keeps picks');
   await click('[data-a="next"]');
   await click('input[name="dnaVis"][value="followers"]'); await click('[data-a="next"]'); expect(scr() === 'how', 'how');
-  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm') && $$('.how-vis svg.pi').length === 4, 'four how cards, library icons, wordmark');
+  expect($$('.how-card').length === 4 && !$('.how-badge') && $('main h1 .wm') && $$('.how-vis svg.pi').length === 3 && $('.how-k-row .how-k-tile svg') && $('.how-k-row .hv-name'), 'four how cards: the drawn Daily Drop tile beside its name (D-086), three library icons, wordmark');
+  expect(document.body.textContent.includes('Podsjetnik stiže u 12:00') && document.body.textContent.includes('otkrivamo priče iza glazbe'), 'the D-086 copy');
   expect(!$('main canvas.current') && fits(), 'how: no current, fits the screen without scrolling (session 11)');
   await click('[data-a="next"]'); expect(scr() === 'reminder', 'reminder');
   expect($('.notif') && $('.foot-row.equal'), 'notification preview and equal buttons');
@@ -455,20 +456,19 @@ const runs = [
     await sleep(250); expect($('.sheet.wall') && $('.wall [data-k="ov-x"]') && $('.shell[inert]'), 'soft: a sheet that can be closed');
     await click('[data-k="ov-x"]'); expect(!$('.wall'), 'closed'); await sleep(300); expect(!$('.wall'), 'and it does not come back');
     return 'ok'; })()` },
-  { name: 'r12c sign-in wall hard (default) on a profile', url: `${base}?at=pubprofile&who=petra.zvuk&wallnow=1`, test: `(async () => {${HELPERS}
+  { name: 'r12c sign-in wall hard (rejected in D-085) on a profile', url: `${base}?at=pubprofile&who=petra.zvuk&wall=hard&wallnow=1`, test: `(async () => {${HELPERS}
     await sleep(250); expect($('.dialog.wall') && $('.scrim-blur') && !$('.wall [data-k="ov-x"]') && !$('.scrim[data-a]'), 'hard: no close button, no scrim close, blurred');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await sleep(100); expect($('.wall'), 'Escape does not close it');
     await click('[data-k="wall-signin"]'); expect(scr() === 'signin' && $('.ret-line'), 'to sign-in with the return line'); return 'ok'; })()` },
   { name: 'r12c no wall on the landing', url: `${base}?at=landing&wallnow=1`, test: `(async () => {${HELPERS} await sleep(300); expect(!$('.wall'), 'the landing never gets a wall'); return 'ok'; })()` },
-  { name: 'r12c no wall (rejected option)', url: `${base}?at=share&wall=none&wallnow=1`, test: `(async () => {${HELPERS} await sleep(300); expect(!$('.wall'), 'wall=none'); return 'ok'; })()` },
+  { name: 'r12c no wall (default since D-085)', url: `${base}?at=share&wallnow=1`, test: `(async () => {${HELPERS} await sleep(300); expect(!$('.wall'), 'wall=none'); return 'ok'; })()` },
   { name: 'r12c landing c', url: `${base}?at=landing&land=c`, test: `(async () => {${HELPERS} expect($('.pub-dd-card .dd-q-sm') && !$('.ans') && !$('.dd-meta'), 'c: today\\'s question, no answers or counts'); return 'ok'; })()` },
   { name: 'r12c share view returns to the question', url: `${base}?at=share`, test: `(async () => {${HELPERS}
     expect(scr() === 'share' && $('h1.dd-q') && !$('canvas.current') && !$('.ans') && !$('.dd-meta') && !$('.stack'), 'question only, no current under the date: no answers, counts or faces (D-022)');
     expect(!document.body.textContent.includes('Mia') && !document.body.textContent.includes('Petra'), 'no member names');
     expect($('[data-k="what"]') && !$('.pub-intro'), 'a: the link to the landing, no intro block');
-    await sleep(3000); expect(!$('.wall'), 'no wall yet after three seconds');
-    await sleep(2300); expect($('.dialog.wall') && $('.scrim-blur') && !$('.wall [data-k="ov-x"]') && $('.shell[inert]'), 'the wall after five seconds, cannot be closed (D-076 C)');
-    await click('[data-k="wall-signin"]'); expect(scr() === 'signin' && $('.ret-line').textContent.includes('pitanje'), 'sign-in says it returns to the question');
+    await sleep(5300); expect(!$('.wall') && !$('.shell[inert]'), 'no wall, also after five seconds (D-085)');
+    await click('[data-k="pub-signin"]'); expect(scr() === 'signin' && $('.ret-line').textContent.includes('pitanje'), 'sign-in says it returns to the question');
     await type('#f-pwin', 'bilo koja'); await click('[data-a="signin"]'); expect(scr() === 'drop' && $('.ans'), 'back on the question, answers visible as a member');
     await click('[data-a="back"]'); expect(scr() === 'home', 'Back leads Home, not to the signed-out view'); return 'ok'; })()` },
   { name: 'r12c share b and the answer link', url: `${base}?at=share&share=b&a=1`, test: `(async () => {${HELPERS}
@@ -488,7 +488,7 @@ const runs = [
     expect($('#err-lock') && $('[data-k="signin"]').disabled && $('[data-k="google"]').disabled && $('[data-k="forgot"]'), 'lockout: both ways disabled, reset offered');
     await click('[data-k="forgot"]'); expect(scr() === 'reset', 'forgot leads to the reset request'); return 'ok'; })()` },
   { name: 'r12c reset request', url: `${base}?at=signin`, test: `(async () => {${HELPERS}
-    await click('[data-k="forgot"]'); expect(scr() === 'reset', 'reset screen'); await click('[data-a="reset-send"]'); expect($('#err-remail'), 'address required');
+    await type('#f-email', ''); await click('[data-k="forgot"]'); expect(scr() === 'reset', 'reset screen'); await click('[data-a="reset-send"]'); expect($('#err-remail'), 'address required'); // an empty sign-in address: nothing to carry over (step 3.9)
     await type('#f-remail', 'ana@therift.com'); await click('[data-a="reset-send"]'); expect(scr() === 'resetsent' && document.body.textContent.includes('ana@therift.com') && document.body.textContent.includes('30 minuta'), 'neutral sent page with the address and the validity');
     await click('[data-k="sent-signin"]'); expect(scr() === 'signin', 'back to sign-in'); return 'ok'; })()` },
   { name: 'r12c new password (D-061 rules, b)', url: `${base}?at=resetnew`, test: `(async () => {${HELPERS}
@@ -541,9 +541,9 @@ const runs = [
   { name: 'r12d audience from the editor', url: `${base}?flow=drop&at=setsub&s=dna`, test: `(async () => {${HELPERS}
     await click('[data-k="dna-aud"]'); expect($('.sheet-pick input[name="dnaVis2"]'), 'the same sheet as in Privacy (SET-05)'); await click('[data-k="dnaVis2-me"]'); await click('[data-k="ov-done"]'); expect($('.aud-line b').textContent === 'samo ja', 'the audience line follows'); return 'ok'; })()` },
   { name: 'r12d profile edit: drafts, discard dialog, save', url: `${base}?flow=drop&at=setsub&s=profile`, test: `(async () => {${HELPERS}
-    await type('#f-dname2', 'ana nova'); expect($('#f-dname2').value === 'Ana Nova', 'name rule (D-067) still applies');
-    await click('[data-k="top-back"]'); expect($('.dialog') && $('[data-a="prof-discard"]'), 'back with unsaved changes asks'); await click('[data-k="ov-cancel"]'); expect(scr() === 'setsub' && $('#f-dname2').value === 'Ana Nova', 'keeps editing with the draft');
-    await type('#f-bio', 'Novi bio.'); await click('[data-k="sub-save"]'); await sleep(120); expect(scr() === 'settings' && $('.set-me .set-t').textContent === 'Ana Nova' && $('.toast-in').textContent.includes('spremljen'), 'saved and back');
+    await type('#f-dname2', 'Ana nova bell hooks'); expect($('#f-dname2').value === 'Ana nova bell ', 'name rule (D-085): three words, as typed');
+    await click('[data-k="top-back"]'); expect($('.dialog') && $('[data-a="prof-discard"]'), 'back with unsaved changes asks'); await click('[data-k="ov-cancel"]'); expect(scr() === 'setsub' && $('#f-dname2').value === 'Ana nova bell ', 'keeps editing with the draft');
+    await type('#f-bio', 'Novi bio.'); await click('[data-k="sub-save"]'); await sleep(120); expect(scr() === 'settings' && $('.set-me .set-t').textContent.trim() === 'Ana nova bell' && $('.toast-in').textContent.includes('spremljen'), 'saved and back');
     await click('[data-k="top-back"]'); expect(scr() === 'profile' && $('.pf-bio').textContent === 'Novi bio.', 'the profile shows the new bio'); return 'ok'; })()` },
   { name: 'r12d photo sheet, crop and remove (a, a)', url: `${base}?flow=drop&at=setsub&s=profile`, test: `(async () => {${HELPERS}
     expect($('#f-file') && !$('.avatar.has-photo'), 'file input present, no photo yet'); await click('[data-k="sub-photo"]'); expect($('.sheet [data-k="ph-gal"]') && $('[data-k="ph-cam"]') && $('[data-k="ph-sample"]') && !$('[data-k="ph-rm"]'), 'sheet: gallery, camera, sample, no remove yet');
@@ -636,7 +636,7 @@ const runs = [
   })()` },
   { name: 'desktop 1920 settings list beside the detail', url: `${base}?flow=drop&at=setsub&s=account`, w: 1920, h: 1080, test: `(async () => {${HELPERS}
     const cs = el => getComputedStyle(el);
-    expect(cs($('.set-nav')).display === 'block' && $('.set-nav [aria-current="page"]') && $('.set-nav [aria-current="page"]').dataset.s === 'account', 'settings list on the left with Account marked');
+    expect(cs($('.set-nav')).display === 'flex' && $('.set-nav [aria-current="page"]') && $('.set-nav [aria-current="page"]').dataset.s === 'account', 'settings list on the left with Account marked');
     expect($('.set-detail').getBoundingClientRect().left > $('.set-nav').getBoundingClientRect().right, 'detail on the right');
     expect(cs($('.topbar [data-a="back"]')).display === 'none', 'no back arrow: the list is the way back');
     await click('.set-nav [data-s="privacy"]'); expect(scr() === 'setsub' && $('.set-nav [aria-current="page"]').dataset.s === 'privacy' && $('.set-detail .set-row'), 'the list opens another sub-screen and marks it');
@@ -688,6 +688,48 @@ const runs = [
     await click('[data-k="top-signin"]'); expect(scr() === 'signin' && Math.round($('.page').getBoundingClientRect().width) === 38 * 17, 'sign-in opens as a 38 rem card');
     return 'ok';
   })()` },
+  /* Step 3.9 (session 21): the fixes from the closing accessibility review. */
+  { name: 'step 3.9 mute keeps focus, the toast waits while focused', url: `${base}?flow=drop&at=drop`, test: `(async () => {${HELPERS}
+    const m = $$('[data-a="more"]')[1]; expect(m, 'an answer menu'); m.scrollIntoView({ block: 'center' }); await sleep(100); const y = scrollY;
+    m.click(); await sleep(150); await click('.sheet [data-a="mute"]'); await click('[data-a="mute-confirm"]'); await sleep(150);
+    const a = document.activeElement; expect(a && a.dataset.a === 'show-muted', 'focus on the collapsed line, got ' + (a && a.outerHTML.slice(0, 80)));
+    const r = a.getBoundingClientRect(); expect(r.top >= 0 && r.bottom <= innerHeight && Math.abs(scrollY - y) < 300, 'the collapsed line is in view');
+    expect(a.getAttribute('aria-describedby') === 'h-' + a.dataset.id, 'Prikaži names the muted answer');
+    const id = a.dataset.id; const tb = $('#toast .toast-btn'); expect(tb, 'Undo toast'); tb.focus(); await sleep(5600);
+    expect($('#toast .toast-btn'), 'the toast stays while it has focus'); tb.click(); await sleep(150);
+    expect(document.activeElement && document.activeElement.id === 'h-' + id, 'Undo returns focus to the answer');
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 verified tip opens in place', url: `${base}?flow=drop&at=member&who=nika.rework`, test: `(async () => {${HELPERS}
+    expect($('#vtip') && $('#vtip').hidden, 'tip closed'); await click('.vbadge'); expect(!$('#vtip').hidden && $('.vbadge').getAttribute('aria-expanded') === 'true' && document.activeElement === $('.vbadge'), 'tip open, focus kept');
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 private profile caps the lists', url: `${base}?flow=drop&at=setsub&s=privacy`, test: `(async () => {${HELPERS}
+    const pickIn = async (p, v) => { await click('[data-k="pick-' + p + '"]'); await sleep(100); const i = $('.sheet input[name="' + p + '"][value="' + v + '"]'); expect(i, 'picker ' + p); i.click(); await sleep(150); if ($('.sheet')) { const x = $('.sheet [data-a="overlay-close"]'); if (x) { x.click(); await sleep(100); } } };
+    const listsAll = async () => { await click('[data-k="pick-lists2"]'); await sleep(100); const a = $('.sheet input[name="lists2"][value="all"]'), f = $('.sheet input[name="lists2"][value="followers"]'); const r = { dis: a.disabled, all: a.checked, fol: f.checked }; $('.sheet [data-a="overlay-close"]').click(); await sleep(100); return r; };
+    await pickIn('lists2', 'all'); expect((await listsAll()).all, 'all members chosen');
+    await pickIn('vis2', 'private'); { const r = await listsAll(); expect(r.dis && r.fol, 'disabled while private: ' + JSON.stringify(r)); }
+    await pickIn('vis2', 'public'); expect((await listsAll()).all, 'the earlier choice comes back');
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 pause button before sign-in', url: `${base}?at=landing&smo=b`, test: `(async () => {${HELPERS}
+    expect($('.top-calm') && $('.top-calm').getAttribute('aria-pressed') === 'false', 'pause button'); await click('.top-calm');
+    expect(document.documentElement.dataset.motion === 'reduced' && $('.top-calm').getAttribute('aria-pressed') === 'true', 'motion stopped');
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 spaced code and Enter on two-step sign-in', url: `${base}?at=twofa`, test: `(async () => {${HELPERS}
+    await type('#f-code', '123 456'); $('#f-code').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await sleep(200);
+    expect(!$('#err-code') && scr() !== 'twofa', 'a pasted "123 456" signs in with Enter, now on ' + scr());
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 reset takes the sign-in address', url: `${base}?at=signin`, test: `(async () => {${HELPERS}
+    await type('#f-email', 'ivo@primjer.hr'); await click('[data-k="forgot"]'); expect(scr() === 'reset' && $('#f-remail').value === 'ivo@primjer.hr', 'address carried over');
+    await type('#f-remail', 'ivo@primjer'); await click('[data-a="reset-send"]'); expect(/ime@primjer/.test(($('#err-remail') || {}).textContent || ''), 'the error suggests the form');
+    return 'ok';
+  })()` },
+  { name: 'step 3.9 review page', url: base.replace('index.html', 'review39.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 15) throw new Error('15 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'D-086 how-drop page', url: base.replace('index.html', 'how-drop.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 9) throw new Error('9 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
+  { name: 'D-086 drop-card page', url: base.replace('index.html', 'drop-card.html'), test: `(async () => { const n = document.querySelectorAll('.ddc').length; if (n !== 23) throw new Error('23 cards, got ' + n); if (!document.querySelector('#c-hk.hk-play .hk-bolt')) throw new Error('chosen card'); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'desktop page', url: base.replace('index.html', 'desktop.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 51) throw new Error('51 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12d page', url: base.replace('index.html', 'round12d.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 47) throw new Error('47 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
   { name: 'round 12c page', url: base.replace('index.html', 'round12c.html'), test: `(async () => { const n = document.querySelectorAll('iframe').length; if (n !== 33) throw new Error('33 frames, got ' + n); return 'ok'; })()`, w: 1600, h: 900 },
@@ -700,7 +742,7 @@ const runs = [
 
 let failed = false;
 try {
-  for (const run of runs) {
+  for (const run of runs.filter(r => !process.env.ONLY || r.name.includes(process.env.ONLY))) { // ONLY=<text> runs the matching runs only
     const t = await cdpTarget();
     const c = await connect(t.webSocketDebuggerUrl);
     await c.send('Runtime.enable'); await c.send('Page.enable');
