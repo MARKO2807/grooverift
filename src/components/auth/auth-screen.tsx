@@ -3,7 +3,10 @@ import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitch } from "@/components/locale-switch";
 
-/** The onboarding shell: top bar with the wordmark, then a centred card from 600 px (D-079). */
+/**
+ * The onboarding shell (D-079, D-080): on the phone a top bar with the wordmark and the screen below it; from
+ * 600 px the top bar and the screen form one card centred in the window, as `pulse/` does for `data-kind="onb"`.
+ */
 export async function AuthScreen({
   title,
   children,
@@ -17,31 +20,33 @@ export async function AuthScreen({
 }) {
   const t = await getTranslations("app");
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-title">
-          <Link href="/" className="no-underline" aria-label="GrooveRift">
-            <Wordmark />
-          </Link>
-          <span className="pill">{t("alpha")}</span>
-        </div>
-        <LocaleSwitch />
-      </header>
-      <main id="main" tabIndex={-1} className="screen-onb">
-        {centered ? (
-          <div className="center-block">
-            {icon ? (
-              <span className="step-ic" aria-hidden="true">
-                {icon}
-              </span>
-            ) : null}
-            <h1 tabIndex={-1}>{title}</h1>
+    <div className="onb-shell">
+      <div className="onb-card">
+        <header className="topbar">
+          <div className="topbar-title">
+            <Link href="/" className="no-underline" aria-label="GrooveRift">
+              <Wordmark />
+            </Link>
+            <span className="pill">{t("alpha")}</span>
           </div>
-        ) : (
-          <h1 tabIndex={-1}>{title}</h1>
-        )}
-        {children}
-      </main>
-    </>
+          <LocaleSwitch />
+        </header>
+        <main id="main" tabIndex={-1} className="screen-onb">
+          {centered ? (
+            <div className="center-block">
+              {icon ? (
+                <span className="step-ic" aria-hidden="true">
+                  {icon}
+                </span>
+              ) : null}
+              <h1 tabIndex={-1}>{title}</h1>
+            </div>
+          ) : (
+            <h1 tabIndex={-1}>{title}</h1>
+          )}
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

@@ -399,7 +399,18 @@
     background: #fff;
   }
 
-  /* ---------- onboarding / auth screens (D-079: a centred card from 600 px) ---------- */
+  /* ---------- onboarding / auth screens (D-079, D-080: one card centred in the window from 600 px) ---------- */
+  .onb-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .onb-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
   .screen-onb {
     display: flex;
     flex-direction: column;
@@ -411,12 +422,34 @@
     margin: 0 auto;
   }
   @media (min-width: 600px) {
-    .screen-onb {
-      margin: var(--gr-space-10) auto;
-      padding: var(--gr-space-8);
+    .onb-shell {
+      padding: var(--gr-space-6) var(--gr-space-4);
+    }
+    /* The top bar sits inside the card, as `pulse/` does for data-kind="onb"; `margin: auto` centres the card. */
+    .onb-card {
+      margin: auto;
+      max-width: 34rem;
       border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
-      border-radius: var(--gr-radius-card);
+      border-radius: var(--gr-radius-sheet);
       background: var(--gr-color-bg-surface);
+      overflow: hidden;
+    }
+    .onb-card .topbar {
+      background: var(--gr-color-bg-surface);
+    }
+    .onb-card .input {
+      background: var(--gr-color-bg-canvas);
+    }
+    .screen-onb {
+      max-width: none;
+      margin: 0;
+      padding: var(--gr-space-6);
+      padding-bottom: var(--gr-space-8);
+    }
+  }
+  @media (min-width: 1600px) {
+    .onb-card {
+      max-width: 38rem;
     }
   }
   .screen-onb h1 {
