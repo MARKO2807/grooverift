@@ -2,7 +2,7 @@
 
 _Drafted 2026-11-05 at the end of Phase 3 (step 3.9). **Status: APPROVED by the owner on 2026-11-05 (D-088): A1–A6 granted with a free hand; A7 (staging, R2, error tracking, email provider) waits for the owner.** Progress per step is in the table below and in [`STATUS.md`](STATUS.md); the code layout is in [`architecture/app-structure.md`](architecture/app-structure.md). Roadmap scope: [`roadmap.md`](roadmap.md) "Phase 4: Foundation"._
 
-## Progress (session 22, 2026-11-05)
+## Progress (sessions 22–23, 2026-11-05; **phase accepted, D-091**)
 
 | Step | Status |
 |---|---|
@@ -17,8 +17,8 @@ _Drafted 2026-11-05 at the end of Phase 3 (step 3.9). **Status: APPROVED by the 
 | 4.8 Authorization policy module | ✅ `src/lib/authz/policy.ts` with 32 tests (one per matrix row); independent security review run at the close of the session |
 | 4.9 Audit log, flags, admin shell | ✅ append-only `audit_log` (database trigger), feature flags with `paused` (SYS-04), admin shell (overview, members and roles, flags, audit) gated by role and second factor |
 | 4.10 Security baseline | ✅ nonce CSP per request, security headers, Better Auth rate limits, dependency audit in CI, no-store on signed-in pages; error tracking waits for A7 |
-| 4.11 Staging | ⏳ waits for A7 (owner: Render, R2, error tracking, email provider accounts) |
-| 4.12 Review and close | 🔄 security and accessibility subagent reviews done in session 22 and every finding fixed (D-090); the owner reviews the sign-in screens and closes the phase |
+| 4.11 Staging | ⏳ deferred past the phase's acceptance; waits for A7 (owner: Render, R2, error tracking, email provider accounts). Done as soon as A7 arrives, in whichever phase is current |
+| 4.12 Review and close | ✅ security and accessibility subagent reviews done in session 22 and every finding fixed (D-090); owner review of the screens in session 23, one fix (wordmark colour and casing, centred auth card, `4451913`), phase accepted (D-091) |
 
 ## Goal
 A running, empty, well-guarded application on the approved stack (ADR-0002), with no product features beyond sign-in. The product screens come in Phase 5. Phase 4 builds:

@@ -1,18 +1,25 @@
 # Session handoff
 
-_Session 22, 2026-11-05 (**Phase 4 Foundation built: steps 4.0–4.10**; 4.11 waits for A7; 4.12 pending the owner's review). Next session: read `docs/STATUS.md`, then this file, then `docs/architecture/app-structure.md`; recommend High effort for anything touching auth or the policy module._
+_Session 23, 2026-11-05 (**Phase 4 accepted by the owner, D-091**; 4.11 staging deferred until A7). Next session: read `docs/STATUS.md`, then this file, then propose the **Phase 5 plan** (no Phase 5 code before the owner approves it). Sources for the plan: `docs/product/master-prompt.txt` (alpha scope sections only), the roadmap and IA in `docs/`, the policy matrix (`src/lib/authz/policy.ts` and its matrix doc), `docs/design/components.md`, `docs/design/copy-guide.md` and the Pulse prototype. Recommend **High** effort on Fable or Opus for the plan (data model, authz, privacy)._
 
 ## Start-of-session checklist
-1. `git status -sb` and `git ls-remote origin`: has the owner pushed? If yes, check the GitHub Actions result (three jobs: checks, database, e2e). **First hosted run (b7dac27): checks and database green, e2e failed** because the CI-only `BETTER_AUTH_SECRET` had 42 characters and the production guard requires 43, so the server answered 500 and Playwright's `webServer` timed out; fixed in df30909 (48-character value, actions bumped to v6, server output piped into the CI log). **Run 2 (df30909) was fully green: 52 e2e tests passed on the hosted runner.** Logs need a GitHub sign-in; the Actions summary page with annotations is readable in the owner's Chrome through the browser tools, which is how session 22 checked it.
+1. `git status -sb` and `git ls-remote origin`: has the owner pushed `4451913` and the session 23 docs commit? If yes, check the GitHub Actions result (three jobs: checks, database, e2e; run 2 on df30909 was fully green, 52 e2e tests). Logs need a GitHub sign-in; the Actions summary page is readable in the owner's Chrome through the browser tools.
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
-3. Effort: the owner confirmed **High** on **Fable 5.1** in words at the start of session 22 ("High effort je uključen").
-4. Local environment: Docker Desktop must be running (`docker compose up -d`), then `npm run db:migrate`, `npm run db:seed`, `npm run dev`. `.env.local` exists on the owner's machine (ignored; a generated `BETTER_AUTH_SECRET`). A dev server may still be listening on port 3000 from session 22; find it with `netstat -ano | findstr :3000` and stop it before `npm run dev`.
+3. Effort: the owner confirmed **High** on **Fable 5.1** in words at the start of session 22; session 23 ran on Fable 5.1 (effort not restated). Ask or check `/effort` before the Phase 5 plan.
+4. Local environment: Docker Desktop must be running (`docker compose up -d`), then `npm run db:migrate`, `npm run db:seed`, `npm run dev`. `.env.local` exists on the owner's machine (ignored; a generated `BETTER_AUTH_SECRET`). Session 23 stopped its dev server and confirmed port 3000 closed; if one is still listening, find it with `netstat -ano | findstr :3000` and stop it before `npm run dev`. **Start the dev server from PowerShell** (`Start-Process cmd "/c npx next dev > $env:TEMP\grooverift-dev.log 2>&1" -WindowStyle Hidden`), then stop it through `Get-NetTCPConnection -LocalPort 3000` and `Stop-Process`; confirm with `netstat`.
 
 ## Where we are
-- **Phase 4 approved (D-088) with a free hand; A7 (staging and external accounts) stays with the owner (OQ-33).** Everything in steps 4.0–4.10 is built, tested and committed: `e897879` scaffold and gates, `386909d` database and auth core, `48e44ad` screens, settings and admin shell, `b47c1ed` policy module, security baseline and worker, then the docs and review commit.
-- **Decisions this session:** D-088 (approval), D-089 (16 foundation decisions, RECOMMENDED for the owner's objection), ADR-0003 (libraries), OQ-33 (A7).
-- **What the owner should do next:** push; review the sign-in screens; object to any D-089 item; decide A7.
+- **Phase 4 accepted (D-091, session 23).** The owner reviewed the running sign-in screens and raised two points on the sign-in screen only (card not centred, wordmark colours); everything else was "super". Fixed in `4451913` (see D-091). D-089 and D-090 are now CONFIRMED without objection.
+- **4.11 staging is deferred, not dropped:** it waits for A7 (OQ-33). The deploy runbook (`docs/ops/deploy-runbook.md`) and the Render blueprint exist; 4.11 is done as soon as the owner creates the accounts, in whichever phase is current.
+- **Phase 5 is not approved.** The next session proposes the plan and stops at the approval gate.
+- **Commits of session 23:** `4451913` the fix; then the docs commit (STATUS, HANDOFF, DECISIONS D-091, phase-4-plan).
 - **Independent reviews:** a security review and an accessibility review ran as subagents at the end of session 22; see "Review findings" below.
+
+## Lessons (session 23)
+- The global `a { color: Amber }` rule recolours anything placed inside a link: brand elements must set their own colour (`text-fg`). Check the other wordmark placements (landing, app shell) the same way when they get their final layout in Phase 5; they were not inside Amber-coloured links at review time but the component is now safe anyway.
+- The auth screens match `pulse/` `data-kind="onb"` only when the top bar is **inside** the centred card (`.onb-shell` > `.onb-card` > `header.topbar` + `main.screen-onb`). Keep that structure for every onboarding screen in Phase 5.
+- Playwright from `node -e` with an unset env variable wrote screenshots into a stray `undefined/` folder in the repo; pass absolute paths. Screenshots belong in the scratchpad, never in the repo.
+- E2e against the production build (`CI=1 PORT=3100 …`) runs fine while the dev server holds port 3000; `rate_limit` must be cleared first.
 
 ## How things work (the parts a new session needs)
 - **Auth** is Better Auth 1.7 with the Drizzle adapter (`src/lib/auth/auth.ts`). `src/lib/db/schema/auth.ts` was generated by `npx @better-auth/cli@latest generate --config src/lib/auth/auth.ts --output src/lib/db/schema/auth.ts`; regenerate it after adding a plugin or a user field, then `npm run db:generate -- --name <what>` and `npm run db:migrate`. Ids are UUIDs generated by PostgreSQL.
@@ -67,8 +74,8 @@ Two read-only subagent reviews ran on the finished foundation. Every finding was
 The design phase's full session notes moved out of this file in session 22; they live in git history (`git show 5c09880:docs/HANDOFF.md`) and in `docs/design/phase-3-plan.md`, `docs/design/phase-3-review.md`, `docs/design/prototype-directions.md` §7 and `docs/decisions/DECISIONS.md` (D-026 to D-087). The prototype `design/prototypes/pulse/` is the reference for look and behaviour; its checks (`pulse-smoke.mjs` 155/155, `a11y-check.mjs`, `zoom-check.mjs`) still run and must stay green when the prototype changes. Owner rules kept: one hub for every review page (`design/prototypes/index.html`), full `file:///` URLs when pointing the owner at a page, every open point as a survey with the example inside the question, ask before anything that touches a strict Master Prompt rule, port rule for `serve.mjs`.
 
 ## Open items for the owner
+- Approval of the Phase 5 plan once proposed (next session).
 - A7 / OQ-33 (staging, R2, error tracking, email provider, Google OAuth client).
-- D-089 objections, if any; the sign-in screen review (4.5 ⛳).
 - OQ-28 (archive depth), OQ-32 (social emails), JO2–JO6, OQ-24, OQ-29; the Narrator listen; counsel questions (B.5, C.9, C.10).
 
 ## Notes
