@@ -1,0 +1,22 @@
+# Local PostgreSQL for development and tests (step 4.3). Production uses Render's managed Postgres.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: grooverift-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: grooverift
+      POSTGRES_PASSWORD: grooverift
+      POSTGRES_DB: grooverift
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - grooverift-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grooverift -d grooverift"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  grooverift-pgdata:
