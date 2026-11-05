@@ -29,6 +29,9 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // CI shows the server's own output, so a server that refuses to start explains itself in the log.
+    stdout: process.env.CI ? "pipe" : "ignore",
+    stderr: "pipe",
     env: {
       ...process.env,
       PORT: process.env.PORT ?? "3000",

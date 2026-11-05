@@ -16,15 +16,15 @@ env:
   NODE_VERSION: 22
   DATABASE_URL: postgres://grooverift:grooverift@localhost:5432/grooverift
   APP_URL: http://localhost:3000
-  BETTER_AUTH_SECRET: ci-only-secret-not-used-anywhere-else-0000
+  BETTER_AUTH_SECRET: ci-only-secret-not-used-anywhere-else-0000000000 # 48 chars: production refuses fewer than 43 (src/lib/env.ts)
 
 jobs:
   checks:
     name: Lint, types, tokens, messages, unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -55,8 +55,8 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -84,8 +84,8 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -99,7 +99,7 @@ jobs:
           CI: true
           EMAIL_TRANSPORT: file
           E2E_EMAIL_FILE: "1"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: playwright-report

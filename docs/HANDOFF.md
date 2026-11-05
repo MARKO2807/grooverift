@@ -3,7 +3,7 @@
 _Session 22, 2026-11-05 (**Phase 4 Foundation built: steps 4.0–4.10**; 4.11 waits for A7; 4.12 pending the owner's review). Next session: read `docs/STATUS.md`, then this file, then `docs/architecture/app-structure.md`; recommend High effort for anything touching auth or the policy module._
 
 ## Start-of-session checklist
-1. `git status -sb` and `git ls-remote origin`: has the owner pushed? If yes, check the GitHub Actions result (three jobs: checks, database, e2e). CI has not run on the hosted runner yet.
+1. `git status -sb` and `git ls-remote origin`: has the owner pushed? If yes, check the GitHub Actions result (three jobs: checks, database, e2e). **First hosted run (b7dac27): checks and database green, e2e failed** because the CI-only `BETTER_AUTH_SECRET` had 42 characters and the production guard requires 43, so the server answered 500 and Playwright's `webServer` timed out; fixed in the commit after b7dac27 (48-character value, actions bumped to v6, server output piped into the CI log). The run after that push is the first one that should be fully green. Logs need a GitHub sign-in; the Actions summary page is readable without one.
 2. Check-up in Croatian (Završeno / Trenutno / Odluke / Rizici / Sljedeći korak / Treba odobrenje).
 3. Effort: the owner confirmed **High** on **Fable 5.1** in words at the start of session 22 ("High effort je uključen").
 4. Local environment: Docker Desktop must be running (`docker compose up -d`), then `npm run db:migrate`, `npm run db:seed`, `npm run dev`. `.env.local` exists on the owner's machine (ignored; a generated `BETTER_AUTH_SECRET`). A dev server may still be listening on port 3000 from session 22; find it with `netstat -ano | findstr :3000` and stop it before `npm run dev`.
@@ -41,6 +41,7 @@ _Session 22, 2026-11-05 (**Phase 4 Foundation built: steps 4.0–4.10**; 4.11 wa
 - **Deleting a route directory while `next dev` runs** left Turbopack in a reload loop (`reloadPage: HMR hash mismatch` every 200 ms on every page). Stop the server, delete `.next`, start again.
 - `next build` evaluates the auth module with `NODE_ENV=production`; start-up-only guards must skip `NEXT_PHASE=phase-production-build`.
 - Playwright against the production server (CI mode) runs with `CI=1 PORT=3100 APP_URL=http://localhost:3100 PLAYWRIGHT_BASE_URL=http://localhost:3100` after `npm run build`; the tests must not hard-code the port.
+- **CI values must satisfy the production guards** (`src/lib/env.ts`): `next start` runs with `NODE_ENV=production`, so the workflow's `BETTER_AUTH_SECRET` needs 43+ characters and the file mail transport needs `E2E_EMAIL_FILE=1`. A guard failure shows as a 500 on every page and "Timed out waiting 120000ms from config.webServer" in Playwright; the server's own output is now piped into the CI log (`webServer.stdout: "pipe"`). Reproduce locally with the exact CI values: `npm run build`, then `CI=1 PORT=3100 … npx playwright test`.
 - The e2e suite needs `E2E_EMAIL_FILE=1` on the server (file mail transport in production mode and ×10 on the Better Auth limits) and a cleared `rate_limit` table between runs (`docker compose exec -T postgres psql -U grooverift -d grooverift -c "delete from rate_limit;"`).
 
 ## Review findings (session 22, end) and what was done

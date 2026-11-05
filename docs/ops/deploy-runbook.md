@@ -8,7 +8,7 @@ _Written 2026-11-05 (session 22) so the owner can create the external accounts i
 |---|---|---|
 | `APP_URL` | Better Auth base URL, email links, CSRF origin | `https://<service>.onrender.com` (later `https://staging.grooverift.com`) |
 | `DATABASE_URL` | Drizzle, Better Auth, pg-boss | from the Render database |
-| `BETTER_AUTH_SECRET` | sessions, TOTP secret encryption, audit IP hash | 32+ random bytes; **the same value on web and worker** |
+| `BETTER_AUTH_SECRET` | sessions, TOTP secret encryption, audit IP hash | 32+ random bytes, which is **at least 43 characters** once encoded (the production guard in `src/lib/env.ts` refuses shorter values and the server answers 500); **the same value on web and worker** |
 | `IP_HEADERS` | lockout and rate limits (`src/lib/auth/lockout.ts`, Better Auth) | `x-forwarded-for` (Render sets it; it replaces client values) |
 | `EMAIL_TRANSPORT`, `EMAIL_FROM` | `src/lib/auth/email.ts` | a real provider (see §3); production refuses `console` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in appears only when both exist | from §4 |
