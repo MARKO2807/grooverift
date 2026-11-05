@@ -1,6 +1,6 @@
 # Session handoff
 
-_Session 20, 2026-11-04 (steps 3.7 brand derivatives and 3.8 copy guide; both closed). Next session: read `docs/STATUS.md`, then this file, then start step 3.9 (review and close Phase 3; recommend High effort)._
+_Session 21, 2026-11-04/05 (step 3.9, the closing review; **Phase 3 accepted**, D-087). Next session: read `docs/STATUS.md`, then this file, then review the **Phase 4 plan** (`docs/phase-4-plan.md`, PROPOSED) with the owner; recommend High effort._
 
 ## Start-of-session checklist
 1. `git status -sb` and `git ls-remote origin`: has the owner pushed?
@@ -8,7 +8,53 @@ _Session 20, 2026-11-04 (steps 3.7 brand derivatives and 3.8 copy guide; both cl
 3. Check that the effort setting matches the recommendation (D-008). The owner ran **xhigh** in session 9 and **Fable at high** in session 10. In sessions 11 and 12 the setting was not visible; Claude recommended High and asked the owner to check `/effort`, with no reply. In session 14 the owner switched to **Fable 5.1 at high** (visible in the session). In session 15 the owner set Fable 5.1 as the default model; the effort was not visible. In session 17 the owner confirmed **high effort** in words ("high effort je uključen") on Fable 5.1. In session 18 Claude asked whether high was still on and got no answer; the work went ahead. Claude may also recommend a model (Fable for complex work, Opus as default); the owner prefers Opus and Fable (CLAUDE.md).
 
 ## Where we are
-- **Phase 3, steps 3.7 (D-083) and 3.8 (D-084) are closed. Next: step 3.9, review and close Phase 3**, in a fresh session, at High effort.
+- **Phase 3 is done and accepted (D-087).** Next: a fresh session to review `docs/phase-4-plan.md` with the owner (approvals A1–A7). Nothing is installed or created before that. Recommend High effort.
+- **Session 21: step 3.9, the closing review (D-085, D-086, D-087).** The owner switched to **High** effort at the start (visible: `/effort` → high, saved as default) and kept Opus 5.5 (`/model`).
+  - **Method:**
+    - An independent subagent review (read-only, WCAG 2.2 AA, its own CDP probes) found 20 points; Claude verified each one.
+    - Every check was rerun.
+    - Claude's own page-zoom measurement found one more point (fix 11).
+    - Write-up: `docs/design/phase-3-review.md`: results, the finding table, the open 3.5–3.8 items answered, the Phase 4 musts.
+  - **Owner decisions:**
+    - **D-085** on `pulse/review39.html`: no visitor wall (`WALL_AT` default `none`, amends D-076); motion before sign-in through the system setting only (`SMO_AT` `a`, accepted WCAG 2.2.2 risk; `?smo=b` pause button and `?smo=c` 5 s rest stay as options); display name up to three words, as typed (`NM_AT` `c`, amends D-067).
+    - **D-086**: the owner reviewed "Kako radi" and the verified mark in the same session (pages `how-drop.html`, `drop-card.html`; four icon rounds: microphone, tear-off page with music, note with a mystery reveal, the rift).
+      - Final: **K2**, a dark tile with a gradient edge; a filled note's halves snap together along a zigzag rift once, then every 3 s the rift jolts and a bolt flickers. No page turning (tried, dropped).
+      - Icon and name share one row; the other three cards are compact.
+      - "Svaki dan novo glazbeno pitanje, isto za sve. Podsjetnik stiže u 12:00, a vrijeme možeš promijeniti." (`HOWT_AT` `a`; the default reminder is 12:00 in that case; the question still publishes at 00:00 UTC, Master Prompt §4).
+      - "Dvaput tjedno otkrivamo priče iza glazbe."
+      - The verified mark opens a bubble above itself.
+    - **D-087**: Phase 3 accepted; the Phase 4 plan is reviewed in a fresh session.
+  - **Code (`pulse/`):**
+    - `focusNear()`, `doMute()` and `doUnmute(h, aid)` keep focus on the collapsed line and the answer.
+    - `focusH1(scroll)`.
+    - `go()` stores the focused `data-k` in the history entry, and `back()` refocuses it.
+    - `toast()`: `arm()`/`close()` never close while focused or hovered.
+    - `say(m)` and `#sr-live` (index.html) announce new answers.
+    - `vbadge()`/`vtip()`, `placeTip()` in `afterRender()`; Escape and outside-click close the bubble.
+    - `choices()` supports `o.off` (`.choice.is-off`); `st.listsWas` restores the lists choice.
+    - TOTP codes accept spaces and hyphens.
+    - A keydown handler makes Enter in credential fields press the scope's primary button.
+    - `to-reset` carries the sign-in address.
+    - `showpw` keeps `#f-pwold` across the redraw.
+    - The day-strip label leads with "danas"; `firstSr()` keeps the countdown sentence current.
+    - `HOW_K()` draws the D-086 tile (ids `hkg-/hkl-/hkr-how`); `HOWIC_AT` (`k`, with the earlier a–e options); `HOWT_AT`.
+  - **CSS:**
+    - Inset focus rings in `.set-list` and on `.p-x`; the open settings row with focus, including forced colours.
+    - `.set-nav` is a flex column; the `set-row-ic` grid for the motion row.
+    - `.top-title` wraps; `.vtip` bubble; `.top-calm`.
+    - The invite and "Kako radi" short-screen rules are limited to `(min-width: 17.5em) and (max-width: 599px) and (orientation: portrait)`, with `@media not (...)` for the tall case.
+    - The `.how-lead` / `.how-k` / `.hk` blocks before the final forced-colours block.
+  - **Tools:**
+    - `screens.mjs` has 128 screens.
+    - `a11y-check` and `zoom-check` take `PORT` (two fixed ports collided when run side by side).
+    - `pulse-smoke` takes `ONLY=`, has seven step 3.9 runs and two D-086 page runs; the name, how-card, wall and reset tests were updated to the new decisions.
+  - **Lessons:**
+    - Top-level `const`s in `app.js` run in order: a new option that called `pick()` above its definition blanked every screen (a TDZ error). Use `P.get` directly there, or define after `pick`.
+    - In SVG, `transform-box: fill-box` also moves the origin of a `transform` attribute, so it must not apply to groups placed with a transform attribute.
+    - Headless Chrome without page focus fires no focus events, so code that relies only on `focusin` cannot be tested there; checking `document.activeElement` at the timer works in both.
+    - Shell quoting through `node -e` broke twice; write the helper script with the Write tool instead.
+  - **Phase 4 plan** (`docs/phase-4-plan.md`, PROPOSED): steps 4.0–4.12 and approvals A1–A7 (A2: Next.js, TypeScript, Drizzle, Zod, Better Auth, pg-boss, next-intl, Tailwind from tokens, Radix or React Aria, Phosphor, Vitest, Playwright, axe-core, ESLint/Prettier or Biome, via ADR-0003).
+  - **Answered for the owner:** chat (DMs, intro requests, private recommendations) is confirmed beta scope, wave B3, not in the alpha (Master Prompt §8; D-023, D-031; IA MSG-01 to MSG-07).
 - **Session 20, part 2: the copy guide (step 3.8).** The owner chose to continue in the same session. Decision page `design/prototypes/copy.html` (K1–K4, every option on the same situations in HR and EN, plus the glossary table); the owner chose every recommendation, then approved the glossary ("Odobravam sve"). Guide: `docs/design/copy-guide.md` (voice, mechanics, gender-neutral Croatian, glossary incl. report categories, patterns, safety copy, accessibility, editorial). Applied in `pulse/app.js` and `components.html`: Tjedna anketa, Znaš li? (no `lang="en"`), Izbriši for permanent deletion, accessible names without „korisnika <ime>". `pulse-smoke.mjs` 146/146, exit 0. Not done: English UI copy for the prototype (it is Croatian only) and e-mail templates; both follow the guide in Phase 4.
 - **Owner rules from session 20 (also in memory):**
   - **One hub for everything:** `design/prototypes/index.html` links every review and decision page, newest first, with D-numbers. Every new page gets its row there in the same commit.

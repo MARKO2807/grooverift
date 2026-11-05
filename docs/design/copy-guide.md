@@ -181,7 +181,7 @@ Report categories (J5; final names):
 - Report: say what happens next and that the reported person is not told who reported („Tko je prijavio, ne otkrivamo."). Prioritised categories say so ("Ima prednost u pregledu.").
 - Account deletion and deactivation: the exact effect and timing, what can be undone and until when (D-069 dates), nothing hidden behind "Saznaj više".
 - 18+ (D-051, D-068): factual, not moralising.
-- No dark patterns: no confirm-shaming, no pre-ticked boxes, no fake urgency. The visitor wall (D-076) stays factual and is a counsel item (C.9).
+- No dark patterns: no confirm-shaming, no pre-ticked boxes, no fake urgency. The visitor wall (D-076) was dropped in D-085; visitor pages invite through the page itself.
 - Placeholder legal text is marked as such until counsel provides it.
 
 ## 7. Accessibility

@@ -1,9 +1,11 @@
 # Project status
 
-_Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy guide)_
+_Last updated: 2026-11-05 (session 21, step 3.9: closing review; **Phase 3 accepted**, D-087)_
 
 ## Current phase
-**Phase 3: UX research, information architecture and design system** (approved, D-026). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md).
+**Between phases.** Phase 3 is **done and accepted by the owner (D-087, 2026-11-05)**. **Phase 4 (Foundation) is PROPOSED** in [`docs/phase-4-plan.md`](phase-4-plan.md); the owner reviews it in a fresh session, and nothing is installed or created before approval.
+
+**Phase 3: UX research, information architecture and design system** (approved D-026, accepted D-087). Plan and step tracking: [`docs/design/phase-3-plan.md`](design/phase-3-plan.md); closing review: [`docs/design/phase-3-review.md`](design/phase-3-review.md).
 
 | Step | Status |
 |---|---|
@@ -17,11 +19,11 @@ _Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy 
 | 3.6 Core components spec | ✅ Done (session 19, D-082): [components](design/components.md) and the specimen `design/prototypes/components.html`; component tokens in `design/tokens/` |
 | 3.7 Brand derivatives ⛳ | ✅ Done (session 20, D-083): `docs/brand/derived/` (cleaned master, app icons, favicon S1, badge, light variants, interim wordmark); review page `design/prototypes/brand.html` |
 | 3.8 HR/EN copy tone guide | ✅ Done (session 20, D-084): [copy-guide](design/copy-guide.md); decision page `design/prototypes/copy.html` |
-| 3.9 Review and close | ⏳ Next |
+| 3.9 Review and close | ✅ Done (session 21): independent WCAG 2.2 AA review and every check rerun ([phase-3-review](design/phase-3-review.md)); owner decisions D-085 (no visitor wall; motion before sign-in through the system setting; display name of three words as typed) and D-086 ("Kako radi" led by the Daily Drop card with its K2 rift tile, reminder default 12:00, verified bubble); Phase 3 accepted (D-087). Review pages `design/prototypes/pulse/review39.html`, `how-drop.html`, `drop-card.html` |
 
 ## Done
 - Phases 0, 1 and 2 (discovery; audit and documentation foundation; architecture and legal groundwork).
-- Decisions D-001 to D-084. Key ones:
+- Decisions D-001 to D-087. Key ones:
   - EU hosting, budget 30–60 €/mo
   - Mutuals naming and semantics
   - **Option B architecture + Next.js (ADR-0002 Accepted)**
@@ -93,6 +95,7 @@ _Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy 
     - **Core components spec (session 19, D-082):** `docs/design/components.md` and the specimen `design/prototypes/components.html` (every component in every state on the real CSS, plus three live overlays in phone frames). Component tokens in `tokens.json` (180 variables, 89 contrast pairs, all pass). Prototype changes: one disabled opacity, the missing hover and pressed states, a bar under the chosen sort option and day (a tick broke D-047), `Highlight` for every selected state and a visible focus outline on hidden radios in forced colours, `scroll-padding` for 2.4.11. Icon mapping to Phosphor for Phase 4. **Step 3.6 is closed.**
     - **Brand derivatives (session 20, D-083):** cleaned symbol master (silhouette byte-identical), apple-touch/PWA/maskable icons, favicon and badge in the drawn S1 "Obris" shape, light-paper L1 "Tinta" (print-only deep Amber `#B87A12`) and L2 tile, and the interim outlined wordmark (D-011). Tools and provenance in `docs/brand/` (README §5). **All review pages are linked from `design/prototypes/index.html`.**
     - **Copy guide (session 20, D-084):** voice "miran i izravan"; feature names English, content types Croatian (Tjedna anketa, Znaš li?); odgovor/komentar; gender-neutral Croatian by rephrasing; full HR/EN glossary in `docs/design/copy-guide.md`.
+    - **Closing review (session 21, D-085 to D-087):** an independent WCAG 2.2 AA review found 20 points; every one was verified, 17 were fixed in the prototype and the spec, three went to the owner: **no visitor sign-in wall** (amends D-076; it was a 5 s time limit, WCAG 2.2.1); **motion before sign-in stops only with the system setting** (owner-accepted WCAG 2.2.2 risk); **display name: up to three words, written as typed** (amends D-067). D-073 is confirmed compliant (browser zoom brings every text to 200 %). Owner changes the same session (D-086): the Daily Drop card leads "Kako radi" (icon and name in one row; a dark tile where a note's halves snap along a rift and a bolt flickers every 3 s), "Podsjetnik stiže u 12:00" (default reminder 12:00; the question still publishes at 00:00 UTC), "Dvaput tjedno otkrivamo priče iza glazbe.", the verified mark explains itself in a bubble. **Phase 3 accepted (D-087).**
     - **OPEN (OQ-28):** how far back the archives reach. The Master Prompt asks for a permanent archive, so a seven-day limit would change confirmed scope.
 - Phase 2 deliverables:
   - `docs/architecture/`: domain model v0.1, visibility matrix **v0.3**, architecture options
@@ -104,8 +107,8 @@ _Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy 
   - `docs/legal/trademark-preliminary-search.md` (complete, preliminary): no identical "GrooveRift" mark (TMview, WIPO, DZIV) and no product with that name on the web. "RIFT" is crowded in classes 9/41. Owner owns `grooverift.com`.
 
 ## Next
-1. **Step 3.9, review and close Phase 3** (effort: **High**; owner gate: approves IA, prototypes and tokens, the roadmap Phase 3 acceptance). Fresh session. Plan: an independent accessibility/UX review by a subagent, all contrast checks and test suites rerun (`contrast-check`, `pulse-smoke`, `zoom-check`, `a11y-check` incl. a visible-box check for hidden radios in forced colours, see HANDOFF session 19), the open 3.9 items (D-073 large-text interpretation, the D-076 visitor wall, the D-078 countdown reduced-motion variant, the owner's Narrator listen), then STATUS/HANDOFF/DECISIONS and a Phase 4 proposal for owner approval.
-2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Findings go to 3.9.
+1. **Fresh session: review the Phase 4 plan** ([`docs/phase-4-plan.md`](phase-4-plan.md)) and decide the approvals A1–A7 (start, libraries via ADR-0003, installing them, GitHub Actions, Docker, Claude hooks and review subagents; staging later). Recommend **High effort** (and Fable or Opus) for 4.0, auth, authorization and security steps.
+2. **Owner, when convenient:** the ten-minute Narrator listen in `docs/design/accessibility-pass.md` §3. Anything that sounds wrong becomes a Phase 4 item.
 3. **OQ-28:** archive depth (permanent archive is confirmed scope; RECOMMENDED: the seven-day strip as the entry, the full archive one tap deeper).
 4. Open, to raise when convenient:
    - JO2–JO6 are RECOMMENDED defaults in `docs/design/journeys/README.md` (JO1 approved, D-069).
@@ -130,9 +133,9 @@ _Last updated: 2026-11-04 (session 20, steps 3.7 brand derivatives and 3.8 copy 
 4. Legal status: DSA, DPIA, age assurance (L-02, L-03, L-04). Onboarding visibility choice is now neutral (D-030, per EDPB 03/2022); counsel C.9 still to confirm.
 5. Missing production vector logo and final wordmark (B-01, X-04). An interim outlined wordmark and raster icons exist (D-083); the designer brief is D-058 plus `docs/brand/README.md` §5.
 6. Trademark: "RIFT" marks in classes 9/41 (gamigo EU, Meta, LOST RIFT); attorney assessment needed before filing or brand spend.
-7. Accessibility interpretation: large-text headings grow by a step, not to 200 % (D-073, owner-accepted). Confirm in the 3.9 accessibility review.
-8. The visitor sign-in wall (D-076): an undismissable blurred dialog after five seconds is a dark-pattern risk (counsel C.9) and an accessibility item for 3.9; there is no registration behind it, only sign-in and the landing.
-9. The first-Drop countdown with seconds (D-078): the alpha launch must be timed so the countdown matches the real first publication (00:00 UTC), and the reduced-motion variant (minutes only) is an item for 3.9.
+7. ~~Accessibility interpretation of large-text headings (D-073)~~ Closed in 3.9: compliant through browser zoom (`phase-3-review.md` §4).
+8. ~~The visitor sign-in wall (D-076)~~ Closed: dropped in D-085. New, owner-accepted: **motion before sign-in** (the invite current, the wordmark bolt, the Daily Drop name and the "Kako radi" tile) stops only with the system reduced-motion setting; a strict WCAG 2.2.2 audit may ask for an in-page pause (a designed pause button exists as `?smo=b`).
+9. The first-Drop countdown with seconds (D-078): the alpha launch must be timed so the countdown matches the real first publication (00:00 UTC). Its reduced-motion and screen-reader behaviour was confirmed in 3.9.
 
 ## Code
 No application code. No dependencies installed.
@@ -140,15 +143,17 @@ No application code. No dependencies installed.
 - `design/prototypes/directions/` holds the step 3.5 round-1 prototypes: three directions on a shared engine, plus a comparison page (unchanged record).
 - `design/prototypes/pulse/` holds the refined direction C. Desktop (session 17): `desktop.html` is the review page and `screens.html` opens any of 61 screens in its own window at 360, 600, 800, 1024, 1366 or 1920 px (headless check: every link opens the named screen); `app.js` renders a rail for signed-in screens and the settings split, and `style.css` ends with the "Desktop" block (media queries at 600, 1024, 1280 and 1600 px). It includes `wordmark.html` (the D-058 bolt options, with the D-055 rounds archived), `invite-current.html` and `invite-current.js` (the D-058 invite current; the app uses variant I4 "branch"), `invite-layout.html` (the D-059 layouts in phone frames), `round6.html` (the D-060 options in phone frames), `password.html` (the D-054 decision sketch; its live HIBP check is opt-in and off by default), `reactions.html` (the D-056 decision sketch) and `picons.js` (six Phosphor icons, MIT, see `ICONS-LICENSE.md`). It is canvas-drawn (current, orbit, Music DNA Spirala) and uses no libraries. `viewer.html` and `choices.html` are the owner review pages. With `?live=1`, the artist search queries MusicBrainz, Wikidata and Wikimedia Commons from the browser, read-only.
 - `design/prototypes/tools/` holds zero-dependency Node scripts that drive headless Chrome:
-  - `screens.mjs` is the shared list of 123 prototype screens (URL queries) for `zoom-check.mjs` and `a11y-check.mjs`; add every new screen there.
+  - `screens.mjs` is the shared list of 128 prototype screens (URL queries) for `zoom-check.mjs` and `a11y-check.mjs` (123 plus the five D-085 option screens); add every new screen there. Both checks take `PORT=<n>` so two runs can go side by side (session 21).
   - `a11y-check.mjs` (session 18) reads the accessibility tree over CDP, walks each screen with Tab and, with `--fc`, emulates forced colours (`--shots` saves screenshots). Passes 123/123 at 360×740, 800×800, 1366×800 and 1920×1080, with and without `--fc` (2026-11-04); re-run in session 19 after step 3.6 at 360×740 and 1366×800, with `--fc` at both (the 360 run with the Tab walk). Since session 19 a hidden 1 px radio only counts as focused if its visible box shows the ring. Doc: `docs/design/accessibility-pass.md`.
   - `smoke.mjs` checks `directions/` and passes 3/3.
-  - `pulse-smoke.mjs` checks `pulse/` and passes 146/146 (2026-11-04, session 19, after step 3.6, exit 0).
+  - `pulse-smoke.mjs` checks `pulse/` and passes 155/155 (2026-11-05, session 21, after step 3.9 and D-086, exit 0). `ONLY=<text>` runs only the runs whose name contains the text.
   - `zoom-check.mjs` checks 123 screens at a raised browser text size (`--scale=2` by default) for sideways scrolling, clipped text and oversized bars; all pass at 200 % (session 17); the round 12d screens also at 100 % and at 320 px; in session 13 the earlier screens also at 150 %. Desktop (session 17; the 1920 runs repeated 2026-11-04 after the second review): all pass at 1920×1080 at 100 % and 200 % text, at 1366×800, 800×800 and 600×800 at 100 % (`--scale=1 --w=1920 --h=1080` and so on).
     - Session 10 added: the password page, counter and breach rejection; the live bolt and its reduced-motion stop; the reactions page and the single icon-only reaction in the flow.
     - Session 11 added: wordmark round 2; the invite current page, also under reduced motion; the I4 invite canvas, the bolt sparks and the flicker motion rule in the flow; that the invite fits the screen; the four invite layouts at 360×640 and 320×568; the language step, the softer 18+ copy, "Kako radi" fitting the screen, the tab swipe, the round 6 page and the D-060 defaults.
   - `shots.mjs` and `pulse-shots.mjs` take screenshots.
 - `design/prototypes/index.html` (session 20) is the hub: every review and decision page, newest first, with decision numbers. Add each new page there.
+- `design/prototypes/pulse/review39.html`, `how-drop.html` and `drop-card.html` (session 21) are the step 3.9 decision pages (D-085, D-086).
+- **Step 3.9 checks, 2026-11-05 (all exit 0):** `contrast-check` 89/89; `a11y-check` 128/128 at 360×740, 800×800, 1366×800 and 1920×1080, each with and without `--fc`, with the Tab walk; `zoom-check` 128/128 at 200 % text (360×740), at 100 % at 320×568 and at 1366×800; `smoke.mjs` 3/3. The screens changed after these runs ("Kako radi", the member profile, profile edit) were rechecked at all four widths.
 - `design/prototypes/brand.html` (session 20) is the step 3.7 review page.
 - `docs/brand/derived/tools/` (session 20): `build-derivatives.ps1` + `Brand.cs` (PowerShell/.NET) and `wordmark.mjs` (Node + headless Chrome); the build checks the source SHA-256 before and after and is deterministic.
 - `design/prototypes/components.html` (session 19) is the step 3.6 specimen: every component and state on `pulse/style.css`; spec in `docs/design/components.md`.

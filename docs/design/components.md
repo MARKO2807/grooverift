@@ -51,7 +51,9 @@ Labels: **CONFIRMED** = an owner decision (D-number). **RECOMMENDED** = a propos
 
 - **Order follows the reading order.** No positive `tabindex`. `tabindex="-1"` only on headings and messages that receive programmatic focus.
 - **Skip link** ("Preskoči na sadržaj") is the first stop on every page; it is visible only on focus.
-- **Navigation moves focus to the new page's `h1`** (with `preventScroll`). Back restores the scroll position and focuses the `h1`.
+- **Navigation moves focus to the new page's `h1`** (with `preventScroll`). **Back restores the scroll position and focuses the control that opened the next page** (step 3.9; the `h1` only when that control is gone), so the reader is where they left off.
+- **An action that changes the page in place keeps focus where the reader is** (step 3.9): on the item that replaced the one acted on (mute: the collapsed "Utišani odgovor" line; Undo: the answer again), else on the opener, else on the `h1` scrolled into view. Focus never lands on something outside the window or on the page body.
+- **Changes that appear without a request** (new answers, "N novih odgovora") are announced through one polite live region that is not the toast (`#sr-live`, step 3.9).
 - **Errors on submit**: focus goes to the first invalid field or the error summary; the error is also announced (`role="alert"`).
 - **Overlays** (§4.8): focus moves in, Tab cycles inside, the page behind is `inert`, Escape closes, focus returns to the opener.
 - **Status messages** use live regions and never steal focus (4.1.3): toasts, counters ("4 od 10"), availability checks, the offline bar.
@@ -100,7 +102,8 @@ Sizes: `button.height` 44, padding `button.padding-x` 16, gap 8, radius `button.
 
 Variants: prefix (`.has-prefix`: "@" or a search icon, decorative), trailing button (`.has-after` + `.input-btn`: "Prikaži" / "Sakrij" password, `aria-pressed`, `aria-controls`), textarea (`field.textarea-min` 6 rem, grows), native select, the TOTP field (`.tfa-field`), the compact time field (`.rem-time`), the live-edge comment field (`.live-field`, motif, stops with reduced motion).
 
-- **Keyboard:** native. Enter submits the form; textareas take Enter as a newline.
+- **Keyboard:** native. Enter submits the form; textareas take Enter as a newline. **Phase 4: every credential form (sign-in, account, reset, two-step, password and email change) is a real `<form>` with its submit button inside**, so Enter and password managers work; the prototype emulates this (step 3.9).
+- **Codes:** one-time and recovery codes accept spaces and hyphens as typed or pasted ("123 456"); they are stripped before checking, and the field is not cut at six characters (3.3.8, step 3.9).
 - **Screen reader:** `label for`, help and error in `aria-describedby` (the id only while the line is rendered, session 18 fix 1). Password rules are read as one line; when every rule is met a hidden status says so. `autocomplete` on email, username, new-password, current-password, one-time-code (1.3.5); paste always allowed (3.3.8).
 - **Forced colours:** system field colours; the error stays readable through its icon and text.
 - **Large text:** the "Prikaži" button moves under the password field so the field keeps its width.
@@ -128,7 +131,7 @@ Three kinds that look related and behave differently.
 
 ### 4.4 Choice cards, switch, checkbox
 
-**Choice card** (`.choice` in a `fieldset.choices`): a large radio for decisions that matter (age, visibility, report category, delete reason). Native radio hidden but in the DOM and the Tab order. Default: `bg.canvas`, 1 px `border.strong`, `radius.card`, empty circle mark. Checked: `selected.bg`, 2 px `selected.border`, the mark filled `action.primary` with a Void tick. Focus: the ring on the whole card (`:has(input:focus-visible)`). Compact variant (`.choices-compact`) and centred variant (`.choices-center`). **Neutral choices (D-030):** nothing pre-selected, equal weight, no "recommended" label. The visibility card (`.vis`, `.vrow`) is a specialised choice card (D-046, D-060).
+**Choice card** (`.choice` in a `fieldset.choices`): a large radio for decisions that matter (age, visibility, report category, delete reason). Native radio hidden but in the DOM and the Tab order. Default: `bg.canvas`, 1 px `border.strong`, `radius.card`, empty circle mark. Checked: `selected.bg`, 2 px `selected.border`, the mark filled `action.primary` with a Void tick. Focus: the ring on the whole card (`:has(input:focus-visible)`). Compact variant (`.choices-compact`) and centred variant (`.choices-center`). **Unavailable option** (`.choice.is-off`, step 3.9): the radio is `disabled`, the title and mark take `opacity.disabled`, and the description says why at full contrast ("Nije moguće dok je profil privatan."). An option is never accepted and then silently undone. **Neutral choices (D-030):** nothing pre-selected, equal weight, no "recommended" label. The visibility card (`.vis`, `.vrow`) is a specialised choice card (D-046, D-060).
 
 **Switch** (`button.switch role="switch" aria-checked`): for settings that apply at once. `switch.width` 52 × `switch.height` 32 (56 × 36 coarse), knob `switch.knob` 20. Off: `bg.canvas`, 2 px `border.strong`, knob `text.secondary`, left. On: `action.primary` fill and border, knob `text.on-accent`, right. Motion: the knob slides in `duration.base`; none under reduced motion. Disabled: `opacity.disabled` and a reason in the row. In a settings row the name comes from the row title (`aria-labelledby`) and the description from the row (`aria-describedby`).
 
@@ -151,7 +154,7 @@ Elevation comes from the surface step and a hairline, never from a shadow (token
 | Search result (`.result`) | `button` | 56 px; artist tile or Commons photo with credit line; "+" or a tick when added (`aria-disabled`). Skeleton rows while loading. |
 | Answer peek (`.peek`) | `button` | Home: avatar, name, two-line clamp; hover `bg.raised`. |
 | Programme card (`.prog-card`), Daily Drop card (`.dd-card`), facts (`.facts-grid`) | static | `bg.surface`, `radius.sheet` or `radius.card`. |
-| Settings group (`.set-list` of `.set-row`) | `ul` of buttons or rows | `bg.surface` group, hairlines between rows, 56 px rows: icon tile, title and description, chevron or switch. Danger row: Coral title and icon. Desktop: current row in the settings nav gets `bg.raised` and an inset Coral bar (`aria-current="page"`). |
+| Settings group (`.set-list` of `.set-row`) | `ul` of buttons or rows | `bg.surface` group, hairlines between rows, 56 px rows: icon tile, title and description, chevron or switch. Danger row: Coral title and icon. Desktop: current row in the settings nav gets `bg.raised` and an inset Coral bar (`aria-current="page"`). **Focus inside a group is an inset ring** (the rounded group clips an outside one), and the current row keeps its bar while showing the ring; in forced colours the focused current row takes a 4 px double `CanvasText` outline instead of its `Highlight` one (step 3.9). |
 
 - **Keyboard:** a card that goes somewhere is one button (one Tab stop). Inside an answer card the order is: author name (opens the profile), "Više opcija", "Pročitaj više", catalog cards, reaction, comments.
 - **Screen reader:** the author name is the answer's heading, so H moves from answer to answer. Times are `<time>`. Member text keeps its `lang` when known.
@@ -193,7 +196,7 @@ All: `bg.raised`, `shadow.overlay` (the only shadows in the system), scrim `bg.s
 
 - **Opening:** focus goes to the first field (compose), the first menu item (menus), the checked option (pickers), or, in decision dialogs, the first option (the "Also report" checkbox, the 18+ choice) and otherwise the safe button ("Odustani" comes first in the DOM, the destructive action last).
 - **While open:** the shell is `inert`; Tab and Shift+Tab cycle inside; nothing behind is reachable by keyboard or screen reader.
-- **Closing:** Escape or the scrim closes sheets, menus and dialogs, except the 18+ step, the notification-permission explainer and the hard sign-in wall (D-076), which need an answer. Closing the composer keeps a new answer's text as a draft (the dock shows it); closing an edit discards the edit. Focus returns to the opener.
+- **Closing:** Escape or the scrim closes sheets, menus and dialogs, except the 18+ step and the notification-permission explainer, which need an answer. (The visitor sign-in wall of D-076 was dropped in D-085.) Closing the composer keeps a new answer's text as a draft (the dock shows it); closing an edit discards the edit. Focus returns to the opener.
 - **Motion:** sheets rise in `duration.base` with `easing.enter` (phone) or fade and rise 12 px (desktop); none under reduced motion.
 - **Large text:** dialog actions wrap and fill the width.
 - **Forced colours:** the sheet edge and the scrim are kept by the system border; no information depends on the shadow.
@@ -203,7 +206,9 @@ All: `bg.raised`, `shadow.overlay` (the only shadows in the system), scrim `bg.s
 
 - One at a time, above the bottom bar (above the dock and the rail offset on desktop), `bg.raised`, `border.strong`, `radius.card`, `shadow.overlay`.
 - **Time:** `toast.duration` 2 s without an action, `toast.duration-action` 5 s with one (D-078, 2.2.1). These are reading times, not motion, so reduced motion does not shorten them.
-- **Action:** one text button (`.toast-btn`, "Poništi"). The action is always also possible elsewhere (unmute in the profile or settings), so a missed toast loses nothing.
+- **Action:** one text button (`.toast-btn`, "Poništi"). The action is always also possible elsewhere (unmute in the answer or profile menu and in Settings → Blokirani i utišani), so a missed toast loses nothing.
+- **Never closes while the pointer or the focus is in it** (step 3.9, 2.2.1); the time starts again when they leave. So focus is never dropped to the page body.
+- **Not the only home for information** (step 3.9): a toast confirms what the member did. Explanations and errors live in the page (a field error, a hint by the control, the verified mark's explanation that opens under the name) and the toast may repeat them.
 - **Screen reader:** the container is `role="status" aria-live="polite"`; the toast never takes focus.
 - **2.4.11:** the toast is `pointer-events: none` except its button and sits above the dock, so it never covers the focused control for longer than its time.
 
@@ -282,6 +287,12 @@ Coarse-pointer sizes (44 px chips and small buttons, 40 px segments, 56 × 36 sw
 7. **Forced-colour focus on hidden radios:** the segmented row, choice cards and the visibility rows showed their focus only as a box-shadow ring, which forced colours remove, while the radio itself is a 1 px invisible box. The visible part now takes a 2 px `CanvasText` outline. (Session 18 ran the forced-colour pass without the Tab walk, so it did not catch this.)
 8. **Focus not obscured (2.4.11):** `scroll-padding` on `html` for the sticky top bar and the bottom bars.
 
+## 6a. Changes made to the prototype in 3.9
+
+From the closing review (`docs/design/phase-3-review.md`): the inset focus ring in settings groups and on the photo-strip remove buttons; focus after mute, Undo and Back (§3.2); the toast that waits while focused or hovered (§4.9); the verified mark's explanation as a bubble above the mark (a toggle button with `aria-expanded` and `aria-controls`; the bubble follows the `h1` in the DOM, not inside it; closes on a second press, Escape or a click elsewhere; D-086); the unavailable choice (§4.4); `#sr-live` for new answers; codes with spaces and Enter in credential fields (§4.2); the top-bar title wraps instead of an ellipsis (1.4.12); the "fits one screen" rules for the invite and "Kako radi" run only on phone screens in portrait, so browser zoom reaches 200 % there too (1.4.4).
+
+**Photo crop (PROF-08), for Phase 4:** moving the photo inside the circle works by dragging and also with four arrow buttons under the frame and the arrow keys on the focused frame (2.5.7, 2.1.1); zoom is the slider.
+
 ## 7. Icons (OQ-23, CONFIRMED D-057: Phosphor, light weight)
 
 - Sizes `size.icon.sm` 16, `md` 20, `lg` 24; `currentColor`; always `aria-hidden` with the name in text or `aria-label`.
@@ -311,12 +322,13 @@ Coarse-pointer sizes (44 px chips and small buttons, 40 px segments, 56 × 36 sw
 
 - `node design/tokens/build.mjs`: 180 variables, 3 reduced-motion overrides.
 - `node design/tokens/contrast-check.mjs --all-options --report design/tokens/contrast-report.md`: base 89/89 pass; all 19 scenarios pass.
+- Step 3.9 reran everything after its fixes; results in `phase-3-review.md` §2.
 - Prototype suites after the changes (2026-11-04): `pulse-smoke.mjs` 146/146, `smoke.mjs` 3/3, `zoom-check.mjs` 123/123 at 200 %, `a11y-check.mjs` 123/123 at 360×740 and 1366×800, and with `--fc` at 360×740 (with the Tab walk) and 1366×800 (`--no-keys`). All exit 0.
 - The specimen was checked in headless Chrome (screenshots at 1366 px, forced colours emulated) and has no console errors.
 
 ## 9. Open and deferred
 
 - **For 3.8 (copy):** the busy-button labels ("Objavljujem…", "Spremam…"), the at-limit reasons for chips, the empty-state sentences as one set.
-- **For 3.9:** an independent review of this spec against WCAG 2.2 AA; the Narrator script in `accessibility-pass.md` §3 now also covers the segment ticks.
+- ~~**For 3.9:** an independent review of this spec against WCAG 2.2 AA~~ Done in step 3.9 (`phase-3-review.md`); the Narrator script in `accessibility-pass.md` §3 now also covers the segment ticks.
 - **Phase 4 (DEFERRED):** the component library itself (framework components from this contract), the icon package install (approval), automated accessibility checks in CI, the DTCG 2025.10 format question (tokens.md §1).
 - **Not in this spec:** DMs, playlists, media and other beta waves; their components are specified when those waves are designed.

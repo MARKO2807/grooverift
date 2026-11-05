@@ -55,6 +55,8 @@ If any step sounds wrong, note the screen and the exact words; it goes into 3.9.
 
 ## 4. For step 3.9 (the accessibility review of the design)
 
+_Done in session 21: each item below is answered in [`phase-3-review.md`](phase-3-review.md) §4 (D-085)._
+
 - The countdown with seconds before the first Drop (D-078): the reduced-motion variant updates once a minute; confirm the live-region behaviour so Narrator does not read every second.
 - The visitor sign-in wall (D-076): an undismissable dialog after five seconds; a screen reader user hears it mid-reading. Recorded as risk 8 in STATUS.
 - Large text: headings grow by a step, not to 200 % (D-073, owner accepted).

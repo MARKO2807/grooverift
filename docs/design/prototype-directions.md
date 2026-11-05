@@ -392,6 +392,12 @@ Recorded in `DECISIONS.md` (D-070 to D-073) and `HANDOFF.md`; sketches `pulse/ro
 - Left as the system's behaviour: green disabled buttons and yellow disclosures in the "High contrast black" theme; the Spirala, the current and the orbit keep their colours as images do. For 3.6: selected chips that rely on border weight get a shape.
 - The owner's own Narrator listen (voice, not markup) is a short script in the document; anything that sounds wrong goes to 3.9.
 
+### Step 3.9: the closing review (2026-11-05, session 21; D-085)
+
+- An independent WCAG 2.2 AA review plus every check rerun; write-up `docs/design/phase-3-review.md`, owner page `pulse/review39.html` (three choice sections, nine frames, then six frames of fixes).
+- Owner choices (D-085): no visitor wall (`wall=none`, amends D-076); motion before sign-in only through the system setting (`smo=a`, accepted WCAG 2.2.2 risk); display name of at most three words, written as typed (`nm=c`, amends D-067).
+- Fixed in `pulse/`: inset focus rings in settings groups and the photo strip, and the open settings row with focus; focus after mute, Undo and Back; toasts wait while focused or hovered; the verified mark's explanation as a disclosure; the unavailable "Svi članovi" option; `#sr-live` for new answers; spaced codes and Enter in credential fields; the reset takes the sign-in address; the top-bar title wraps; the short-screen rules for the invite and "Kako radi" run only on phones in portrait (browser zoom now reaches 200 % everywhere); names in same-label buttons; the day strip label; the countdown sentence; the password change "Prikaži"; the desktop settings list gaps and the "Smanji pokrete" row.
+
 ### Verification (session 9)
 
 - `node design/prototypes/tools/pulse-smoke.mjs`: **all 10 runs pass**, with no JS exceptions or console errors.
