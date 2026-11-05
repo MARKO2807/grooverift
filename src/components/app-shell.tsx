@@ -1,38 +1,82 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/wordmark";
-import { LocaleSwitch } from "@/components/locale-switch";
+import { AlphaMark } from "@/components/shell/alpha-mark";
+import { Rail, TabBar, TABS, tabOf, type NavId } from "@/components/shell/nav";
+import { SwipeTabs } from "@/components/shell/swipe-tabs";
+import { IconBack } from "@/components/ui/icons";
 
-/** Minimal signed-in shell for the foundation (the rail and tabs arrive with Phase 5). */
+/**
+ * The signed-in shell (components §4.7, D-079, D-080; pulse `data-kind="app"`): on the phone a top bar, the
+ * screen and the glass tab bar; from 600 px the rail beside one centred column, from 1024 px the rail with
+ * labels and the wordmark. Two top-bar variants:
+ *  - `home`: the wordmark in the bar (phone), no bar from 1024 px; the h1 is visually hidden in the screen.
+ *  - default: optional back, the screen's h1 as the bar title; `actions` sit on the right.
+ * Navigation focuses the page's h1 (FocusOnNavigate), wherever it sits.
+ */
 export async function AppShell({
   title,
   backHref,
+  nav,
+  home = false,
+  bodyHeading = false,
+  actions,
+  screen,
   children,
 }: {
   title: string;
   backHref?: string;
+  nav?: NavId;
+  home?: boolean;
+  /** The body renders its own h1 (system pages): the bar shows the wordmark and no title. */
+  bodyHeading?: boolean;
+  actions?: React.ReactNode;
+  /** Adds `screen-<name>` to main for screen-specific layout. */
+  screen?: string;
   children: React.ReactNode;
 }) {
   const t = await getTranslations("app");
+  const tab = tabOf(nav);
+  const tabIndex = tab ? TABS.findIndex((x) => x.id === tab) : -1;
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-title">
+    <div className="shell" data-kind="app">
+      <Rail nav={nav} />
+      <div className="page">
+        <header className={`topbar${home ? " topbar-home" : ""}`}>
           {backHref ? (
-            <Link href={backHref} className="btn btn-secondary btn-sm">
-              {t("back")}
+            <Link href={backHref} className="iconbtn" aria-label={t("back")}>
+              <IconBack />
             </Link>
           ) : null}
-          <Link href="/home" className="no-underline" aria-label="GrooveRift">
-            <Wordmark />
-          </Link>
+          {home || bodyHeading ? (
+            <Link href="/home" className="wm-link" aria-label="GrooveRift">
+              <Wordmark />
+            </Link>
+          ) : (
+            <h1 className="top-title" tabIndex={-1}>
+              {title}
+            </h1>
+          )}
+          <div className="top-right">
+            {actions}
+            <AlphaMark />
+          </div>
+        </header>
+        <main id="main" tabIndex={-1} className={`screen${screen ? ` screen-${screen}` : ""}`}>
+          {home && !bodyHeading ? (
+            <h1 className="sr-only" tabIndex={-1}>
+              {title}
+            </h1>
+          ) : null}
+          {children}
+        </main>
+        <div className="bottom">
+          <TabBar nav={nav} />
         </div>
-        <LocaleSwitch />
-      </header>
-      <main id="main" tabIndex={-1} className="screen-onb">
-        <h1 tabIndex={-1}>{title}</h1>
-        {children}
-      </main>
-    </>
+      </div>
+      {tabIndex >= 0 && (nav === tab || nav === undefined) ? (
+        <SwipeTabs current={tabIndex} />
+      ) : null}
+    </div>
   );
 }

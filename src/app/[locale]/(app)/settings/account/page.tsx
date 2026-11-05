@@ -19,7 +19,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
     redirect({ href: { pathname: "/sign-in", query: { returnTo: "/settings/account" } }, locale });
   const t = await getTranslations("settings.account");
   return (
-    <AppShell title={t("title")} backHref="/home">
+    <AppShell title={t("title")} backHref="/settings" nav="settings" screen="narrow">
       <section className="form-stack" aria-labelledby="h-email">
         <h2 id="h-email" className="set-t">
           {t("email")}

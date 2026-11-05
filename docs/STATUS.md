@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05 (session 24: **Phase 5 approved by the owner, D-092**; alpha scope decisions D-093; step 5.0 done; next is step 5.1, the app shell and public pages, in a fresh session)_
+_Last updated: 2026-11-05 (session 25: **step 5.1 done**, app shell and public pages, D-094; the owner asked Claude to continue with every step that needs no owner input; next is step 5.2)_
 
 ## Current phase
 **Phase 5: Alpha vertical slice, IN PROGRESS (approved D-092, 2026-11-05, with a free hand as in D-088).** Plan and step acceptance: [`docs/phase-5-plan.md`](phase-5-plan.md). Scope decisions: D-093 (push in the alpha behind a flag; live MusicBrainz lookups; people search on the Profile tab; seven-day strip plus the full archive; JO2–JO6). Code layout and rules: [`docs/architecture/app-structure.md`](architecture/app-structure.md). Step 4.11 (staging) stays deferred until A7 (OQ-33) and is done in whichever step is current when A7 arrives.
@@ -8,8 +8,8 @@ _Last updated: 2026-11-05 (session 24: **Phase 5 approved by the owner, D-092**;
 | Step | Status |
 |---|---|
 | 5.0 Kickoff | ✅ plan approved (D-092), decisions D-093, `web-push` 3.6 and `archiver` 8 installed with types, `readdir-glob` minimatch override (audit 0 findings), OQ-07/08/16/28 closed |
-| 5.1 App shell and public pages | ⏳ **next** (Medium): tab bar, rail, desktop columns, large text, motion rules, the Spirala component, landing, legal placeholders, DSA notice form, about-the-alpha, "nije dostupno", error, offline, paused |
-| 5.2 Data model and data-access layer ⛳ | ⏳ High |
+| 5.1 App shell and public pages | ✅ session 25: tab bar, rail, columns, large text, motion; Spirala and invite current on canvas (D-094); PUB-01, PUB-10 drafts, PUB-11 (validates and audits, stores from 5.2), PUB-12, SYS-01–05 |
+| 5.2 Data model and data-access layer ⛳ | ⏳ **next** (High) |
 | 5.3 Catalogue and Music DNA | ⏳ needs the owner's MetaBrainz registration and the project mailbox (A4) |
 | 5.4 Invitations and onboarding ⛳ | ⏳ |
 | 5.5 Profiles, follow and people search | ⏳ |
@@ -23,7 +23,7 @@ _Last updated: 2026-11-05 (session 24: **Phase 5 approved by the owner, D-092**;
 | 5.13 Copy and owner review ⛳ | ⏳ |
 | 5.14 Review and close | ⏳ High |
 
-**Checks on 2026-11-05 (session 24, after the installs, all green):** `npm run check` (format, lint, typecheck, tokens 180 variables / 89 contrast pairs, i18n 204 keys, 40 unit tests), `npm audit` 0 findings (with and without dev). E2e and db suites were not rerun (no code changed); the last green runs are session 23's (52 e2e on the production build) and GitHub Actions on `9485d72` (checks, database, e2e all ✅).
+**Checks on 2026-11-05 (session 25, after step 5.1, all green):** `npm run check` (format, lint, typecheck, tokens 180 / 89 pairs, i18n 327 keys, 59 unit tests); e2e **101 passed** on the dev server and **101 passed** on the production build (`CI=1 PORT=3100`); `scripts/screens.mjs` 80 views (180/360/800/1366/1920 px) with no sideways scroll, one h1, one visible main navigation; Spirala at 360 px with the CPU 4x slower: median 16.7 ms, p95 33.4 ms per frame. Not rerun: `npm run test:db` (no database code changed).
 
 ## Done
 - Phases 0–4 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087; Foundation, accepted D-091).
@@ -37,15 +37,14 @@ _Last updated: 2026-11-05 (session 24: **Phase 5 approved by the owner, D-092**;
 - Phase 3 record: [`design/phase-3-plan.md`](design/phase-3-plan.md), [`design/phase-3-review.md`](design/phase-3-review.md); every review page is linked from `design/prototypes/index.html`. Phase 4 record: [`phase-4-plan.md`](phase-4-plan.md).
 
 ## Next
-1. **Owner:** `! git push` (`0131cb6` the proposed plan + the session 24 docs and install commit).
-2. **Claude, next session (fresh):** **step 5.1, app shell and public pages** (Medium effort). Port the shell from `design/prototypes/pulse/` (`app.js`, `style.css`, `dna.js` for the Spirala, the icons map) onto the Phase 4 component contract; build PUB-01, PUB-10 placeholders, PUB-11, PUB-12, SYS-01–05; screenshot pass at 360/800/1366/1920 px; axe clean; the no-store and 404-for-everything tests. Then STATUS/HANDOFF and a commit; step 5.2 (High) in the session after.
-3. **Owner, before step 5.3:** register with MetaBrainz (Stealth Start-Up, $0, D-018) and create the project mailbox on grooverift.com for the MusicBrainz User-Agent (A4, D-092); tell Claude the address.
-4. **Owner, A7 (OQ-33):** staging, R2, error tracking, the email provider and the Google OAuth client whenever ready. Claude then does 4.11 (runbook: `docs/ops/deploy-runbook.md`) and 5.11.
-5. Open, to raise when convenient: OQ-06 (moderation staffing and response time for the alpha notice), OQ-24, OQ-29, OQ-32; the owner's Narrator listen (`docs/design/accessibility-pass.md` §3); counsel questions (B.3 retention periods, B.5, C.9, C.10).
+1. **Owner:** `! git push` (the session 25 commits).
+2. **Claude (continuing on the owner's instruction, session 25):** step 5.2 data model and data-access layer (High). Then the steps that need no owner input: 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.12 (flagged), in plan order; each ⛳ point is prepared for the owner's review, not decided.
+3. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (project mailbox and MetaBrainz for 5.3; A7 accounts; counsel). OQ-34 (alpha data after the alpha) before invitations.
+4. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 
 ## Owner actions outside Claude
 - `git push` after each session (Claude's push is blocked).
-- MetaBrainz registration and the project mailbox before 5.3 (D-092). A7 accounts (OQ-33) when ready.
+- MetaBrainz registration and the project mailbox before 5.3 (D-092). A7 accounts (OQ-33) when ready. Step by step: `docs/ops/owner-setup-checklist.md`.
 - Start looking for an accountant and lawyer (`docs/legal/questions-for-counsel.md`). Needed before the alpha (legal pages are placeholders until then; no invite goes out while they are).
 
 ## Blockers
@@ -62,8 +61,10 @@ _Last updated: 2026-11-05 (session 24: **Phase 5 approved by the owner, D-092**;
 8. The first-Drop countdown with seconds (D-078): the alpha launch must be timed so the countdown matches the real first publication; the first question is scheduled before any invite.
 9. Password composition (D-061) deviates from NIST; mitigations are built; revisit before the alpha.
 10. No staging yet (4.11 deferred): the Render client-IP header, the email provider and R2 are unverified until A7; the first deploy must follow the runbook §1 checks before any invite goes out.
-11. **New:** iOS Web Push needs an installed PWA over HTTPS and a real-device check (T-04); push is flagged (D-093 (1)) so the alpha can ship without it.
-12. **New:** the Spirala port (`dna.js`) must stay smooth on a mid-range phone; measured in 5.1, simplified with the owner's knowledge if the frame budget is missed.
+11. iOS Web Push needs an installed PWA over HTTPS and a real-device check (T-04); push is flagged (D-093 (1)) so the alpha can ship without it.
+12. The Spirala port: measured in 5.1 (D-094), within budget at 4x CPU throttle; recheck on a real mid-range phone with staging.
+13. **New:** the 404 page renders through the client in Next.js 16 (status 404 is right; without JavaScript the page is blank). Revisit with `global-not-found` or a framework update (D-094 (6)).
+14. **New:** DSA notices are validated and audited but not stored until step 5.2 adds the `notice` table; no invitation goes out before then.
 
 ## Code
 - **Application (session 22):** see [`docs/architecture/app-structure.md`](architecture/app-structure.md). Commands: `npm run dev`, `npm run check`, `npm run test:db`, `npm run build && npm run test:e2e`, `npm run worker`, `npm run db:migrate`, `npm run db:seed`, `npm run tokens`, `npm run i18n:check`. New dependencies (session 24, unused until 5.10 and 5.12): `web-push`, `archiver`.

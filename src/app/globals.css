@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/fonts.css";
 @import "../styles/components.css";
+@import "../styles/shell.css";
 
 @layer base {
   html {
@@ -54,6 +55,16 @@
     text-decoration-color: var(--gr-color-focus-ring);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.2em;
+  }
+
+  /* "Smanji pokrete" (D-049): the member setting stops motion like the system setting does. */
+  html[data-motion="reduced"] *,
+  html[data-motion="reduced"] *::before,
+  html[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 
   @media (prefers-reduced-motion: reduce) {

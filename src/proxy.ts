@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
+import { isPrivatePath, profileRewrite } from "./lib/routing/paths";
 
 // Locale routing plus the per-request Content Security Policy (step 4.10). Authorization is never
 // decided here: every page and API route checks the session and the policy module server-side.
@@ -41,8 +42,20 @@ export default function proxy(request: NextRequest) {
   request.headers.set("x-nonce", nonce);
   request.headers.set("content-security-policy", csp);
 
-  const response = intl(request);
+  const { pathname } = request.nextUrl;
+  const profile = profileRewrite(pathname);
+  if (profile) {
+    // The locale is the first segment of the rewrite target; next-intl reads it from this header (as its own
+    // middleware sets it), so "nije dostupno" and later the profile render in the visitor's language.
+    request.headers.set("X-NEXT-INTL-LOCALE", profile.split("/")[1]!);
+  }
+  const response = profile
+    ? NextResponse.rewrite(new URL(profile + request.nextUrl.search, request.url), {
+        request: { headers: request.headers },
+      })
+    : intl(request);
   response.headers.set("Content-Security-Policy", csp);
+  if (isPrivatePath(pathname)) response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
 

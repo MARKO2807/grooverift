@@ -29,7 +29,7 @@ export default async function AdminLayout({
       redirect({ href: { pathname: "/sign-in", query: { returnTo: "/admin" } }, locale });
     }
     return (
-      <AppShell title={t("forbidden.title")} backHref="/home">
+      <AppShell title={t("forbidden.title")} backHref="/settings" nav="settings" screen="narrow">
         <Notice kind="warning">
           {gate.reason === "TWO_FACTOR_REQUIRED" ? t("forbidden.twoFactor") : t("forbidden.role")}
         </Notice>
@@ -42,7 +42,7 @@ export default async function AdminLayout({
     );
   }
   return (
-    <AppShell title={t("title")} backHref="/home">
+    <AppShell title={t("title")} backHref="/settings" nav="settings">
       <p className="lead">{t("lead")}</p>
       <nav aria-label={t("nav.label")} className="foot-row">
         <Link href="/admin" className="btn btn-secondary btn-sm">

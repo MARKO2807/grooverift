@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { ToastProvider } from "@/components/ui/toast";
 import { FocusOnNavigate } from "@/components/focus-on-navigate";
+import { motionPreference } from "@/lib/settings/motion";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -44,9 +45,10 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "app" });
+  const motion = await motionPreference();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-motion={motion}>
       <head>
         <link
           rel="preload"

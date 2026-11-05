@@ -92,7 +92,7 @@ export default async function SecurityPage({
   const role = roleOf(session);
 
   return (
-    <AppShell title={t("title")} backHref="/home">
+    <AppShell title={t("title")} backHref="/settings" nav="settings" screen="narrow">
       <section className="form-stack" aria-labelledby="h-pw">
         <h2 id="h-pw" className="set-t">
           {t("password")}

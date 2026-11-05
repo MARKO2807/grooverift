@@ -2,16 +2,18 @@
   "app": {
     "description": "GrooveRift: mjesto za ljude koji žive glazbu.",
     "skipToContent": "Preskoči na sadržaj",
-    "alpha": "Alfa",
     "language": "Jezik",
-    "back": "Natrag"
+    "back": "Natrag",
+    "mainNav": "Glavna navigacija",
+    "alphaMark": "Alfa",
+    "alphaMarkLabel": "Alfa: o ovoj fazi",
+    "toApp": "Na početnu",
+    "signIn": "Prijavi se"
   },
   "home": {
-    "title": "Uskoro",
-    "lead": "Aplikacija se gradi. Zasad ovdje nema ničega za vidjeti.",
-    "signIn": "Prijavi se",
+    "title": "Početna",
+    "lead": "Ovdje će biti današnji Daily Drop i prvi odgovori. Taj dio se još gradi.",
     "signedInAs": "Prijavljen si kao {name}.",
-    "settings": "Postavke",
     "admin": "Administracija",
     "signOut": "Odjavi se"
   },
@@ -250,5 +252,168 @@
     "editor": "urednik",
     "moderator": "moderator",
     "admin": "administrator"
+  },
+  "nav": {
+    "home": "Početna",
+    "hub": "Hub",
+    "activity": "Aktivnost",
+    "profile": "Profil",
+    "settings": "Postavke",
+    "help": "Pomoć"
+  },
+  "landing": {
+    "title": "Svaki dan jedno pitanje za sve.",
+    "tagline": "Where musical worlds collide.",
+    "lead": "Otkrij svoj Music DNA, raspravljaj o glazbi i poveži se s ljudima različitih ukusa.",
+    "howLabel": "Što je u aplikaciji",
+    "dropTitle": "Daily Drop.",
+    "dropText": "Svaki dan jedno pitanje o glazbi, za sve.",
+    "dnaTitle": "Music DNA.",
+    "dnaText": "Spirala tvog ukusa, iz žanrova i izvođača koje biraš.",
+    "peopleTitle": "Ljudi.",
+    "peopleText": "Rasprave i veze s ljudima drugačijeg ukusa.",
+    "inviteTitle": "Samo uz pozivnicu.",
+    "inviteText": "<brand>GrooveRift</brand> je u zatvorenoj alfi: članovi pozivaju ljude koje znaju. Nema liste čekanja.",
+    "moreAlpha": "Više o alfi",
+    "haveInvite": "Imaš pozivnicu? Otvori poveznicu iz e-pošte s pozivnicom."
+  },
+  "legal": {
+    "navLabel": "Pravne informacije",
+    "terms": "Uvjeti",
+    "privacy": "Privatnost",
+    "guidelines": "Pravila zajednice",
+    "cookies": "Kolačići",
+    "contact": "Kontakt",
+    "notice": "Prijavi sadržaj",
+    "draftMark": "Nacrt, čeka pravni pregled",
+    "draftText": "Ovaj tekst još nije konačan. Pravni pregled je u tijeku i nitko ne dobiva pozivnicu dok ne završi.",
+    "noticeLine": "Nezakonit sadržaj možeš prijaviti i bez računa.",
+    "docs": {
+      "terms": {
+        "title": "Uvjeti korištenja",
+        "lead": "Uvjeti pod kojima koristiš GrooveRift: tko se može učlaniti (punoljetni, uz pozivnicu), što smiješ objavljivati i kako se račun zatvara."
+      },
+      "privacy": {
+        "title": "Pravila privatnosti",
+        "lead": "Koje podatke obrađujemo, zašto i koliko dugo, gdje se čuvaju i kako ih možeš preuzeti ili izbrisati."
+      },
+      "guidelines": {
+        "title": "Pravila zajednice",
+        "lead": "Kako se odnosimo jedni prema drugima, što nije dopušteno i što se događa kad netko prekrši pravila."
+      },
+      "cookies": {
+        "title": "Kolačići",
+        "lead": "Zasad koristimo samo kolačiće nužne za prijavu, sigurnost i odabir jezika. Popis s rokovima stiže s pravnim pregledom."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "lead": "Kontakt adrese za članove i za nadležna tijela objavljujemo prije prvih pozivnica."
+      }
+    }
+  },
+  "notice": {
+    "title": "Prijavi nezakonit sadržaj",
+    "lead": "Obrazac je za svakoga, i bez računa. Članovi sadržaj mogu prijaviti i iz aplikacije.",
+    "urgent": "Ako je netko u neposrednoj opasnosti, nazovi 112.",
+    "categoryLegend": "Što prijavljuješ?",
+    "categories": {
+      "csam": "Seksualno zlostavljanje djece",
+      "hate": "Nezakonit govor mržnje ili poticanje na nasilje",
+      "threat": "Prijetnje",
+      "privacy": "Objava tuđih osobnih podataka",
+      "copyright": "Povreda autorskih prava",
+      "fraud": "Prijevara",
+      "other": "Nešto drugo nezakonito"
+    },
+    "urlLabel": "Poveznica na sadržaj",
+    "urlHelp": "Adresa odgovora, profila ili stranice na GrooveRiftu. Ako ih je više, ostale dodaj u objašnjenje.",
+    "explanationLabel": "Zašto je sadržaj nezakonit?",
+    "explanationHelp": "Opiši što je točno sporno i, ako znaš, koji propis krši.",
+    "contactLegend": "Tvoji podaci",
+    "contactHelp": "Javit ćemo ti što smo odlučili. Osoba koju prijavljuješ ne vidi tko je poslao prijavu.",
+    "contactOptional": "Kod prijave seksualnog zlostavljanja djece ime i e-pošta nisu obavezni.",
+    "nameLabel": "Ime i prezime",
+    "emailLabel": "E-pošta",
+    "goodFaith": "Iskreno vjerujem da su podaci u prijavi točni i potpuni.",
+    "submit": "Pošalji prijavu",
+    "sending": "Šaljem…",
+    "doneTitle": "Prijava je zaprimljena",
+    "doneText": "Pregledat će je osoba iz našeg tima. Ako smo dobili tvoju e-poštu, javit ćemo ti odluku.",
+    "another": "Pošalji još jednu prijavu",
+    "errors": {
+      "summary": "Prijava nije poslana. Ispravi označena polja.",
+      "categoryRequired": "Odaberi što prijavljuješ.",
+      "urlRequired": "Upiši poveznicu na sadržaj.",
+      "urlInvalid": "Poveznica treba počinjati s https://, na primjer https://grooverift.com/@ime.",
+      "explanationRequired": "Opiši zašto je sadržaj nezakonit.",
+      "explanationLong": "Najviše 5.000 znakova.",
+      "nameRequired": "Upiši ime i prezime.",
+      "emailRequired": "Upiši e-poštu.",
+      "emailInvalid": "Provjeri e-poštu, na primjer ime@primjer.hr.",
+      "goodFaithRequired": "Potvrdi da su podaci točni.",
+      "generic": "Prijava nije poslana zbog greške kod nas. Pokušaj ponovno za minutu."
+    }
+  },
+  "alphaPage": {
+    "title": "O alfi",
+    "lead": "GrooveRift je u zatvorenoj tehničkoj alfi: ranoj, nedovršenoj verziji za malu skupinu pozvanih punoljetnih ljudi.",
+    "whatTitle": "Što radi",
+    "whatText": "Samo dio onoga što GrooveRift treba postati: Daily Drop, profil s Music DNA, praćenje te prijava i blokiranje. Ostalo dolazi u beti.",
+    "limitsTitle": "Poznata ograničenja",
+    "limit1": "Nema poruka, objava ni prijedloga ljudi. To dolazi kasnije.",
+    "limit2": "Slike profila stižu naknadno. Do tada profil prikazuje početno slovo.",
+    "limit3": "Moguće su greške i kratki prekidi rada.",
+    "feedbackTitle": "Povratne informacije",
+    "feedbackText": "Obrazac za povratne informacije bit će u aplikaciji, pod Pomoć. Adresu za kontakt objavljujemo prije prvih pozivnica.",
+    "dataTitle": "Tvoji podaci",
+    "dataText": "Podaci se čuvaju na poslužiteljima u EU. Što obrađujemo i koliko dugo opisuju Pravila privatnosti.",
+    "afterTitle": "Što nakon alfe",
+    "afterText": "Ništa ne brišemo bez najave. Prelaze li računi i odgovori iz alfe u betu, javit ćemo prije prvih pozivnica."
+  },
+  "system": {
+    "naTitle": "Ova stranica nije dostupna",
+    "naText": "Možda je poveznica pogrešna ili sadržaj više ne postoji.",
+    "toHome": "Na početnu",
+    "errorTitle": "Nešto je pošlo po zlu",
+    "errorText": "Stranica se nije učitala. Nije do tebe.",
+    "retry": "Pokušaj ponovno",
+    "errorHelp": "Ponavlja se?",
+    "errorHelpLink": "Javi nam",
+    "offlineTitle": "Nisi na mreži",
+    "offlineText": "Ova stranica nije spremljena za rad bez mreže. Provjeri vezu i pokušaj ponovno.",
+    "pausedSafe": "Tvoji podaci su na sigurnom, a ostatak aplikacije radi.",
+    "paused": {
+      "music_dna": {
+        "title": "Music DNA je privremeno isključen",
+        "text": "Popravljamo problem s Music DNA."
+      },
+      "daily_drop": {
+        "title": "Daily Drop je na pauzi",
+        "text": "Popravljamo nešto u pozadini. Odgovori i komentari čekaju dok se ne vratimo."
+      },
+      "comments": {
+        "title": "Komentari su privremeno isključeni",
+        "text": "Popravljamo problem s komentarima. Odgovori na pitanje rade."
+      }
+    }
+  },
+  "placeholder": {
+    "mark": "U izradi",
+    "hub": "Ovdje će biti današnji Daily Drop, zadnjih sedam dana i arhiva pitanja.",
+    "activity": "Ovdje će biti odgovori na tvoje komentare, reakcije i novi pratitelji.",
+    "profile": "Ovdje će biti tvoj profil sa Spiralom tvog Music DNA.",
+    "help": "Ovdje će biti pomoć i obrazac za povratne informacije."
+  },
+  "settingsIndex": {
+    "title": "Postavke",
+    "security": "Sigurnost",
+    "securityText": "Lozinka, dvostruka provjera i uređaji",
+    "account": "Račun",
+    "accountText": "Adresa e-pošte"
+  },
+  "spirala": {
+    "listLabel": "Žanrovi i izvođači u Music DNA",
+    "empty": "Još nema žanrova.",
+    "artists": "{genre}: {artists}"
   }
 }

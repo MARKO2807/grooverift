@@ -2,16 +2,18 @@
   "app": {
     "description": "GrooveRift: a place for people who live music.",
     "skipToContent": "Skip to content",
-    "alpha": "Alpha",
     "language": "Language",
-    "back": "Back"
+    "back": "Back",
+    "mainNav": "Main navigation",
+    "alphaMark": "Alpha",
+    "alphaMarkLabel": "Alpha: about this stage",
+    "toApp": "Go to Home",
+    "signIn": "Sign in"
   },
   "home": {
-    "title": "Coming soon",
-    "lead": "The app is being built. There is nothing to see here yet.",
-    "signIn": "Sign in",
+    "title": "Home",
+    "lead": "Today's Daily Drop and the first answers will be here. That part is still being built.",
     "signedInAs": "You are signed in as {name}.",
-    "settings": "Settings",
     "admin": "Admin",
     "signOut": "Sign out"
   },
@@ -250,5 +252,168 @@
     "editor": "editor",
     "moderator": "moderator",
     "admin": "admin"
+  },
+  "nav": {
+    "home": "Home",
+    "hub": "Hub",
+    "activity": "Activity",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "landing": {
+    "title": "One question a day, for everyone.",
+    "tagline": "Where musical worlds collide.",
+    "lead": "Discover your Music DNA, talk about music and connect with people whose taste differs from yours.",
+    "howLabel": "What's inside",
+    "dropTitle": "Daily Drop.",
+    "dropText": "One question about music every day, for everyone.",
+    "dnaTitle": "Music DNA.",
+    "dnaText": "A spiral of your taste, from the genres and artists you pick.",
+    "peopleTitle": "People.",
+    "peopleText": "Conversations and connections with people of different taste.",
+    "inviteTitle": "Invite only.",
+    "inviteText": "<brand>GrooveRift</brand> is in a closed alpha: members invite people they know. There is no waitlist.",
+    "moreAlpha": "More about the alpha",
+    "haveInvite": "Have an invite? Open the link in your invitation email."
+  },
+  "legal": {
+    "navLabel": "Legal information",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "guidelines": "Community guidelines",
+    "cookies": "Cookies",
+    "contact": "Contact",
+    "notice": "Report content",
+    "draftMark": "Draft, awaiting legal review",
+    "draftText": "This text is not final. A legal review is under way and nobody receives an invitation until it is done.",
+    "noticeLine": "You can report illegal content without an account.",
+    "docs": {
+      "terms": {
+        "title": "Terms of use",
+        "lead": "The terms under which you use GrooveRift: who can join (adults, by invitation), what you may post and how an account is closed."
+      },
+      "privacy": {
+        "title": "Privacy policy",
+        "lead": "What data we process, why and for how long, where it is stored and how you can download or delete it."
+      },
+      "guidelines": {
+        "title": "Community guidelines",
+        "lead": "How we treat each other, what is not allowed and what happens when someone breaks the rules."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "lead": "For now we only use cookies needed for signing in, security and your language choice. A full list with durations comes with the legal review."
+      },
+      "contact": {
+        "title": "Contact",
+        "lead": "Contact addresses for members and for the authorities are published before the first invitations."
+      }
+    }
+  },
+  "notice": {
+    "title": "Report illegal content",
+    "lead": "Anyone can use this form, with or without an account. Members can also report content from inside the app.",
+    "urgent": "If someone is in immediate danger, call 112.",
+    "categoryLegend": "What are you reporting?",
+    "categories": {
+      "csam": "Child sexual abuse",
+      "hate": "Illegal hate speech or incitement to violence",
+      "threat": "Threats",
+      "privacy": "Someone's personal data published",
+      "copyright": "Copyright infringement",
+      "fraud": "Fraud",
+      "other": "Something else that is illegal"
+    },
+    "urlLabel": "Link to the content",
+    "urlHelp": "The address of the answer, profile or page on GrooveRift. If there are several, add the others to the explanation.",
+    "explanationLabel": "Why is the content illegal?",
+    "explanationHelp": "Describe what exactly is wrong and, if you know, which law it breaks.",
+    "contactLegend": "Your details",
+    "contactHelp": "We will tell you what we decided. The person you report does not see who sent the report.",
+    "contactOptional": "For reports of child sexual abuse, your name and email are optional.",
+    "nameLabel": "Full name",
+    "emailLabel": "Email",
+    "goodFaith": "I believe in good faith that the information in this report is accurate and complete.",
+    "submit": "Send report",
+    "sending": "Sending…",
+    "doneTitle": "Report received",
+    "doneText": "A person on our team will review it. If we have your email, we will tell you the decision.",
+    "another": "Send another report",
+    "errors": {
+      "summary": "The report was not sent. Fix the marked fields.",
+      "categoryRequired": "Choose what you are reporting.",
+      "urlRequired": "Enter the link to the content.",
+      "urlInvalid": "The link should start with https://, for example https://grooverift.com/@name.",
+      "explanationRequired": "Describe why the content is illegal.",
+      "explanationLong": "At most 5,000 characters.",
+      "nameRequired": "Enter your full name.",
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "Check the email, for example name@example.com.",
+      "goodFaithRequired": "Confirm that the information is accurate.",
+      "generic": "The report was not sent because of an error on our side. Try again in a minute."
+    }
+  },
+  "alphaPage": {
+    "title": "About the alpha",
+    "lead": "GrooveRift is in a closed technical alpha: an early, unfinished version for a small group of invited adults.",
+    "whatTitle": "What works",
+    "whatText": "Only part of what GrooveRift is meant to become: the Daily Drop, a profile with Music DNA, following, and reporting and blocking. The rest comes in the beta.",
+    "limitsTitle": "Known limitations",
+    "limit1": "No messages, posts or people suggestions yet. They come later.",
+    "limit2": "Profile photos come later. Until then a profile shows an initial.",
+    "limit3": "Expect bugs and short outages.",
+    "feedbackTitle": "Feedback",
+    "feedbackText": "A feedback form will be in the app, under Help. A contact address is published before the first invitations.",
+    "dataTitle": "Your data",
+    "dataText": "Data is stored on servers in the EU. The privacy policy describes what we process and for how long.",
+    "afterTitle": "After the alpha",
+    "afterText": "We delete nothing without notice. Whether alpha accounts and answers carry over to the beta will be announced before the first invitations."
+  },
+  "system": {
+    "naTitle": "This page is not available",
+    "naText": "The link may be wrong, or the content no longer exists.",
+    "toHome": "Go to Home",
+    "errorTitle": "Something went wrong",
+    "errorText": "The page did not load. It's not you.",
+    "retry": "Try again",
+    "errorHelp": "Keeps happening?",
+    "errorHelpLink": "Let us know",
+    "offlineTitle": "You're offline",
+    "offlineText": "This page is not saved for offline use. Check your connection and try again.",
+    "pausedSafe": "Your data is safe, and the rest of the app works.",
+    "paused": {
+      "music_dna": {
+        "title": "Music DNA is switched off for now",
+        "text": "We are fixing a problem with Music DNA."
+      },
+      "daily_drop": {
+        "title": "Daily Drop is paused",
+        "text": "We are fixing something behind the scenes. Answers and comments wait until we are back."
+      },
+      "comments": {
+        "title": "Comments are switched off for now",
+        "text": "We are fixing a problem with comments. Answers to the question still work."
+      }
+    }
+  },
+  "placeholder": {
+    "mark": "Being built",
+    "hub": "Today's Daily Drop, the last seven days and the question archive will be here.",
+    "activity": "Replies to your comments, reactions and new followers will be here.",
+    "profile": "Your profile with the spiral of your Music DNA will be here.",
+    "help": "Help and the feedback form will be here."
+  },
+  "settingsIndex": {
+    "title": "Settings",
+    "security": "Security",
+    "securityText": "Password, two-step verification and devices",
+    "account": "Account",
+    "accountText": "Email address"
+  },
+  "spirala": {
+    "listLabel": "Genres and artists in the Music DNA",
+    "empty": "No genres yet.",
+    "artists": "{genre}: {artists}"
   }
 }

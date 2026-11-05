@@ -8,7 +8,9 @@ export async function expectNoAxeViolations(page: Page) {
     .analyze();
   const summary = results.violations.map(
     (v) =>
-      `${v.id} (${v.impact}): ${v.help}\n  ${v.nodes.map((n) => n.target.join(" ")).join("\n  ")}`,
+      `${v.id} (${v.impact}): ${v.help}\n  ${v.nodes
+        .map((n) => `${n.target.join(" ")} ${n.html.slice(0, 160)}`)
+        .join("\n  ")}`,
   );
   expect(summary, "axe-core violations").toEqual([]);
 }

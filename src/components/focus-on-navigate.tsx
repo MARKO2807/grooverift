@@ -16,7 +16,8 @@ export function FocusOnNavigate() {
     }
     if (last.current === pathname) return;
     last.current = pathname;
-    const h1 = document.querySelector<HTMLElement>("main h1");
+    // The page's h1 is in main, or in the top bar on screens whose title is the bar title (AppShell).
+    const h1 = document.querySelector<HTMLElement>("main h1, .topbar h1");
     h1?.focus({ preventScroll: true });
   }, [pathname]);
   return null;

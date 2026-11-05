@@ -1,7 +1,7 @@
-import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocaleSwitch } from "@/components/locale-switch";
+import { AlphaMark } from "@/components/shell/alpha-mark";
 
 /**
  * The onboarding shell (D-079, D-080): on the phone a top bar with the wordmark and the screen below it; from
@@ -18,7 +18,6 @@ export async function AuthScreen({
   icon?: React.ReactNode;
   centered?: boolean;
 }) {
-  const t = await getTranslations("app");
   return (
     <div className="onb-shell">
       <div className="onb-card">
@@ -27,7 +26,7 @@ export async function AuthScreen({
             <Link href="/" className="no-underline" aria-label="GrooveRift">
               <Wordmark />
             </Link>
-            <span className="pill">{t("alpha")}</span>
+            <AlphaMark />
           </div>
           <LocaleSwitch />
         </header>
