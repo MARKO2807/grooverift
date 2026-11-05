@@ -5,6 +5,7 @@
 @import "../styles/shell.css";
 @import "../styles/dna.css";
 @import "../styles/onboarding.css";
+@import "../styles/profile.css";
 
 @layer base {
   html {

@@ -4,9 +4,10 @@
  *  App Router, so the profile route lives at `/[locale]/u/[username]` and the public URL is rewritten to it. */
 const PROFILE_PATH = /^(?:\/(en|hr))?\/@([^/]+)(\/.*)?$/;
 
-/** Private areas never enter a shared or browser cache (ADR-0002 §3, plan 5.1). Pages there are dynamic, so
- *  Next already sends no-store; the header is set here too so the rule holds whatever a page declares. */
-const PRIVATE_PATH = /^(?:\/(?:en|hr))?\/(?:me|settings|admin)(?:\/|$)/;
+/** Private areas never enter a shared or browser cache (ADR-0002 §3, plan 5.1): the member's own pages, settings,
+ *  admin, and since 5.5 the people search and Activity. Pages there are dynamic, so Next already sends no-store;
+ *  the header is set here too so the rule holds whatever a page declares. */
+const PRIVATE_PATH = /^(?:\/(?:en|hr))?\/(?:me|settings|admin|search|activity)(?:\/|$)/;
 
 export function profileRewrite(pathname: string): string | null {
   const m = PROFILE_PATH.exec(pathname);

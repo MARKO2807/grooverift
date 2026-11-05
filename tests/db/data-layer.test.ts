@@ -137,10 +137,11 @@ describe("invariant 2: a block removes follows both ways and hides the pair", ()
     g = await loadGraph(ids.ana!, ids.ben!);
     expect(g.blocked).toBe(true);
 
-    // The blocked side cannot follow again and sees "not available", not "blocked" (IA8).
+    // The blocked side cannot follow again and sees "not available", not "blocked" (IA8); the blocker sees
+    // their own block so they can undo it (J4 B state, step 5.5).
     expect(await followMember(ana, ids.ben!)).toEqual({ ok: false, reason: "not-available" });
     expect((await profileByUsername(ana, uname("ben"))).kind).toBe("not-available");
-    expect((await profileByUsername(ben, uname("ana"))).kind).toBe("not-available");
+    expect((await profileByUsername(ben, uname("ana"))).kind).toBe("blocked-by-you");
 
     await unblockMember(ids.ben!, ids.ana!);
     expect((await loadGraph(ids.ana!, ids.ben!)).follows).toBe("none"); // follows do not come back

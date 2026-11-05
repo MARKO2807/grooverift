@@ -15,7 +15,7 @@ import {
 } from "@/lib/db/schema";
 import type { DnaAudience } from "@/lib/music/limits";
 import { isUniqueViolation } from "./db-errors";
-import { normalizeUsername, usernameAvailable } from "./profiles";
+import { normalizeUsername, usernameAvailable, USERNAME_SHAPE, validDisplayName } from "./profiles";
 
 /** The steps after the account exists, in order. `onboarding_step` holds one of these (null = finished). */
 export const PROFILE_STEPS = [
@@ -86,9 +86,8 @@ export async function onboardingState(userId: string): Promise<OnboardingState> 
   };
 }
 
-export const USERNAME_SHAPE = /^[a-z0-9_]{3,30}$/; // profile_username_shape in the database
-export const DISPLAY_NAME_MAX = 40;
-export const DISPLAY_NAME_WORDS = 3; // D-085 (3): at most three words, written as typed
+// The username shape and display-name rules live in ./profiles (shared with PROF-08 since step 5.5).
+export { DISPLAY_NAME_MAX, DISPLAY_NAME_WORDS, USERNAME_SHAPE, validDisplayName } from "./profiles";
 
 export type CreateProfileResult = { ok: true } | { ok: false; reason: "taken" | "invalid" };
 
@@ -133,13 +132,6 @@ export async function createOnboardingProfile(
     throw e;
   }
   return { ok: true };
-}
-
-export function validDisplayName(name: string): boolean {
-  const trimmed = name.trim();
-  if (!trimmed || trimmed.length > DISPLAY_NAME_MAX) return false;
-  if (/[\p{C}]/u.test(trimmed)) return false; // control characters
-  return trimmed.split(/\s+/).length <= DISPLAY_NAME_WORDS;
 }
 
 /** Up to three free usernames near `base` (J1 E6), checked against profiles and reservations in one query each. */

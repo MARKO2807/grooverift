@@ -13,7 +13,12 @@ const scratchUrl = (() => {
   u.pathname = `/${scratchName}`;
   return u.toString();
 })();
-const DOWN = ["0004_invitations", "0003_alpha_constraints", "0002_alpha_model"];
+const DOWN = [
+  "0005_profiles_search",
+  "0004_invitations",
+  "0003_alpha_constraints",
+  "0002_alpha_model",
+];
 
 async function admin<T>(fn: (c: Client) => Promise<T>) {
   const c = new Client({ connectionString: base });

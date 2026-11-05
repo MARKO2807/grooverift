@@ -22,6 +22,7 @@ mkdirSync(dir, { recursive: true });
 const WIDTHS = [180, 360, 800, 1366, 1920];
 const PUBLIC = [
   "/",
+  "/@ana", // PUB-08
   "/legal/terms",
   "/legal/notice",
   "/about/alpha",
@@ -38,6 +39,13 @@ const MEMBER = [
   "/settings",
   "/settings/help",
   "/settings/security",
+  "/settings/profile",
+  "/settings/privacy",
+  "/@luka", // another member (step 5.5)
+  "/@mia", // a private profile: the P state
+  "/@luka/followers",
+  "/search?q=luka",
+  "/activity/requests",
   "/@nobody",
 ];
 

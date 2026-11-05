@@ -125,7 +125,10 @@
     "notOnboarding": "This step is no longer available.",
     "inviteMember": "That address already has an account.",
     "inviteOpen": "That address already has an open invitation. Revoke it, then send a new one.",
-    "mailFailed": "The message wasn't sent, so no invitation was created. Try again."
+    "mailFailed": "The message wasn't sent, so no invitation was created. Try again.",
+    "bioInvalid": "The bio has up to 200 characters and no control characters.",
+    "usernameTooSoon": "The username can change at most once every 30 days.",
+    "usernameSame": "That is already your username."
   },
   "settings": {
     "security": {
@@ -178,6 +181,82 @@
       "change": "Send the link",
       "changing": "Sending…",
       "sent": "We sent a confirmation link to your current address."
+    },
+    "profile": {
+      "title": "Profile",
+      "basics": "Name and bio",
+      "displayName": "Display name",
+      "displayNameHelp": "Up to three words, written as you type them. Everyone who sees the profile sees it.",
+      "bio": "Bio",
+      "optional": "optional",
+      "bioHelp": "Up to {max} characters. Visible without signing in if the profile is public.",
+      "photoLater": "A profile photo arrives once image storage is connected; until then the avatar is the first letter of your name.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "usernameTitle": "Username",
+      "usernameLead": "You can change it once every 30 days. The old name stays reserved for you for 30 days, and old links to the profile stop working.",
+      "username": "New username",
+      "usernameHelp": "3 to 30 characters: lower-case letters, digits and underscore.",
+      "change": "Change username",
+      "changing": "Changing…",
+      "renamed": "Your username has changed. Your profile is now at @{username}.",
+      "nextAt": "The next change is possible from {date}."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "lead": "One row per setting. Tap to choose.",
+      "profileGroup": "Profile",
+      "sectionsGroup": "Who sees each part",
+      "visibility": "Profile visibility",
+      "visibilityTitle": "Who sees your profile?",
+      "visibilityOption": {
+        "public": "Public",
+        "private": "Private"
+      },
+      "visibilityDesc": {
+        "public": "All members see the profile, Music DNA and answer history. Visitors see the name, avatar and bio.",
+        "private": "Only followers you approve see the profile, Music DNA and answer history. Visitors see nothing."
+      },
+      "toPrivateNote": "Existing followers stay; you can remove them on the followers list. Daily Drop answers and comments stay visible with the questions.",
+      "toPublicNote": "New followers no longer need approval. Answers and comments are visible to all members, as before.",
+      "pendingTitle": "{n, plural, one {# request is waiting} other {# requests are waiting}}",
+      "pendingText": "Switching to public accepts these requests, and those people follow you at once. You can review them first.",
+      "review": "Review requests",
+      "continueAccept": "Continue and accept",
+      "discoverable": "People search",
+      "discoverableTitle": "Can people find you in search?",
+      "discoverableOn": "People can find you",
+      "discoverableOnDesc": "Members find you by name or username. A private profile still shows only the header.",
+      "discoverableOff": "You do not appear in search",
+      "discoverableOffDesc": "Your profile is reached only by a direct link or through your answers.",
+      "discoverableOnSaved": "Saved. People can find you in search.",
+      "discoverableOffSaved": "Saved. You do not appear in search.",
+      "section": {
+        "musicDna": "Music DNA",
+        "lists": "Followers and following",
+        "dropHistory": "Daily Drop answer history"
+      },
+      "sectionTitle": "Who sees: {section}?",
+      "audience": {
+        "everyone": "All members",
+        "followers": "Followers only",
+        "me": "Only me",
+        "mutuals": "Connected"
+      },
+      "audienceDesc": {
+        "everyone": "All signed-in members. Visitors never see it.",
+        "followers": "Only members who follow you.",
+        "me": "Nobody else."
+      },
+      "privateCap": "Your profile is private, so at most your followers see each part.",
+      "choose": "Choose one",
+      "change": "Change",
+      "save": "Save",
+      "cancel": "Cancel",
+      "savedVisibility": "Saved. Your profile is {who}.",
+      "savedAccepted": "Saved. Your profile is public and {n, plural, one {# request was} other {# requests were}} accepted.",
+      "savedSection": "Saved. {section}: {who}."
     }
   },
   "admin": {
@@ -422,7 +501,6 @@
     "mark": "Being built",
     "hub": "Today's Daily Drop, the last seven days and the question archive will be here.",
     "activity": "Replies to your comments, reactions and new followers will be here.",
-    "profile": "The rest of your profile goes here: bio, followers and your answer history.",
     "help": "Help and the feedback form will be here."
   },
   "settingsIndex": {
@@ -430,7 +508,11 @@
     "security": "Security",
     "securityText": "Password, two-step verification and devices",
     "account": "Account",
-    "accountText": "Email address"
+    "accountText": "Email address",
+    "profile": "Profile",
+    "profileText": "Name, bio and username",
+    "privacy": "Privacy",
+    "privacyText": "Who sees your profile, Music DNA and lists"
   },
   "spirala": {
     "listLabel": "Genres and artists in the Music DNA",
@@ -715,6 +797,138 @@
       "reminderOff": "Off",
       "fine": "You can change all of this in Settings.",
       "home": "Home"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "settings": "Settings",
+    "edit": "Edit profile",
+    "change": "Change",
+    "chip": {
+      "mutual": "Connected",
+      "followsYou": "Follows you"
+    },
+    "follow": "Follow",
+    "request": "Request to follow",
+    "following": "Following",
+    "requested": "Requested",
+    "followingLabel": "Following. Unfollow",
+    "mutualLabel": "Following, connected. Unfollow",
+    "requestedLabel": "Requested. Cancel the follow request",
+    "nowFollowing": "You follow @{username}.",
+    "unfollowed": "You no longer follow @{username}.",
+    "requestSent": "Request sent. You will see when it is accepted.",
+    "requestCancelled": "Request cancelled.",
+    "unfollowTitle": "Unfollow @{username}?",
+    "unfollowPublic": "You can follow again any time. They are not notified.",
+    "unfollowPrivate": "The profile is private: following again takes a new request, which they must approve. They are not notified of this.",
+    "unfollow": "Unfollow",
+    "cancelTitle": "Cancel the request to @{username}?",
+    "cancelText": "They are not notified. You can send a new request later.",
+    "cancelRequest": "Cancel request",
+    "cancel": "Cancel",
+    "more": "More options: profile of {name}",
+    "moreTitle": "@{username}",
+    "moreSoon": "Mute and Report arrive in the next alpha step.",
+    "share": "Share",
+    "shareCopied": "Link copied.",
+    "shareFailed": "Copy the link: {url}",
+    "block": "Block",
+    "blockTitle": "Block @{username}?",
+    "blockFact1": "You no longer see each other while signed in: profile, answers and comments disappear both ways.",
+    "blockFact2": "Follows and requests between you are removed, both ways.",
+    "blockFact3": "They are not notified. You can unblock any time; follows do not come back.",
+    "blockNote": "Public content stays reachable through public links without signing in. A private profile is the stronger step.",
+    "blockConfirm": "Block",
+    "blocked": "@{username} is on your block list. You do not see each other while the block stands.",
+    "blockedTitle": "This account is on your block list",
+    "blockedText": "You do not see each other while the block stands. Follows were removed both ways.",
+    "unblock": "Unblock",
+    "unblocked": "Block removed. Follows do not come back on their own.",
+    "privateTitle": "This profile is private.",
+    "privateText": "Request to follow to see the Music DNA and the answer history. Daily Drop answers are visible with every question anyway.",
+    "minimalNote": "Members see the rest of the profile.",
+    "minimalSignIn": "Sign in",
+    "counts": {
+      "followers": "{n, plural, one {follower} other {followers}}",
+      "following": "following",
+      "answers": "{n, plural, one {answer} other {answers}}"
+    },
+    "visibility": {
+      "public": "Public profile",
+      "private": "Private profile"
+    },
+    "visibleTo": "Visible to: <b>{who}</b>",
+    "audience": {
+      "everyone": "all members",
+      "followers": "followers only",
+      "mutuals": "connected",
+      "me": "only me"
+    },
+    "dna": "Music DNA",
+    "dnaEmpty": "No genres yet.",
+    "artists": "Artists",
+    "noArtists": "No artists.",
+    "allDna": "Full Music DNA",
+    "history": "Daily Drop answers",
+    "historyEmpty": "No answers yet.",
+    "historyEmptyOwn": "Your Daily Drop answers collect here.",
+    "historyEmptyOther": "Daily Drop answers collect here.",
+    "historyNoteOwn": "You choose who sees this list in Settings, under Privacy.",
+    "historyNoteOther": "Individual answers are visible to all members with the question; you see this list because this person allowed it.",
+    "allAnswers": "All answers ({n})",
+    "lists": {
+      "title": "Followers and following",
+      "tabs": "List",
+      "followers": "Followers",
+      "following": "Following",
+      "you": "you",
+      "emptyFollowers": "No followers yet.",
+      "emptyFollowingOwn": "You are not following anyone yet.",
+      "emptyFollowing": "Not following anyone yet.",
+      "followersHint": "People find you through Daily Drop answers and search.",
+      "followingHint": "You can find people through Daily Drop answers and search.",
+      "noteOwnPrivate": "Private profile: you can remove a follower without blocking. They are not notified and can send a new request.",
+      "noteOwn": "You choose who sees this list in Settings, under Privacy.",
+      "rowMore": "More options: {name}",
+      "remove": "Remove follower",
+      "removeTitle": "Remove @{username} from your followers?",
+      "removeText": "They no longer see your profile, Music DNA or answer history. They are not notified and can send a new request. Blocking is the stronger step.",
+      "removeConfirm": "Remove",
+      "removed": "Removed from followers."
+    },
+    "requests": {
+      "title": "Follow requests",
+      "rowCount": "{n, plural, one {# person wants to follow you} other {# people want to follow you}}",
+      "empty": "No new requests.",
+      "emptyText": "When someone requests to follow you, you see it here and in Activity.",
+      "notPrivate": "No requests.",
+      "notPrivateText": "Follow requests arrive only while the profile is private.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "accepted": "Accepted. {name} now follows you.",
+      "declined": "Request declined.",
+      "note": "Whoever is accepted follows you at once. Declining sends no notification, and that person can send a new request later."
+    },
+    "search": {
+      "title": "People search",
+      "label": "Find people",
+      "placeholder": "Name or @username",
+      "go": "Search",
+      "hint": "Finds members who allowed being found. Accents do not matter: \"Zeljko\" finds Željko.",
+      "short": "Type at least {min} characters.",
+      "tooMany": "Too many searches in a short time. Wait a minute.",
+      "results": "{n, plural, =0 {No results} one {# result} other {# results}}",
+      "none": "Nobody by that name.",
+      "noneText": "Check the spelling or try the username."
+    },
+    "error": {
+      "signedOut": "Sign in and try again.",
+      "notAllowed": "This is not possible right now.",
+      "notAvailable": "This profile is not available.",
+      "tooMany": "Too many actions in a short time. Wait a moment.",
+      "wait": "A request went out recently. Try again in a few days.",
+      "generic": "Something went wrong. Try again."
     }
   }
 }

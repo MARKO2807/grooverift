@@ -1,6 +1,6 @@
 # Application structure (Phase 4 foundation)
 
-_Written 2026-11-05 (session 22), updated in session 25 (steps 5.1 and 5.2). Describes the code as built; the plan is [`../phase-4-plan.md`](../phase-4-plan.md), the libraries are [ADR-0003](../decisions/adr/0003-application-libraries.md)._
+_Written 2026-11-05 (session 22), updated in sessions 25 (steps 5.1 and 5.2) and 28 (step 5.5). Describes the code as built; the plan is [`../phase-4-plan.md`](../phase-4-plan.md), the libraries are [ADR-0003](../decisions/adr/0003-application-libraries.md)._
 
 ## Layout
 
@@ -14,8 +14,9 @@ playwright.config.ts, vitest.config.ts, vitest.db.config.ts, drizzle.config.ts, 
 scripts/tokens.mjs                design/tokens/tokens.json → src/styles/tokens.css (+ Tailwind @theme)
 scripts/i18n-check.mjs            messages complete, no empty values, every key used (declare dynamic keys with // i18n-keys:)
 scripts/claude-hooks/post-edit.mjs
-drizzle/                          SQL migrations (0000 foundation, 0001 audit append-only, 0002 alpha model, 0003 alpha constraints) + meta
-drizzle/down/                     hand-written reverts for 0002 and 0003 (tests/db/migrations.test.ts runs them on a scratch database)
+drizzle/                          SQL migrations (0000 foundation, 0001 audit append-only, 0002 alpha model, 0003 alpha constraints,
+                                  0004 invitations, 0005 profiles and search: follow_decline, pg_trgm + unaccent, search_fold(), GIN indexes) + meta
+drizzle/down/                     hand-written reverts for 0002–0005 (tests/db/migrations.test.ts runs them on a scratch database)
 messages/hr.json, en.json         next-intl catalogues (Croatian default; same keys in both)
 public/fonts, public/icons        self-hosted Sora/Inter (OFL), brand icons (D-083), favicon.ico
 src/
@@ -26,13 +27,19 @@ src/
   app/[locale]/page.tsx           PUB-01 landing (signed-in members go to /home)
   app/[locale]/legal/[doc], legal/notice, about/alpha, offline   PUB-10 drafts, PUB-11 DSA form, PUB-12, SYS-03
   app/[locale]/not-found.tsx, error.tsx, app/global-error.tsx      SYS-01 (one page, 404), SYS-02
-  app/[locale]/[...rest], u/[username], drop/[date], p/[id]        404 until their steps (5.5, 5.7, B1)
+  app/[locale]/[...rest], drop/[date], p/[id]        404 until their steps (5.7, B1)
+  app/[locale]/u/[username]/      /@username (step 5.5): the profile (PROF-01/10, PUB-08, the P and B states), followers, following,
+                                  drops (PROF-03), dna (PROF-04); src/lib/profile/page.ts gives the viewer and the 404 helper
   app/[locale]/specimen           dev and e2e only (E2E_SPECIMENS=1): the Spirala with fictional picks
   app/[locale]/(auth)/            sign-in, sign-in/second-step, check-email, reset, reset/sent, reset/new, verified
   app/[locale]/(auth)/join/       PUB-05 and onboarding (step 5.4): /join (invite, E1, E3), age, minor, language, account, username,
                                   reading, visibility, dna, dna-audience, how, reminder (push flag), done
   app/[locale]/invite/[token]/route.ts   the emailed link: token → httpOnly cookie → 303 /join (U-05); consumes nothing
-  app/[locale]/(app)/home, hub, activity, me   the four tabs (placeholders in the real shell until 5.5–5.8)
+  app/[locale]/(app)/home, hub, activity   three tabs (Home and Hub placeholders until 5.7; Activity carries the ACT-02 row since 5.5)
+  app/[locale]/(app)/me            the Profile tab's fixed target: redirects to /@<own username> (me/dna stays the editor)
+  app/[locale]/(app)/search        DISC-05 α people search (step 5.5), private, rate-limited
+  app/[locale]/(app)/activity/requests   ACT-02 follow requests
+  app/[locale]/(app)/settings/profile, settings/privacy   PROF-08 (display name, bio, username change) and SET-05
   app/[locale]/(app)/settings, settings/help   minimal index and help (5.10 builds them out)
   app/[locale]/(app)/settings/    security (password, two-factor, devices), account (email)
   app/[locale]/(app)/admin/       layout gate (role + second factor), overview, members, flags, audit
@@ -56,8 +63,20 @@ src/
   lib/db/schema/product.ts        the alpha model (plan §4): identity, profile, graph, catalogue, Music DNA, Daily Drop, content,
                                   notifications, trust and safety, operations. ONLY src/lib/data imports it (eslint rule)
   lib/data/facts.ts               loadViewer, loadOwners/loadOwner, loadGraphs/loadGraph: the facts for src/lib/authz
-  lib/data/graph.ts               follow, accept, unfollow, remove follower, block (removes follows both ways), mute
-  lib/data/profiles.ts            profileByUsername → one "not-available" for every hidden reason; usernameAvailable
+  lib/data/graph.ts               follow (with the seven-day wait after a decline), accept, decline (follow_decline), pending requests,
+                                  unfollow, remove follower, block (removes follows both ways), unblock, mute
+  lib/data/profiles.ts            profileByUsername → one "not-available" for every hidden reason, the blocker's own B state, counts per
+                                  the list rule; listMembers (PROF-07), dropHistory (PROF-03), updateProfile, changeUsername (D-069),
+                                  privacyState / setProfileVisibility (JO5) / setSectionAudience / setDiscoverable; peopleFor (rows the
+                                  viewer may see)
+  lib/data/people.ts              searchPeople: trigram + unaccent SQL that already excludes hidden and blocked members, then the policy
+  lib/profile/constants.ts        pure profile rules shared with client code (name, bio, username window, audiences)
+  lib/profile/actions.ts          "use server": follow, unfollow, block, unblock, accept, decline, remove follower, edit profile,
+                                  change username, visibility, section audience, discoverable
+  components/profile/             avatar (ring from visible genres only), profile-screen, relationship button with confirmations,
+                                  profile-menu (Share, Block; Mute and Report in 5.9), person-row, row-actions, requests, list-page,
+                                  people-search
+  components/settings/profile-forms.tsx, privacy-rows.tsx   PROF-08 forms; SET-05 rows with their sheets
   lib/data/catalog.ts             resolveCanonicalId (redirect chains, loop refused), artistsByIds
   lib/data/answers.ts             createAnswer (one per member per question), deleteOwnAnswer, visibleAnswers
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)

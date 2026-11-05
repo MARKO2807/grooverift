@@ -24,7 +24,7 @@ export const asStatus = (s: string | null | undefined): AccountStatus =>
  * A staff role without a second factor counts as a member here, as staffGate does for pages (review M3).
  */
 export async function loadViewer(who: { id: string; role: Role } | null): Promise<Viewer> {
-  if (!who) return { id: null, role: "member" };
+  if (!who) return { id: null, role: "member", status: "active" };
   const [row] = await db()
     .select({
       status: user.status,
@@ -127,7 +127,9 @@ export async function loadGraphs(
   ]);
   for (const b of blocks) {
     const other = b.blockerId === viewerId ? b.blockedId : b.blockerId;
-    out.get(other)!.blocked = true;
+    const g = out.get(other)!;
+    g.blocked = true;
+    if (b.blockerId === viewerId) g.blockedByViewer = true;
   }
   for (const f of follows) {
     if (f.followerId === viewerId) out.get(f.followeeId)!.follows = f.status;

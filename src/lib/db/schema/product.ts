@@ -204,6 +204,23 @@ export const block = pgTable(
   ],
 );
 
+/**
+ * A declined follow request (step 5.5, review L7, J4 E6): the requester may ask again after FOLLOW_DECLINE_DAYS.
+ * Declining sends no notification; the row is the only trace and the owner never sees it.
+ */
+export const followDecline = pgTable(
+  "follow_decline",
+  {
+    ownerId: userRef("owner_id").notNull(),
+    requesterId: userRef("requester_id").notNull(),
+    declinedAt: at("declined_at").notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.ownerId, t.requesterId] }),
+    check("follow_decline_not_self", sql`${t.ownerId} <> ${t.requesterId}`),
+  ],
+);
+
 export const mute = pgTable(
   "mute",
   {

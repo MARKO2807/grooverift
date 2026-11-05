@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
-import { IconChevron, IconLockSimple, IconMail, IconShield } from "@/components/ui/icons";
+import {
+  IconChevron,
+  IconEye,
+  IconLockSimple,
+  IconMail,
+  IconShield,
+  IconUser,
+} from "@/components/ui/icons";
 import { memberPage } from "@/lib/auth/member-page";
 import { roleOf } from "@/lib/auth/session";
 import { STAFF_ROLES } from "@/lib/auth/roles";
@@ -14,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-/** SET-01, minimal: the groups that exist today. Step 5.10 builds the full index (arrangement B, D-066). */
+/** SET-01, minimal: the groups that exist today (profile and privacy since 5.5). Step 5.10 builds the full index (arrangement B, D-066). */
 export default async function SettingsIndexPage({
   params,
 }: {
@@ -25,6 +32,8 @@ export default async function SettingsIndexPage({
   const t = await getTranslations("settingsIndex");
   const th = await getTranslations("home");
   const rows = [
+    { href: "/settings/profile", Icon: IconUser, title: t("profile"), text: t("profileText") },
+    { href: "/settings/privacy", Icon: IconEye, title: t("privacy"), text: t("privacyText") },
     { href: "/settings/security", Icon: IconShield, title: t("security"), text: t("securityText") },
     { href: "/settings/account", Icon: IconMail, title: t("account"), text: t("accountText") },
   ];

@@ -24,9 +24,9 @@ _Session 25, 2026-11-05. Read-only subagent review (High) of `src/lib/db/schema/
 | # | Finding | Where |
 |---|---|---|
 | M6 | Leftmost `X-Forwarded-For` may be client-controlled if Render appends | Runbook §1 first-deploy check with a forged header; switch to the proxy-appended entry if needed. Also: 5 notices per IP per hour may block notifiers behind carrier NAT; revisit with counsel B.5 |
-| L4 | `canInteract` allows when `Viewer.status` is missing | `loadViewer` always sets it; make it required when the policy gets its next change (5.5) |
-| L7 | No storage for declined follow requests (J4 E6: one new request per 7 days) | Step 5.5 adds a `follow_decline` record |
-| L8 | `username_reservation` primary key blocks a later reservation; check and claim can race | Step 5.5 (username change) upserts and claims in one transaction |
+| L4 | `canInteract` allows when `Viewer.status` is missing | ~~Step 5.5~~ Done in 5.5: `Viewer.status` is required; `loadViewer` gives the anonymous viewer "active" (D-098 (11)) |
+| L7 | No storage for declined follow requests (J4 E6: one new request per 7 days) | ~~Step 5.5~~ Done in 5.5: `follow_decline` (migration 0005), seven-day wait in `followMember`; `tests/db/profiles.test.ts` |
+| L8 | `username_reservation` primary key blocks a later reservation; check and claim can race | ~~Step 5.5~~ Done in 5.5: `changeUsername` upserts the reservation and claims the name in one transaction under an advisory lock (D-098 (5)); db test |
 | L10 | `user.status` is independent of Better Auth's `banned`; suspension does not revoke sessions | Step 5.9 (enforcement) sets both and revokes sessions |
 | L11 | Invitation email normalisation and one open invite per email are not enforced in the database | ~~Step 5.4~~ Done in 5.4 (migration 0004: `invitation_email_normalised` check, partial unique index `invitation_open_email_uq`; `tests/db/invitations.test.ts`) |
 | Note | The app connects as the table owner, so append-only triggers can be dropped by a migration | Phase 6 hardening: a separate migration role |

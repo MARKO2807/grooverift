@@ -10,7 +10,7 @@ describe("proxy routing helpers", () => {
     expect(profileRewrite("/legal/@x")).toBeNull();
   });
 
-  it("marks /me, /settings and /admin (and nothing else) as private", () => {
+  it("marks /me, /settings, /admin, /search and /activity (and nothing else) as private", () => {
     for (const p of [
       "/me",
       "/me/dna",
@@ -18,9 +18,21 @@ describe("proxy routing helpers", () => {
       "/en/settings/security",
       "/admin/flags",
       "/hr/me",
+      "/search",
+      "/en/search",
+      "/activity/requests",
     ])
       expect(isPrivatePath(p), p).toBe(true);
-    for (const p of ["/", "/home", "/meet", "/settingsx", "/legal/terms", "/en"])
+    for (const p of [
+      "/",
+      "/home",
+      "/meet",
+      "/settingsx",
+      "/legal/terms",
+      "/en",
+      "/@search",
+      "/searching",
+    ])
       expect(isPrivatePath(p), p).toBe(false);
   });
 });

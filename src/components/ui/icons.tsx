@@ -13,11 +13,13 @@ import {
   CheckCircleIcon,
   ClockIcon,
   DeviceMobileIcon,
+  DotsThreeIcon,
   EnvelopeSimpleIcon,
   EyeIcon,
   EyeSlashIcon,
   GearSixIcon,
   GlobeHemisphereEastIcon,
+  HandshakeIcon,
   HouseIcon,
   InfoIcon,
   LightbulbFilamentIcon,
@@ -30,10 +32,14 @@ import {
   PencilSimpleIcon,
   PlusIcon,
   PlusSquareIcon,
+  ProhibitIcon,
   PulseIcon,
   QuestionIcon,
+  ShareNetworkIcon,
   ShieldCheckIcon,
   UserIcon,
+  UserMinusIcon,
+  UserPlusIcon,
   UsersThreeIcon,
   WarningIcon,
   WarningCircleIcon,
@@ -85,3 +91,10 @@ export const IconChart = light(ChartBarHorizontalIcon);
 export const IconBulb = light(LightbulbFilamentIcon);
 export const IconPlusSquare = light(PlusSquareIcon);
 export const IconDevice = light(DeviceMobileIcon);
+// Step 5.5: profiles, lists and requests.
+export const IconMore = light(DotsThreeIcon);
+export const IconUserPlus = light(UserPlusIcon);
+export const IconUserMinus = light(UserMinusIcon);
+export const IconMutual = light(HandshakeIcon);
+export const IconShare = light(ShareNetworkIcon);
+export const IconBlock = light(ProhibitIcon);

@@ -17,7 +17,8 @@ export type Viewer = {
   /** null when signed out (ANON) */
   id: string | null;
   role: Role;
-  status?: AccountStatus;
+  /** Read fresh by loadViewer; required since step 5.5 (review L4) so a caller cannot forget it. "active" for ANON. */
+  status: AccountStatus;
   /** False while the member has not finished onboarding: they may read but not write (step 5.2 review M4). */
   onboarded?: boolean;
 };
@@ -36,6 +37,8 @@ export type Owner = {
 export type Graph = {
   /** A Block in either direction between viewer and owner. */
   blocked: boolean;
+  /** The viewer is the one who blocked (J4 B state: the blocker sees their own block and can undo it; D-019). */
+  blockedByViewer?: boolean;
   /** viewer → owner follow state */
   follows: "none" | "pending" | "accepted";
   /** owner → viewer is an accepted follow */
@@ -421,7 +424,7 @@ export function canInteract(
   facts: InteractionFacts = {},
 ): InteractionDecision {
   if (!viewer.id) return { allowed: false, reason: "anon" };
-  if (viewer.status && viewer.status !== "active") return { allowed: false, reason: "status" };
+  if (viewer.status !== "active") return { allowed: false, reason: "status" };
   if (viewer.onboarded === false) return { allowed: false, reason: "status" };
   const rel = relationship(viewer, target, graph);
   if (rel === "SELF" && action !== "votePoll" && action !== "react") {

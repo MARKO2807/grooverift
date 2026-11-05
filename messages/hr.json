@@ -125,7 +125,10 @@
     "notOnboarding": "Ovaj korak više nije dostupan.",
     "inviteMember": "Ta adresa već ima račun.",
     "inviteOpen": "Za tu adresu već postoji otvorena pozivnica. Opozovi je pa pošalji novu.",
-    "mailFailed": "Poruka nije poslana, pa pozivnica nije stvorena. Pokušaj ponovno."
+    "mailFailed": "Poruka nije poslana, pa pozivnica nije stvorena. Pokušaj ponovno.",
+    "bioInvalid": "Bio ima do 200 znakova, bez posebnih kontrolnih znakova.",
+    "usernameTooSoon": "Korisničko ime mijenja se najviše jednom u 30 dana.",
+    "usernameSame": "To je već tvoje korisničko ime."
   },
   "settings": {
     "security": {
@@ -178,6 +181,82 @@
       "change": "Pošalji poveznicu",
       "changing": "Šaljem…",
       "sent": "Poslali smo poveznicu za potvrdu na trenutačnu adresu."
+    },
+    "profile": {
+      "title": "Profil",
+      "basics": "Ime i opis",
+      "displayName": "Ime za prikaz",
+      "displayNameHelp": "Do tri riječi, kako ga pišeš. Vide ga svi koji vide profil.",
+      "bio": "Bio",
+      "optional": "neobavezno",
+      "bioHelp": "Do {max} znakova. Vidi se i bez prijave ako je profil javan.",
+      "photoLater": "Slika profila stiže kad proradi pohrana slika; dotad je avatar prvo slovo imena.",
+      "save": "Spremi",
+      "saving": "Spremam…",
+      "saved": "Spremljeno.",
+      "usernameTitle": "Korisničko ime",
+      "usernameLead": "Promjena je moguća jednom u 30 dana. Staro ime ostaje rezervirano za tebe 30 dana, a stare poveznice na profil prestaju raditi.",
+      "username": "Novo korisničko ime",
+      "usernameHelp": "3 do 30 znakova: mala slova, brojke i donja crta.",
+      "change": "Promijeni korisničko ime",
+      "changing": "Mijenjam…",
+      "renamed": "Korisničko ime je promijenjeno. Tvoj profil je sada na @{username}.",
+      "nextAt": "Sljedeća promjena moguća je od {date}."
+    },
+    "privacy": {
+      "title": "Privatnost",
+      "lead": "Jedan redak po postavci. Dodir otvara izbor.",
+      "profileGroup": "Profil",
+      "sectionsGroup": "Tko vidi pojedine dijelove",
+      "visibility": "Vidljivost profila",
+      "visibilityTitle": "Tko vidi tvoj profil?",
+      "visibilityOption": {
+        "public": "Javno",
+        "private": "Privatno"
+      },
+      "visibilityDesc": {
+        "public": "Profil, Music DNA i povijest odgovora vide svi članovi. Neprijavljeni vide ime, avatar i bio.",
+        "private": "Profil, Music DNA i povijest odgovora vide samo pratitelji koje odobriš. Neprijavljeni ne vide ništa."
+      },
+      "toPrivateNote": "Postojeći pratitelji ostaju; ukloniti ih možeš na popisu pratitelja. Odgovori na Daily Drop i komentari i dalje se vide uz pitanja.",
+      "toPublicNote": "Novi pratitelji više ne trebaju odobrenje. Odgovore i komentare vide svi članovi, kao i dosad.",
+      "pendingTitle": "{n, plural, one {# zahtjev čeka} few {# zahtjeva čekaju} other {# zahtjeva čeka}}",
+      "pendingText": "Prelaskom na javni profil ti se zahtjevi prihvaćaju i te te osobe odmah prate. Možeš ih prvo pregledati.",
+      "review": "Pregledaj zahtjeve",
+      "continueAccept": "Nastavi i prihvati",
+      "discoverable": "Pretraga ljudi",
+      "discoverableTitle": "Mogu li te pronaći u pretrazi?",
+      "discoverableOn": "Mogu te pronaći",
+      "discoverableOnDesc": "Članovi te nađu po imenu ili korisničkom imenu. Privatan profil i dalje pokazuje samo zaglavlje.",
+      "discoverableOff": "Ne pojavljuješ se u pretrazi",
+      "discoverableOffDesc": "Do profila se dolazi samo izravnom poveznicom ili preko tvojih odgovora.",
+      "discoverableOnSaved": "Spremljeno. Mogu te pronaći u pretrazi.",
+      "discoverableOffSaved": "Spremljeno. Ne pojavljuješ se u pretrazi.",
+      "section": {
+        "musicDna": "Music DNA",
+        "lists": "Pratitelji i praćeni",
+        "dropHistory": "Povijest Daily Drop odgovora"
+      },
+      "sectionTitle": "Tko vidi: {section}?",
+      "audience": {
+        "everyone": "Svi članovi",
+        "followers": "Samo pratitelji",
+        "me": "Samo ja",
+        "mutuals": "Povezani"
+      },
+      "audienceDesc": {
+        "everyone": "Svi prijavljeni članovi. Neprijavljeni to nikad ne vide.",
+        "followers": "Samo članovi koji te prate.",
+        "me": "Nitko drugi."
+      },
+      "privateCap": "Profil je privatan, pa svaki dio vide najviše tvoji pratitelji.",
+      "choose": "Odaberi jedno",
+      "change": "Promijeni",
+      "save": "Spremi",
+      "cancel": "Odustani",
+      "savedVisibility": "Spremljeno. Profil je {who}.",
+      "savedAccepted": "Spremljeno. Profil je javan, {n, plural, one {# zahtjev je prihvaćen} few {# zahtjeva su prihvaćena} other {# zahtjeva je prihvaćeno}}.",
+      "savedSection": "Spremljeno. {section}: {who}."
     }
   },
   "admin": {
@@ -422,7 +501,6 @@
     "mark": "U izradi",
     "hub": "Ovdje će biti današnji Daily Drop, zadnjih sedam dana i arhiva pitanja.",
     "activity": "Ovdje će biti odgovori na tvoje komentare, reakcije i novi pratitelji.",
-    "profile": "Ovdje će biti ostatak profila: opis, pratitelji i povijest odgovora.",
     "help": "Ovdje će biti pomoć i obrazac za povratne informacije."
   },
   "settingsIndex": {
@@ -430,7 +508,11 @@
     "security": "Sigurnost",
     "securityText": "Lozinka, dvostruka provjera i uređaji",
     "account": "Račun",
-    "accountText": "Adresa e-pošte"
+    "accountText": "Adresa e-pošte",
+    "profile": "Profil",
+    "profileText": "Ime, opis i korisničko ime",
+    "privacy": "Privatnost",
+    "privacyText": "Tko vidi profil, Music DNA i popise"
   },
   "spirala": {
     "listLabel": "Žanrovi i izvođači u Music DNA",
@@ -715,6 +797,138 @@
       "reminderOff": "Isključen",
       "fine": "Sve ovo možeš promijeniti u postavkama.",
       "home": "Na početnu"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "settings": "Postavke",
+    "edit": "Uredi profil",
+    "change": "Promijeni",
+    "chip": {
+      "mutual": "Povezani",
+      "followsYou": "Prati te"
+    },
+    "follow": "Prati",
+    "request": "Zatraži praćenje",
+    "following": "Pratiš",
+    "requested": "Zatraženo",
+    "followingLabel": "Pratiš. Prestani pratiti",
+    "mutualLabel": "Pratiš, povezani. Prestani pratiti",
+    "requestedLabel": "Zatraženo. Povuci zahtjev za praćenje",
+    "nowFollowing": "Pratiš @{username}.",
+    "unfollowed": "Više ne pratiš @{username}.",
+    "requestSent": "Zahtjev je poslan. Vidjet ćeš kad bude prihvaćen.",
+    "requestCancelled": "Zahtjev je povučen.",
+    "unfollowTitle": "Prestati pratiti @{username}?",
+    "unfollowPublic": "Možeš opet zapratiti bilo kad. Ta osoba ne dobije obavijest.",
+    "unfollowPrivate": "Profil je privatan: za ponovno praćenje trebat će novi zahtjev, koji ta osoba mora odobriti. Ne dobije obavijest o ovome.",
+    "unfollow": "Prestani pratiti",
+    "cancelTitle": "Povući zahtjev za @{username}?",
+    "cancelText": "Ta osoba ne dobije obavijest. Novi zahtjev možeš poslati kasnije.",
+    "cancelRequest": "Povuci zahtjev",
+    "cancel": "Odustani",
+    "more": "Više opcija: profil {name}",
+    "moreTitle": "@{username}",
+    "moreSoon": "Utišavanje i prijava stižu u sljedećem koraku alfe.",
+    "share": "Podijeli",
+    "shareCopied": "Poveznica je kopirana.",
+    "shareFailed": "Kopiraj poveznicu: {url}",
+    "block": "Blokiraj",
+    "blockTitle": "Blokirati @{username}?",
+    "blockFact1": "Ne vidite se dok ste prijavljeni: profil, odgovori i komentari nestaju u oba smjera.",
+    "blockFact2": "Praćenja i zahtjevi između vas se uklanjaju, u oba smjera.",
+    "blockFact3": "Ta osoba ne dobije obavijest. Blokadu možeš ukloniti bilo kad; praćenja se ne vraćaju.",
+    "blockNote": "Javni sadržaj ostaje dostupan preko javnih poveznica bez prijave. Privatan profil je jači korak.",
+    "blockConfirm": "Blokiraj",
+    "blocked": "@{username} je na popisu blokiranih. Ne vidite se dok blokada traje.",
+    "blockedTitle": "Ovaj račun je na tvom popisu blokiranih",
+    "blockedText": "Ne vidite se dok blokada traje. Praćenja su uklonjena u oba smjera.",
+    "unblock": "Odblokiraj",
+    "unblocked": "Blokada je uklonjena. Praćenja se ne vraćaju sama.",
+    "privateTitle": "Ovaj profil je privatan.",
+    "privateText": "Zatraži praćenje da vidiš Music DNA i povijest odgovora. Odgovore na Daily Drop ionako vidiš uz svako pitanje.",
+    "minimalNote": "Ostatak profila vide članovi.",
+    "minimalSignIn": "Prijavi se",
+    "counts": {
+      "followers": "{n, plural, one {pratitelj} few {pratitelja} other {pratitelja}}",
+      "following": "prati",
+      "answers": "{n, plural, one {odgovor} few {odgovora} other {odgovora}}"
+    },
+    "visibility": {
+      "public": "Javni profil",
+      "private": "Privatni profil"
+    },
+    "visibleTo": "Vide: <b>{who}</b>",
+    "audience": {
+      "everyone": "svi članovi",
+      "followers": "samo pratitelji",
+      "mutuals": "povezani",
+      "me": "samo ja"
+    },
+    "dna": "Music DNA",
+    "dnaEmpty": "Još nema žanrova.",
+    "artists": "Izvođači",
+    "noArtists": "Nema izvođača.",
+    "allDna": "Cijeli Music DNA",
+    "history": "Daily Drop odgovori",
+    "historyEmpty": "Još nema odgovora.",
+    "historyEmptyOwn": "Tvoji odgovori na Daily Drop skupljaju se ovdje.",
+    "historyEmptyOther": "Odgovori na Daily Drop skupljaju se ovdje.",
+    "historyNoteOwn": "Tko vidi ovaj popis biraš u Postavkama, pod Privatnost.",
+    "historyNoteOther": "Pojedinačni odgovori uz pitanje vide se svim članovima; ovaj popis vidiš jer je ta osoba to dopustila.",
+    "allAnswers": "Svi odgovori ({n})",
+    "lists": {
+      "title": "Pratitelji i praćeni",
+      "tabs": "Popis",
+      "followers": "Pratitelji",
+      "following": "Prati",
+      "you": "ti",
+      "emptyFollowers": "Još nema pratitelja.",
+      "emptyFollowingOwn": "Još nikoga ne pratiš.",
+      "emptyFollowing": "Još nikoga ne prati.",
+      "followersHint": "Ljudi te nađu kroz odgovore na Daily Drop i pretragu.",
+      "followingHint": "Ljude možeš pronaći kroz odgovore na Daily Drop i pretragu.",
+      "noteOwnPrivate": "Privatan profil: pratitelja možeš ukloniti bez blokiranja. Ta osoba ne dobije obavijest i može opet poslati zahtjev.",
+      "noteOwn": "Tko vidi ovaj popis biraš u Postavkama, pod Privatnost.",
+      "rowMore": "Više opcija: {name}",
+      "remove": "Ukloni pratitelja",
+      "removeTitle": "Ukloniti @{username} iz pratitelja?",
+      "removeText": "Ta osoba više ne vidi tvoj profil, Music DNA ni povijest odgovora. Ne dobije obavijest i može opet poslati zahtjev. Blokiranje je jači korak.",
+      "removeConfirm": "Ukloni",
+      "removed": "Uklonjeno iz pratitelja."
+    },
+    "requests": {
+      "title": "Zahtjevi za praćenje",
+      "rowCount": "{n, plural, one {# osoba želi te pratiti} few {# osobe žele te pratiti} other {# osoba želi te pratiti}}",
+      "empty": "Nema novih zahtjeva.",
+      "emptyText": "Kad netko zatraži praćenje, vidiš to ovdje i u Aktivnosti.",
+      "notPrivate": "Nema zahtjeva.",
+      "notPrivateText": "Zahtjevi za praćenje stižu samo dok je profil privatan.",
+      "accept": "Prihvati",
+      "decline": "Odbij",
+      "accepted": "Prihvaćeno. {name} te sada prati.",
+      "declined": "Zahtjev je odbijen.",
+      "note": "Tko je prihvaćen, odmah te prati. Odbijanje ne šalje obavijest, a ta osoba može poslati novi zahtjev kasnije."
+    },
+    "search": {
+      "title": "Pretraga ljudi",
+      "label": "Pronađi ljude",
+      "placeholder": "Ime ili @korisničko ime",
+      "go": "Traži",
+      "hint": "Nađu se članovi koji su dopustili da ih se pronađe. Dijakritički znakovi nisu važni: „Zeljko” nađe Željka.",
+      "short": "Upiši barem {min} znaka.",
+      "tooMany": "Previše pretraga u kratkom vremenu. Pričekaj minutu.",
+      "results": "{n, plural, =0 {Nema rezultata} one {# rezultat} few {# rezultata} other {# rezultata}}",
+      "none": "Nitko s tim imenom.",
+      "noneText": "Provjeri kako se piše ili probaj korisničko ime."
+    },
+    "error": {
+      "signedOut": "Prijavi se pa pokušaj ponovno.",
+      "notAllowed": "Ovo trenutačno nije moguće.",
+      "notAvailable": "Ovaj profil nije dostupan.",
+      "tooMany": "Previše radnji u kratkom vremenu. Pričekaj malo.",
+      "wait": "Zahtjev je nedavno poslan. Pokušaj ponovno za koji dan.",
+      "generic": "Nešto je pošlo po zlu. Pokušaj ponovno."
     }
   }
 }

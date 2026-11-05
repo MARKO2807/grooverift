@@ -19,7 +19,7 @@ import { generateRecoveryCodes } from "./recovery-codes";
 
 const e = env();
 // The end-to-end suite creates many accounts from one address; only its explicit flag relaxes the limits.
-const limitScale = e.E2E_EMAIL_FILE === "1" ? 10 : 1;
+const limitScale = e.E2E_EMAIL_FILE === "1" ? 20 : 1; // 20 since 5.5: the suite creates about 40 accounts in 10 minutes
 
 export const auth = betterAuth({
   appName: "GrooveRift",

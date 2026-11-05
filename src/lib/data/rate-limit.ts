@@ -19,6 +19,9 @@ export const LIMITS = {
   dna: { limit: 300, windowSeconds: 3600 }, // Music DNA changes per member (step 5.3a)
   genreSearch: { limit: 8, windowSeconds: 1 }, // genre typeahead per member (in-memory list, debounced)
   username: { limit: 30, windowSeconds: 60 }, // the live username check in onboarding (step 5.4)
+  people: { limit: 30, windowSeconds: 60 }, // people search per member (step 5.5, D-093 (3))
+  profileEdit: { limit: 20, windowSeconds: 3600 }, // profile, username and privacy changes per member (step 5.5)
+  graph: { limit: 120, windowSeconds: 3600 }, // unfollow, cancel, accept, decline, remove, block, unblock per member
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

@@ -27,12 +27,12 @@ const owner = (over: Partial<Owner> = {}): Owner => ({
 const privateOwner = (over: Partial<Owner> = {}) =>
   owner({ profile: "private", dropHistory: "followers", ...over });
 
-const SELF: Viewer = { id: "owner", role: "member" };
-const MEMBER: Viewer = { id: "m", role: "member" };
-const ANON: Viewer = { id: null, role: "member" };
-const MOD: Viewer = { id: "mod", role: "moderator" };
-const ADMIN: Viewer = { id: "adm", role: "admin" };
-const EDITOR: Viewer = { id: "ed", role: "editor" };
+const SELF: Viewer = { id: "owner", role: "member", status: "active" };
+const MEMBER: Viewer = { id: "m", role: "member", status: "active" };
+const ANON: Viewer = { id: null, role: "member", status: "active" };
+const MOD: Viewer = { id: "mod", role: "moderator", status: "active" };
+const ADMIN: Viewer = { id: "adm", role: "admin", status: "active" };
+const EDITOR: Viewer = { id: "ed", role: "editor", status: "active" };
 
 const asFollower: Graph = { blocked: false, follows: "accepted", followedBy: false };
 const asMutual: Graph = { blocked: false, follows: "accepted", followedBy: true };
@@ -546,13 +546,18 @@ describe("unfinished onboarding (step 5.2 review M4)", () => {
     onboarded: false,
   } as const;
   it("hides the member from others but not from themselves or staff", () => {
-    expect(canViewProfileSection("identity", { id: "v", role: "member" }, fresh).allowed).toBe(
-      false,
-    );
-    expect(canViewProfileSection("identity", { id: "o", role: "member" }, fresh).allowed).toBe(
-      true,
-    );
-    expect(canViewProfileSection("identity", { id: "a", role: "admin" }, fresh).allowed).toBe(true);
+    expect(
+      canViewProfileSection("identity", { id: "v", role: "member", status: "active" }, fresh)
+        .allowed,
+    ).toBe(false);
+    expect(
+      canViewProfileSection("identity", { id: "o", role: "member", status: "active" }, fresh)
+        .allowed,
+    ).toBe(true);
+    expect(
+      canViewProfileSection("identity", { id: "a", role: "admin", status: "active" }, fresh)
+        .allowed,
+    ).toBe(true);
   });
   it("refuses interactions both ways", () => {
     const active = { ...fresh, id: "v", onboarded: true };

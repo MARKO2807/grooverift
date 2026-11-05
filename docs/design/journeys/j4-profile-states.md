@@ -103,6 +103,6 @@ No confirmation dialog is added for choosing Private. Both directions are equall
 
 ## Open items
 - ~~JO1: Remove follower~~ approved (D-069) and prototyped (D-074: ⋯ on each row of the owner's followers list, then a confirmation).
-- JO5: accept pending requests on switch to public (RECOMMENDED).
-- E6 rate limit value (RECOMMENDED).
+- ~~JO5: accept pending requests on switch to public~~ accepted (D-093 (5)) and built in step 5.5 (D-098 (6): the count first, then "Review requests" or "Continue and accept").
+- ~~E6 rate limit value~~ built in step 5.5 as one new request per pair per 7 days (D-098 (4), `follow_decline`).
 - E7 Mutual ends: DM and playlist rules (OPEN, B3/B5).
