@@ -61,6 +61,8 @@ services:
       - key: BETTER_AUTH_SECRET
         sync: false # paste the same value as the web service (the audit IP hash key)
       - key: EMAIL_TRANSPORT
+        sync: false # the worker mails the Daily Drop staff alerts (step 5.6)
+      - key: EMAIL_FROM
         sync: false
 
 databases:

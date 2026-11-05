@@ -3,6 +3,8 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 import { closeDb, db } from "./client";
 import {
   account,
+  dailyDropQuestion,
+  dailyDropTranslation,
   featureFlag,
   genre,
   memberSettings,
@@ -51,6 +53,58 @@ export const SEED_FLAGS = [
     note: "Daily Drop push and the reminder step in onboarding (step 5.12; D-093 (1))",
   },
 ] as const;
+
+/**
+ * SAMPLE editorial content for development (step 5.6): fixed ids so a re-seed changes nothing an editor did.
+ * Three reserve questions (fewer than the JO4 minimum of seven, so the warning shows), one approved question to
+ * schedule, one in review and one Croatian-only draft. Nothing is scheduled or published by the seed.
+ */
+export const SEED_QUESTIONS = [
+  {
+    n: 1,
+    status: "approved",
+    reserve: true,
+    hr: "Koja ti je pjesma prva otvorila neki novi žanr?",
+    en: "Which song first opened a new genre for you?",
+  },
+  {
+    n: 2,
+    status: "approved",
+    reserve: true,
+    hr: "Koji album preporučuješ nekome tko tek upoznaje tvoju omiljenu glazbu?",
+    en: "Which album do you recommend to someone just getting to know your favourite music?",
+  },
+  {
+    n: 3,
+    status: "approved",
+    reserve: true,
+    hr: "Koji zvuk ili instrument te uvijek natjera da pojačaš glazbu?",
+    en: "Which sound or instrument always makes you turn the music up?",
+  },
+  {
+    n: 4,
+    status: "approved",
+    reserve: false,
+    hr: "Koju pjesmu znaš napamet, a ne znaš kako?",
+    en: "Which song do you know by heart without knowing how?",
+  },
+  {
+    n: 5,
+    status: "in_review",
+    reserve: false,
+    hr: "Koji koncert ti je ostao u sjećanju i zašto?",
+    en: "Which concert stayed with you, and why?",
+  },
+  {
+    n: 6,
+    status: "draft",
+    reserve: false,
+    hr: "Koja pjesma najbolje opisuje tvoj tjedan?",
+    en: "",
+  },
+] as const;
+const seedQuestionId = (n: number) =>
+  `00000000-0000-4000-8000-0000000560${String(n).padStart(2, "0")}`;
 
 export async function seed() {
   if (env().NODE_ENV === "production") throw new Error("Refusing to seed a production database.");
@@ -120,12 +174,50 @@ export async function seed() {
     }
   });
 
+  // Sample Daily Drop questions (step 5.6), approved by the seeded editor; left alone once they exist.
+  await d.transaction(async (tx) => {
+    const [ed] = await tx
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.email, "editor@example.test"));
+    for (const sq of SEED_QUESTIONS) {
+      const id = seedQuestionId(sq.n);
+      const approved = sq.status === "approved";
+      const inserted = await tx
+        .insert(dailyDropQuestion)
+        .values({
+          id,
+          status: sq.status,
+          isReserve: sq.reserve,
+          createdBy: ed?.id ?? null,
+          approvedBy: approved ? (ed?.id ?? null) : null,
+        })
+        .onConflictDoNothing()
+        .returning({ id: dailyDropQuestion.id });
+      if (!inserted.length) continue;
+      const texts = [
+        { locale: "hr", text: sq.hr },
+        { locale: "en", text: sq.en },
+      ].filter((t) => t.text);
+      await tx.insert(dailyDropTranslation).values(
+        texts.map((t) => ({
+          questionId: id,
+          locale: t.locale,
+          text: t.text,
+          review: approved ? ("approved" as const) : ("draft" as const),
+          reviewedBy: approved ? (ed?.id ?? null) : null,
+          reviewedAt: approved ? new Date() : null,
+        })),
+      );
+    }
+  });
+
   const rows = await d
     .execute<{ count: string }>(sql`select count(*)::text as count from "user"`)
     .then((r) => r.rows);
   const count = rows[0]?.count ?? "?";
   console.log(
-    `seed: ${SEED_USERS.length} fictional members upserted (${count} users total), ${SEED_FLAGS.length} flags, ${genres} genres`,
+    `seed: ${SEED_USERS.length} fictional members upserted (${count} users total), ${SEED_FLAGS.length} flags, ${genres} genres, ${SEED_QUESTIONS.length} sample questions`,
   );
 }
 

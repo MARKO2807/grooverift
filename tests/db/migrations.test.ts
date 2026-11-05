@@ -14,6 +14,7 @@ const scratchUrl = (() => {
   return u.toString();
 })();
 const DOWN = [
+  "0006_editorial",
   "0005_profiles_search",
   "0004_invitations",
   "0003_alpha_constraints",
@@ -57,8 +58,21 @@ describe("migrations up and down", () => {
       expect.arrayContaining(["profile", "follow", "daily_drop_question", "notice"]),
     );
 
+    const dropStatuses = async () =>
+      (
+        await pool.query<{ v: string }>("select unnest(enum_range(null::drop_status))::text as v")
+      ).rows.map((r) => r.v);
+    expect(await dropStatuses()).toContain("withdrawn");
     for (const name of DOWN) {
       await pool.query(readFileSync(`./drizzle/down/${name}.down.sql`, "utf8"));
+      // 0006 rebuilds the enum without 'withdrawn' and keeps the one-question-per-date index (step 5.6).
+      if (name === "0006_editorial") {
+        expect(await dropStatuses()).not.toContain("withdrawn");
+        const idx = await pool.query(
+          "select 1 from pg_indexes where indexname = 'daily_drop_one_per_date_uq'",
+        );
+        expect(idx.rowCount).toBe(1);
+      }
     }
     // Forget the reverted migrations in drizzle's journal (the newest entries, one per down file).
     await pool.query(

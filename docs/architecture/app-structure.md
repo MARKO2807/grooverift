@@ -42,7 +42,9 @@ src/
   app/[locale]/(app)/settings/profile, settings/privacy   PROF-08 (display name, bio, username change) and SET-05
   app/[locale]/(app)/settings, settings/help   minimal index and help (5.10 builds them out)
   app/[locale]/(app)/settings/    security (password, two-factor, devices), account (email)
-  app/[locale]/(app)/admin/       layout gate (role + second factor), overview, members, flags, audit
+  app/[locale]/(app)/admin/       layout gate (role + second factor), overview (ADM-01 with the Daily Drop warnings), members, flags, audit
+  app/[locale]/(app)/admin/editorial/   step 5.6, editors and admins: calendar (ADM-04), drops/new and drops/[id] (ADM-05), reserve,
+                                  jobs (ADM-09, "Publish now")
   app/api/auth/[...all]/route.ts  Better Auth handler
   app/manifest.ts                 web app manifest (icons any + maskable)
   components/ui/                  button, field (TextField, PasswordField, CodeField), notice, toast, dialog, form-status, icons
@@ -78,6 +80,12 @@ src/
                                   people-search
   components/settings/profile-forms.tsx, privacy-rows.tsx   PROF-08 forms; SET-05 rows with their sheets
   lib/data/catalog.ts             resolveCanonicalId (redirect chains, loop refused), artistsByIds
+  lib/data/editorial.ts           Daily Drop lifecycle with optimistic locking (version), listCalendar/listPool/listRuns, editorialHealth
+                                  (JO4), publishForDate (advisory lock per UTC date, savepoint, reserve fallback, idempotent), staff recipients
+  lib/editorial/rules.ts          pure: UTC date helpers, the 72-hour window, QUESTION_MAX, RESERVE_LOW, retry values, correctionAllowed
+  lib/editorial/publication.ts    runPublication (audit + staff alert emails), dailyCheck (JO4 mail), alertMail (HR/EN)
+  lib/editorial/actions.ts        "use server": create, save, the lifecycle moves, delete, correct, withdraw (admin), Publish now
+  components/admin/editorial.tsx, editorial-parts.tsx   ADM-04/05/09 forms (client) and server parts (nav, warnings, labels)
   lib/data/answers.ts             createAnswer (one per member per question), deleteOwnAnswer, visibleAnswers
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)
   lib/data/notices.ts             DSA notice storage
@@ -110,7 +118,8 @@ src/
   lib/flags/index.ts              on | off | paused (SYS-04), audience by role or user id, audited writes
   lib/admin/actions.ts            setRole, setFlag, createInvite (50/day, mails the link), revokeInvite (admin only, re-checked server-side)
   lib/auth/member-page.ts         memberPage: signed-in pages; a member who has not finished onboarding is sent to their next step
-  worker.ts                       pg-boss: auth.throttle.prune daily (Phase 5 adds the Daily Drop job)
+  worker.ts                       pg-boss: auth.throttle.prune and data.rate_limit.prune daily; daily_drop.publish at 00:00 UTC (retries
+                                  with backoff, date from the cron tick, catch-up at start); editorial.check at 08:00 UTC (step 5.6)
 tests/unit/                       Vitest (policy 32, password, recovery codes, i18n)
 tests/db/                         Vitest against the database (lockout, audit trigger, flags, worker, data layer and invariants, migrations up/down)
 tests/e2e/                        Playwright + axe-core (landing, public pages, shell, not-available, auth flows, security headers), phone and desktop

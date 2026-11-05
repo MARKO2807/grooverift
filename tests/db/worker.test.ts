@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { closeDb, db } from "@/lib/db/client";
 import { signInThrottle } from "@/lib/db/schema";
 import { pruneThrottle, recordFailure } from "@/lib/auth/lockout";
-import { JOBS, startWorker } from "@/worker";
+import { JOBS, publishDateOf, startWorker } from "@/worker";
 
 afterAll(() => closeDb());
 
@@ -20,11 +20,31 @@ describe("worker and housekeeping", () => {
   });
 
   it("starts pg-boss, registers the schedule and stops cleanly", async () => {
-    const boss = await startWorker();
+    const boss = await startWorker({ catchUp: false }); // no publication against the dev database
     const schedules = await boss.getSchedules();
     expect(schedules.some((s) => s.name === JOBS.pruneThrottle && s.cron === "30 3 * * *")).toBe(
       true,
     );
+    // Step 5.6: the Daily Drop at 00:00 UTC and the JO4 look ahead at 08:00 UTC
+    expect(schedules.some((s) => s.name === JOBS.publishDrop && s.cron === "0 0 * * *")).toBe(true);
+    expect(schedules.some((s) => s.name === JOBS.editorialCheck && s.cron === "0 8 * * *")).toBe(
+      true,
+    );
     await boss.stop({ graceful: false, timeout: 2000 });
+  });
+
+  it("takes the publication date from the cron tick, never from the worker's clock at run time (step 5.6)", () => {
+    // the tick a moment before midnight (database clock) still means the new day
+    expect(publishDateOf({}, new Date("2026-11-05T23:59:58Z"))).toBe("2026-11-06");
+    expect(publishDateOf({}, new Date("2026-11-06T00:00:02Z"))).toBe("2026-11-06");
+    // a retry 20 minutes later keeps the date of its job
+    expect(publishDateOf(undefined, new Date("2026-11-06T00:00:00Z"))).toBe("2026-11-06");
+    // the catch-up job carries its date
+    expect(publishDateOf({ date: "2026-11-04" }, new Date("2026-11-06T10:00:00Z"))).toBe(
+      "2026-11-04",
+    );
+    expect(publishDateOf({ date: "nonsense" }, new Date("2026-11-06T10:00:00Z"))).toBe(
+      "2026-11-06",
+    );
   });
 });

@@ -1,0 +1,66 @@
+/* Daily Drop editorial (ADM-04, ADM-05, ADM-09; step 5.6). Admin screens: plain tables and rows, no decoration.
+   HR and EN sit side by side from 800 px (J6 "side-by-side view") and stack below that. */
+@layer components {
+  .ed-pair {
+    display: grid;
+    gap: var(--gr-space-4);
+  }
+  @media (min-width: 800px) {
+    .ed-pair {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .ed-text {
+    margin: 0;
+    padding: var(--gr-space-3);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    overflow-wrap: anywhere;
+  }
+  .ed-text-missing {
+    color: var(--gr-color-text-secondary);
+  }
+  .ed-count {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    text-align: right;
+  }
+  .ed-count[data-over="true"] {
+    color: var(--gr-color-state-danger);
+  }
+  .ed-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-3);
+    padding-top: var(--gr-space-4);
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .ed-checks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .ed-checks legend {
+    font: var(--gr-type-label);
+    margin-bottom: var(--gr-space-2);
+  }
+  .ed-q {
+    overflow-wrap: anywhere;
+  }
+  .ed-gap td {
+    background: var(--gr-color-state-warning-bg);
+  }
+  .ed-today th {
+    color: var(--gr-color-text-primary);
+  }
+  .ed-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+  }
+}

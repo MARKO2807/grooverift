@@ -43,6 +43,13 @@
       "when": 1793908753325,
       "tag": "0005_profiles_search",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793915801999,
+      "tag": "0006_editorial",
+      "breakpoints": true
     }
   ]
 }

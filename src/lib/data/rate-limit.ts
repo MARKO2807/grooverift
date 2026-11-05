@@ -22,6 +22,7 @@ export const LIMITS = {
   people: { limit: 30, windowSeconds: 60 }, // people search per member (step 5.5, D-093 (3))
   profileEdit: { limit: 20, windowSeconds: 3600 }, // profile, username and privacy changes per member (step 5.5)
   graph: { limit: 120, windowSeconds: 3600 }, // unfollow, cancel, accept, decline, remove, block, unblock per member
+  editorial: { limit: 300, windowSeconds: 3600 }, // editor and admin writes in ADM-04/05/09 (step 5.6)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

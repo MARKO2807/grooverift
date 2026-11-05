@@ -356,6 +356,10 @@ export const dropStatus = pgEnum("drop_status", [
   "scheduled",
   "published",
   "failed",
+  // Step 5.6: an admin took a published question down for a severe error (J6 "Corrections"). Every member read
+  // asks for status = 'published', so a withdrawn question and its answers disappear without a second check;
+  // the date is free again (the unique index covers scheduled and published only).
+  "withdrawn",
 ]);
 export const translationReview = pgEnum("translation_review", ["draft", "approved"]);
 export const runStatus = pgEnum("run_status", ["running", "succeeded", "failed"]);
