@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05 (session 28: **step 5.5 done**, D-098; continuing with 5.6 under the standing instruction of session 25)_
+_Last updated: 2026-11-05 (session 28: **step 5.5 done**, D-098; owner settled three of its points, D-099; continuing with 5.6 under the standing instruction of session 25)_
 
 ## Current phase
 **Phase 5: Alpha vertical slice, IN PROGRESS (approved D-092, 2026-11-05, with a free hand as in D-088).** Plan and step acceptance: [`docs/phase-5-plan.md`](phase-5-plan.md). Scope decisions: D-093 (push in the alpha behind a flag; live MusicBrainz lookups; people search on the Profile tab; seven-day strip plus the full archive; JO2–JO6). Code layout and rules: [`docs/architecture/app-structure.md`](architecture/app-structure.md). Step 4.11 (staging) stays deferred until A7 (OQ-33) and is done in whichever step is current when A7 arrives.
@@ -12,11 +12,11 @@ _Last updated: 2026-11-05 (session 28: **step 5.5 done**, D-098; continuing with
 | 5.2 Data model and data-access layer ⛳ | ✅ session 25 (D-095): schema and migrations (down tested), `src/lib/data`, rate limiter, notices stored; independent review: 1 high, 6 medium fixed or carried (`docs/security/review-5.2-data-layer.md`; L4, L7, L8 closed in 5.5); **owner review open** |
 | 5.3 Catalogue and Music DNA | 🔶 **5.3a done** (session 26, D-096): 2,210 genres seeded (families reviewed, 586 "no family"), editor `/me/dna`, audience sheet, Spirala on the profile; **5.3b** (artist lookup, typeahead, CAT-01) waits for A4 |
 | 5.4 Invitations and onboarding ⛳ | ✅ session 27 (D-097): invitations only (the `sign_up` flag retired), ADM-03 at `/admin/invites`, `/invite/<token>` → cookie → `/join` (U-05), ONB-01–09 with progress and resume, JO6, review L11 closed; **owner walks the flow** |
-| 5.5 Profiles, follow and people search | ✅ **session 28 (D-098):** `/@username` for every member (PROF-01/10, the P and B states, PUB-08), counts per the list rule, lists with "Ukloni pratitelja", follow / request / cancel / unfollow with confirmations, ACT-02, `follow_decline` (L7), `/settings/profile` with the username change (L8), `/settings/privacy` (SET-05, JO5), people search `/search` on `pg_trgm` + `unaccent` (migration 0005), `Viewer.status` required (L4); ⛳ points in D-098 (8), (3), (1) for the owner |
+| 5.5 Profiles, follow and people search | ✅ **session 28 (D-098):** `/@username` for every member (PROF-01/10, the P and B states, PUB-08), counts per the list rule, lists with "Ukloni pratitelja", follow / request / cancel / unfollow with confirmations, ACT-02, `follow_decline` (L7), `/settings/profile` with the username change (L8), `/settings/privacy` (SET-05, JO5), people search `/search` on `pg_trgm` + `unaccent` (migration 0005), `Viewer.status` required (L4); the owner settled D-098 (1), (3), (8) in **D-099** (back returns through history; ⋯ menu as planned; the avatar ring only for viewers of the Music DNA) |
 | 5.6 Daily Drop editorial ⛳ | ⏳ High |
 | 5.7 Daily Drop for members ⛳ | ⏳ |
 | 5.8 Activity | ⏳ |
-| 5.9 Safety and moderation ⛳ | ⏳ High (Mute and Report join the profile's ⋯ menu here) |
+| 5.9 Safety and moderation ⛳ | ⏳ High (**do not forget:** Mute and Report join the profile's ⋯ menu here and its "arrive soon" note goes, D-099 (3)) |
 | 5.10 Settings, account and data ⛳ | ⏳ High |
 | 5.11 Images | ⏳ waits for A7 (`sharp`, `@aws-sdk/client-s3` approved for then) |
 | 5.12 Push and PWA | ⏳ High, behind a flag (D-093 (1)); the onboarding reminder step already exists behind the `push` flag |
@@ -35,19 +35,19 @@ _Last updated: 2026-11-05 (session 28: **step 5.5 done**, D-098; continuing with
 
 ## Done
 - Phases 0–4 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087; Foundation, accepted D-091).
-- Decisions D-001 to D-098. Key ones for the code:
+- Decisions D-001 to D-099. Key ones for the code:
   - EU hosting, budget 30–60 €/mo; **Option B architecture + Next.js (ADR-0002)**; libraries (ADR-0003)
   - **Visibility (session 3):** blocks hide both ways (D-019); private members' replies in public threads are visible (D-020); Daily Drop answers visible to all members (D-021); signed-out visitors see the question only (D-022); DM history after a block read-only (D-023); Music DNA defaults to all members (D-024); profiles default to public via an active choice (D-025, D-030)
   - **Auth rules:** passwords 12+ with upper, lower, special (D-061); HIBP k-anonymity, fail-open (D-054); lockout 5/15 min → 15 min, 1 h, 24 h, 100 → reset (D-077); password change signs other devices out (D-072); no "remember this device" (D-076); Argon2id (R-14 → D-089); **accounts from invitations only, verified at once (D-097, JO6)**
   - **Phase 4:** approved with a free hand (D-088); foundation decisions (D-089) and review fixes (D-090) confirmed; phase accepted (D-091)
-  - **Phase 5:** approved with a free hand (D-092); alpha scope decisions (D-093); implementation choices D-094 (5.1), D-095 (5.2), D-096 (5.3a), D-097 (5.4), D-098 (5.5)
+  - **Phase 5:** approved with a free hand (D-092); alpha scope decisions (D-093); implementation choices D-094 (5.1), D-095 (5.2), D-096 (5.3a), D-097 (5.4), D-098 (5.5) with the owner's review D-099
   - Design: direction C "Pulse" prototype (`design/prototypes/pulse/`) is the reference; tokens (`design/tokens/tokens.json`), components spec (`docs/design/components.md`), copy guide (`docs/design/copy-guide.md`)
 - Phase 3 record: [`design/phase-3-plan.md`](design/phase-3-plan.md), [`design/phase-3-review.md`](design/phase-3-review.md); every review page is linked from `design/prototypes/index.html`. Phase 4 record: [`phase-4-plan.md`](phase-4-plan.md).
 
 ## Next
 1. **Owner:** `! git push` (the session 28 commit).
 2. **Claude (standing instruction from session 25: continue without waiting):** step **5.6** (Daily Drop editorial and publication, High), then 5.7, 5.8, 5.9, 5.10, 5.12 (flagged) in plan order; **5.3b** (artist lookup) as soon as A4 is done. Each ⛳ point is prepared for the owner's review, not decided.
-3. **Owner, when back:** walk ⛳ 5.4 and 5.5 on the running app (sign in as `ana@example.test`; open `/@luka`, follow, open `/@mia` for the P state, search for "Zeljko"-style names, try `/settings/profile` and `/settings/privacy`, block and unblock someone from the ⋯ menu; D-098 lists the choices and the three ⛳ points); review ⛳ 5.2 (D-095), 5.1 and 5.3a (D-096); `! git push`.
+3. **Owner, when back:** walk ⛳ 5.4 and 5.5 on the running app (sign in as `ana@example.test`; open `/@luka`, follow, open `/@mia` for the P state, search for "Zeljko"-style names, try `/settings/profile` and `/settings/privacy`, block and unblock someone from the ⋯ menu; D-098 lists the choices, D-099 settled three of them); review ⛳ 5.2 (D-095), 5.1 and 5.3a (D-096); `! git push`.
 4. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (project mailbox and MetaBrainz for 5.3b; A7 accounts; counsel). OQ-34 (alpha data after the alpha) before invitations.
 5. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 

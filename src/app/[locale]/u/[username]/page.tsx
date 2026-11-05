@@ -45,7 +45,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
 
   if (view.kind === "blocked-by-you") {
     return (
-      <AppShell title={view.displayName} backHref="/home" bodyHeading screen="profile">
+      <AppShell title={view.displayName} backHref="/home" backHistory bodyHeading screen="profile">
         <BlockedByYouScreen view={view} />
       </AppShell>
     );
@@ -55,6 +55,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
     <AppShell
       title={view.displayName}
       backHref={view.self ? undefined : "/home"}
+      backHistory
       nav={view.self ? "profile" : undefined}
       bodyHeading
       screen="profile"

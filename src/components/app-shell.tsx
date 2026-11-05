@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/wordmark";
 import { AlphaMark } from "@/components/shell/alpha-mark";
 import { Rail, TabBar, TABS, tabOf, type NavId } from "@/components/shell/nav";
+import { BackLink } from "@/components/shell/back-link";
 import { SwipeTabs } from "@/components/shell/swipe-tabs";
 import { IconBack } from "@/components/ui/icons";
 
@@ -17,6 +18,7 @@ import { IconBack } from "@/components/ui/icons";
 export async function AppShell({
   title,
   backHref,
+  backHistory = false,
   nav,
   home = false,
   bodyHeading = false,
@@ -26,6 +28,8 @@ export async function AppShell({
 }: {
   title: string;
   backHref?: string;
+  /** Back returns to the previous page of the app; `backHref` is the fallback (BackLink, D-098 (1)). */
+  backHistory?: boolean;
   nav?: NavId;
   home?: boolean;
   /** The body renders its own h1 (system pages): the bar shows the wordmark and no title. */
@@ -43,7 +47,9 @@ export async function AppShell({
       <Rail nav={nav} />
       <div className="page">
         <header className={`topbar${home ? " topbar-home" : ""}`}>
-          {backHref ? (
+          {backHref && backHistory ? (
+            <BackLink fallback={backHref} label={t("back")} />
+          ) : backHref ? (
             <Link href={backHref} className="iconbtn" aria-label={t("back")}>
               <IconBack />
             </Link>

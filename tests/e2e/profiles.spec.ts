@@ -308,6 +308,15 @@ test.describe("profiles and following (J4)", () => {
     await expect(page).toHaveURL(/\/search\?q=Ana\+Slusa$/);
     await expect(page.getByRole("link", { name: /Ana Sluša/ })).toBeVisible();
     await expectNoAxeViolations(page);
+    // D-098 (1), owner choice B: back from a profile opened in the results returns to the results...
+    await page.getByRole("link", { name: /Ana Sluša/ }).click();
+    await expect(page).toHaveURL(/\/@ana$/);
+    await page.getByRole("banner").getByRole("link", { name: "Natrag" }).click();
+    await expect(page).toHaveURL(/\/search\?q=Ana\+Slusa$/);
+    // ...and a profile opened directly (a shared link, a fresh load) goes back to Home.
+    await page.goto("/@ana");
+    await page.getByRole("banner").getByRole("link", { name: "Natrag" }).click();
+    await expect(page).toHaveURL(/\/home$/);
     await page.goto("/search?q=@mia");
     await expect(page.getByRole("link", { name: /Mia Mono/ })).toBeVisible(); // private: listed, P state when opened
     await expect(page.getByRole("button", { name: "Zatraži praćenje" })).toBeVisible();
