@@ -82,9 +82,9 @@ src/
   lib/data/catalog.ts             resolveCanonicalId (redirect chains, loop refused), artistsByIds
   lib/data/editorial.ts           Daily Drop lifecycle with optimistic locking (version), listCalendar/listPool/listRuns, editorialHealth
                                   (JO4), publishForDate (advisory lock per UTC date, savepoint, reserve fallback, idempotent), staff recipients
-  lib/editorial/rules.ts          pure: UTC date helpers, the 72-hour window, QUESTION_MAX, RESERVE_LOW, retry values, correctionAllowed
+  lib/editorial/rules.ts          pure: UTC date helpers, the 72-hour window, QUESTION_MAX, RESERVE_LOW, retry values
   lib/editorial/publication.ts    runPublication (audit + staff alert emails), dailyCheck (JO4 mail), alertMail (HR/EN)
-  lib/editorial/actions.ts        "use server": create, save, the lifecycle moves, delete, correct, withdraw (admin), Publish now
+  lib/editorial/actions.ts        "use server": create, save, the lifecycle moves, delete, withdraw (admin), Publish now
   components/admin/editorial.tsx, editorial-parts.tsx   ADM-04/05/09 forms (client) and server parts (nav, warnings, labels)
   lib/data/answers.ts             createAnswer (one per member per question), deleteOwnAnswer, visibleAnswers
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)

@@ -6,7 +6,6 @@ import { adminPageGate } from "@/components/admin/gate";
 import { EditorialNav, statusLabel } from "@/components/admin/editorial-parts";
 import {
   ApproveForm,
-  CorrectionForm,
   DeleteForm,
   LocalTime,
   MoveButton,
@@ -162,8 +161,7 @@ export default async function QuestionPage({
         ) : null}
         {q.status === "published" ? (
           <>
-            <p className="meta">{tm("correctionsPolicy")}</p>
-            <CorrectionForm question={ref} hr={q.hr?.text ?? ""} en={q.en?.text ?? ""} />
+            <Notice kind="info">{tm("publishedLead")}</Notice>
           </>
         ) : null}
         {q.status === "withdrawn" ? <Notice kind="info">{tm("withdrawnLead")}</Notice> : null}

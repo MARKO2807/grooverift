@@ -80,6 +80,8 @@ The same lifecycle and calendar, with these differences:
 - A missed Weekly Poll or Did You Know? produces a calendar warning, not a member-facing placeholder.
 
 ## Corrections after publishing
+> **Decided in D-101 (2):** a published question is never edited, not even for a typo; for a severe error an admin withdraws it. The two bullets below on typo fixes and editor's notes are superseded; the withdraw bullet stands (status `withdrawn`, D-100 (8)).
+
 - A typo fix in a published question is allowed. It is recorded in the audit log (ADM-18) and members are not notified. Answers stay attached to the question.
 - A meaning-changing edit after people have answered is not allowed. The editor contacts an admin, who decides whether to add a short editor's note instead. RECOMMENDED, because changing the question under existing answers misrepresents what people answered.
 - Unpublishing a question is admin-only, for severe errors, and audited. Its page becomes SYS-01 and its answers are hidden, not deleted.

@@ -3,7 +3,6 @@
 import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  correctQuestionAction,
   createQuestionAction,
   deleteQuestionAction,
   publishNowAction,
@@ -349,69 +348,6 @@ export function DeleteForm({ question }: { question: Ref }) {
         {tm("delete")}
       </SubmitButton>
       {state.error ? <Notice kind="error">{te(state.error)}</Notice> : null}
-    </form>
-  );
-}
-
-/** J6 corrections: a typo fix in one language, confirmed; larger changes are refused. */
-export function CorrectionForm({ question, hr, en }: { question: Ref; hr: string; en: string }) {
-  const tm = useTranslations("admin.editorial.moves");
-  const tx = useTranslations("admin.editorial.editor");
-  const te = useTranslations("admin.editorial.errors");
-  const [state, action] = useActionState<EditorialState, FormData>(correctQuestionAction, {});
-  const toast = useToast();
-  const id = useId();
-  const [locale, setLocale] = useState<DropLocale>(state.values?.locale === "en" ? "en" : "hr");
-  useEffect(() => {
-    if (state.ok) toast.show(tm("corrected"));
-  }, [state, toast, tm]);
-  const current = locale === "hr" ? hr : en;
-  const err = state.error ? te(state.error) : null;
-  return (
-    <form action={action} className="form-stack" noValidate>
-      <input type="hidden" name="id" value={question.id} />
-      <input type="hidden" name="version" value={question.version} />
-      <div className="flex items-center gap-2">
-        <label htmlFor={`${id}-l`} className="label">
-          {tm("correctLanguage")}
-        </label>
-        <select
-          id={`${id}-l`}
-          name="locale"
-          className="select"
-          style={{ width: "auto" }}
-          value={locale}
-          onChange={(e) => setLocale(e.target.value === "en" ? "en" : "hr")}
-        >
-          <option value="hr">{LANG_NAME.hr}</option>
-          <option value="en">{LANG_NAME.en}</option>
-        </select>
-      </div>
-      <div className="field">
-        <label className="label" htmlFor={`${id}-t`}>
-          {tm("correctText")}
-        </label>
-        <textarea
-          key={`${locale}-${question.version}`}
-          id={`${id}-t`}
-          name="text"
-          lang={locale}
-          className="textarea textarea-sm"
-          rows={3}
-          maxLength={QUESTION_MAX}
-          defaultValue={state.values?.locale === locale ? state.values.text : current}
-          aria-invalid={err ? true : undefined}
-          aria-describedby={err ? `${id}-err` : undefined}
-        />
-        {err ? <FieldError id={`${id}-err`} text={err} /> : null}
-      </div>
-      <label className="check-row">
-        <input type="checkbox" name="confirm" />
-        <span>{tm("correctConfirm")}</span>
-      </label>
-      <SubmitButton busyLabel={tx("saving")} variant="secondary" block={false}>
-        {tm("correct")}
-      </SubmitButton>
     </form>
   );
 }

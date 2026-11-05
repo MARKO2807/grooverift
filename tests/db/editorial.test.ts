@@ -15,7 +15,6 @@ import {
   user,
 } from "@/lib/db/schema";
 import {
-  correctPublished,
   createQuestion,
   deleteQuestion,
   editorialHealth,
@@ -414,29 +413,25 @@ describe("publication (J6, invariant 4)", () => {
   });
 });
 
-describe("after publishing (J6 corrections)", () => {
-  it("a typo fix is allowed and returns before/after; a larger change is refused", async () => {
+describe("after publishing (J6, D-101)", () => {
+  it("a published question is never edited, not even for a typo", async () => {
     const date = nextDate();
     await scheduled(date);
     const pub = await publishForDate(date);
     if (pub.status !== "published") throw new Error("not published");
     const d = (await getQuestion(editor, pub.questionId))!;
-    const fixed = await correctPublished(editor, {
-      id: d.id,
-      version: d.version,
-      locale: "hr",
-      text: `Pitanje  ${RUN}!`,
-    });
-    expect(fixed).toMatchObject({ ok: true, before: `Pitanje ${RUN}?`, after: `Pitanje ${RUN}!` });
-    const v = (await getQuestion(editor, d.id))!.version;
     expect(
-      await correctPublished(editor, {
+      await saveQuestion(editor, {
         id: d.id,
-        version: v,
-        locale: "hr",
-        text: "Koji ti je najdraži album svih vremena i zašto baš taj?",
+        version: d.version,
+        texts: { hr: "Ispravak?", en: "Fix?" },
       }),
-    ).toEqual({ ok: false, reason: "too-big" });
+    ).toEqual({ ok: false, reason: "state" });
+    expect(await transition(editor, { id: d.id, version: d.version, to: "toDraft" })).toEqual({
+      ok: false,
+      reason: "state",
+    });
+    expect((await getQuestion(editor, d.id))?.hr?.text).toBe(d.hr?.text);
   });
 
   it("only an admin withdraws a published question; its date is free again", async () => {

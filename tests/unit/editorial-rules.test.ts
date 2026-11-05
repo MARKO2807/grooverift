@@ -1,14 +1,6 @@
-// Step 5.6: the pure editorial rules (UTC dates, the JO4 window, the corrections limit).
+// Step 5.6: the pure editorial rules (UTC dates, the JO4 window).
 import { describe, expect, it } from "vitest";
-import {
-  addDays,
-  correctionAllowed,
-  datesWithinGap,
-  editDistance,
-  goLiveAt,
-  isIsoDate,
-  utcDate,
-} from "@/lib/editorial/rules";
+import { addDays, datesWithinGap, goLiveAt, isIsoDate, utcDate } from "@/lib/editorial/rules";
 
 describe("UTC dates (J6 E5, E6)", () => {
   it("accepts only real calendar dates", () => {
@@ -51,22 +43,5 @@ describe("JO4 gap window (72 hours)", () => {
       "2026-11-06",
       "2026-11-07",
     ]);
-  });
-});
-
-describe("corrections after publishing (J6)", () => {
-  it("measures edits by code point", () => {
-    expect(editDistance("pitanje", "pitanje")).toBe(0);
-    expect(editDistance("Koja pjesma?", "Koja pjesma!")).toBe(1);
-    expect(editDistance("čćš", "ccs")).toBe(3);
-    expect(editDistance("", "abc")).toBe(3);
-  });
-
-  it("allows a typo fix and refuses a change of meaning", () => {
-    const q = "Koja ti je pjesma otvorila neki novi žanr?";
-    expect(correctionAllowed(q, "Koja ti je pjesma otvorila neki novi žanr ?")).toBe(true);
-    expect(correctionAllowed(q, "Koja ti je pjesma otvorila neki nov žanr?")).toBe(true);
-    expect(correctionAllowed(q, "Koji ti je album zatvorio neki stari žanr?")).toBe(false);
-    expect(correctionAllowed(q, "Koju pjesmu nikad ne bi preslušao/la?")).toBe(false);
   });
 });

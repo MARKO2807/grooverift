@@ -8,7 +8,6 @@ import { audit } from "@/lib/audit";
 import { Forbidden, requireRole, roleOf, Unauthenticated } from "@/lib/auth/session";
 import type { FormState } from "@/lib/auth/actions";
 import {
-  correctPublished,
   createQuestion,
   deleteQuestion,
   mayEdit,
@@ -35,7 +34,7 @@ export type EditorialState = FormState & {
   outcome?: string;
 };
 
-// i18n-keys: admin.editorial.errors.forbidden admin.editorial.errors.notFound admin.editorial.errors.state admin.editorial.errors.incomplete admin.editorial.errors.invalid admin.editorial.errors.dateTaken admin.editorial.errors.datePast admin.editorial.errors.tooBig admin.editorial.errors.conflict admin.editorial.errors.tooMany admin.editorial.errors.generic admin.editorial.errors.freshSession admin.editorial.errors.checklist admin.editorial.errors.timeless admin.editorial.errors.confirm admin.editorial.errors.reason admin.editorial.errors.correctionTooBig admin.editorial.errors.paused admin.editorial.errors.empty admin.editorial.errors.publishFailed admin.editorial.errors.empty_text
+// i18n-keys: admin.editorial.errors.forbidden admin.editorial.errors.notFound admin.editorial.errors.state admin.editorial.errors.incomplete admin.editorial.errors.invalid admin.editorial.errors.dateTaken admin.editorial.errors.datePast admin.editorial.errors.tooBig admin.editorial.errors.conflict admin.editorial.errors.tooMany admin.editorial.errors.generic admin.editorial.errors.freshSession admin.editorial.errors.checklist admin.editorial.errors.timeless admin.editorial.errors.confirm admin.editorial.errors.reason admin.editorial.errors.paused admin.editorial.errors.empty admin.editorial.errors.publishFailed admin.editorial.errors.empty_text
 const REASON_KEYS: Record<string, string> = {
   forbidden: "forbidden",
   "not-found": "notFound",
@@ -232,43 +231,6 @@ export async function deleteQuestionAction(
   revalidate();
   redirect({ href: "/admin/editorial?deleted=1", locale: await getLocale() });
   return {};
-}
-
-/** J6 corrections: a typo fix in one language of a published question, confirmed and audited with both texts. */
-export async function correctQuestionAction(
-  _prev: EditorialState,
-  form: FormData,
-): Promise<EditorialState> {
-  const values = { text: String(form.get("text") ?? ""), locale: String(form.get("locale") ?? "") };
-  const parsed = ref
-    .extend({ locale: z.enum(["hr", "en"]) })
-    .safeParse({ id: form.get("id"), version: form.get("version"), locale: form.get("locale") });
-  if (!parsed.success) return { error: "generic", values };
-  if (form.get("confirm") !== "on") return { error: "confirm", values };
-  try {
-    const { viewer, id } = await editor();
-    if (await limited(id)) return { error: "tooMany", values };
-    const r = await correctPublished(viewer, { ...parsed.data, text: values.text });
-    if (!r.ok) {
-      if (r.reason === "too-big") return { error: "correctionTooBig", values };
-      if (r.reason === "invalid") return { error: "empty_text", values };
-      return refused(r, values);
-    }
-    if (r.before !== undefined) {
-      await audit({
-        actorType: "staff",
-        actorId: id,
-        action: "editorial.question.corrected",
-        targetType: "daily_drop_question",
-        targetId: r.id,
-        metadata: { locale: parsed.data.locale, before: r.before, after: r.after },
-      });
-    }
-    revalidate();
-    return { ok: true };
-  } catch (error) {
-    return guard(error);
-  }
 }
 
 const FRESH_MS = 15 * 60 * 1000; // as Better Auth's freshAge (src/lib/auth/auth.ts)

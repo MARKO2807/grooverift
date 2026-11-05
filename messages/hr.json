@@ -459,12 +459,6 @@
         "scheduledLead": "Zakazano pitanje se ne uređuje. Za promjenu ga vrati u nacrt; tada ga treba ponovno odobriti i zakazati.",
         "failedLead": "Objava za ovaj datum nije uspjela ni nakon ponovnih pokušaja. Pokreni „Objavi sada” ili vrati pitanje u nacrt.",
         "toJobs": "Na stranicu objava",
-        "correctionsPolicy": "Objavljeno pitanje smiješ samo ispraviti (tipfeler, interpunkcija). Izmjena koja mijenja smisao nije dopuštena jer bi promijenila ono na što su ljudi odgovorili; javi se adminu. Ispravak se bilježi u dnevnik, članovi ne dobivaju obavijest.",
-        "correctLanguage": "Jezik",
-        "correctText": "Ispravljeni tekst",
-        "correctConfirm": "Ovo je samo ispravak, smisao pitanja ostaje isti.",
-        "correct": "Spremi ispravak",
-        "corrected": "Ispravak je spremljen.",
         "withdrawnLead": "Pitanje je povučeno. Članovi ga više ne vide, kao ni odgovore na njega; ništa nije obrisano.",
         "withdrawTitle": "Povuci pitanje",
         "withdrawLead": "Samo za ozbiljne greške. Pitanje i odgovori nestaju za članove, ali se ne brišu. Datum ostaje slobodan.",
@@ -475,7 +469,8 @@
         "withdrawn": "Pitanje je povučeno.",
         "deleteTitle": "Obriši",
         "deleteConfirm": "Obriši ovo pitanje zauvijek.",
-        "delete": "Obriši pitanje"
+        "delete": "Obriši pitanje",
+        "publishedLead": "Objavljeno pitanje se ne mijenja, ni zbog tipfelera: ljudi su odgovarali baš na ovaj tekst. Kod ozbiljne greške admin ga može povući."
       },
       "reserve": {
         "title": "Rezerva",
@@ -539,7 +534,6 @@
         "timeless": "Potvrdi da pitanje ne ovisi o datumu.",
         "confirm": "Potvrdi radnju kvačicom.",
         "reason": "Napiši razlog (10 do 500 znakova).",
-        "correctionTooBig": "Ovo je veća izmjena od ispravka. Objavljenom pitanju ne smije se promijeniti smisao; javi se adminu.",
         "paused": "Daily Drop je na pauzi pa se ništa ne objavljuje.",
         "empty": "Nema zakazanog pitanja ni pitanja u rezervi. Odobri pitanje, stavi ga u rezervu ili zakaži za danas, pa pokušaj ponovno.",
         "publishFailed": "Objava nije uspjela. Pokušaj je zabilježen; pokušaj ponovno za minutu."

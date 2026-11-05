@@ -60,34 +60,3 @@ export function datesWithinGap(now: Date = new Date(), hours = GAP_HOURS): strin
 /** Text as stored: trimmed, inner whitespace kept (line breaks are not part of a question). */
 export const cleanQuestion = (text: unknown) =>
   typeof text === "string" ? text.replace(/\s+/g, " ").trim() : "";
-
-/** Levenshtein distance between two strings, by code point. */
-export function editDistance(a: string, b: string): number {
-  const x = [...a];
-  const y = [...b];
-  if (!x.length) return y.length;
-  if (!y.length) return x.length;
-  let prev = Array.from({ length: y.length + 1 }, (_, i) => i);
-  for (let i = 1; i <= x.length; i++) {
-    const cur = [i];
-    for (let j = 1; j <= y.length; j++) {
-      cur[j] = Math.min(
-        prev[j]! + 1,
-        cur[j - 1]! + 1,
-        prev[j - 1]! + (x[i - 1] === y[j - 1] ? 0 : 1),
-      );
-    }
-    prev = cur;
-  }
-  return prev[y.length]!;
-}
-
-/**
- * Corrections after publishing (J6): a typo fix only. A meaning-changing edit under existing answers is refused;
- * the guard is a size limit on the change (at most 5 characters or 10% of the text, whichever is larger),
- * RECOMMENDED in D-100. The editor also confirms that the meaning stays the same.
- */
-export function correctionAllowed(before: string, after: string): boolean {
-  const limit = Math.max(5, Math.ceil(before.length * 0.1));
-  return editDistance(before, after) <= limit;
-}

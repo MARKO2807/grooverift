@@ -33,7 +33,6 @@ import {
 } from "@/lib/db/schema";
 import {
   addDays,
-  correctionAllowed,
   datesWithinGap,
   DROP_LOCALES,
   QUESTION_MAX,
@@ -508,38 +507,6 @@ export async function deleteQuestion(
     if (pgCode(error) === "23503") return fail("state"); // a publication run refers to it
     throw error;
   }
-}
-
-/**
- * A typo fix in a published question (J6 "Corrections"): one language at a time, within the correctionAllowed
- * limit; members are not notified and the answers stay attached. Returns the old and new text for the audit.
- */
-export async function correctPublished(
-  viewer: Viewer,
-  input: { id: string; version: number; locale: DropLocale; text: string },
-): Promise<EditorialResult & { before?: string; after?: string }> {
-  if (!mayEdit(viewer)) return FORBIDDEN;
-  const clean = cleanTexts({ [input.locale]: input.text });
-  if (!clean) return fail("too-big");
-  const after = clean[input.locale];
-  if (!after) return fail("invalid");
-  return db().transaction(async (tx) => {
-    const [current] = await details(eq(q.id, input.id), [], tx);
-    if (!current) return fail("not-found");
-    if (current.version !== input.version)
-      return { ok: false as const, reason: "conflict" as const, current };
-    if (current.status !== "published") return fail("state");
-    const before = current[input.locale]?.text ?? "";
-    if (before === after) return { ok: true as const, id: current.id, version: current.version };
-    if (!correctionAllowed(before, after)) return fail("too-big");
-    const result = await change(tx, input.id, input.version, ["published"], {});
-    if (!result.ok) return result;
-    await tx
-      .update(tr)
-      .set({ text: after })
-      .where(and(eq(tr.questionId, input.id), eq(tr.locale, input.locale)));
-    return { ...result, before, after };
-  });
 }
 
 /** Admin only, for severe errors (J6): the question and its answers disappear for members; nothing is deleted. */

@@ -459,12 +459,6 @@
         "scheduledLead": "A scheduled question is not edited. To change it, take it back to draft; it then needs approving and scheduling again.",
         "failedLead": "Publishing for this date failed even after the retries. Use \"Publish now\" or take the question back to draft.",
         "toJobs": "To the publishing page",
-        "correctionsPolicy": "A published question may only be corrected (a typo, punctuation). A change of meaning is not allowed because it would change what people answered; contact an admin. Corrections are logged and members are not notified.",
-        "correctLanguage": "Language",
-        "correctText": "Corrected text",
-        "correctConfirm": "This is only a correction; the meaning of the question stays the same.",
-        "correct": "Save the correction",
-        "corrected": "The correction is saved.",
         "withdrawnLead": "The question is withdrawn. Members no longer see it or its answers; nothing was deleted.",
         "withdrawTitle": "Withdraw the question",
         "withdrawLead": "For severe errors only. The question and its answers disappear for members but are not deleted. The date becomes free.",
@@ -475,7 +469,8 @@
         "withdrawn": "The question is withdrawn.",
         "deleteTitle": "Delete",
         "deleteConfirm": "Delete this question for good.",
-        "delete": "Delete the question"
+        "delete": "Delete the question",
+        "publishedLead": "A published question is never changed, not even for a typo: people answered this exact text. For a severe error an admin can withdraw it."
       },
       "reserve": {
         "title": "Reserve",
@@ -539,7 +534,6 @@
         "timeless": "Confirm that the question does not depend on its date.",
         "confirm": "Confirm the action with the tick box.",
         "reason": "Write a reason (10 to 500 characters).",
-        "correctionTooBig": "This is more than a correction. A published question must not change its meaning; contact an admin.",
         "paused": "The Daily Drop is paused, so nothing is published.",
         "empty": "No scheduled question and nothing in the reserve. Approve a question, add it to the reserve or schedule it for today, then try again.",
         "publishFailed": "Publishing failed. The attempt is recorded; try again in a minute."
