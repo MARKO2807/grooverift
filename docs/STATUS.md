@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-095; the owner asked Claude to continue with every step that needs no owner input; next is a fresh session for 5.3a and 5.4)_
+_Last updated: 2026-11-05 (session 26: **step 5.3a done**, D-096; continuing with 5.4 under the standing instruction of session 25)_
 
 ## Current phase
 **Phase 5: Alpha vertical slice, IN PROGRESS (approved D-092, 2026-11-05, with a free hand as in D-088).** Plan and step acceptance: [`docs/phase-5-plan.md`](phase-5-plan.md). Scope decisions: D-093 (push in the alpha behind a flag; live MusicBrainz lookups; people search on the Profile tab; seven-day strip plus the full archive; JO2–JO6). Code layout and rules: [`docs/architecture/app-structure.md`](architecture/app-structure.md). Step 4.11 (staging) stays deferred until A7 (OQ-33) and is done in whichever step is current when A7 arrives.
@@ -10,7 +10,7 @@ _Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-0
 | 5.0 Kickoff | ✅ plan approved (D-092), decisions D-093, `web-push` 3.6 and `archiver` 8 installed with types, `readdir-glob` minimatch override (audit 0 findings), OQ-07/08/16/28 closed |
 | 5.1 App shell and public pages | ✅ session 25: tab bar, rail, columns, large text, motion; Spirala and invite current on canvas (D-094); PUB-01, PUB-10 drafts, PUB-11 (validates and audits, stores from 5.2), PUB-12, SYS-01–05 |
 | 5.2 Data model and data-access layer ⛳ | ✅ session 25 (D-095): schema and migrations (down tested), `src/lib/data`, rate limiter, notices stored; independent review: 1 high, 6 medium fixed or carried (`docs/security/review-5.2-data-layer.md`); **owner review open** |
-| 5.3 Catalogue and Music DNA | ⏳ **5.3a next** (genres from the CC0 list, no API needed); the artist lookup needs the owner's MetaBrainz registration and the project mailbox (A4) |
+| 5.3 Catalogue and Music DNA | 🔶 **5.3a done** (session 26, D-096): 2,210 genres seeded (families reviewed, 586 "no family"), editor `/me/dna`, audience sheet, Spirala on the profile; **5.3b** (artist lookup, typeahead, CAT-01) waits for A4 |
 | 5.4 Invitations and onboarding ⛳ | ⏳ |
 | 5.5 Profiles, follow and people search | ⏳ |
 | 5.6 Daily Drop editorial ⛳ | ⏳ High |
@@ -27,6 +27,8 @@ _Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-0
 
 **Checks after step 5.2 (session 25, all green):** `npm run check` (61 unit tests, i18n 328 keys); `npm run test:db` **38 passed** (data layer, invariants, review fixes, migrations up-down-up on a scratch database); e2e **101 passed** on the dev server; `db:generate` reports no schema drift.
 
+**Checks after step 5.3a (session 26, all green):** `npm run check` (68 unit tests, i18n 393 keys); `npm run test:db` **46 passed** (genre seed idempotent, search, add/remove/undo/move, cap under concurrent adds, minimum, stale reorder, another member's entries untouched, audience through the policy); e2e **103 passed** in the full run on the dev server, with the TOTP test failing once in both projects under load (sign-in wait) and passing 2/2 when rerun alone; `dna.spec.ts` 4/4.
+
 ## Done
 - Phases 0–4 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087; Foundation, accepted D-091).
 - Decisions D-001 to D-093. Key ones for the code:
@@ -40,8 +42,8 @@ _Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-0
 
 ## Next
 1. **Owner:** `! git push` (the session 25 commits).
-2. **Claude, next session (fresh, standing instruction from session 25: continue without waiting):** step **5.3a** (genre table from the CC0 list with families, the Music DNA editor for genres; artist lookup waits for A4), then **5.4** (invitations and onboarding; ⛳ the owner walks the flow later), then 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.12 (flagged) in plan order. Each ⛳ point is prepared for the owner's review, not decided.
-3. **Owner, when back:** review ⛳ 5.2 (D-095, the review record) and 5.1 on the running app; `! git push`.
+2. **Claude (standing instruction from session 25: continue without waiting):** step **5.4** (invitations and onboarding; ⛳ the owner walks the flow later), then 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.12 (flagged) in plan order; **5.3b** (artist lookup) as soon as A4 is done. Each ⛳ point is prepared for the owner's review, not decided.
+3. **Owner, when back:** review ⛳ 5.2 (D-095, the review record), 5.1 and 5.3a (D-096: `/me/dna`, the genre families) on the running app; `! git push`.
 4. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (project mailbox and MetaBrainz for 5.3; A7 accounts; counsel). OQ-34 (alpha data after the alpha) before invitations.
 5. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 
@@ -51,7 +53,7 @@ _Last updated: 2026-11-05 (session 25: **steps 5.1 and 5.2 done**, D-094 and D-0
 - Start looking for an accountant and lawyer (`docs/legal/questions-for-counsel.md`). Needed before the alpha (legal pages are placeholders until then; no invite goes out while they are).
 
 ## Blockers
-- None for 5.1 and 5.2. 5.3 needs A4 (owner). 5.11 and real push tests need A7. Before the alpha: legal entity (OQ-05), moderation staffing (OQ-06), age policy (OQ-10), DPIA, legal documents.
+- None for 5.4. 5.3b needs A4 (owner). 5.11 and real push tests need A7. Before the alpha: legal entity (OQ-05), moderation staffing (OQ-06), age policy (OQ-10), DPIA, legal documents.
 
 ## Top risks
 1. Scope vs. capacity (A-01). Phase 5 has fourteen steps; one step per session, flags for anything unfinished, no step starts before the previous one is green.

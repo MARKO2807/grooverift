@@ -74,3 +74,23 @@ export function totp(secretBase32: string, at = Date.now()): string {
 
 export const uniqueEmail = (prefix: string) =>
   `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.test`;
+
+/**
+ * A fresh, verified member signed in on `page` (open sign-up, development and CI only; step 5.4 replaces this with
+ * an invitation). Tests that change a member's own data use one, so the phone and desktop runs never share state.
+ */
+export async function newMember(page: Page, prefix: string, password = "Nova-Lozinka-2026!") {
+  const email = uniqueEmail(prefix);
+  const t0 = Date.now();
+  await page.goto("/sign-up");
+  await page.getByLabel("Lozinka", { exact: true }).fill(password);
+  await page.getByLabel("Kako se zoveš?").fill("Testna Osoba");
+  await page.getByLabel("E-pošta").fill(email);
+  await page.getByLabel("Imam 18 ili više godina.").check();
+  await page.getByRole("button", { name: "Napravi račun" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Provjeri e-poštu");
+  await page.goto(firstLink(await lastMailTo(email, t0)));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Adresa je potvrđena");
+  await signIn(page, email, password);
+  return email;
+}

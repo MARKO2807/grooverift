@@ -4,7 +4,15 @@ import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { MotifCanvas } from "./motif-canvas";
 import { HOT, bolt, mix, rgba, rng, type MotifEngine } from "./motif-lib";
-import { segmentAt, spiralaModel, type SpiralaArtist, type SpiralaModel } from "./spirala-model";
+import {
+  genreKey,
+  genreName,
+  segmentAt,
+  spiralaModel,
+  type SpiralaArtist,
+  type SpiralaGenre,
+  type SpiralaModel,
+} from "./spirala-model";
 
 /* The Music DNA picture, "Spirala" (D-048, D-052, D-067 (4)). Ported from design/prototypes/pulse/dna.js:
    a double helix whose sections are the member's genres (length = weight, colour, height, twist and behaviour
@@ -298,7 +306,7 @@ export function Spirala({
   captionHidden = false,
   intro = true,
 }: {
-  genres: string[];
+  genres: SpiralaGenre[];
   artists?: SpiralaArtist[];
   /** Names the figure (components §4.14). */
   caption: string;
@@ -309,7 +317,10 @@ export function Spirala({
 }) {
   const t = useTranslations("spirala");
   const id = useId();
-  const key = genres.join("|") + "#" + artists.map((a) => a.name).join("|");
+  const key =
+    genres.map((g) => `${genreKey(g)}:${genreName(g)}`).join("|") +
+    "#" +
+    artists.map((a) => a.name).join("|");
   // eslint-disable-next-line react-hooks/exhaustive-deps -- the model depends only on the picks, keyed above
   const model = useMemo(() => spiralaModel(genres, artists), [key]);
   const engine = useMemo(() => new SpiralaEngine(model, intro), [model, intro]);
@@ -331,7 +342,7 @@ export function Spirala({
     },
     [model],
   );
-  const byGenre = genres.map((g) => ({
+  const byGenre = genres.map(genreName).map((g) => ({
     genre: g,
     artists: artists.filter((a) => a.genres.includes(g)).map((a) => a.name),
   }));

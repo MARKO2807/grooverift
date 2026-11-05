@@ -10,7 +10,7 @@ services:
     plan: starter
     branch: main
     buildCommand: npm ci && npm run build
-    preDeployCommand: npm run db:migrate
+    preDeployCommand: npm run db:migrate && npm run db:seed-genres # the genre list is reference data (D-096)
     startCommand: npm run start
     healthCheckPath: /manifest.webmanifest
     autoDeploy: true

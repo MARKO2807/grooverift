@@ -94,7 +94,20 @@ const NEUTRAL: Omit<GenreTraits, "n"> = {
 
 const BY_NAME = new Map(GENRE_TRAITS.map((g) => [g.n.toLowerCase(), g]));
 
-export function genreTraits(name: string): GenreTraits & { parent?: string } {
+/**
+ * Traits for a genre. `traitKey` names the genre whose traits it uses (the catalogue's family, step 5.3a); without
+ * it the name itself is looked up, then the local children above. A genre with neither gets the neutral traits.
+ */
+export function genreTraits(
+  name: string,
+  traitKey?: string | null,
+): GenreTraits & { parent?: string } {
+  if (traitKey) {
+    const p = BY_NAME.get(traitKey.toLowerCase());
+    if (p) return p.n === name ? p : { ...p, n: name, parent: p.n };
+    return { ...NEUTRAL, n: name };
+  }
+  if (traitKey === null) return { ...NEUTRAL, n: name };
   const own = BY_NAME.get(name.toLowerCase());
   if (own) return own;
   const parent = CHILDREN[name];
@@ -102,3 +115,6 @@ export function genreTraits(name: string): GenreTraits & { parent?: string } {
   if (p) return { ...p, n: name, parent: p.n };
   return { ...NEUTRAL, n: name };
 }
+
+/** The colour a genre shows in lists and chips (its family's colour, or the neutral grey). */
+export const genreColour = (name: string, traitKey: string | null) => genreTraits(name, traitKey).c;

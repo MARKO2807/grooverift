@@ -4,6 +4,13 @@ import { genreTraits, type GenreTraits } from "@/lib/music/genre-traits";
 import { AMBER, hash, hex, noise, rng, type RGB } from "./motif-lib";
 
 export type SpiralaArtist = { name: string; genres: string[] };
+/**
+ * A genre by name (traits looked up by name), or from the catalogue: its display name, the genre whose traits it
+ * uses (null = no family) and a stable key (the slug) so the helix is the same in every language.
+ */
+export type SpiralaGenre = string | { name: string; traitKey: string | null; key?: string };
+export const genreName = (g: SpiralaGenre) => (typeof g === "string" ? g : g.name);
+export const genreKey = (g: SpiralaGenre) => (typeof g === "string" ? g : (g.key ?? g.name));
 
 export type Segment = {
   g: GenreTraits & { parent?: string };
@@ -25,9 +32,11 @@ export type SpiralaModel = {
   n2: (x: number) => number;
 };
 
-export function spiralaModel(genres: string[], artists: SpiralaArtist[]): SpiralaModel {
-  const gs = genres.map(genreTraits);
-  const seed = hash(genres.join("|") + "#" + artists.map((a) => a.name).join("|"));
+export function spiralaModel(genres: SpiralaGenre[], artists: SpiralaArtist[]): SpiralaModel {
+  const gs = genres.map((g) =>
+    typeof g === "string" ? genreTraits(g) : genreTraits(g.name, g.traitKey),
+  );
+  const seed = hash(genres.map(genreKey).join("|") + "#" + artists.map((a) => a.name).join("|"));
   const R = rng(seed);
   const fits = (a: SpiralaArtist, g: GenreTraits & { parent?: string }) =>
     a.genres.includes(g.n) || (!!g.parent && a.genres.includes(g.parent));

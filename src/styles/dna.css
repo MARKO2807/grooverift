@@ -1,0 +1,281 @@
+/* The Music DNA editor (PROF-09) and the profile's Music DNA block (step 5.3a). Ported from
+   design/prototypes/pulse/style.css (round 12d: .dna-row, .dna-add, .aud-line, .chip-genre, .g-grid) on the
+   --gr-* tokens. A genre's colour arrives as --g (its family's colour, D-052). */
+@layer components {
+  .hint {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+    margin: 0;
+  }
+  .has-prefix .input {
+    padding-left: 2.25rem;
+  }
+  .prefix {
+    position: absolute;
+    left: var(--gr-space-3);
+    color: var(--gr-color-text-secondary);
+    display: inline-flex;
+    pointer-events: none;
+  }
+  .prefix svg {
+    width: 18px;
+    height: 18px;
+  }
+  .iconbtn.sm {
+    width: 40px;
+    height: 40px;
+  }
+  .iconbtn.sm svg {
+    width: 18px;
+    height: 18px;
+  }
+  .iconbtn:disabled,
+  .iconbtn[aria-disabled="true"] {
+    opacity: var(--gr-opacity-disabled);
+    cursor: not-allowed;
+  }
+
+  /* choice cards with a title and a line (the audience sheet) */
+  .choice-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .choice-title {
+    font: var(--gr-type-label);
+  }
+  .choice-desc {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+
+  /* ---------- the editor ---------- */
+  .dna-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-5);
+  }
+  .dna-editor .dna-card {
+    max-width: none;
+  }
+  .dna-empty {
+    padding: var(--gr-space-6) var(--gr-space-4);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) dashed var(--gr-color-border-strong);
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+    text-align: center;
+  }
+  .aud-line {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    margin: calc(var(--gr-space-2) * -1) 0 0;
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .aud-line b {
+    color: var(--gr-color-text-primary);
+    font-weight: var(--gr-font-weight-medium);
+  }
+  .aud-line svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+  .aud-line .link {
+    margin-left: auto;
+    min-height: 32px;
+  }
+  .dna-fail {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .set-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .set-gt {
+    font: var(--gr-type-eyebrow);
+    letter-spacing: var(--gr-type-eyebrow-letter-spacing);
+    text-transform: uppercase;
+    color: var(--gr-color-text-secondary);
+    margin: 0;
+    padding: 0 var(--gr-space-1);
+  }
+  .set-gt .count {
+    font-weight: var(--gr-font-weight-regular);
+    margin-left: var(--gr-space-1);
+  }
+  .set-empty {
+    margin: 0;
+    padding: var(--gr-space-4) var(--gr-space-3);
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .dna-order {
+    padding: 0 var(--gr-space-1);
+  }
+
+  .dna-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    overflow: hidden;
+  }
+  .dna-row {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-2);
+    min-height: 56px;
+    padding: var(--gr-space-1) var(--gr-space-1) var(--gr-space-1) var(--gr-space-3);
+  }
+  .dna-row + .dna-row {
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .dna-swatch {
+    width: 10px;
+    height: 28px;
+    border-radius: 5px;
+    background: var(--g, var(--gr-color-border-strong));
+  }
+  .dna-pos {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    min-width: 1.4em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .dna-name {
+    font: var(--gr-type-label);
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .dna-fam {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .dna-btns {
+    display: flex;
+  }
+  .dna-btns .dna-x {
+    color: var(--gr-color-text-secondary);
+  }
+  .dna-addbtn {
+    align-self: flex-start;
+  }
+  .dna-add {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) dashed var(--gr-color-highlight-border);
+    background: var(--gr-color-highlight-bg);
+  }
+  .dna-add-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--gr-space-2);
+  }
+  .dna-add-head .link {
+    min-height: 32px;
+  }
+
+  /* genre chips as a two-column grid of equal tiles: the name over its family (D-063) */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-1);
+    min-height: var(--gr-chip-height);
+    padding: 0 var(--gr-chip-padding-x);
+    border-radius: var(--gr-chip-radius);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+    background: transparent;
+    color: var(--gr-color-text-primary);
+    font: var(--gr-type-label);
+    cursor: pointer;
+  }
+  .chip:hover {
+    background: var(--gr-color-bg-high);
+  }
+  .chip:disabled {
+    cursor: progress;
+  }
+  .chip-genre:hover {
+    border-color: color-mix(in srgb, var(--g) 55%, var(--gr-color-border-strong));
+  }
+  .chip-genre .ck {
+    color: var(--g);
+    display: inline-flex;
+  }
+  .g-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gr-space-2);
+  }
+  .g-grid .chip {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-1);
+    min-height: 52px;
+    padding: 6px var(--gr-space-3);
+    border-radius: 14px;
+    text-align: left;
+    background: var(--gr-color-bg-canvas);
+  }
+  .g-txt {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .g-n {
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+  }
+  .g-fam {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    font-weight: var(--gr-font-weight-regular);
+  }
+  @media (max-width: 340px) {
+    .g-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Narrow screens and large text: the buttons move under the name. */
+  @media (max-width: 380px) {
+    .dna-row {
+      grid-template-columns: auto auto 1fr;
+    }
+    .dna-btns {
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+    }
+    .aud-line,
+    .dna-add-head {
+      flex-wrap: wrap;
+    }
+  }
+
+  /* ---------- the profile block ---------- */
+  .me-dna {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-3);
+  }
+  .me-dna-edit {
+    align-self: flex-start;
+  }
+}

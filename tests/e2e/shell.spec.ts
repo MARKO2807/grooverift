@@ -49,11 +49,14 @@ test.describe("app shell (D-031, D-079, D-080)", () => {
     }
   });
 
-  test("the seeded paused flag shows SYS-04 instead of the Spirala", async ({ page }) => {
+  test("the profile draws the seeded Music DNA and opens its editor", async ({ page }) => {
+    // The paused state (SYS-04) is checked on the specimen page; the seed now keeps music_dna on (D-096).
     await page.goto("/me");
-    await expect(
-      page.getByRole("status").filter({ hasText: "Music DNA je privremeno isključen" }),
-    ).toBeVisible();
+    await expect(page.getByRole("figure", { name: /žanr/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Uredi Music DNA" })).toHaveAttribute(
+      "href",
+      /\/me\/dna$/,
+    );
   });
 
   test("the member's reduced-motion setting reaches the page", async ({ page }) => {
@@ -102,6 +105,10 @@ test.describe("Spirala specimen", () => {
     await expect(fig).toBeVisible();
     await expect(fig.locator("canvas")).toHaveAttribute("aria-hidden", "true");
     await expect(fig.getByRole("list")).toContainText("Metal: Izvođač A");
+    // SYS-04 for a paused feature (the seed no longer pauses music_dna).
+    await expect(
+      page.getByRole("status").filter({ hasText: "Music DNA je privremeno isključen" }),
+    ).toBeVisible();
     await expectNoAxeViolations(page);
   });
 });
