@@ -1,0 +1,10 @@
+{
+  "app": {
+    "description": "GrooveRift: mjesto za ljude koji žive glazbu.",
+    "skipToContent": "Preskoči na sadržaj"
+  },
+  "home": {
+    "title": "Uskoro",
+    "lead": "Aplikacija se gradi. Zasad ovdje nema ničega za vidjeti."
+  }
+}

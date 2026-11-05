@@ -1,0 +1,77 @@
+{
+  "name": "grooverift",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GrooveRift web application (Phase 4 foundation).",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "tokens": "node scripts/tokens.mjs",
+    "tokens:check": "node scripts/tokens.mjs --check && node design/tokens/contrast-check.mjs",
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/lib/db/migrate.ts",
+    "db:seed": "tsx src/lib/db/seed.ts",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run tokens:check && npm run i18n:check && npm run test"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.2",
+    "@phosphor-icons/react": "^2.1.10",
+    "better-auth": "^1.7.17",
+    "drizzle-orm": "^0.45.4",
+    "next": "^16.4.5",
+    "next-intl": "^4.14.9",
+    "pg": "^8.23.1",
+    "pg-boss": "^12.38.0",
+    "react": "^19.3.1",
+    "react-aria-components": "^1.22.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.4",
+    "@types/node": "^22",
+    "@types/pg": "^8",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^18.0.9",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^10.14.0",
+    "eslint-config-next": "^16.4.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.28.2"
+    },
+    "@eslint/config-array": {
+      "minimatch": "^11.0.4"
+    },
+    "eslint": {
+      "minimatch": "^11.0.4"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.4"
+    }
+  }
+}

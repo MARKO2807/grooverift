@@ -1,0 +1,19 @@
+# Build output and dependencies
+.next/
+out/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+next-env.d.ts
+
+# Phase 0-3 records (not code of the app; formatted by their own rules)
+design/
+docs/
+Logo/
+*.md
+
+# Generated
+src/styles/tokens.css
+drizzle/meta/

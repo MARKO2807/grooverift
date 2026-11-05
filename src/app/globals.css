@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/fonts.css";
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--gr-color-bg-canvas);
+    color: var(--gr-color-text-primary);
+    font: var(--gr-type-body);
+    letter-spacing: var(--gr-type-body-letter-spacing);
+    -webkit-text-size-adjust: 100%;
+    /* Keep focused controls clear of the sticky bars (WCAG 2.4.11). */
+    scroll-padding-block: calc(var(--gr-bar-top) + var(--gr-space-2)) var(--gr-space-12);
+  }
+
+  @media (min-width: 1600px) {
+    html {
+      /* A percentage keeps the browser text-size setting working (WCAG 1.4.4), D-079. */
+      font-size: 106.25%;
+    }
+  }
+
+  body {
+    min-height: 100dvh;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--gr-font-family-heading);
+    letter-spacing: var(--gr-font-letter-spacing-heading);
+    line-height: var(--gr-font-line-height-tight);
+    margin: 0;
+  }
+
+  a {
+    color: var(--gr-color-text-link);
+    text-underline-offset: 0.15em;
+  }
+
+  /* One focus style everywhere (components §3.2): a 2 px Amber ring with a 2 px gap. */
+  :focus-visible {
+    outline: var(--gr-focus-width) solid var(--gr-color-focus-ring);
+    outline-offset: var(--gr-focus-gap);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--gr-space-4);
+    top: var(--gr-space-2);
+    z-index: var(--gr-z-toast);
+    padding: var(--gr-space-2) var(--gr-space-4);
+    border-radius: var(--gr-radius-control);
+    background: var(--gr-color-action-primary);
+    color: var(--gr-color-text-on-accent);
+    font: var(--gr-type-label);
+    transform: translateY(-200%);
+  }
+  .skip-link:focus-visible {
+    transform: none;
+  }
+}

@@ -35,3 +35,11 @@ npm-debug.log*
 
 # --- Claude Code local-only settings ---
 .claude/settings.local.json
+
+# --- App test and build artefacts (Phase 4) ---
+playwright-report/
+test-results/
+next-env.d.ts
+*.tsbuildinfo
+.env.local
+

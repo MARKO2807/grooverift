@@ -1,0 +1,10 @@
+{
+  "app": {
+    "description": "GrooveRift: a place for people who live music.",
+    "skipToContent": "Skip to content"
+  },
+  "home": {
+    "title": "Coming soon",
+    "lead": "The app is being built. There is nothing to see here yet."
+  }
+}
