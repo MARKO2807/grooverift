@@ -27,13 +27,13 @@ export function inviteMail(to: string, locale: "hr" | "en", link: string): Mail 
     to,
     subject: "Tvoja pozivnica za GrooveRift alfu",
     text: [
-      "Pozvani ste u GrooveRift, mjesto za ljude koji žive glazbu. Svaki dan jedno pitanje za sve, tvoj Music DNA i ljudi različitih ukusa.",
+      "Imaš pozivnicu za GrooveRift, mjesto za ljude koji žive glazbu. Svaki dan jedno pitanje za sve, tvoj Music DNA i ljudi različitih ukusa.",
       "",
       `Prihvati pozivnicu (vrijedi ${INVITE_TTL_DAYS} dana, samo za ovu adresu):`,
       link,
       "",
       "Ovo je zatvorena alfa: neke stvari još nedostaju i mogu se promijeniti. GrooveRift je za punoljetne (18+).",
-      "Ako nisi očekivao/la ovu pozivnicu, zanemari poruku; bez poveznice se ništa ne događa.",
+      "Ako ti pozivnica nije bila namijenjena, zanemari poruku; bez poveznice se ništa ne događa.",
     ].join("\n"),
   };
 }

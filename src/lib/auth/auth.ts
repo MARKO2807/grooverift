@@ -42,7 +42,7 @@ export const auth = betterAuth({
         {
           to: user.email,
           subject: "GrooveRift: nova lozinka / new password",
-          text: `Postavi novu lozinku (vrijedi 30 minuta) / Set a new password (valid 30 minutes):\n${url}\n\nAko ovo nisi zatražio/la, zanemari poruku. / If you did not ask for this, ignore this message.`,
+          text: `Postavi novu lozinku (vrijedi 30 minuta) / Set a new password (valid 30 minutes):\n${url}\n\nAko zahtjev nije od tebe, zanemari poruku. / If you did not ask for this, ignore this message.`,
         },
         "reset",
       );

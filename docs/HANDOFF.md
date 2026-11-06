@@ -30,6 +30,7 @@ _Session 31, 2026-11-06 (**step 5.8 done**, D-103, ⛳ owner review open; sessio
 - Pages get the viewer with `loadViewer({ id: session.user.id, role: roleOf(session) })`; never pass the session's role to the policy directly. Profile routes that visitors may open use `profileViewer(locale, path)` from `src/lib/profile/page.ts` and `notAvailable()` for every hidden reason.
 
 ## Lessons (session 31)
+- **A dev server left running through many edits can crash a page with "Element type is invalid … got undefined"** (seen on `/admin/invites` in the AdminLayout) although the code is fine: restart the dev server before suspecting the code. With port 3000 taken, Playwright reuses that server, whose mail goes to the console, so the invitation e2e that reads `.mail-outbox.jsonl` fails there; the invite link is in `%TEMP%grooverift-dev.log`.
 - **Timestamps round-tripped through JavaScript lose microseconds:** a `createdAt <= upTo` bound from an ISO string misses the newest row; add 1 ms (the mark-read action does).
 - **`locator.filter({ has })` takes a locator relative to the filtered element:** do not pass one that starts from `page` through an ancestor region.
 - **A db test helper that calls `Date.now()` per use can change value between calls** (`day(n)` in a test): fix such values once per run.
