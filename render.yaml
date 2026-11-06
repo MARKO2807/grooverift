@@ -45,7 +45,7 @@ services:
     region: frankfurt
     plan: 0.5c-512mb # formerly "starter"
     branch: main
-    buildCommand: npm ci
+    buildCommand: npm ci --include=dev # without dev, drizzle-kit's nested esbuild loses its platform binary
     startCommand: npm run worker
     autoDeployTrigger: checksPass # deploy only after GitHub Actions is green
     envVars:
