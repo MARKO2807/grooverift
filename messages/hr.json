@@ -37,6 +37,7 @@
       "submitting": "Prijavljujem…",
       "or": "ili",
       "google": "Nastavi s Google računom",
+      "googleNoAccount": "Za taj Google račun nema GrooveRift računa. GrooveRift radi samo uz pozivnicu: otvori poveznicu iz pozivnice i na koraku računa odaberi Google.",
       "noAccount": "Nemaš račun? GrooveRift radi samo uz pozivnicu.",
       "returnTo": "Nakon prijave vraćamo te na stranicu koju si otvorio.",
       "resetDone": "Lozinka je promijenjena. Prijavi se novom lozinkom.",

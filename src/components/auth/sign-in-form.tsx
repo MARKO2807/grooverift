@@ -12,10 +12,12 @@ export function SignInForm({
   returnTo,
   googleEnabled,
   notice,
+  oauthError,
 }: {
   returnTo: string;
   googleEnabled: boolean;
   notice?: "reset" | "verified";
+  oauthError?: "noAccount" | "failed";
 }) {
   const t = useTranslations("auth.signIn");
   const te = useTranslations("authErrors");
@@ -28,6 +30,11 @@ export function SignInForm({
 
   return (
     <>
+      {oauthError ? (
+        <Notice kind="warning" focusable>
+          {oauthError === "noAccount" ? t("googleNoAccount") : te("generic")}
+        </Notice>
+      ) : null}
       <form ref={formRef} action={action} className="form-stack" noValidate>
         {notice === "reset" ? <Notice kind="success">{t("resetDone")}</Notice> : null}
         {notice === "verified" ? <Notice kind="success">{t("verifiedDone")}</Notice> : null}

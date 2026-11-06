@@ -62,6 +62,18 @@ test.describe("sign-in", () => {
     const res = await page.goto("/sign-up");
     expect(res?.status()).toBe(404);
   });
+
+  test("a refused Google sign-in is explained, never shown as the raw code (J1 E4)", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/sign-in?error=INVITE_EMAIL_MISMATCH&error_description=An+invitation+for+this+address+is+required.",
+    );
+    await expect(page.getByText("Za taj Google račun nema GrooveRift računa.")).toBeVisible();
+    await expect(page.getByText("An invitation for this address")).toHaveCount(0);
+    await page.goto("/sign-in?error=something_else");
+    await expect(page.locator("main").getByText("Nešto je pošlo po zlu.")).toBeVisible();
+  });
 });
 
 test.describe("password reset", () => {

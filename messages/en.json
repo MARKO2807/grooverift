@@ -37,6 +37,7 @@
       "submitting": "Signing in…",
       "or": "or",
       "google": "Continue with Google",
+      "googleNoAccount": "There is no GrooveRift account for that Google account. GrooveRift works by invitation only: open the link from your invitation and choose Google at the account step.",
       "noAccount": "No account? GrooveRift works by invitation only.",
       "returnTo": "After sign-in we take you back to the page you opened.",
       "resetDone": "Your password was changed. Sign in with the new one.",

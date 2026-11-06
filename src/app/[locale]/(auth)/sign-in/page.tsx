@@ -14,7 +14,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-type Search = Promise<{ returnTo?: string; reset?: string; verified?: string }>;
+/**
+ * The Google callback comes back here with ?error=<code> when it refuses (no account and no invitation for that
+ * address, J1 E4) or fails. Only the kind is passed on; the raw code and description are never rendered.
+ */
+function oauthErrorOf(code: string | undefined): "noAccount" | "failed" | undefined {
+  if (!code) return undefined;
+  return code === "INVITE_EMAIL_MISMATCH" || code === "INVITE_REQUIRED" ? "noAccount" : "failed";
+}
+
+type Search = Promise<{ returnTo?: string; reset?: string; verified?: string; error?: string }>;
 
 export default async function SignInPage({
   params,
@@ -38,6 +47,7 @@ export default async function SignInPage({
       <SignInForm
         returnTo={returnTo}
         googleEnabled={googleEnabled}
+        oauthError={oauthErrorOf(sp.error)}
         notice={sp.reset ? "reset" : sp.verified ? "verified" : undefined}
       />
     </AuthScreen>
