@@ -35,6 +35,9 @@ test("comments and reactions on the own answer show up in Activity (ACT-01)", as
 
   // Luka sees both, unread, in today's group.
   await signIn(page, "luka@example.test");
+  // The tab carries the unread count (D-104): visible digits, and the name says how many are new.
+  await page.goto("/home");
+  await expect(page.getByRole("link", { name: /^Aktivnost ?, [0-9]+ nov/ })).toBeVisible();
   await page.goto("/activity");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aktivnost");
   const today = page.getByRole("region", { name: "Danas" });

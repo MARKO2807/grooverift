@@ -35,6 +35,7 @@ import {
   unfollowMember,
 } from "@/lib/data/graph";
 import {
+  activityBadgeCount,
   activityFor,
   markActivityRead,
   notify,
@@ -118,10 +119,12 @@ beforeAll(async () => {
     "req2",
     "tom",
     "pru",
+    "bdg",
   ])
     await member(k);
   await member("priv", { visibility: "private" });
   await member("priv2", { visibility: "private" });
+  await member("privb", { visibility: "private" });
   await member("gone", { status: "deactivated" });
 });
 
@@ -349,5 +352,25 @@ describe("read state and housekeeping", () => {
       .where(eq(notification.recipientId, ids.cara!));
     expect(await pruneNotifications()).toBeGreaterThan(0);
     expect(await rowsFor("cara")).toHaveLength(0);
+  });
+});
+
+describe("the Activity badge (D-104)", () => {
+  it("counts unread entries that render plus open requests, never a muted actor's", async () => {
+    expect(await activityBadgeCount(ids.bdg!)).toBe(0);
+    const q = await question(day(6));
+    const a = await answerBy("bdg", q);
+    await createComment(await as("ana"), a, "Jedan");
+    await createComment(await as("muted"), a, "Dva");
+    await db().insert(mute).values({ muterId: ids.bdg!, mutedId: ids.ben! });
+    await createComment(await as("ben"), a, "Tri");
+    expect(await activityBadgeCount(ids.bdg!)).toBe(2); // ben is muted
+    await db().insert(mute).values({ muterId: ids.bdg!, mutedId: ids.muted! });
+    expect(await activityBadgeCount(ids.bdg!)).toBe(1);
+    await markActivityRead(ids.bdg!, new Date());
+    expect(await activityBadgeCount(ids.bdg!)).toBe(0);
+
+    await followMember(await as("bdg"), ids.privb!);
+    expect(await activityBadgeCount(ids.privb!)).toBe(1); // the open request
   });
 });

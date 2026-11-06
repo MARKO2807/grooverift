@@ -98,3 +98,37 @@
     }
   }
 }
+
+/* The unread count on the Activity tab and rail item (D-104): a small coral pill on the icon's corner, no glow. */
+@layer components {
+  .nav-ic {
+    position: relative;
+    display: inline-flex;
+  }
+  .tab .nav-ic .nav-badge,
+  .rail-item .nav-ic .nav-badge {
+    position: absolute;
+    top: -6px;
+    left: calc(100% - 10px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--gr-radius-full);
+    background: var(--gr-color-action-primary);
+    color: var(--gr-color-text-on-accent);
+    font: var(--gr-type-caption);
+    font-size: 0.6875rem;
+    font-weight: var(--gr-font-weight-semibold);
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 0 0 2px var(--gr-color-bg-canvas);
+  }
+  @media (forced-colors: active) {
+    .tab .nav-ic .nav-badge,
+    .rail-item .nav-ic .nav-badge {
+      border: 1px solid CanvasText;
+    }
+  }
+}

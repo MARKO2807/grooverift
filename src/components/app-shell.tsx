@@ -6,6 +6,19 @@ import { Rail, TabBar, TABS, tabOf, type NavId } from "@/components/shell/nav";
 import { BackLink } from "@/components/shell/back-link";
 import { SwipeTabs } from "@/components/shell/swipe-tabs";
 import { IconBack } from "@/components/ui/icons";
+import { getSession } from "@/lib/auth/session";
+import { activityBadgeCount } from "@/lib/data/notifications";
+
+/** D-104: the Activity badge for the signed-in member; none on Activity itself, and never an error for the page. */
+async function badgeFor(nav: NavId | undefined): Promise<number> {
+  if (nav === "activity") return 0;
+  try {
+    const session = await getSession();
+    return session ? await activityBadgeCount(session.user.id) : 0;
+  } catch {
+    return 0;
+  }
+}
 
 /**
  * The signed-in shell (components §4.7, D-079, D-080; pulse `data-kind="app"`): on the phone a top bar, the
@@ -45,9 +58,10 @@ export async function AppShell({
   const t = await getTranslations("app");
   const tab = tabOf(nav);
   const tabIndex = tab ? TABS.findIndex((x) => x.id === tab) : -1;
+  const badge = await badgeFor(nav);
   return (
     <div className="shell" data-kind="app">
-      <Rail nav={nav} />
+      <Rail nav={nav} badge={badge} />
       <div className="page">
         <header className={`topbar${home ? " topbar-home" : ""}`}>
           {backHref && backHistory ? (
@@ -81,7 +95,7 @@ export async function AppShell({
         </main>
         <div className={`bottom${dock ? " has-dock" : ""}`}>
           {dock}
-          <TabBar nav={nav} />
+          <TabBar nav={nav} badge={badge} />
         </div>
       </div>
       {tabIndex >= 0 && (nav === tab || nav === undefined) ? (

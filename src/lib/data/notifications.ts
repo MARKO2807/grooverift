@@ -23,6 +23,7 @@ import {
 import { utcDate } from "@/lib/editorial/rules";
 import { publishedOn } from "./drops";
 import { loadGraphs, loadOwners, loadViewer, type OwnerRecord } from "./facts";
+import { pendingRequestCount } from "./graph";
 
 export const NOTIFICATION_TYPES = ["comment", "reaction", "follow", "follow_accept"] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
@@ -379,4 +380,28 @@ export async function activityFor(viewerId: string, locale: "hr" | "en"): Promis
     items.splice(i === -1 ? items.length : i, 0, line);
   }
   return items;
+}
+
+/**
+ * The Activity tab's badge (D-104): unread entries that would render plus open follow requests. A cheap existence
+ * check first, so the full re-checked read runs only when something is unread; never counts what Activity would
+ * not show (a muted or blocked actor, a deleted comment).
+ */
+export async function activityBadgeCount(viewerId: string): Promise<number> {
+  const [any] = await db()
+    .select({ id: notification.id })
+    .from(notification)
+    .where(
+      and(
+        eq(notification.recipientId, viewerId),
+        isNull(notification.readAt),
+        gte(notification.createdAt, new Date(Date.now() - ACTIVITY_DAYS * 86_400_000)),
+      ),
+    )
+    .limit(1);
+  const [unread, requests] = await Promise.all([
+    any ? activityFor(viewerId, "hr").then((i) => i.filter((x) => x.unread).length) : 0,
+    pendingRequestCount(viewerId),
+  ]);
+  return unread + requests;
 }

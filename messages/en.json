@@ -549,7 +549,8 @@
     "activity": "Activity",
     "profile": "Profile",
     "settings": "Settings",
-    "help": "Help"
+    "help": "Help",
+    "unread": ", {n, plural, one {# new item} other {# new items}}"
   },
   "landing": {
     "title": "One question a day, for everyone.",

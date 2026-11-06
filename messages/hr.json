@@ -549,7 +549,8 @@
     "activity": "Aktivnost",
     "profile": "Profil",
     "settings": "Postavke",
-    "help": "Pomoć"
+    "help": "Pomoć",
+    "unread": ", {n, plural, one {# nova stavka} few {# nove stavke} other {# novih stavki}}"
   },
   "landing": {
     "title": "Svaki dan jedno pitanje za sve.",

@@ -19,8 +19,28 @@ export type NavId = TabId | "settings" | "help";
 export const tabOf = (nav: NavId | undefined): TabId | undefined =>
   nav === "settings" || nav === "help" ? "profile" : nav;
 
+/**
+ * The unread mark on Activity (D-104): a small count on the icon (9+ above nine), hidden from assistive technology,
+ * which hears ", N novih stavki" after the label instead (the name still starts with the visible text).
+ */
+function Badge({ n }: { n: number }) {
+  if (n <= 0) return null;
+  return (
+    <span className="nav-badge" aria-hidden="true">
+      {n > 9 ? "9+" : n}
+    </span>
+  );
+}
+
+/** The spoken half of the badge, placed after the label so the link's name starts with the visible text. */
+async function UnreadText({ n }: { n: number }) {
+  if (n <= 0) return null;
+  const t = await getTranslations("nav");
+  return <span className="sr-only">{t("unread", { n })}</span>;
+}
+
 /** Phone tab bar (components §4.7): icon and caption, the current tab marked with a bar and aria-current. */
-export async function TabBar({ nav }: { nav?: NavId }) {
+export async function TabBar({ nav, badge = 0 }: { nav?: NavId; badge?: number }) {
   const t = await getTranslations("nav");
   const ta = await getTranslations("app");
   const current = tabOf(nav);
@@ -35,8 +55,12 @@ export async function TabBar({ nav }: { nav?: NavId }) {
               aria-current={current === id ? "page" : undefined}
               data-tab={id}
             >
-              <Icon />
+              <span className="nav-ic">
+                <Icon />
+                {id === "activity" ? <Badge n={badge} /> : null}
+              </span>
               <span>{t(id)}</span>
+              {id === "activity" ? <UnreadText n={badge} /> : null}
             </Link>
           </li>
         ))}
@@ -48,14 +72,18 @@ export async function TabBar({ nav }: { nav?: NavId }) {
 /** The rail from 600 px (D-079, D-080): the same four destinations in the same order (WCAG 3.2.3), then
  *  Settings, Help and the alpha mark. CSS shows only one of the rail and the tab bar, so a screen reader
  *  hears one main navigation. */
-export async function Rail({ nav }: { nav?: NavId }) {
+export async function Rail({ nav, badge = 0 }: { nav?: NavId; badge?: number }) {
   const t = await getTranslations("nav");
   const ta = await getTranslations("app");
   const item = (id: NavId, href: string, Icon: React.ComponentType) => (
     <li key={id}>
       <Link href={href} className="rail-item" aria-current={nav === id ? "page" : undefined}>
-        <Icon />
+        <span className="nav-ic">
+          <Icon />
+          {id === "activity" ? <Badge n={badge} /> : null}
+        </span>
         <span>{t(id)}</span>
+        {id === "activity" ? <UnreadText n={badge} /> : null}
       </Link>
     </li>
   );
