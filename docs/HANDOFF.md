@@ -1,5 +1,7 @@
 # Session handoff
 
+_Session 35, 2026-11-06 (**A7, four of five**: Google OAuth set up by the owner with Claude's step-by-step guidance and verified on staging, D-112: refused without an invitation, onboarding through Google from a Gmail invitation (J1 E4), linked and not unlinkable, sign-out and Google sign-in to Home. One fix from staging: the sign-in page now explains `?error=` after a refused Google sign-in (`2ef72e1`). The owner now has a second staging account (member, Google-only, their Gmail) beside the admin on the project mailbox. **Next:** Cloudflare R2 (runbook §2), the client-IP check, 4.11 clean-deploy-twice; then 5.3b and 5.12.)_
+
 _Session 34, 2026-11-06 (**A7, three of five services**: Render staging live at `https://grooverift-staging.onrender.com` with the owner as first admin, ZeptoMail EU app mail plus DMARC (D-110), Sentry EU error tracking (D-111); the owner went through the reminder list and chose A7 first; no product step was built). The standing instruction from session 25 still holds for product steps. **Next session:** finish A7 with the owner (Google OAuth, runbook §4; Cloudflare R2, §2), then Claude's client-IP check (review 5.2 M6) and the 4.11 clean-deploy-twice acceptance; after that 5.3b (Medium) and 5.12 (High). Session 33 did 5.10, 32 did 5.9, 31 did 5.8._
 
 ## Start-of-session checklist
@@ -10,9 +12,9 @@ _Session 34, 2026-11-06 (**A7, three of five services**: Render staging live at 
 
 ## Remind the owner (they asked for it, session 32; updated session 33)
 List what is still open for them in Croatian at the start of a session:
-1. `! git push` (the last session 34 commits) and look at GitHub Actions; in Sentry, resolve the test issue "GrooveRift Sentry test".
+1. `! git push` (the last session 35 commit) and look at GitHub Actions; in Sentry, resolve the test issue "GrooveRift Sentry test".
 2. ~~**Project mailbox** on grooverift.com (A4)~~ done (D-108: Zoho Mail Lite EU; `MUSICBRAINZ_CONTACT` is in `.env.local`), ~~then **MetaBrainz registration** (A4, D-018)~~ done (Stealth Start-Up, pending; development use allowed): **5.3b is unblocked**. Steps: `docs/ops/owner-setup-checklist.md` §2–§3.
-3. **A7 accounts** (OQ-33), **3 of 5 done** (D-110, D-111): ~~Render~~, ~~email (ZeptoMail)~~, ~~error tracking (Sentry EU)~~; left: **Google OAuth** (runbook §4, free) and **Cloudflare R2 EU** (runbook §2, about $0–1/month; Cloudflare may ask for a card). Costs: projected Render total about $20/month; pipeline minutes have a $0 spend limit (default, checked); the owner declined a virtual card and the session-start cost check (session 34).
+3. **A7 accounts** (OQ-33), **4 of 5 done** (D-110, D-111, D-112): ~~Render~~, ~~email (ZeptoMail)~~, ~~error tracking (Sentry EU)~~, ~~Google OAuth~~ (audience stays Testing: add each tester's Google address as a test user; "In production" before the alpha); left: **Cloudflare R2 EU** (runbook §2, about $0–1/month; Cloudflare may ask for a card). Costs: projected Render total about $20/month; pipeline minutes have a $0 spend limit (default, checked); the owner declined a virtual card and the session-start cost check (session 34).
 4. **Accountant and lawyer** (`docs/legal/questions-for-counsel.md`), now also: the moderation copy retention and the appeal window (D-107 (4), (5); B.3), the statement-of-reasons wording, and from 5.10 the retention of the audit log (raw user agent), of reports and cases after an account is purged, of DSA notice contact details, the 30-day grace and erasure requests from suspended or banned members (D-109 (5), (7)).
 5. **Open reviews (⛳):** 5.10 (D-109, the delete flow copy; how to try it: STATUS "Next" 3), 5.9 (D-107, same place), 5.7 remainder (Hub, Arhiva, PUB-07 link), 5.1, 5.2, 5.3a, 5.6; the full review of everything at 5.13 (D-106).
 6. **Decisions waiting:** OQ-34 (alpha data after the alpha) before invitations; OQ-06 (moderation staffing: the owner is the only moderator, D-107 (3) lets the admin decide with a stated reason when involved); OQ-24, OQ-29, OQ-32.
@@ -43,6 +45,11 @@ List what is still open for them in Croatian at the start of a session:
 - **E2e accounts:** `newMember(page, prefix)` in `tests/e2e/helpers.ts` creates an invitation directly in the database (`tests/e2e/db.ts`) and walks the whole onboarding (about 15 s); `createAccountFromInvite` and `finishOnboarding` are the two halves. Staff tests turn on the second factor in the page (`enableTwoFactor` in `tests/e2e/editorial.spec.ts`). `tests/e2e/profiles.spec.ts` shows two people in two contexts. The Playwright timeout is 120 s; mark very long tests `test.slow()`.
 - **Back on another member's profile** uses `AppShell backHistory` → `BackLink`; use it for any page reached from many places.
 - Pages get the viewer with `loadViewer({ id: session.user.id, role: roleOf(session) })`; never pass the session's role to the policy directly. Profile routes that visitors may open use `profileViewer(locale, path)` from `src/lib/profile/page.ts` and `notAvailable()` for every hidden reason.
+
+## Lessons (session 35)
+- Google Auth Platform's Branding page will not save while its links point at a domain missing from "Authorized domains"; `grooverift-staging.onrender.com` is accepted as its own domain because `onrender.com` is a public suffix.
+- Every OAuth `errorCallbackURL` must land on a page that reads `?error=` (the account step did, sign-in did not until `2ef72e1`; `/settings/account?linked=0` does). Check new ones the same way.
+- Staging env checks without secrets: the sign-in page's RSC payload shows `googleEnabled":true|false`; `POST /api/auth/sign-in/social` with an `Origin` header returns the Google URL to inspect (mask `client_id`, `state`, `code_challenge`).
 
 ## Lessons (session 34)
 - Render renamed plan IDs in 2026 (`starter` → `0.5c-512mb`, `basic-256mb` → `0.1c-256mb`) and `autoDeploy` → `autoDeployTrigger`; check the blueprint spec before editing `render.yaml`.
