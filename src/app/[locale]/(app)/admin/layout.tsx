@@ -72,6 +72,9 @@ export default async function AdminLayout({
             <Link href="/admin/audit" className="btn btn-secondary btn-sm">
               {t("nav.audit")}
             </Link>
+            <Link href="/admin/feedback" className="btn btn-secondary btn-sm">
+              {t("nav.feedback")}
+            </Link>
           </>
         ) : null}
       </nav>

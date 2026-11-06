@@ -29,6 +29,10 @@ export const LIMITS = {
   appeal: { limit: 5, windowSeconds: 86400 }, // SAFE-06 appeals per member (step 5.9)
   safety: { limit: 120, windowSeconds: 3600 }, // mute, unmute, acknowledge (step 5.9)
   moderation: { limit: 300, windowSeconds: 3600 }, // staff case and appeal writes (step 5.9)
+  export: { limit: 5, windowSeconds: 86400 }, // data copies per member (step 5.10)
+  reauth: { limit: 10, windowSeconds: 3600 }, // password confirmations in the delete flow (step 5.10)
+  feedback: { limit: 10, windowSeconds: 86400 }, // SET-12 messages per member (step 5.10)
+  settings: { limit: 60, windowSeconds: 3600 }, // language, region and motion changes (step 5.10)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

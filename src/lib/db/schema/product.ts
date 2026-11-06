@@ -7,6 +7,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  customType,
   date,
   index,
   integer,
@@ -755,16 +756,47 @@ export const exportStatus = pgEnum("export_status", [
   "failed",
 ]);
 
-export const feedbackReport = pgTable("feedback_report", {
-  id: id(),
-  userId: userRefNull("user_id"),
-  kind: text("kind").notNull(),
-  text: text("text").notNull(),
-  status: text("status").notNull().default("new"),
-  triageNotes: text("triage_notes"),
-  createdAt: createdAt(),
-});
+/** Step 5.10: the bytes of an export ZIP, kept in the row until A7 brings R2 (D-109 (4)). */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
 
+/**
+ * SET-12 feedback and bug reports (Master Prompt §13), separate from abuse reports. `context` holds only the
+ * technical details the member left ticked (screen, version, browser and device, time); the screenshot waits for
+ * 5.11. Deleted with the account (D-109 (6)).
+ */
+export const feedbackReport = pgTable(
+  "feedback_report",
+  {
+    id: id(),
+    userId: userRefNull("user_id"),
+    kind: text("kind").notNull(),
+    text: text("text").notNull(),
+    status: text("status").notNull().default("new"),
+    triageNotes: text("triage_notes"),
+    createdAt: createdAt(),
+    context: jsonb("context").$type<Record<string, string>>().notNull().default({}),
+    /** The member ticked "reply by email" (D-078): only then does ADM-15 show the address. */
+    replyByEmail: boolean("reply_by_email").notNull().default(false),
+    locale: text("locale").notNull().default("hr"),
+    handledBy: userRefNull("handled_by"),
+    handledAt: at("handled_at"),
+  },
+  (t) => [
+    index("feedback_report_status_idx").on(t.status, t.createdAt),
+    check("feedback_report_kind", sql`${t.kind} in ('bug', 'idea', 'other')`),
+    check("feedback_report_status", sql`${t.status} in ('new', 'done')`),
+    check("feedback_report_text_len", sql`char_length(${t.text}) between 1 and 2000`),
+    check(
+      "feedback_report_notes_len",
+      sql`${t.triageNotes} is null or char_length(${t.triageNotes}) <= 2000`,
+    ),
+  ],
+);
+
+/**
+ * The data copy (D-066, GDPR Art. 15 and 20): built right after the request (or by the worker's sweep),
+ * downloadable by its owner for 24 hours, then the bytes are dropped. One open request per member.
+ */
 export const dataExportRequest = pgTable(
   "data_export_request",
   {
@@ -775,8 +807,20 @@ export const dataExportRequest = pgTable(
     expiresAt: at("expires_at"),
     createdAt: createdAt(),
     completedAt: at("completed_at"),
+    archive: bytea("archive"),
+    sizeBytes: integer("size_bytes"),
+    attempts: integer("attempts").notNull().default(0),
   },
-  (t) => [index("data_export_user_idx").on(t.userId, t.createdAt)],
+  (t) => [
+    index("data_export_user_idx").on(t.userId, t.createdAt),
+    uniqueIndex("data_export_open_uq")
+      .on(t.userId)
+      .where(sql`${t.status} in ('requested', 'building')`),
+    check(
+      "data_export_ready_has_archive",
+      sql`${t.status} <> 'ready' or (${t.archive} is not null and ${t.expiresAt} is not null)`,
+    ),
+  ],
 );
 
 /** 30-day grace (D-063 (9), counsel B.3). The purge job erases personal data after scheduled_for. */
@@ -791,7 +835,13 @@ export const deletionRequest = pgTable(
     completedAt: at("completed_at"),
     steps: jsonb("steps").$type<Record<string, string>>().notNull().default({}),
   },
-  (t) => [index("deletion_request_due_idx").on(t.scheduledFor)],
+  (t) => [
+    index("deletion_request_due_idx").on(t.scheduledFor),
+    // Step 5.10: one open request per member (neither cancelled nor completed).
+    uniqueIndex("deletion_request_open_uq")
+      .on(t.userId)
+      .where(sql`${t.cancelledAt} is null and ${t.completedAt} is null`),
+  ],
 );
 
 /** The general rate limiter (non-auth routes). Keys are keyed hashes, never an IP or email in clear. */

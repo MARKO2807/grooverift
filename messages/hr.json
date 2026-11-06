@@ -11,8 +11,7 @@
     "signIn": "Prijavi se"
   },
   "home": {
-    "title": "Početna",
-    "admin": "Administracija"
+    "title": "Početna"
   },
   "fields": {
     "show": "Prikaži",
@@ -177,7 +176,11 @@
       "newEmail": "Nova adresa",
       "change": "Pošalji poveznicu",
       "changing": "Šaljem…",
-      "sent": "Poslali smo poveznicu za potvrdu na trenutačnu adresu."
+      "sent": "Poslali smo poveznicu za potvrdu na trenutačnu adresu.",
+      "password": "Lozinka",
+      "passwordText": "Mijenja se pod Sigurnost",
+      "username": "Korisničko ime",
+      "usernameText": "mijenja se pod Uredi profil"
     },
     "profile": {
       "title": "Profil",
@@ -267,7 +270,8 @@
       "label": "Administracijski izbornik",
       "invites": "Pozivnice",
       "editorial": "Uredništvo",
-      "moderation": "Moderacija"
+      "moderation": "Moderacija",
+      "feedback": "Povratne informacije"
     },
     "overview": {
       "role": "Tvoja uloga: {role}",
@@ -541,6 +545,39 @@
         "empty": "Nema zakazanog pitanja ni pitanja u rezervi. Odobri pitanje, stavi ga u rezervu ili zakaži za danas, pa pokušaj ponovno.",
         "publishFailed": "Objava nije uspjela. Pokušaj je zabilježen; pokušaj ponovno za minutu."
       }
+    },
+    "feedback": {
+      "title": "Povratne informacije",
+      "viewLabel": "Prikaz",
+      "open": "Otvorene",
+      "all": "Sve",
+      "empty": "Nema otvorenih poruka.",
+      "emptyAll": "Još nema poruka.",
+      "gone": "Račun više ne postoji",
+      "back": "Natrag na popis",
+      "noDetails": "Bez tehničkih podataka.",
+      "replyTo": "Odgovor na: {email}",
+      "noReply": "Bez odgovora e-poštom.",
+      "notes": "Bilješke tima",
+      "notesHelp": "Vidi ih samo tim. Ne prepisuj ovamo osobne podatke.",
+      "close": "Riješeno",
+      "reopen": "Vrati u otvorene",
+      "closed": "Označeno kao riješeno.",
+      "reopened": "Vraćeno u otvorene.",
+      "kind": {
+        "bug": "Greška",
+        "idea": "Prijedlog",
+        "other": "Drugo"
+      },
+      "status": {
+        "new": "Otvoreno",
+        "done": "Riješeno"
+      },
+      "error": {
+        "forbidden": "Za ovo treba uloga administratora i dvostruka provjera.",
+        "generic": "Nije spremljeno. Pokušaj ponovno.",
+        "tooMany": "Previše izmjena. Pričekaj malo."
+      }
     }
   },
   "roles": {
@@ -696,23 +733,51 @@
     }
   },
   "placeholder": {
-    "mark": "U izradi",
-    "help": "Ovdje će biti pomoć i obrazac za povratne informacije."
+    "mark": "U izradi"
   },
   "settingsIndex": {
     "title": "Postavke",
     "security": "Sigurnost",
     "securityText": "Lozinka, dvostruka provjera i uređaji",
     "account": "Račun",
-    "accountText": "Adresa e-pošte",
-    "profile": "Profil",
-    "profileText": "Ime, opis i korisničko ime",
+    "accountText": "E-pošta, lozinka, @{username}",
     "privacy": "Privatnost",
-    "privacyText": "Tko vidi profil, Music DNA i popise",
+    "privacyText": "{profile} · Music DNA: {dna}",
     "signOut": "Odjavi se",
     "signOutTitle": "Odjaviti se?",
     "signOutText": "Samo na ovom uređaju.",
-    "cancel": "Odustani"
+    "cancel": "Odustani",
+    "editProfile": "Uredi profil",
+    "statusOk": "Račun je u redu",
+    "statusRestricted": "Ograničeno do {date}",
+    "statusSuffix": ", status računa",
+    "groupAccount": "Račun",
+    "groupPrivacy": "Privatnost",
+    "groupApp": "Aplikacija",
+    "groupHelp": "Pomoć i informacije",
+    "visibility": {
+      "public": "Javni profil",
+      "private": "Privatni profil",
+      "none": "Profil bez odabira"
+    },
+    "language": "Jezik i regija",
+    "languageText": "{language} · {zone}",
+    "lang": {
+      "hr": "Hrvatski",
+      "en": "English"
+    },
+    "motion": "Smanji pokrete",
+    "motionText": "Pristupačnost. Struja, iskra i Music DNA miruju. Isto vrijedi ako je to uključeno na uređaju.",
+    "help": "Pomoć i povratne informacije",
+    "helpText": "Prijavi grešku ili predloži nešto",
+    "guidelines": "Pravila zajednice",
+    "legal": "Uvjeti, privatnost i kolačići",
+    "legalText": "Nacrti, čekaju pravni pregled",
+    "about": "O GrooveRiftu",
+    "aboutText": "Kontakt, licence, verzija",
+    "admin": "Administracija",
+    "close": "Deaktiviraj ili izbriši račun",
+    "version": "GrooveRift alfa"
   },
   "spirala": {
     "listLabel": "Žanrovi i izvođači u Music DNA",
@@ -1502,7 +1567,6 @@
     },
     "status": {
       "title": "Status računa",
-      "rowText": "Odluke moderacije i tvoje prijave",
       "fine": "Račun je u redu",
       "fineText": "Nema aktivnih ograničenja.",
       "restricted": "Objavljivanje je ograničeno do {date}",
@@ -1717,6 +1781,183 @@
       "text": "Napiši obrazloženje za člana.",
       "gone": "Slučaj više nije otvoren.",
       "staffSubject": "Admina se u aplikaciji ne može suspendirati ni trajno zatvoriti."
+    }
+  },
+  "account": {
+    "error": {
+      "signedOut": "Prijavi se ponovno pa pokušaj još jednom.",
+      "notAllowed": "To sada nije moguće.",
+      "tooMany": "Previše pokušaja. Pričekaj malo pa pokušaj ponovno.",
+      "generic": "Nešto nije uspjelo. Pokušaj ponovno.",
+      "wrongPassword": "Lozinka nije točna.",
+      "required": "Ovo polje je obavezno.",
+      "staff": "Račun s ulogom u timu ne može se zatvoriti dok ima tu ulogu. Neka ti je administrator prvo ukloni.",
+      "state": "To više nije moguće. Osvježi stranicu.",
+      "reauth": "Za potvrdu se ponovno prijavi.",
+      "invalid": "Provjeri unos."
+    },
+    "close": {
+      "title": "Deaktiviraj ili izbriši račun",
+      "staff": "Račun s ulogom u timu ne može se deaktivirati ni izbrisati dok ima tu ulogu. Neka ti je administrator prvo ukloni.",
+      "chooseTitle": "Što želiš?",
+      "chooseError": "Odaberi jednu mogućnost.",
+      "progress": "Korak {n} od {total}",
+      "next": "Nastavi",
+      "back": "Natrag",
+      "copyTitle": "Želiš li prvo kopiju svojih podataka?",
+      "copyText": "Profil, odgovori, komentari, Music DNA i postavke u jednoj ZIP datoteci. Možeš i preskočiti.",
+      "password": "Za potvrdu upiši lozinku",
+      "freshNote": "Prijava Google računom je svježa, pa lozinka ne treba.",
+      "reauthNote": "Račun nema lozinku. Za potvrdu se ponovno prijavi Google računom i vrati se ovamo.",
+      "reauth": "Prijavi se ponovno",
+      "working": "Trenutak…",
+      "deactivate": {
+        "title": "Deaktiviraj",
+        "desc": "Profil i odgovori se skrivaju. Kad se opet prijaviš, sve se vraća.",
+        "confirmTitle": "Deaktiviraj račun",
+        "f1": "Profil, Music DNA i odgovori se skrivaju, a ti se odjavljuješ sa svih uređaja.",
+        "f2": "Nitko te ne može pronaći ni zapratiti.",
+        "f3": "Kad se opet prijaviš, sve se vraća.",
+        "go": "Deaktiviraj"
+      },
+      "delete": {
+        "title": "Izbriši trajno",
+        "desc": "Račun se skriva odmah, a briše se {date}. Do tada se možeš predomisliti.",
+        "confirmTitle": "Izbriši račun {date}",
+        "f1": "Račun se skriva odmah i odjavljuješ se sa svih uređaja.",
+        "f2": "{date} brišemo profil, Music DNA, odgovore, komentare i reakcije.",
+        "f3": "Do tada se možeš prijaviti i vratiti račun.",
+        "f4": "Neke zapise moramo čuvati duže jer to traži zakon. Piše u Pravilima privatnosti.",
+        "go": "Izbriši račun"
+      }
+    },
+    "copy": {
+      "ask": "Preuzmi kopiju",
+      "asking": "Pripremam…",
+      "preparing": "Kopija se priprema. Ostani ovdje ili se vrati kasnije, javit ćemo i e-poštom.",
+      "ready": "Kopija je spremna",
+      "readyText": "ZIP, oko {kb} kB. Poveznica vrijedi 24 sata.",
+      "download": "Preuzmi ZIP",
+      "failed": "Kopiju nije bilo moguće napraviti. Pokušaj ponovno."
+    },
+    "pending": {
+      "pageTitle": "Brisanje računa",
+      "title": "Račun se briše {date}.",
+      "lead": "Brisanje je zatraženo {requested}. Do {date} možeš vratiti račun i sve ostaje kako je bilo.",
+      "copyTitle": "Kopija tvojih podataka",
+      "signOut": "Odjavi se",
+      "restore": "Vrati račun",
+      "restoring": "Vraćam…",
+      "restored": "Račun je vraćen. Sve je kako je bilo."
+    },
+    "closed": {
+      "pageTitle": "Račun zatvoren",
+      "deactivatedTitle": "Račun je deaktiviran",
+      "deactivatedText": "Profil i odgovori su skriveni. Kad se opet prijaviš, sve se vraća.",
+      "deletedTitle": "Brisanje je zakazano za {date}.",
+      "deletedTitleNoDate": "Brisanje je zakazano.",
+      "deletedText": "Potvrda stiže e-poštom. Ako se predomisliš, prijavi se prije tog datuma i vrati račun.",
+      "ok": "U redu"
+    },
+    "google": {
+      "title": "Google",
+      "linked": "Povezano. Možeš se prijaviti i Google računom s istom adresom.",
+      "notLinked": "Nije povezano.",
+      "link": "Poveži Google račun",
+      "unlink": "Odspoji Google",
+      "onlyWay": "Google je tvoj jedini način prijave, pa se ne može odspojiti.",
+      "linkedNow": "Google račun je povezan.",
+      "linkFailed": "Povezivanje nije uspjelo. Google račun mora imati istu adresu e-pošte."
+    },
+    "language": {
+      "title": "Jezik i regija",
+      "interface": "Jezik sučelja",
+      "reading": "Jezici čitanja",
+      "readingHelp": "Na kojim jezicima rado čitaš odgovore. Neobavezno, ništa se ne skriva.",
+      "zone": "Vremenska zona",
+      "zoneHelp": "Za vrijeme podsjetnika. Daily Drop izlazi za sve u isto vrijeme.",
+      "saved": "Spremljeno."
+    },
+    "about": {
+      "title": "O GrooveRiftu",
+      "version": "Alfa",
+      "alpha": "O alfi",
+      "alphaText": "Što radi, što još ne radi, što je s podacima",
+      "contact": "Kontakt",
+      "contactText": "Adrese za članove i nadležna tijela",
+      "privacy": "Pravila privatnosti",
+      "privacyText": "Pitanja o podacima i kopija podataka",
+      "cookies": "Kolačići",
+      "licences": "Licence",
+      "lic": {
+        "musicbrainz": {
+          "name": "MusicBrainz",
+          "text": "Žanrovi i izvođači, CC0 (javno dobro)"
+        },
+        "phosphor": {
+          "name": "Phosphor Icons",
+          "text": "Ikone, licenca MIT"
+        },
+        "fonts": {
+          "name": "Sora i Inter",
+          "text": "Fontovi, SIL Open Font License"
+        }
+      }
+    },
+    "feedback": {
+      "title": "Pomoć i povratne informacije",
+      "kindLegend": "O čemu se radi?",
+      "kindError": "Odaberi o čemu se radi.",
+      "kind": {
+        "bug": {
+          "title": "Nešto ne radi",
+          "desc": "Greška, zastoj ili čudan prikaz"
+        },
+        "idea": {
+          "title": "Prijedlog",
+          "desc": "Što bi bilo bolje ili što nedostaje"
+        },
+        "other": {
+          "title": "Nešto drugo",
+          "desc": "Pitanje ili bilo što drugo"
+        }
+      },
+      "text": "Poruka",
+      "textHelp": "Do {max} znakova. Ne upisuj lozinke ni tuđe podatke.",
+      "detailsTitle": "Što šaljemo uz poruku",
+      "detailsNote": "Svaku stavku možeš isključiti. Ništa iz tvojih odgovora, komentara ni Music DNA.",
+      "ctx": {
+        "screen": "Ekran prije pomoći",
+        "version": "Verzija",
+        "device": "Preglednik i uređaj",
+        "time": "Vrijeme"
+      },
+      "screens": {
+        "home": "Početna",
+        "hub": "Hub",
+        "drop": "Daily Drop",
+        "activity": "Aktivnost",
+        "profile": "Profil",
+        "settings": "Postavke",
+        "search": "Traži",
+        "other": "Drugo"
+      },
+      "versionValue": "Alfa",
+      "unknownDevice": "Nepoznat uređaj",
+      "reply": "Odgovor mi može stići na {email}",
+      "send": "Pošalji",
+      "sending": "Šaljem…",
+      "sentTitle": "Hvala, poruka je stigla timu.",
+      "sentReply": "U alfi čitamo svaku poruku. Ako treba, odgovorit ćemo na {email}.",
+      "sentNoReply": "U alfi čitamo svaku poruku. Odgovor e-poštom ne šaljemo, kako je odabrano.",
+      "again": "Pošalji još jednu",
+      "more": "Još",
+      "alpha": "O alfi",
+      "alphaText": "Što radi, što još ne radi, što je s podacima",
+      "privacy": "Kontakt za privatnost",
+      "privacyText": "Pitanja o podacima, kopija podataka",
+      "guidelines": "Pravila zajednice",
+      "abuseNote": "Neprimjeren sadržaj ili račun prijavi preko ⋯ na odgovoru ili profilu, ne ovdje."
     }
   }
 }

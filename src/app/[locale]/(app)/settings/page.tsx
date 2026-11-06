@@ -1,31 +1,53 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
+import { Avatar } from "@/components/profile/avatar";
+import { MotionSwitch } from "@/components/settings/motion-switch";
 import { SignOutButton } from "@/components/settings/sign-out";
 import {
+  IconBlock,
+  IconCheck,
   IconChevron,
+  IconClock,
   IconEye,
+  IconGlobe,
+  IconHelp,
+  IconInfo,
   IconLockSimple,
   IconMail,
+  IconPulse,
   IconShield,
-  IconUser,
-  IconBlock,
-  IconShield as IconStatus,
+  IconTrash,
+  IconUsers,
 } from "@/components/ui/icons";
-import { blockMuteCounts } from "@/lib/data/safety";
 import { memberPage } from "@/lib/auth/member-page";
-import { roleOf } from "@/lib/auth/session";
 import { STAFF_ROLES } from "@/lib/auth/roles";
+import { roleOf } from "@/lib/auth/session";
+import { activeRestriction, blockMuteCounts } from "@/lib/data/safety";
+import { settingsSummary } from "@/lib/data/settings";
 
 export const dynamic = "force-dynamic";
+
+// i18n-keys: settings.privacy.audience.everyone settings.privacy.audience.followers settings.privacy.audience.me
+// i18n-keys: settings.privacy.audience.mutuals settingsIndex.visibility.public settingsIndex.visibility.private
+// i18n-keys: settingsIndex.visibility.none settingsIndex.lang.hr settingsIndex.lang.en
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("settingsIndex");
   return { title: t("title") };
 }
 
-/** SET-01, minimal: the groups that exist today (profile and privacy since 5.5). Step 5.10 builds the full index (arrangement B, D-066). */
+type Row = { href: string; Icon: React.ComponentType; title: string; text?: string };
+
+/** The city part of an IANA zone for the row ("Europe/Zagreb" → "Zagreb"). */
+const city = (tz: string) => (tz.split("/").pop() ?? tz).replaceAll("_", " ");
+
+/**
+ * SET-01, arrangement B "Kartica profila" (D-066): the member's name and @username on top (opens Edit profile),
+ * the quiet account status under it, four groups, Log out, and "Deaktiviraj ili izbriši račun" at the very bottom
+ * (D-063 (9)). Notifications (SET-06) join the Aplikacija group with push in step 5.12.
+ */
 export default async function SettingsIndexPage({
   params,
 }: {
@@ -33,50 +55,151 @@ export default async function SettingsIndexPage({
 }) {
   const { locale } = await params;
   const session = await memberPage(locale, "/settings");
+  const userId = session.user.id;
   const t = await getTranslations("settingsIndex");
-  const th = await getTranslations("home");
+  const tp = await getTranslations("settings.privacy");
   const ts = await getTranslations("safety");
-  const counts = await blockMuteCounts(session.user.id);
-  const rows = [
-    { href: "/settings/profile", Icon: IconUser, title: t("profile"), text: t("profileText") },
-    { href: "/settings/privacy", Icon: IconEye, title: t("privacy"), text: t("privacyText") },
-    { href: "/settings/security", Icon: IconShield, title: t("security"), text: t("securityText") },
-    { href: "/settings/account", Icon: IconMail, title: t("account"), text: t("accountText") },
+  const f = await getFormatter();
+  const [summary, counts, restriction] = await Promise.all([
+    settingsSummary(userId),
+    blockMuteCounts(userId),
+    activeRestriction(userId),
+  ]);
+  const name = summary?.displayName ?? session.user.name;
+  const username = summary?.username ?? "";
+
+  const groups: { id: string; title: string; rows: Row[] }[] = [
     {
-      href: "/settings/blocked",
-      Icon: IconBlock,
-      title: ts("lists.title"),
-      text:
-        counts.blocked || counts.muted
-          ? ts("lists.summary", { blocked: counts.blocked, muted: counts.muted })
-          : ts("lists.nobody"),
+      id: "account",
+      title: t("groupAccount"),
+      rows: [
+        {
+          href: "/settings/account",
+          Icon: IconMail,
+          title: t("account"),
+          text: t("accountText", { username }),
+        },
+        {
+          href: "/settings/security",
+          Icon: IconShield,
+          title: t("security"),
+          text: t("securityText"),
+        },
+      ],
     },
     {
-      href: "/settings/status",
-      Icon: IconStatus,
-      title: ts("status.title"),
-      text: ts("status.rowText"),
+      id: "privacy",
+      title: t("groupPrivacy"),
+      rows: [
+        {
+          href: "/settings/privacy",
+          Icon: IconEye,
+          title: t("privacy"),
+          text: t("privacyText", {
+            profile: t(`visibility.${summary?.visibility ?? "none"}`),
+            dna: tp(`audience.${summary?.musicDna ?? "me"}`).toLocaleLowerCase(locale),
+          }),
+        },
+        {
+          href: "/settings/blocked",
+          Icon: IconBlock,
+          title: ts("lists.title"),
+          text:
+            counts.blocked || counts.muted
+              ? ts("lists.summary", { blocked: counts.blocked, muted: counts.muted })
+              : ts("lists.nobody"),
+        },
+      ],
+    },
+    {
+      id: "app",
+      title: t("groupApp"),
+      rows: [
+        {
+          href: "/settings/language",
+          Icon: IconGlobe,
+          title: t("language"),
+          text: t("languageText", {
+            language: t(`lang.${summary?.locale ?? "hr"}`),
+            zone: city(summary?.timeZone ?? "Europe/Zagreb"),
+          }),
+        },
+      ],
+    },
+    {
+      id: "help",
+      title: t("groupHelp"),
+      rows: [
+        { href: "/settings/help", Icon: IconHelp, title: t("help"), text: t("helpText") },
+        { href: "/legal/guidelines", Icon: IconUsers, title: t("guidelines") },
+        { href: "/legal/terms", Icon: IconInfo, title: t("legal"), text: t("legalText") },
+        { href: "/settings/about", Icon: IconPulse, title: t("about"), text: t("aboutText") },
+      ],
     },
   ];
   if (STAFF_ROLES.includes(roleOf(session)))
-    rows.push({ href: "/admin", Icon: IconLockSimple, title: th("admin"), text: "" });
+    groups[0]!.rows.push({ href: "/admin", Icon: IconLockSimple, title: t("admin") });
+
+  const statusText = restriction
+    ? t("statusRestricted", {
+        date: f.dateTime(restriction.endsAt, { day: "numeric", month: "long" }),
+      })
+    : t("statusOk");
+
   return (
     <AppShell title={t("title")} backHref="/me" nav="settings" screen="narrow">
-      <ul className="set-list">
-        {rows.map(({ href, Icon, title, text }) => (
-          <li key={href}>
-            <Link href={href} className="set-link">
-              <Icon />
-              <span className="set-txt">
-                <span className="set-t">{title}</span>
-                {text ? <span className="set-d">{text}</span> : null}
-              </span>
-              <IconChevron />
-            </Link>
-          </li>
+      <Link href="/settings/profile" className="set-me">
+        <Avatar name={name} size="sm" />
+        <span className="set-txt">
+          <span className="set-t">{name}</span>
+          <span className="set-d">
+            @{username} · {t("editProfile")}
+          </span>
+        </span>
+        <IconChevron />
+      </Link>
+      <Link
+        href="/settings/status"
+        className={`set-status${restriction ? " set-status-warn" : ""}`}
+      >
+        {restriction ? <IconClock /> : <IconCheck />}
+        <span>{statusText}</span>
+        <span className="sr-only">{t("statusSuffix")}</span>
+      </Link>
+      <div className="set-body">
+        {groups.map((g) => (
+          <section key={g.id} className="set-group" aria-labelledby={`sg-${g.id}`}>
+            <h2 className="set-gt" id={`sg-${g.id}`}>
+              {g.title}
+            </h2>
+            <ul className="set-list">
+              {g.rows.map(({ href, Icon, title, text }) => (
+                <li key={href}>
+                  <Link href={href} className="set-link">
+                    <span className="set-ic-wrap" aria-hidden="true">
+                      <Icon />
+                    </span>
+                    <span className="set-txt">
+                      <span className="set-t">{title}</span>
+                      {text ? <span className="set-d">{text}</span> : null}
+                    </span>
+                    <IconChevron />
+                  </Link>
+                </li>
+              ))}
+              {g.id === "app" ? <MotionSwitch initial={summary?.reduceMotion ?? false} /> : null}
+            </ul>
+          </section>
         ))}
-      </ul>
-      <SignOutButton />
+      </div>
+      <div className="set-foot">
+        <SignOutButton />
+        <Link href="/settings/data" className="set-delete">
+          <IconTrash />
+          {t("close")}
+        </Link>
+      </div>
+      <p className="meta set-ver">{t("version")}</p>
     </AppShell>
   );
 }

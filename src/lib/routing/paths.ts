@@ -5,10 +5,10 @@
 const PROFILE_PATH = /^(?:\/(en|hr))?\/@([^/]+)(\/.*)?$/;
 
 /** Private areas never enter a shared or browser cache (ADR-0002 §3, plan 5.1): the member's own pages, settings,
- *  admin, and since 5.5 the people search and Activity. Pages there are dynamic, so Next already sends no-store;
+ *  admin, and since 5.5 the people search and Activity; since 5.10 the grace-period and closed-account screens. Pages there are dynamic, so Next already sends no-store;
  *  the header is set here too so the rule holds whatever a page declares. */
 const PRIVATE_PATH =
-  /^(?:\/(?:en|hr))?\/(?:me|settings|admin|search|activity|account-status)(?:\/|$)/;
+  /^(?:\/(?:en|hr))?\/(?:me|settings|admin|search|activity|account-status|account-deletion|account-closed)(?:\/|$)/;
 
 export function profileRewrite(pathname: string): string | null {
   const m = PROFILE_PATH.exec(pathname);

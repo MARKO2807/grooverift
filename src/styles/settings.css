@@ -1,0 +1,282 @@
+/* Settings, account and data (step 5.10): SET-01 arrangement B (D-066), SET-07, SET-09 (D-070 (7)), SET-12.
+   Ported from design/prototypes/pulse/style.css (.set-me, .set-status, .set-ic-wrap, .set-delete, .switch,
+   .sub-step, .sub-facts, .fb-info) on the --gr-* tokens. Quiet: no glow, the danger colour only on the delete
+   entry and its final button. */
+@layer components {
+  /* ---------- SET-01 ---------- */
+  .set-me {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-3);
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    color: var(--gr-color-text-primary);
+    text-decoration: none;
+  }
+  .set-me:hover {
+    background: var(--gr-color-bg-raised);
+  }
+  .set-me:focus-visible,
+  .set-status:focus-visible,
+  .set-delete:focus-visible,
+  .switch:focus-visible {
+    outline: 2px solid var(--gr-color-focus-ring);
+    outline-offset: 2px;
+  }
+  .set-me > svg,
+  .set-go {
+    color: var(--gr-color-text-secondary);
+  }
+  .set-status {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--gr-size-target-min);
+    padding: 0 var(--gr-space-3) 0 var(--gr-space-2);
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    color: var(--gr-color-text-secondary);
+    font: var(--gr-type-caption);
+    text-decoration: none;
+  }
+  .set-status svg {
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+    color: var(--gr-color-state-success);
+  }
+  .set-status:hover {
+    border-color: var(--gr-color-border-strong);
+    color: var(--gr-color-text-primary);
+  }
+  .set-status-warn {
+    border-color: var(--gr-color-state-warning);
+    color: var(--gr-color-text-primary);
+  }
+  .set-status-warn svg {
+    color: var(--gr-color-state-warning);
+  }
+  .set-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-5);
+  }
+  .set-ic-wrap {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: var(--gr-color-bg-canvas);
+    color: var(--gr-color-highlight-text);
+  }
+  .set-ic-wrap svg {
+    width: 20px;
+    height: 20px;
+  }
+  .set-row-switch {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-3);
+  }
+  .set-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--gr-space-3);
+    margin-top: var(--gr-space-2);
+  }
+  .set-foot .sign-out {
+    align-self: stretch;
+    margin-top: 0;
+  }
+  .set-delete {
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    min-height: var(--gr-size-target-min);
+    padding: 0 var(--gr-space-3);
+    border-radius: var(--gr-radius-control);
+    color: var(--gr-color-state-danger);
+    font: var(--gr-type-label);
+    text-decoration: none;
+  }
+  .set-delete:hover {
+    background: var(--gr-color-state-danger-bg);
+  }
+  .set-ver {
+    text-align: center;
+  }
+
+  /* ---------- the switch (Smanji pokrete) ---------- */
+  .switch {
+    flex: none;
+    position: relative;
+    width: var(--gr-switch-width);
+    height: var(--gr-switch-height);
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-thick) solid var(--gr-color-border-strong);
+    background: var(--gr-color-bg-canvas);
+    padding: 0;
+    cursor: pointer;
+  }
+  .switch span {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: var(--gr-switch-knob);
+    height: var(--gr-switch-knob);
+    border-radius: var(--gr-radius-full);
+    background: var(--gr-color-text-secondary);
+    transition: transform var(--gr-motion-duration-base) var(--gr-motion-easing-standard);
+  }
+  .switch[aria-checked="true"] {
+    background: var(--gr-color-action-primary);
+    border-color: var(--gr-color-action-primary);
+  }
+  .switch[aria-checked="true"] span {
+    transform: translateX(20px);
+    background: var(--gr-color-text-on-accent);
+  }
+  .switch[aria-disabled="true"] {
+    opacity: var(--gr-opacity-disabled);
+    cursor: not-allowed;
+  }
+  @media (forced-colors: active) {
+    .switch[aria-checked="true"] span {
+      background: Highlight;
+    }
+  }
+
+  /* ---------- SET-09: deactivate or delete ---------- */
+  .sub-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--gr-space-2);
+  }
+  .sub-step .step-ic {
+    margin-bottom: 0;
+  }
+  .sub-facts {
+    list-style: disc;
+    padding-left: var(--gr-space-5);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .close-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-4);
+  }
+  .close-flow h2:focus {
+    outline: none;
+  }
+  .copy-ready {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-3);
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .copy-ready .set-d {
+    display: block;
+  }
+  /* ---------- SET-12: feedback ---------- */
+  .fb-info {
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    padding: var(--gr-space-1) var(--gr-space-3);
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .fb-info summary {
+    cursor: pointer;
+    color: var(--gr-color-text-primary);
+    font: var(--gr-type-label);
+    min-height: var(--gr-size-target-min);
+    display: flex;
+    align-items: center;
+  }
+  .fb-info summary:focus-visible {
+    outline: 2px solid var(--gr-color-focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .fb-info .check-row {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    min-height: var(--gr-size-target-min);
+    padding: var(--gr-space-1) 0;
+  }
+  .fb-info .check-row input,
+  .fb-reply input {
+    margin-top: 3px;
+    width: 20px;
+    height: 20px;
+    flex: none;
+    accent-color: var(--gr-color-action-primary);
+  }
+  .fb-reply {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    min-height: var(--gr-size-target-min);
+  }
+
+  /* ---------- About ---------- */
+  .about-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gr-space-2);
+    padding: var(--gr-space-4) 0;
+    text-align: center;
+  }
+
+  /* ---------- ADM-15 ---------- */
+  .fb-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .fb-row {
+    display: block;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    color: var(--gr-color-text-primary);
+    text-decoration: none;
+  }
+  .fb-row:hover {
+    background: var(--gr-color-bg-raised);
+  }
+  .fb-row .set-d {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+  .fb-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

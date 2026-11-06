@@ -2,6 +2,7 @@
 // The mapping from the prototype's provisional icons is in docs/design/components.md §7.
 import {
   BellIcon,
+  BugBeetleIcon,
   CalendarDotsIcon,
   CaretDownIcon,
   CaretLeftIcon,
@@ -13,6 +14,7 @@ import {
   CheckIcon,
   CheckCircleIcon,
   ClockIcon,
+  DatabaseIcon,
   DeviceMobileIcon,
   DotsThreeIcon,
   EnvelopeSimpleIcon,
@@ -38,6 +40,8 @@ import {
   QuestionIcon,
   ShareNetworkIcon,
   ShieldCheckIcon,
+  SlidersHorizontalIcon,
+  TrashIcon,
   UserIcon,
   UserMinusIcon,
   UserPlusIcon,
@@ -100,3 +104,8 @@ export const IconUserMinus = light(UserMinusIcon);
 export const IconMutual = light(HandshakeIcon);
 export const IconShare = light(ShareNetworkIcon);
 export const IconBlock = light(ProhibitIcon);
+// Step 5.10: settings, account and data.
+export const IconTrash = light(TrashIcon);
+export const IconDatabase = light(DatabaseIcon);
+export const IconSliders = light(SlidersHorizontalIcon);
+export const IconBug = light(BugBeetleIcon);

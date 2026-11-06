@@ -626,9 +626,11 @@ export async function blockMuteCounts(viewerId: string) {
  */
 export async function holdKind(
   userId: string,
-): Promise<"suspension" | "ban" | "restriction" | null> {
+): Promise<"suspension" | "ban" | "restriction" | "deletion" | null> {
   const [u] = await db().select({ status: user.status }).from(user).where(eq(user.id, userId));
   if (!u) return null;
+  // Step 5.10: a member in the deletion grace period chooses "Vrati račun" or "Odjavi se" first (SET-09).
+  if (u.status === "pending_deletion") return "deletion";
   if (u.status === "suspended" && !(await liftExpiredSuspensions(userId))) return "suspension";
   if (u.status === "banned") return "ban";
   const [r] = await db()

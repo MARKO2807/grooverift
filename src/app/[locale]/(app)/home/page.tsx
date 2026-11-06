@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DdMeta, DdTop, FirstDrop, LateLine, PastList, Peeks } from "@/components/drop/parts";
 import { FeaturePaused } from "@/components/system/states";
+import { Notice } from "@/components/ui/notice";
 import { memberPage } from "@/lib/auth/member-page";
 import { roleOf } from "@/lib/auth/session";
 import { peeks as firstPeeks, questionAnswers, type AnswerView } from "@/lib/data/answers";
@@ -14,6 +15,8 @@ import { utcDate } from "@/lib/editorial/rules";
 import { flagState } from "@/lib/flags";
 
 export const dynamic = "force-dynamic";
+
+// i18n-keys: account.pending.restored
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("home");
@@ -26,8 +29,19 @@ export async function generateMetadata(): Promise<Metadata> {
  * Drop, the countdown (D-078 (8)); while paused, the pause card with the question still readable (D-078 (7)).
  * "From people you follow" (the feed) arrives in B1 and is not shown as an empty promise.
  */
-export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function HomePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ restored?: string }>;
+}) {
   const { locale } = await params;
+  // "Vrati račun" (SET-09) lands here; one quiet line says the account is back as it was.
+  const restored =
+    (await searchParams).restored === "1" ? (
+      <Notice kind="success">{(await getTranslations("account.pending"))("restored")}</Notice>
+    ) : null;
   const session = await memberPage(locale, "/home");
   const lang = dropLocale(locale);
   const t = await getTranslations("home");
@@ -42,6 +56,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     const first = await firstDropState();
     return (
       <AppShell title={t("title")} nav="home" home screen="home">
+        {restored}
         {paused ? <FeaturePaused feature="daily_drop" /> : null}
         <FirstDrop nextDate={first.nextDate} />
       </AppShell>
@@ -61,6 +76,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <AppShell title={t("title")} nav="home" home screen="home">
+      {restored}
       {paused ? <FeaturePaused feature="daily_drop" /> : null}
       <section className="dd dd-teaser dd-c dd-e" aria-labelledby="h-teaser">
         {late ? <LateLine /> : null}

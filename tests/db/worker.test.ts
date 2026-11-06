@@ -41,6 +41,13 @@ describe("worker and housekeeping", () => {
     expect(schedules.some((s) => s.name === JOBS.purgeSnapshots && s.cron === "0 4 * * *")).toBe(
       true,
     );
+    // Step 5.10: the account purge hourly, the data-copy sweep every five minutes.
+    expect(schedules.some((s) => s.name === JOBS.purgeAccounts && s.cron === "15 * * * *")).toBe(
+      true,
+    );
+    expect(schedules.some((s) => s.name === JOBS.sweepExports && s.cron === "*/5 * * * *")).toBe(
+      true,
+    );
     await boss.stop({ graceful: false, timeout: 2000 });
   });
 

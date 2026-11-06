@@ -11,8 +11,7 @@
     "signIn": "Sign in"
   },
   "home": {
-    "title": "Home",
-    "admin": "Admin"
+    "title": "Home"
   },
   "fields": {
     "show": "Show",
@@ -177,7 +176,11 @@
       "newEmail": "New address",
       "change": "Send the link",
       "changing": "Sending…",
-      "sent": "We sent a confirmation link to your current address."
+      "sent": "We sent a confirmation link to your current address.",
+      "password": "Password",
+      "passwordText": "Changed under Security",
+      "username": "Username",
+      "usernameText": "changed under Edit profile"
     },
     "profile": {
       "title": "Profile",
@@ -267,7 +270,8 @@
       "label": "Admin menu",
       "invites": "Invitations",
       "editorial": "Editorial",
-      "moderation": "Moderation"
+      "moderation": "Moderation",
+      "feedback": "Feedback"
     },
     "overview": {
       "role": "Your role: {role}",
@@ -541,6 +545,39 @@
         "empty": "No scheduled question and nothing in the reserve. Approve a question, add it to the reserve or schedule it for today, then try again.",
         "publishFailed": "Publishing failed. The attempt is recorded; try again in a minute."
       }
+    },
+    "feedback": {
+      "title": "Feedback",
+      "viewLabel": "View",
+      "open": "Open",
+      "all": "All",
+      "empty": "No open messages.",
+      "emptyAll": "No messages yet.",
+      "gone": "The account no longer exists",
+      "back": "Back to the list",
+      "noDetails": "No technical details.",
+      "replyTo": "Reply to: {email}",
+      "noReply": "No reply by email.",
+      "notes": "Team notes",
+      "notesHelp": "Only the team sees them. Do not copy personal data here.",
+      "close": "Resolved",
+      "reopen": "Reopen",
+      "closed": "Marked as resolved.",
+      "reopened": "Reopened.",
+      "kind": {
+        "bug": "Bug",
+        "idea": "Suggestion",
+        "other": "Other"
+      },
+      "status": {
+        "new": "Open",
+        "done": "Resolved"
+      },
+      "error": {
+        "forbidden": "This needs the admin role and two-step verification.",
+        "generic": "Not saved. Try again.",
+        "tooMany": "Too many changes. Wait a moment."
+      }
     }
   },
   "roles": {
@@ -696,23 +733,51 @@
     }
   },
   "placeholder": {
-    "mark": "Being built",
-    "help": "Help and the feedback form will be here."
+    "mark": "Being built"
   },
   "settingsIndex": {
     "title": "Settings",
     "security": "Security",
     "securityText": "Password, two-step verification and devices",
     "account": "Account",
-    "accountText": "Email address",
-    "profile": "Profile",
-    "profileText": "Name, bio and username",
+    "accountText": "Email, password, @{username}",
     "privacy": "Privacy",
-    "privacyText": "Who sees your profile, Music DNA and lists",
+    "privacyText": "{profile} · Music DNA: {dna}",
     "signOut": "Sign out",
     "signOutTitle": "Sign out?",
     "signOutText": "Only on this device.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "editProfile": "Edit profile",
+    "statusOk": "Account in good standing",
+    "statusRestricted": "Restricted until {date}",
+    "statusSuffix": ", account status",
+    "groupAccount": "Account",
+    "groupPrivacy": "Privacy",
+    "groupApp": "App",
+    "groupHelp": "Help and information",
+    "visibility": {
+      "public": "Public profile",
+      "private": "Private profile",
+      "none": "No choice yet"
+    },
+    "language": "Language and region",
+    "languageText": "{language} · {zone}",
+    "lang": {
+      "hr": "Hrvatski",
+      "en": "English"
+    },
+    "motion": "Reduce motion",
+    "motionText": "Accessibility. The current, the spark and the Music DNA stay still. The same applies if your device asks for it.",
+    "help": "Help and feedback",
+    "helpText": "Report a bug or suggest something",
+    "guidelines": "Community guidelines",
+    "legal": "Terms, privacy and cookies",
+    "legalText": "Drafts awaiting legal review",
+    "about": "About GrooveRift",
+    "aboutText": "Contact, licences, version",
+    "admin": "Administration",
+    "close": "Deactivate or delete account",
+    "version": "GrooveRift alpha"
   },
   "spirala": {
     "listLabel": "Genres and artists in the Music DNA",
@@ -1502,7 +1567,6 @@
     },
     "status": {
       "title": "Account status",
-      "rowText": "Moderation decisions and your reports",
       "fine": "Your account is in good standing",
       "fineText": "No active restrictions.",
       "restricted": "Posting is restricted until {date}",
@@ -1717,6 +1781,183 @@
       "text": "Write the reasons for the member.",
       "gone": "The case is no longer open.",
       "staffSubject": "An admin account can't be suspended or closed from inside the app."
+    }
+  },
+  "account": {
+    "error": {
+      "signedOut": "Sign in again and retry.",
+      "notAllowed": "That is not possible right now.",
+      "tooMany": "Too many attempts. Wait a moment and try again.",
+      "generic": "Something went wrong. Try again.",
+      "wrongPassword": "The password is not correct.",
+      "required": "This field is required.",
+      "staff": "An account with a team role cannot be closed while it has the role. Ask an administrator to remove it first.",
+      "state": "That is no longer possible. Refresh the page.",
+      "reauth": "Sign in again to confirm.",
+      "invalid": "Check what you entered."
+    },
+    "close": {
+      "title": "Deactivate or delete account",
+      "staff": "An account with a team role cannot be deactivated or deleted while it has the role. Ask an administrator to remove it first.",
+      "chooseTitle": "What would you like to do?",
+      "chooseError": "Choose one option.",
+      "progress": "Step {n} of {total}",
+      "next": "Continue",
+      "back": "Back",
+      "copyTitle": "Would you like a copy of your data first?",
+      "copyText": "Profile, answers, comments, Music DNA and settings in one ZIP file. You can also skip this.",
+      "password": "Enter your password to confirm",
+      "freshNote": "You signed in with Google a moment ago, so no password is needed.",
+      "reauthNote": "This account has no password. Sign in again with Google to confirm, then come back here.",
+      "reauth": "Sign in again",
+      "working": "One moment…",
+      "deactivate": {
+        "title": "Deactivate",
+        "desc": "Your profile and answers are hidden. When you sign in again, everything comes back.",
+        "confirmTitle": "Deactivate account",
+        "f1": "Your profile, Music DNA and answers are hidden, and you are signed out on every device.",
+        "f2": "Nobody can find or follow you.",
+        "f3": "When you sign in again, everything comes back.",
+        "go": "Deactivate"
+      },
+      "delete": {
+        "title": "Delete permanently",
+        "desc": "Your account is hidden now and deleted on {date}. Until then you can change your mind.",
+        "confirmTitle": "Delete account on {date}",
+        "f1": "Your account is hidden now and you are signed out on every device.",
+        "f2": "On {date} we delete your profile, Music DNA, answers, comments and reactions.",
+        "f3": "Until then you can sign in and restore your account.",
+        "f4": "Some records must be kept longer because the law requires it. The privacy policy explains this.",
+        "go": "Delete account"
+      }
+    },
+    "copy": {
+      "ask": "Download a copy",
+      "asking": "Preparing…",
+      "preparing": "Your copy is being prepared. Stay here or come back later; we will also tell you by email.",
+      "ready": "Your copy is ready",
+      "readyText": "ZIP, about {kb} kB. The link works for 24 hours.",
+      "download": "Download ZIP",
+      "failed": "The copy could not be made. Try again."
+    },
+    "pending": {
+      "pageTitle": "Account deletion",
+      "title": "Your account will be deleted on {date}.",
+      "lead": "Deletion was requested on {requested}. Until {date} you can restore your account and everything stays as it was.",
+      "copyTitle": "A copy of your data",
+      "signOut": "Sign out",
+      "restore": "Restore account",
+      "restoring": "Restoring…",
+      "restored": "Your account is back. Everything is as it was."
+    },
+    "closed": {
+      "pageTitle": "Account closed",
+      "deactivatedTitle": "Your account is deactivated",
+      "deactivatedText": "Your profile and answers are hidden. When you sign in again, everything comes back.",
+      "deletedTitle": "Deletion is scheduled for {date}.",
+      "deletedTitleNoDate": "Deletion is scheduled.",
+      "deletedText": "A confirmation is on its way by email. If you change your mind, sign in before that date and restore your account.",
+      "ok": "OK"
+    },
+    "google": {
+      "title": "Google",
+      "linked": "Linked. You can also sign in with the Google account that has the same address.",
+      "notLinked": "Not linked.",
+      "link": "Link a Google account",
+      "unlink": "Unlink Google",
+      "onlyWay": "Google is your only way to sign in, so it cannot be unlinked.",
+      "linkedNow": "Your Google account is linked.",
+      "linkFailed": "Linking failed. The Google account must have the same email address."
+    },
+    "language": {
+      "title": "Language and region",
+      "interface": "Interface language",
+      "reading": "Reading languages",
+      "readingHelp": "The languages you like to read answers in. Optional; nothing is hidden.",
+      "zone": "Time zone",
+      "zoneHelp": "For the reminder time. The Daily Drop comes out for everyone at the same moment.",
+      "saved": "Saved."
+    },
+    "about": {
+      "title": "About GrooveRift",
+      "version": "Alpha",
+      "alpha": "About the alpha",
+      "alphaText": "What works, what does not yet, what happens to data",
+      "contact": "Contact",
+      "contactText": "Addresses for members and authorities",
+      "privacy": "Privacy policy",
+      "privacyText": "Questions about data and a copy of your data",
+      "cookies": "Cookies",
+      "licences": "Licences",
+      "lic": {
+        "musicbrainz": {
+          "name": "MusicBrainz",
+          "text": "Genres and artists, CC0 (public domain)"
+        },
+        "phosphor": {
+          "name": "Phosphor Icons",
+          "text": "Icons, MIT licence"
+        },
+        "fonts": {
+          "name": "Sora and Inter",
+          "text": "Fonts, SIL Open Font License"
+        }
+      }
+    },
+    "feedback": {
+      "title": "Help and feedback",
+      "kindLegend": "What is it about?",
+      "kindError": "Choose what it is about.",
+      "kind": {
+        "bug": {
+          "title": "Something is broken",
+          "desc": "An error, a freeze or something that looks odd"
+        },
+        "idea": {
+          "title": "Suggestion",
+          "desc": "What would be better or what is missing"
+        },
+        "other": {
+          "title": "Something else",
+          "desc": "A question or anything else"
+        }
+      },
+      "text": "Message",
+      "textHelp": "Up to {max} characters. Do not include passwords or other people's data.",
+      "detailsTitle": "What we send with your message",
+      "detailsNote": "You can untick any item. Nothing from your answers, comments or Music DNA.",
+      "ctx": {
+        "screen": "Screen before help",
+        "version": "Version",
+        "device": "Browser and device",
+        "time": "Time"
+      },
+      "screens": {
+        "home": "Home",
+        "hub": "Hub",
+        "drop": "Daily Drop",
+        "activity": "Activity",
+        "profile": "Profile",
+        "settings": "Settings",
+        "search": "Search",
+        "other": "Other"
+      },
+      "versionValue": "Alpha",
+      "unknownDevice": "Unknown device",
+      "reply": "A reply may come to {email}",
+      "send": "Send",
+      "sending": "Sending…",
+      "sentTitle": "Thank you, your message reached the team.",
+      "sentReply": "We read every message in the alpha. If needed, we will reply to {email}.",
+      "sentNoReply": "We read every message in the alpha. No reply by email, as chosen.",
+      "again": "Send another one",
+      "more": "More",
+      "alpha": "About the alpha",
+      "alphaText": "What works, what does not yet, what happens to data",
+      "privacy": "Privacy contact",
+      "privacyText": "Questions about data, a copy of your data",
+      "guidelines": "Community guidelines",
+      "abuseNote": "Report inappropriate content or accounts through ⋯ on the answer or profile, not here."
     }
   }
 }

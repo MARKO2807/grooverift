@@ -3,6 +3,8 @@ import { PgBoss, type JobWithMetadata } from "pg-boss";
 import { pruneThrottle } from "@/lib/auth/lockout";
 import { audit } from "@/lib/audit";
 import { closeDb } from "@/lib/db/client";
+import { purgeDueAccounts } from "@/lib/data/account";
+import { sweepExports } from "@/lib/data/export";
 import { purgeSnapshots } from "@/lib/data/moderation";
 import { pruneNotifications } from "@/lib/data/notifications";
 import { liftExpiredSuspensions } from "@/lib/data/safety";
@@ -28,6 +30,8 @@ export const JOBS = {
   pruneNotifications: "activity.prune",
   liftSuspensions: "moderation.lift",
   purgeSnapshots: "moderation.purge",
+  purgeAccounts: "account.purge",
+  sweepExports: "account.export",
 } as const;
 
 type PublishData = { date?: string };
@@ -89,6 +93,23 @@ export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgB
       await audit({ actorType: "system", action: "moderation.snapshots.purged", metadata: { n } });
   });
   await boss.schedule(JOBS.purgeSnapshots, "0 4 * * *", {}, { tz: "UTC" });
+
+  // Step 5.10 (SET-09): accounts whose 30-day grace period ended are erased, hourly, so the deletion lands within
+  // the hour of the date the member was shown. Each purge is its own transaction and audited.
+  await boss.createQueue(JOBS.purgeAccounts);
+  await boss.work(JOBS.purgeAccounts, async () => {
+    await purgeDueAccounts();
+  });
+  await boss.schedule(JOBS.purgeAccounts, "15 * * * *", {}, { tz: "UTC" });
+
+  // Data copies (D-066): builds left behind by the web process, and the 24-hour expiry of ready copies.
+  await boss.createQueue(JOBS.sweepExports);
+  await boss.work(JOBS.sweepExports, async () => {
+    const r = await sweepExports();
+    if (r.built || r.expired)
+      await audit({ actorType: "system", action: "account.export.swept", metadata: r });
+  });
+  await boss.schedule(JOBS.sweepExports, "*/5 * * * *", {}, { tz: "UTC" });
 
   // The Daily Drop at 00:00 UTC (J6). The run itself is idempotent by date, so a duplicate job, a restart or
   // "Publish now" at the same moment cannot publish twice. A failed run throws, and pg-boss retries it with

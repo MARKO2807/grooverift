@@ -7,6 +7,7 @@ import { db } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
 import { env, listFromEnv } from "@/lib/env";
 import { audit } from "@/lib/audit";
+import { reactivateOnSignIn } from "@/lib/data/account";
 import { acceptInvitation, invitationByToken, invitationMatches } from "@/lib/data/invitations";
 import { INVITE_COOKIE } from "@/lib/onboarding/constants";
 import { breachedPasswordCheck } from "./breached";
@@ -169,6 +170,10 @@ export const auth = betterAuth({
             ip: session.ipAddress,
             userAgent: session.userAgent,
           });
+          // SET-09 (step 5.10): a completed sign-in brings a deactivated account back ("Kad se opet prijaviš,
+          // sve se vraća"). A member in the deletion grace period is NOT restored here: memberPage shows them
+          // the choice "Vrati račun" / "Odjavi se" first.
+          await reactivateOnSignIn(session.userId);
         },
       },
     },
