@@ -17,7 +17,7 @@ _Written 2026-11-06 (session 35) at the owner's request, so every account the pr
 | 7 | **Render** | Staging hosting: web `grooverift-staging`, worker `grooverift-staging-worker`, PostgreSQL `grooverift-staging-db`; blueprint `grooverift-staging` | Owner's address (which one ?), second factor on; GitHub access limited to the `grooverift` repo | About $20/month; pipeline minutes spend limit $0 | Frankfurt | `BETTER_AUTH_SECRET` (generated locally, set on web + worker), database URL (Render manages it) | D-110 |
 | 8 | **Sentry** | Error tracking, organisation `grooverift`, project `grooverift-staging` | Project mailbox | Developer (free, after a 14-day trial), no card | EU (Frankfurt) | `SENTRY_DSN` (Render web + worker) | D-111 |
 | 9 | **Google Cloud / Google Auth Platform** | "Nastavi s Google računom": project `grooverift`, OAuth client "GrooveRift staging", audience Testing | Owner's personal Google | Free; **no billing, $300 trial not taken** | n/a | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (Render web only, `.env.local`) | D-112 |
-| 10 | **Cloudflare R2** | Images (step 5.11) | not created yet | about $0–1/month; may ask for a card | EU jurisdiction | will produce `R2_*` keys | runbook §2 |
+| 10 | **Cloudflare** (R2 Object Storage) | Images and later data copies (step 5.11): bucket `grooverift-staging-media`, private | Project mailbox | R2 pay-as-you-go, $0 inside the free tier; **owner's card on file**; budget alert $1 recommended | EU jurisdiction | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` (token `grooverift-staging`, this bucket only; Render web + worker); `R2_ENDPOINT`, `R2_BUCKET` are not secret | D-113 |
 
 ## 2. Accounts inside GrooveRift staging (`https://grooverift-staging.onrender.com`)
 
@@ -32,18 +32,18 @@ Local development accounts (`*@example.test`, seeded by `npm run db:seed`) are f
 
 | Place | Holds |
 |---|---|
-| Render → `grooverift-staging` → Environment | `BETTER_AUTH_SECRET`, `EMAIL_TRANSPORT`, `EMAIL_FROM`, `ZEPTOMAIL_API_URL`, `ZEPTOMAIL_TOKEN`, `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `IP_HEADERS` |
-| Render → `grooverift-staging-worker` → Environment | the same secret, email and Sentry values (no Google keys) |
+| Render → `grooverift-staging` → Environment | `BETTER_AUTH_SECRET`, `EMAIL_TRANSPORT`, `EMAIL_FROM`, `ZEPTOMAIL_API_URL`, `ZEPTOMAIL_TOKEN`, `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `IP_HEADERS` |
+| Render → `grooverift-staging-worker` → Environment | the same secret, email, Sentry and R2 values (no Google keys) |
 | `C:\Users\marko\Desktop\GrooveRift\.env.local` (ignored by git, this machine only) | local `BETTER_AUTH_SECRET`, `MUSICBRAINZ_CONTACT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, local database and mail settings |
-| The owner's password manager (recommended) | every login above, second-factor backup codes, and a copy of each secret that cannot be shown again (Google client secret, ZeptoMail token) |
+| The owner's password manager (recommended) | every login above, second-factor backup codes, and a copy of each secret that cannot be shown again (Google client secret, ZeptoMail token, R2 secret access key) |
 
 ## 4. The owner's tidy-up checklist
 
 For each row of §1:
 - [ ] The login (email or user name) is written in the password manager, with the password.
-- [ ] Second factor is on, and its backup codes are stored. Priority: Zoho (it is the recovery address of the others), GitHub, Render, Google, Sentry.
+- [ ] Second factor is on, and its backup codes are stored. Priority: Zoho (it is the recovery address of the others), GitHub, Render, Cloudflare (card on file), Google, Sentry.
 - [ ] The recovery email is the project mailbox where the service allows it (not a personal address), except Google, which stays on the personal account (D-112).
-- [ ] The billing contact and card (if any) are known: Zoho Mail Lite, ZeptoMail credits, Render, the domain.
+- [ ] The billing contact and card (if any) are known: Zoho Mail Lite, ZeptoMail credits, Render, Cloudflare, the domain.
 - [ ] Fill the "?" cells above in the password manager (domain registrar and renewal date, Netlify login, GitHub email, which address Render uses).
 
 Later, when the legal entity exists (OQ-05): move billing and ownership of every paid account to it.

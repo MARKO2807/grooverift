@@ -31,7 +31,7 @@ _Written 2026-11-05 (session 22) so the owner can create the external accounts i
 
 ## 2. Cloudflare R2 (EU jurisdiction), about $0–1 per month
 
-Needed by Phase 5 (avatars and media), not by Phase 4. When created: a bucket with **jurisdiction = EU**, an API token scoped to that bucket, and the variables `R2_ACCOUNT_ID`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` (the code for uploads arrives with the feature and will read them).
+**Done in session 35 (D-113).** As built: Cloudflare account on the project mailbox → R2 Object Storage → "Add R2 subscription" (a card is required; $0 due, billed only above the free tier) → add a budget alert ($1) → **Create bucket** `grooverift-staging-media`, **Specify jurisdiction → EU** (the bucket list may not show it at first; refresh), Standard class, public access and r2.dev off → **Manage API Tokens → Create Account API token** `grooverift-staging`, Object Read & Write, **this bucket only**, TTL forever, no IP filter; copy the keys at once and the **EU** endpoint (`https://<account-id>.eu.r2.cloudflarestorage.com`). On Render, web **and** worker: `R2_ENDPOINT` (EU endpoint; the env guard refuses others), `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, then Save, rebuild and deploy. Check: type `npm run r2:test` in the web service shell (PUT 200, GET 200, DELETE 204, GET after delete 404, OK).
 
 ## 3. Transactional email (security and account messages only, OQ-32)
 
