@@ -21,6 +21,8 @@ _Done 2026-11-06 (D-108): Zoho Mail Lite on zoho.eu, DNS at Netlify, tested both
 3. Tell Claude the address. It goes into the environment variable `MUSICBRAINZ_CONTACT` (`.env.local` and later Render), never into the code or a commit.
 
 ## 3. MetaBrainz registration (A4, D-018)
+_Done 2026-11-06 (D-108): Commercial, Stealth Start-Up, state Pending; development use is allowed meanwhile._
+
 
 1. Create a MusicBrainz account at <https://musicbrainz.org/register> with the project mailbox from step 2.
 2. Sign in at <https://metabrainz.org/supporters> and register the project as a supporter. Choose the free tier for a stealth start-up or non-commercial project (D-018: Stealth Start-Up, $0). Describe the use honestly: "artist lookups for a music community app, about 1 request per second, local cache".
