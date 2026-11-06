@@ -7,14 +7,14 @@ services:
     name: grooverift-staging
     runtime: node
     region: frankfurt
-    plan: starter
+    plan: 0.5c-512mb # formerly "starter"
     branch: main
     # NODE_ENV=production makes `npm ci` skip devDependencies; the build needs TypeScript and Tailwind.
     buildCommand: npm ci --include=dev && npm run build
     preDeployCommand: npm run db:migrate && npm run db:seed-genres # the genre list is reference data (D-096)
     startCommand: npm run start
     healthCheckPath: /manifest.webmanifest
-    autoDeploy: true
+    autoDeployTrigger: checksPass # deploy only after GitHub Actions is green
     envVars:
       - key: NODE_ENV
         value: production
@@ -43,11 +43,11 @@ services:
     name: grooverift-staging-worker
     runtime: node
     region: frankfurt
-    plan: starter
+    plan: 0.5c-512mb # formerly "starter"
     branch: main
     buildCommand: npm ci
     startCommand: npm run worker
-    autoDeploy: true
+    autoDeployTrigger: checksPass # deploy only after GitHub Actions is green
     envVars:
       - key: NODE_ENV
         value: production
@@ -69,5 +69,5 @@ services:
 databases:
   - name: grooverift-staging-db
     region: frankfurt
-    plan: basic-256mb
+    plan: 0.1c-256mb # formerly "basic-256mb"
     postgresMajorVersion: "17"
