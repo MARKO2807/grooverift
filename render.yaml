@@ -29,7 +29,7 @@ services:
       - key: BETTER_AUTH_SECRET
         sync: false # Render generates only 32 hex characters; the guard needs 43+: paste `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
       - key: IP_HEADERS
-        value: x-forwarded-for
+        value: true-client-ip # set by Cloudflare in front of Render; X-Forwarded-For is client-extendable there (review 5.2 M6)
       - key: SENTRY_DSN
         sync: false # error tracking, Sentry EU (D-111); set by hand on web and worker
       - key: SENTRY_ENVIRONMENT
@@ -74,7 +74,7 @@ services:
       - key: BETTER_AUTH_SECRET
         sync: false # paste the same value as the web service (the audit IP hash key)
       - key: IP_HEADERS
-        value: x-forwarded-for # the worker serves no requests, but the shared production guard requires it
+        value: true-client-ip # the worker serves no requests, but the shared production guard requires it
       - key: SENTRY_DSN
         sync: false # error tracking, Sentry EU (D-111); set by hand on web and worker
       - key: SENTRY_ENVIRONMENT

@@ -77,7 +77,7 @@ export function env(): Env {
     }
     if (!data.IP_HEADERS.trim() && data.E2E_EMAIL_FILE !== "1") {
       throw new Error(
-        "IP_HEADERS must name the client-IP header in production (e.g. x-forwarded-for).",
+        "IP_HEADERS must name the client-IP header in production (Render: true-client-ip).",
       );
     }
     if (data.BETTER_AUTH_SECRET.length < 43) {
