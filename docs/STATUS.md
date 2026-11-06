@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-07 (session 33: **step 5.10 done**, D-109, with the independent security review fixed (`docs/security/review-5.10-account.md`); next 5.3b (Medium, unblocked) or 5.12 (High) under the standing instruction of session 25)_
+_Last updated: 2026-11-06 (session 34: **A7 three of five**: Render staging live at `https://grooverift-staging.onrender.com` (D-110), ZeptoMail EU app mail with DMARC (D-110), Sentry EU error tracking (D-111); Google OAuth and R2 next; then 5.3b / 5.12 under the standing instruction of session 25)_
 
 ## Current phase
 **Phase 5: Alpha vertical slice, IN PROGRESS (approved D-092, 2026-11-05, with a free hand as in D-088).** Plan and step acceptance: [`docs/phase-5-plan.md`](phase-5-plan.md). Scope decisions: D-093 (push in the alpha behind a flag; live MusicBrainz lookups; people search on the Profile tab; seven-day strip plus the full archive; JO2–JO6). Code layout and rules: [`docs/architecture/app-structure.md`](architecture/app-structure.md). Step 4.11 (staging) stays deferred until A7 (OQ-33) and is done in whichever step is current when A7 arrives.
@@ -47,20 +47,20 @@ _Last updated: 2026-11-07 (session 33: **step 5.10 done**, D-109, with the indep
 
 ## Done
 - Phases 0–4 (discovery; audit and documentation foundation; architecture and legal groundwork; UX research, IA and design system, accepted D-087; Foundation, accepted D-091).
-- Decisions D-001 to D-109. Key ones for the code:
+- Decisions D-001 to D-111. Key ones for the code:
   - EU hosting, budget 30–60 €/mo; **Option B architecture + Next.js (ADR-0002)**; libraries (ADR-0003)
   - **Visibility (session 3):** blocks hide both ways (D-019); private members' replies in public threads are visible (D-020); Daily Drop answers visible to all members (D-021); signed-out visitors see the question only (D-022); DM history after a block read-only (D-023); Music DNA defaults to all members (D-024); profiles default to public via an active choice (D-025, D-030)
   - **Auth rules:** passwords 12+ with upper, lower, special (D-061); HIBP k-anonymity, fail-open (D-054); lockout 5/15 min → 15 min, 1 h, 24 h, 100 → reset (D-077); password change signs other devices out (D-072); no "remember this device" (D-076); Argon2id (R-14 → D-089); **accounts from invitations only, verified at once (D-097, JO6)**
   - **Phase 4:** approved with a free hand (D-088); foundation decisions (D-089) and review fixes (D-090) confirmed; phase accepted (D-091)
-  - **Phase 5:** approved with a free hand (D-092); alpha scope decisions (D-093); implementation choices D-094 (5.1), D-095 (5.2), D-096 (5.3a), D-097 (5.4), D-098 (5.5) with the owner's review D-099, D-100 (5.6) with the owner's review D-101, D-102 (5.7), D-103 (5.8) with D-104, D-107 (5.9), D-109 (5.10)
+  - **Phase 5:** approved with a free hand (D-092); alpha scope decisions (D-093); implementation choices D-094 (5.1), D-095 (5.2), D-096 (5.3a), D-097 (5.4), D-098 (5.5) with the owner's review D-099, D-100 (5.6) with the owner's review D-101, D-102 (5.7), D-103 (5.8) with D-104, D-107 (5.9), D-109 (5.10) A7 (session 34): Render staging and ZeptoMail (D-110), Sentry EU (D-111).
   - Design: direction C "Pulse" prototype (`design/prototypes/pulse/`) is the reference; tokens (`design/tokens/tokens.json`), components spec (`docs/design/components.md`), copy guide (`docs/design/copy-guide.md`)
 - Phase 3 record: [`design/phase-3-plan.md`](design/phase-3-plan.md), [`design/phase-3-review.md`](design/phase-3-review.md); every review page is linked from `design/prototypes/index.html`. Phase 4 record: [`phase-4-plan.md`](phase-4-plan.md).
 
 ## Next
-1. **Owner:** `! git push` (the session 33 commits) and look at GitHub Actions.
+1. **Owner:** `! git push` (the last session 34 commits) and look at GitHub Actions; resolve the Sentry test issue.
 2. **Claude (standing instruction from session 25: continue without waiting):** **5.3b** (artist lookup, typeahead, catalogue cards; Medium; unblocked by A4, D-108), then **5.12** (push and PWA behind the flag, High; it also brings SET-06). 5.11 waits for A7. Each ⛳ point is prepared for the owner's review, not decided.
 3. **Owner, when back:** ⛳ **5.10 (D-109)** to try (after `npm run db:migrate` for 0008): Postavke (the name card, the status line, the groups), the **Smanji pokrete** switch, Jezik i regija (time zone), Pomoć (send a message; as admin: Administracija → Povratne informacije), O GrooveRiftu; then **Deaktiviraj ili izbriši račun** with a seeded member such as `luka@example.test`: Deaktiviraj → signed out → sign in again (all back); Izbriši trajno → Preuzmi kopiju (a ZIP) → the password → "Brisanje je zakazano" → sign in → "Vrati račun". **Read the delete flow copy** (plan acceptance). Points to look at: D-109 (2) where the password and @username live, (3) Google-only confirmation, (7) staff cannot close their account, (9) the reading-languages line in onboarding. ⛳ **5.9 (D-107)** to try: as a member open ⋯ on someone's answer → Prijavi odgovor (three steps), Utišaj, Blokiraj; as admin (`admin@example.test`, second factor on) Administracija → Moderacija → open the case → decide; back as the member, Aktivnost → the decision with its reasons and the appeal; points D-107 (2), (3), (6), (10). The full review of everything waits for 5.13 (D-106).
-4. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (A7 accounts; counsel, now also the retention questions from `docs/security/review-5.10-account.md`). OQ-34 (alpha data after the alpha) before invitations.
+4. **Owner, when convenient:** `docs/ops/owner-setup-checklist.md` (A7 remainder: Google OAuth §4 of the runbook and Cloudflare R2 §2; counsel, now also the retention questions from `docs/security/review-5.10-account.md`). OQ-34 (alpha data after the alpha) before invitations.
 5. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 
 ## Owner actions outside Claude
@@ -81,7 +81,7 @@ _Last updated: 2026-11-07 (session 33: **step 5.10 done**, D-109, with the indep
 7. Motion before sign-in (D-085) stops only with the system reduced-motion setting; a strict WCAG 2.2.2 audit may ask for an in-page pause.
 8. The first-Drop countdown with seconds (D-078): the alpha launch must be timed so the countdown matches the real first publication; the first question is scheduled before any invite.
 9. Password composition (D-061) deviates from NIST; mitigations are built; revisit before the alpha.
-10. No staging yet (4.11 deferred): the Render client-IP header, the email provider and R2 are unverified until A7; the first deploy must follow the runbook §1 checks before any invite goes out. **New in 5.5:** migration 0005 runs `CREATE EXTENSION pg_trgm` and `unaccent`; Render's managed PostgreSQL allows both, but the first deploy must confirm the application role may create them (else run them once as the database owner before the migration).
+10. **Staging exists since session 34 (D-110)** but 4.11 is not closed: still open are the client-IP check (review 5.2 M6, before any invite), Google OAuth, R2 and the clean-deploy-twice acceptance. **Costs:** Render is the only service that can bill unexpectedly (no workspace spend cap; bandwidth overage $0.15/GB beyond 5 GB on Hobby); pipeline minutes have a $0 spend limit (Render's default, checked by the owner), so builds stop rather than bill after 500 min/month; projected about $20/month. ZeptoMail has auto top-up off; Sentry has no card. **New in 5.5:** migration 0005 runs `CREATE EXTENSION pg_trgm` and `unaccent`; Render's managed PostgreSQL allows both, but the first deploy must confirm the application role may create them (else run them once as the database owner before the migration).
 11. iOS Web Push needs an installed PWA over HTTPS and a real-device check (T-04); push is flagged (D-093 (1)) so the alpha can ship without it.
 12. The Spirala port: measured in 5.1 (D-094), within budget at 4x CPU throttle; recheck on a real mid-range phone with staging.
 13. The 404 page renders through the client in Next.js 16 (status 404 is right; without JavaScript the page is blank). Revisit with `global-not-found` or a framework update (D-094 (6)).
