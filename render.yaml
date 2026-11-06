@@ -27,7 +27,7 @@ services:
           name: grooverift-staging-db
           property: connectionString
       - key: BETTER_AUTH_SECRET
-        generateValue: true
+        sync: false # Render generates only 32 hex characters; the guard needs 43+: paste `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
       - key: IP_HEADERS
         value: x-forwarded-for
       - key: EMAIL_TRANSPORT
