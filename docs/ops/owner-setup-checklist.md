@@ -13,6 +13,8 @@ _Written 2026-11-05 (session 25). Everything Claude cannot do for the project: e
 | 5 | Accountant and lawyer (`docs/legal/questions-for-counsel.md`) | final legal pages, the legal entity (OQ-05), retention periods (B.3), the DSA notice scope (B.5) | quote | yes, before any invitation |
 
 ## 2. Project mailbox (A4)
+_Done 2026-11-06 (D-108): Zoho Mail Lite on zoho.eu, DNS at Netlify, tested both ways. Still to do: the mailbox's second factor and, at A7, a never-published alias for infrastructure sign-ups._
+
 
 1. Create one mailbox on the grooverift.com domain with the mail host you already use for the domain, or add one (any EU host is fine).
 2. Pick a role address, not a personal one, for example `dev@grooverift.com` or `api@grooverift.com`. MusicBrainz shows it to their operators only; it is how they contact the project if the app misbehaves.

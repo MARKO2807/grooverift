@@ -11,7 +11,7 @@ _Session 32, 2026-11-07 (**step 5.9 done** overnight while the owner slept, with
 ## Remind the owner (they asked for it, session 32)
 The owner will register and catch up on 2026-11-07. List it for them in Croatian at the start of session 33:
 1. `! git push` (sessions 32's commit) and look at GitHub Actions.
-2. **Project mailbox** on grooverift.com (A4), then **MetaBrainz registration** (A4, D-018): unblocks 5.3b. Steps: `docs/ops/owner-setup-checklist.md` §2–§3.
+2. ~~**Project mailbox** on grooverift.com (A4)~~ done (D-108: Zoho Mail Lite EU; `MUSICBRAINZ_CONTACT` is in `.env.local`), then **MetaBrainz registration** (A4, D-018): unblocks 5.3b. Steps: `docs/ops/owner-setup-checklist.md` §2–§3.
 3. **A7 accounts** (OQ-33): Render Frankfurt, Cloudflare R2 EU, the email provider, error tracking, Google OAuth: unblocks staging (4.11), images (5.11), real push tests (5.12). §4 and `docs/ops/deploy-runbook.md`. About $20/month.
 4. **Accountant and lawyer** (`docs/legal/questions-for-counsel.md`), now also: the moderation copy retention and the appeal window (D-107 (4), (5); B.3) and the statement-of-reasons wording.
 5. **Open reviews (⛳):** 5.9 (D-107, how to try it: STATUS "Next" 3), 5.7 remainder (Hub, Arhiva, PUB-07 link), 5.1, 5.2, 5.3a, 5.6; the full review of everything at 5.13 (D-106).
@@ -173,7 +173,7 @@ The security review (3 high, 6 medium, 7 low) and the WCAG 2.2 AA review (3 must
 The design phase's full session notes live in git history (`git show 5c09880:docs/HANDOFF.md`) and in `docs/design/phase-3-plan.md`, `docs/design/phase-3-review.md`, `docs/design/prototype-directions.md` §7 and `docs/decisions/DECISIONS.md` (D-026 to D-087). The prototype `design/prototypes/pulse/` is the reference for look and behaviour; its checks (`pulse-smoke.mjs` 155/155, `a11y-check.mjs`, `zoom-check.mjs`) still run and must stay green when the prototype changes. Owner rules kept: one hub for every review page (`design/prototypes/index.html`), full `file:///` URLs when pointing the owner at a page, every open point as a survey with the example inside the question, ask before anything that touches a strict Master Prompt rule, port rule for `serve.mjs` and the dev server.
 
 ## Open items for the owner
-- A4: MetaBrainz registration and the project mailbox (before 5.3b).
+- A4: MetaBrainz registration (before 5.3b); the project mailbox is done (D-108).
 - A7 / OQ-33 (staging, R2, error tracking, email provider, Google OAuth client; the Google path of onboarding, J1 E4, is untested until then).
 - OQ-06 (who moderates, response time for the alpha notice), OQ-24, OQ-29, OQ-32; the Narrator listen; counsel questions (B.3 retention periods, B.5, C.9, C.10).
 - D-098's three ⛳ points were settled in session 28 (D-099). **For 5.9:** add Mute and Report to the profile's ⋯ menu (`src/components/profile/profile-menu.tsx`) and remove the `profile.moreSoon` note and key.
