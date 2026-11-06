@@ -64,6 +64,7 @@ _Last updated: 2026-11-06 (session 35: **A7 four of five**: Google sign-in live 
 5. Open, to raise when convenient: OQ-06, OQ-24, OQ-29, OQ-32, OQ-34; the owner's Narrator listen; counsel questions (B.3, B.5, C.9, C.10).
 
 ## Owner actions outside Claude
+- **Every external account in one list:** [`docs/ops/accounts-inventory.md`](ops/accounts-inventory.md) (logins, plans, regions, where the secrets live, the tidy-up checklist). Keep it current when an account is added.
 - `git push` after each session (Claude's push is blocked).
 - MetaBrainz registration and the project mailbox before 5.3b (D-092). A7 accounts (OQ-33) when ready. Step by step: `docs/ops/owner-setup-checklist.md`.
 - Start looking for an accountant and lawyer (`docs/legal/questions-for-counsel.md`). Needed before the alpha (legal pages are placeholders until then; no invite goes out while they are).

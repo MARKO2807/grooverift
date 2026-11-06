@@ -46,6 +46,9 @@ List what is still open for them in Croatian at the start of a session:
 - **Back on another member's profile** uses `AppShell backHistory` → `BackLink`; use it for any page reached from many places.
 - Pages get the viewer with `loadViewer({ id: session.user.id, role: roleOf(session) })`; never pass the session's role to the policy directly. Profile routes that visitors may open use `profileViewer(locale, path)` from `src/lib/profile/page.ts` and `notAvailable()` for every hidden reason.
 
+## Accounts inventory (session 35)
+`docs/ops/accounts-inventory.md` lists every external account (service, login, plan, region, where its secrets live) without any secret or personal address. **Update it whenever an account is created** (R2 is next) and remind the owner of its tidy-up checklist.
+
 ## Lessons (session 35)
 - Google Auth Platform's Branding page will not save while its links point at a domain missing from "Authorized domains"; `grooverift-staging.onrender.com` is accepted as its own domain because `onrender.com` is a public suffix.
 - Every OAuth `errorCallbackURL` must land on a page that reads `?error=` (the account step did, sign-in did not until `2ef72e1`; `/settings/account?linked=0` does). Check new ones the same way.
