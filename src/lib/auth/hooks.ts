@@ -88,6 +88,14 @@ export const beforeHook = createAuthMiddleware(async (ctx) => {
         message: "Staff actions need two-step verification.",
       });
     }
+    // Review 5.10 L7: nobody changes their own role through the API (setRoleAction refuses it too), so the last
+    // admin can never demote themselves and then close the account, leaving the team without one.
+    if (ctx.path === "/admin/set-role" && body(ctx).userId === session.user.id) {
+      throw new APIError("FORBIDDEN", {
+        code: "SELF_ROLE_CHANGE",
+        message: "You cannot change your own role.",
+      });
+    }
   }
 
   // 5. Lockout.

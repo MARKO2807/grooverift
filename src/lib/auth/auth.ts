@@ -160,7 +160,7 @@ export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
-        after: async (session) => {
+        after: async (session, context) => {
           await audit({
             actorType: "member",
             actorId: session.userId,
@@ -173,7 +173,10 @@ export const auth = betterAuth({
           // SET-09 (step 5.10): a completed sign-in brings a deactivated account back ("Kad se opet prijaviš,
           // sve se vraća"). A member in the deletion grace period is NOT restored here: memberPage shows them
           // the choice "Vrati račun" / "Odjavi se" first.
-          await reactivateOnSignIn(session.userId);
+          await reactivateOnSignIn(session.userId, {
+            // Review 5.10 M1: the first-factor session of a 2FA account does not count as a sign-in.
+            firstFactorOnly: !!context?.path?.startsWith("/sign-in/"),
+          });
         },
       },
     },

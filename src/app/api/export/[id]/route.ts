@@ -3,6 +3,7 @@ import { verifyExportSignature } from "@/lib/account/download";
 import { audit } from "@/lib/audit";
 import { getSession } from "@/lib/auth/session";
 import { exportArchive } from "@/lib/data/export";
+import { consume } from "@/lib/data/rate-limit";
 
 // The data copy download (step 5.10, D-066). Only the owner, signed in, with an unexpired signed link, gets the
 // bytes; everything else answers the same 404 (no hint whether the copy exists). Never cached anywhere.
@@ -22,6 +23,8 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ id: str
   const userId = session.user.id;
   const q = request.nextUrl.searchParams;
   if (!verifyExportSignature(id, userId, q.get("e"), q.get("s"))) return notFound();
+  if (!(await consume("exportDownload", userId)).allowed)
+    return new NextResponse("Too many requests", { status: 429, headers: NO_STORE });
   const copy = await exportArchive(userId, id);
   if (!copy) return notFound();
   await audit({

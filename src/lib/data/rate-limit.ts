@@ -31,6 +31,8 @@ export const LIMITS = {
   moderation: { limit: 300, windowSeconds: 3600 }, // staff case and appeal writes (step 5.9)
   export: { limit: 5, windowSeconds: 86400 }, // data copies per member (step 5.10)
   reauth: { limit: 10, windowSeconds: 3600 }, // password confirmations in the delete flow (step 5.10)
+  reauthFail: { limit: 5, windowSeconds: 3600 }, // wrong ones: past this every session ends (review 5.10 L4)
+  exportDownload: { limit: 20, windowSeconds: 3600 }, // data copy downloads per member (review 5.10 L5)
   feedback: { limit: 10, windowSeconds: 86400 }, // SET-12 messages per member (step 5.10)
   settings: { limit: 60, windowSeconds: 3600 }, // language, region and motion changes (step 5.10)
 } as const satisfies Record<string, Limit>;

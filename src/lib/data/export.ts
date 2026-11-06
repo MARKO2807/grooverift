@@ -39,6 +39,7 @@ import {
   memberSettings,
   musicDnaEntry,
   mute,
+  notice,
   notificationPreference,
   privacySettings,
   profile,
@@ -46,6 +47,7 @@ import {
   report,
   session,
   user,
+  usernameReservation,
 } from "@/lib/db/schema";
 import { isUniqueViolation, logDbError } from "./db-errors";
 import { consume } from "./rate-limit";
@@ -93,6 +95,11 @@ export async function requestExport(userId: string): Promise<RequestExportResult
     return { ok: true, id: open.id, fresh: false };
   if (!(await consume("export", userId)).allowed) return { ok: false, reason: "too-many" };
   try {
+    // One stored copy per member at a time (review 5.10 L5): an older ready copy is dropped for the new one.
+    await db()
+      .update(request)
+      .set({ status: "expired", archive: null })
+      .where(and(eq(request.userId, userId), eq(request.status, "ready")));
     const [row] = await db().insert(request).values({ userId }).returning({ id: request.id });
     await audit({
       actorType: "member",
@@ -334,6 +341,27 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
     .from(feedbackReport)
     .where(eq(feedbackReport.userId, userId));
 
+  // Review 5.10 L6: DSA notices the member sent through PUB-11, and their reserved former usernames.
+  const notices = await db()
+    .select({
+      category: notice.category,
+      url: notice.url,
+      explanation: notice.explanation,
+      name: notice.notifierName,
+      email: notice.notifierEmail,
+      status: notice.status,
+      createdAt: notice.createdAt,
+    })
+    .from(notice)
+    .where(eq(notice.submittedBy, userId));
+  const reservations = await db()
+    .select({
+      username: usernameReservation.username,
+      reservedUntil: usernameReservation.reservedUntil,
+    })
+    .from(usernameReservation)
+    .where(eq(usernameReservation.userId, userId));
+
   const stamp = (rows: Record<string, unknown>[]) =>
     rows.map((r) =>
       Object.fromEntries(Object.entries(r).map(([k, v]) => [k, v instanceof Date ? iso(v) : v])),
@@ -363,6 +391,7 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
           timeZone: p.timeZone,
           onboardedAt: iso(p.onboardedAt),
           usernameChangedAt: iso(p.usernameChangedAt),
+          reservedFormerUsernames: stamp(reservations),
           createdAt: iso(p.createdAt),
         }
       : null,
@@ -401,6 +430,7 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
     "reports.json": stamp(reports),
     "decisions.json": { decisions: stamp(decisions), appeals: stamp(appeals) },
     "feedback.json": stamp(feedback),
+    "notices.json": stamp(notices),
   };
 }
 
@@ -410,7 +440,7 @@ HR
 Ova ZIP datoteka sadrži podatke koje GrooveRift čuva o tvom računu, u JSON formatu:
 account.json (adresa, načini prijave, uređaji), profile.json, settings.json (privatnost, obavijesti, podsjetnik),
 music-dna.json, answers.json, comments.json, reactions.json, follows.json, blocks.json, mutes.json,
-reports.json (tvoje prijave), decisions.json (odluke moderacije o tebi i tvoje žalbe), feedback.json.
+reports.json (tvoje prijave), notices.json (prijave nezakonitog sadržaja), decisions.json (odluke moderacije o tebi i tvoje žalbe), feedback.json.
 Drugi članovi navedeni su samo korisničkim imenom. Tko je prijavio tvoj sadržaj ne piše nigdje.
 Pitanja: kontakt za privatnost u aplikaciji (Postavke → O GrooveRiftu).
 
@@ -418,7 +448,7 @@ EN
 This ZIP file holds the data GrooveRift keeps about your account, as JSON:
 account.json (address, sign-in methods, devices), profile.json, settings.json (privacy, notifications, reminder),
 music-dna.json, answers.json, comments.json, reactions.json, follows.json, blocks.json, mutes.json,
-reports.json (reports you sent), decisions.json (moderation decisions about you and your appeals), feedback.json.
+reports.json (reports you sent), notices.json (illegal-content notices), decisions.json (moderation decisions about you and your appeals), feedback.json.
 Other members appear by @username only. Who reported your content is never included.
 Questions: the privacy contact in the app (Settings → About GrooveRift).
 `;

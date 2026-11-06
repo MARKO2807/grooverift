@@ -29,6 +29,7 @@
     "db:seed-genres": "tsx src/lib/db/seed-genres.ts",
     "genres:build": "node scripts/build-genre-seed.mjs",
     "worker": "tsx src/worker.ts",
+    "job": "tsx src/run-job.ts",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run tokens:check && npm run i18n:check && npm run test"
   },
   "dependencies": {

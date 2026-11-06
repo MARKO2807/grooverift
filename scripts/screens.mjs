@@ -50,6 +50,10 @@ const MEMBER = [
   "/settings/status/notices",
   "/settings/status/reports",
   "/settings/blocked", // SAFE-08
+  "/settings/account", // SET-02 (step 5.10)
+  "/settings/language", // SET-07
+  "/settings/about",
+  "/settings/data", // SET-09
   "/@nobody",
 ];
 

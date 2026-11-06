@@ -13,6 +13,7 @@ import { getSession, roleOf } from "@/lib/auth/session";
 import {
   accountFacts,
   deactivateAccount,
+  signOutEverywhere,
   pendingDeletion,
   requestDeletion,
   restoreAccount,
@@ -140,8 +141,15 @@ async function confirmIdentity(
     await auth.api.verifyPassword({ body: { password }, headers: await headers() });
     return null;
   } catch (e) {
-    if (e instanceof APIError) return "wrongPassword";
-    throw e;
+    if (!(e instanceof APIError)) throw e;
+    // Review 5.10 L4: a stolen session must not become a password oracle. After a few wrong confirmations every
+    // session of the account ends, so the next guess needs a full sign-in (and its D-077 lockout).
+    if (!(await consume("reauthFail", userId)).allowed) {
+      await signOutEverywhere(userId);
+      await audit({ actorType: "member", actorId: userId, action: "account.reauth.locked" });
+      return "signedOut";
+    }
+    return "wrongPassword";
   }
 }
 

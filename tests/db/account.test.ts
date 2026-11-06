@@ -168,6 +168,15 @@ describe("deactivate and reactivate (SET-09)", () => {
     expect(await reactivateOnSignIn(ids.deo!)).toBe(false);
   });
 
+  it("is not reactivated by the password step of a 2FA account, only by the completed sign-in (review M1)", async () => {
+    await db().update(user).set({ twoFactorEnabled: true }).where(eq(user.id, ids.deo!));
+    expect(await deactivateAccount(ids.deo!)).toEqual({ ok: true });
+    expect(await reactivateOnSignIn(ids.deo!, { firstFactorOnly: true })).toBe(false);
+    expect((await loadViewer({ id: ids.deo!, role: "member" })).status).toBe("deactivated");
+    expect(await reactivateOnSignIn(ids.deo!)).toBe(true);
+    await db().update(user).set({ twoFactorEnabled: false }).where(eq(user.id, ids.deo!));
+  });
+
   it("refuses staff accounts while they hold the role", async () => {
     expect(await deactivateAccount(ids.boss!)).toEqual({ ok: false, reason: "staff" });
     expect(await requestDeletion(ids.boss!)).toEqual({ ok: false, reason: "staff" });
@@ -269,6 +278,7 @@ describe("the data copy (D-066, plan §1.2)", () => {
         "follows.json",
         "music-dna.json",
         "mutes.json",
+        "notices.json",
         "profile.json",
         "reactions.json",
         "reports.json",
@@ -541,7 +551,10 @@ describe("the purge (plan 5.10 acceptance)", () => {
     ).rows;
     const hits: string[] = [];
     for (const { table_name, column_name } of cols) {
-      if (allowed.has(table_name)) continue;
+      // The audit log may keep the pseudonymous ids only; its metadata and user agent are scanned (review L1).
+      if (table_name === "audit_log" && (column_name === "actor_id" || column_name === "target_id"))
+        continue;
+      if (table_name !== "audit_log" && allowed.has(table_name)) continue;
       for (const n of needles) {
         const r = await db().execute<{ n: number }>(
           sql`select count(*)::int as n from ${sql.identifier(table_name)} where ${sql.identifier(column_name)}::text ilike ${`%${n}%`}`,
@@ -568,6 +581,11 @@ describe("the purge (plan 5.10 acceptance)", () => {
       sql`select reporter_id, target_owner_id from report where details = ${`Xenina prijava ${RUN}`} or target_id = ${x}`,
     );
     expect(reports.rows.length).toBe(2);
+    // The handle of the purged member is gone from reports about them (review M2).
+    const handles = await db().execute<{ n: number }>(
+      sql`select count(*)::int as n from report where target_handle = ${handle("xena")}`,
+    );
+    expect(handles.rows[0]!.n).toBe(0);
     for (const r of reports.rows) {
       expect(r.reporter_id).not.toBe(x);
       expect(r.target_owner_id).not.toBe(x);

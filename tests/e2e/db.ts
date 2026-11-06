@@ -226,3 +226,36 @@ export async function closeCasesFor(targetIds: string[]) {
     [targetIds],
   );
 }
+
+// ---- Account and data (step 5.10) ----
+
+/** Moves the member's open deletion request into the past, so the next purge run erases them. */
+export async function makeDeletionDue(email: string) {
+  await query(
+    `update deletion_request set scheduled_for = now() - interval '1 minute'
+     where user_id = (select id from "user" where email = $1) and cancelled_at is null and completed_at is null`,
+    [email.toLowerCase()],
+  );
+}
+
+export async function userExists(email: string): Promise<boolean> {
+  const rows = await query<{ id: string }>(`select id from "user" where email = $1`, [
+    email.toLowerCase(),
+  ]);
+  return rows.length > 0;
+}
+
+/** The newest feedback row of a member: kind, text, the details they left ticked, and the reply choice. */
+export async function lastFeedbackOf(email: string) {
+  const [row] = await query<{
+    kind: string;
+    text: string;
+    context: Record<string, string>;
+    reply_by_email: boolean;
+  }>(
+    `select kind, text, context, reply_by_email from feedback_report
+     where user_id = (select id from "user" where email = $1) order by created_at desc limit 1`,
+    [email.toLowerCase()],
+  );
+  return row;
+}

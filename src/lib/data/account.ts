@@ -14,7 +14,7 @@
 //   append-only and keeps the pseudonymous id and the keyed IP hash under the audit retention (counsel B.3).
 // - Staff accounts cannot be deactivated or deleted while they hold a role (an admin removes the role first),
 //   so the last admin cannot lock the team out by accident.
-import { and, eq, inArray, isNotNull, isNull, lte, ne, or, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, lte, ne, or, sql } from "drizzle-orm";
 import { audit } from "@/lib/audit";
 import { clearAccountLock } from "@/lib/auth/lockout";
 import { STAFF_ROLES, isRole } from "@/lib/auth/roles";
@@ -29,6 +29,7 @@ import {
   featureFlag,
   feedbackReport,
   invitation,
+  report,
   notification,
   reaction,
   session,
@@ -91,12 +92,28 @@ export async function deactivateAccount(userId: string): Promise<LifecycleResult
   return { ok: true };
 }
 
+/** Ends every session of a member (review 5.10 L4: after repeated wrong password confirmations). */
+export async function signOutEverywhere(userId: string): Promise<void> {
+  await db().delete(session).where(eq(session.userId, userId));
+}
+
 /** The next completed sign-in of a deactivated member brings the account back ("Kad se opet prijaviš…"). */
-export async function reactivateOnSignIn(userId: string): Promise<boolean> {
+export async function reactivateOnSignIn(
+  userId: string,
+  opts: { firstFactorOnly?: boolean } = {},
+): Promise<boolean> {
+  // Review 5.10 M1: with a second factor, the password step creates a session that the two-factor plugin deletes
+  // again; only the completed sign-in (the verify step's own session) may bring the account back.
   const rows = await db()
     .update(user)
     .set({ status: "active" })
-    .where(and(eq(user.id, userId), eq(user.status, "deactivated")))
+    .where(
+      and(
+        eq(user.id, userId),
+        eq(user.status, "deactivated"),
+        opts.firstFactorOnly ? sql`${user.twoFactorEnabled} is not true` : undefined,
+      ),
+    )
     .returning({ id: user.id });
   if (!rows.length) return false;
   await audit({ actorType: "member", actorId: userId, action: "account.reactivated" });
@@ -320,19 +337,25 @@ async function eraseMember(tx: Tx, userId: string, now: Date): Promise<Record<st
         : eq(invitation.acceptedUserId, userId),
     );
 
-  // 5. Open verification tokens (email change, reset): Better Auth keys them by user id or address.
+  // 5. Open verification tokens (email change, reset): Better Auth keys them by user id or address. The address
+  // matches whole (the identifier is the address or ends with ":<address>"), never as a substring of another
+  // address (review 5.10 L2); a user id is a UUID, so a substring match on it cannot hit anyone else.
   await tx
     .delete(verification)
     .where(
       email
         ? or(
             eq(verification.value, userId),
-            sql`${verification.value} like ${`%${userId}%`}`,
-            sql`position(${email} in lower(${verification.identifier})) > 0`,
-            sql`position(${email} in lower(${verification.value})) > 0`,
+            sql`position(${userId} in ${verification.value}) > 0`,
+            sql`lower(${verification.identifier}) = ${email}`,
+            sql`right(lower(${verification.identifier}), ${email.length + 1}) = ${":" + email}`,
           )
-        : or(eq(verification.value, userId), sql`${verification.value} like ${`%${userId}%`}`),
+        : or(eq(verification.value, userId), sql`position(${userId} in ${verification.value}) > 0`),
     );
+
+  // 5b. Reports about them keep the case, not the handle (review 5.10 M2): the @username is free again after the
+  // purge, so a stored handle would one day name somebody else. SAFE-04 shows "—" for a missing handle.
+  await tx.update(report).set({ targetHandle: null }).where(eq(report.targetOwnerId, userId));
 
   // 6. Feedback they sent (D-109 (6)).
   await tx.delete(feedbackReport).where(eq(feedbackReport.userId, userId));
@@ -363,6 +386,9 @@ async function eraseMember(tx: Tx, userId: string, now: Date): Promise<Record<st
   return steps;
 }
 
+/** After this many failed runs a request leaves the hourly batch and waits for a person (review 5.10 L3). */
+export const PURGE_MAX_FAILURES = 5;
+
 /** One due request: erase in one transaction, then mark it completed. Returns false when it failed. */
 async function purgeOne(req: { id: string; userId: string }, now: Date): Promise<boolean> {
   let email: string | undefined;
@@ -382,11 +408,13 @@ async function purgeOne(req: { id: string; userId: string }, now: Date): Promise
         .for("update", { skipLocked: true });
       if (!open) return null;
       const [u] = await tx
-        .select({ email: user.email, status: user.status })
+        .select({ email: user.email, status: user.status, role: user.role })
         .from(user)
         .where(eq(user.id, req.userId));
-      // Only a member still in the grace period is erased (restore sets "active" and cancels in one transaction).
+      // Only a member still in the grace period is erased (restore sets "active" and cancels in one transaction),
+      // and never one who was given a staff role meanwhile (review 5.10 L3: the role is removed first).
       if (u && u.status !== "pending_deletion") return null;
+      if (u && isRole(u.role) && STAFF_ROLES.includes(u.role)) throw new Error("staff role");
       email = u?.email;
       const steps = u ? await eraseMember(tx, req.userId, now) : { user: "already-gone" };
       await tx
@@ -408,6 +436,15 @@ async function purgeOne(req: { id: string; userId: string }, now: Date): Promise
     return true;
   } catch (e) {
     logDbError("purgeAccount", e);
+    // Count the failure on the request; after PURGE_MAX_FAILURES it leaves the hourly batch (review 5.10 L3) and
+    // waits for a person (the audit entry below is the alert in the alpha).
+    await db()
+      .update(deletionRequest)
+      .set({
+        steps: sql`jsonb_set(${deletionRequest.steps}, '{failures}', to_jsonb(coalesce((${deletionRequest.steps} ->> 'failures')::int, 0) + 1))`,
+      })
+      .where(eq(deletionRequest.id, req.id))
+      .catch(() => {});
     await audit({
       actorType: "system",
       action: "account.purge.failed",
@@ -428,8 +465,10 @@ export async function purgeDueAccounts(now = new Date()): Promise<number> {
         isNull(deletionRequest.cancelledAt),
         isNull(deletionRequest.completedAt),
         lte(deletionRequest.scheduledFor, now),
+        sql`coalesce((${deletionRequest.steps} ->> 'failures')::int, 0) < ${PURGE_MAX_FAILURES}`,
       ),
     )
+    .orderBy(asc(deletionRequest.scheduledFor))
     .limit(100);
   let n = 0;
   for (const req of due) if (await purgeOne(req, now)) n++;
