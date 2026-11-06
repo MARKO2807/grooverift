@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
-import { BuildingPlaceholder } from "@/components/system/states";
-import { IconChevron, IconUserPlus } from "@/components/ui/icons";
+import { ActivityList, type ActivityRow } from "@/components/activity/activity-list";
+import { IconBell, IconChevron, IconUserPlus } from "@/components/ui/icons";
 import { memberPage } from "@/lib/auth/member-page";
+import { dropLocale } from "@/lib/drop/present";
 import { pendingRequestCount } from "@/lib/data/graph";
+import { activityFor, type ActivityItem } from "@/lib/data/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -14,17 +16,24 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("activity") };
 }
 
+const toRow = (i: ActivityItem): ActivityRow => ({ ...i, at: i.at.toISOString() }) as ActivityRow;
+
 /**
- * ACT-01 placeholder; Activity arrives in step 5.8. The follow-requests row (ACT-02 entry, D-074 (5)) sits on
- * top from step 5.5: one row with the count, shown only while requests are waiting.
+ * ACT-01 (step 5.8, D-068 (4)): the follow-requests row on top while requests wait (ACT-02, D-074 (5)), then one
+ * list grouped by day. Never cached (`/activity` is a private, no-store path, D-098 (2)); every entry is checked
+ * again in `activityFor`, so content the member lost access to renders as nothing.
  */
 export default async function ActivityPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const session = await memberPage(locale, "/activity");
   const t = await getTranslations("nav");
-  const tp = await getTranslations("placeholder");
+  const ta = await getTranslations("activity");
   const tr = await getTranslations("profile.requests");
-  const pending = await pendingRequestCount(session.user.id);
+  const [pending, items] = await Promise.all([
+    pendingRequestCount(session.user.id),
+    activityFor(session.user.id, dropLocale(locale)),
+  ]);
+  const newest = items.find((i) => i.kind !== "drop" && i.unread);
   return (
     <AppShell title={t("activity")} nav="activity" screen="activity">
       {pending ? (
@@ -46,7 +55,15 @@ export default async function ActivityPage({ params }: { params: Promise<{ local
           </li>
         </ul>
       ) : null}
-      <BuildingPlaceholder text={tp("activity")} />
+      {items.length ? (
+        <ActivityList rows={items.map(toRow)} upTo={newest ? newest.at.toISOString() : null} />
+      ) : (
+        <div className="empty-b">
+          <IconBell />
+          <p className="empty-t">{ta("empty")}</p>
+          <p>{ta("emptyText")}</p>
+        </div>
+      )}
     </AppShell>
   );
 }

@@ -41,7 +41,7 @@ import {
 } from "@/lib/profile/constants";
 import { isUniqueViolation } from "./db-errors";
 import { loadGraph, loadGraphs, loadOwner, loadOwners, type OwnerRecord } from "./facts";
-import { acceptAllPending, pendingRequestCount } from "./graph";
+import { acceptAllPending, notifyAccepted, pendingRequestCount } from "./graph";
 
 // Re-exported for the data-layer callers (onboarding, actions, tests); client code imports @/lib/profile/constants.
 export {
@@ -585,17 +585,19 @@ export async function setProfileVisibility(
   visibility: "public" | "private",
   opts: { acceptPending: boolean } = { acceptPending: true },
 ): Promise<{ ok: boolean; accepted: number }> {
-  return db().transaction(async (tx) => {
+  const result = await db().transaction(async (tx) => {
     const rows = await tx
       .update(profile)
       .set({ visibility, updatedAt: new Date() })
       .where(and(eq(profile.userId, userId), isNotNull(profile.onboardedAt)))
       .returning({ userId: profile.userId });
-    if (!rows.length) return { ok: false, accepted: 0 };
+    if (!rows.length) return { ok: false, accepted: [] as string[] };
     const accepted =
-      visibility === "public" && opts.acceptPending ? await acceptAllPending(tx, userId) : 0;
+      visibility === "public" && opts.acceptPending ? await acceptAllPending(tx, userId) : [];
     return { ok: true, accepted };
   });
+  await notifyAccepted(userId, result.accepted);
+  return { ok: result.ok, accepted: result.accepted.length };
 }
 
 export async function setSectionAudience(

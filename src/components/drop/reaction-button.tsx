@@ -10,7 +10,7 @@ import { reactAction } from "@/lib/drop/actions";
 // accessible name carries its name, the count and "ti" when pressed (J3 accessibility notes). The own answer
 // shows the count without a button. The count links to who reacted (POST-04) when there is someone to show.
 
-const Wave = () => (
+export const Wave = () => (
   <svg className="wave-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <polyline className="wave" points="2,12 7,12 9.5,5 12,19 14.5,8 16,12 22,12" />
   </svg>

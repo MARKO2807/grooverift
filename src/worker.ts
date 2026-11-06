@@ -3,6 +3,7 @@ import { PgBoss, type JobWithMetadata } from "pg-boss";
 import { pruneThrottle } from "@/lib/auth/lockout";
 import { audit } from "@/lib/audit";
 import { closeDb } from "@/lib/db/client";
+import { pruneNotifications } from "@/lib/data/notifications";
 import { pruneRateLimits } from "@/lib/data/rate-limit";
 import { dailyCheck, runPublication } from "@/lib/editorial/publication";
 import {
@@ -22,6 +23,7 @@ export const JOBS = {
   pruneRateLimits: "data.rate_limit.prune",
   publishDrop: "daily_drop.publish",
   editorialCheck: "editorial.check",
+  pruneNotifications: "activity.prune",
 } as const;
 
 type PublishData = { date?: string };
@@ -56,6 +58,13 @@ export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgB
     await pruneRateLimits();
   });
   await boss.schedule(JOBS.pruneRateLimits, "40 3 * * *", {}, { tz: "UTC" });
+
+  // Activity entries older than 30 days are never shown (step 5.8), so they go; daily at 03:50 UTC.
+  await boss.createQueue(JOBS.pruneNotifications);
+  await boss.work(JOBS.pruneNotifications, async () => {
+    await pruneNotifications();
+  });
+  await boss.schedule(JOBS.pruneNotifications, "50 3 * * *", {}, { tz: "UTC" });
 
   // The Daily Drop at 00:00 UTC (J6). The run itself is idempotent by date, so a duplicate job, a restart or
   // "Publish now" at the same moment cannot publish twice. A failed run throws, and pg-boss retries it with

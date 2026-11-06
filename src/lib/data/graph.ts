@@ -5,6 +5,7 @@ import { canInteract, ownerVisibleAtAll, relationship, type Viewer } from "@/lib
 import { db, type Db } from "@/lib/db/client";
 import { block, follow, followDecline, mute } from "@/lib/db/schema";
 import { loadGraph, loadGraphs, loadOwner, loadOwners, loadViewer } from "./facts";
+import { dropNotificationsBetween, notify } from "./notifications";
 import { consume } from "./rate-limit";
 
 /** J4 E6 (review L7): after a decline, the same person may ask again after this many days. */
@@ -60,9 +61,9 @@ export async function followMember(viewer: Viewer, targetId: string): Promise<Gr
   if (!(await consume("follow", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   const state = decision.pending ? "pending" : "accepted";
   const followerId = viewer.id;
-  await db().transaction(async (tx) => {
+  const inserted = await db().transaction(async (tx) => {
     await lockPair(tx, followerId, targetId);
-    await tx
+    return tx
       .insert(follow)
       .values({
         followerId,
@@ -70,8 +71,17 @@ export async function followMember(viewer: Viewer, targetId: string): Promise<Gr
         status: state,
         acceptedAt: state === "accepted" ? new Date() : null,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ followerId: follow.followerId });
   });
+  // A request is not an Activity entry: the requests row on top counts it (D-074 (5)).
+  if (inserted.length && state === "accepted")
+    await notify({
+      recipientId: targetId,
+      actorId: followerId,
+      type: "follow",
+      targetId: followerId,
+    });
   return { ok: true, state };
 }
 
@@ -102,6 +112,13 @@ export async function acceptFollowRequest(ownerId: string, followerId: string): 
       ),
     )
     .returning({ followerId: follow.followerId });
+  if (rows.length)
+    await notify({
+      recipientId: followerId,
+      actorId: ownerId,
+      type: "follow_accept",
+      targetId: ownerId,
+    });
   return rows.length > 0;
 }
 
@@ -173,14 +190,31 @@ export async function pendingRequestCount(ownerId: string): Promise<number> {
   return Number(row?.n ?? 0);
 }
 
-/** JO5: every pending request becomes an accepted follow (used when the profile turns public). */
-export async function acceptAllPending(tx: Tx | Db, ownerId: string): Promise<number> {
+/**
+ * JO5: every pending request becomes an accepted follow (used when the profile turns public). Returns the
+ * accepted followers; the caller notifies them after its transaction commits (notifyAccepted).
+ */
+export async function acceptAllPending(tx: Tx | Db, ownerId: string): Promise<string[]> {
   const rows = await tx
     .update(follow)
     .set({ status: "accepted", acceptedAt: new Date() })
     .where(and(eq(follow.followeeId, ownerId), eq(follow.status, "pending")))
     .returning({ followerId: follow.followerId });
-  return rows.length;
+  return rows.map((r) => r.followerId);
+}
+
+/** "X accepted your follow request" for each follower accepted in bulk (JO5). */
+export async function notifyAccepted(
+  ownerId: string,
+  followerIds: readonly string[],
+): Promise<void> {
+  for (const followerId of followerIds)
+    await notify({
+      recipientId: followerId,
+      actorId: ownerId,
+      type: "follow_accept",
+      targetId: ownerId,
+    });
 }
 
 /**
@@ -206,6 +240,7 @@ export async function blockMember(viewerId: string, targetId: string): Promise<G
           and(eq(follow.followerId, targetId), eq(follow.followeeId, viewerId)),
         ),
       );
+    await dropNotificationsBetween(tx, viewerId, targetId);
   });
   return { ok: true };
 }

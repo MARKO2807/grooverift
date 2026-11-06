@@ -66,7 +66,7 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
     });
 
   return (
-    <article className="com" aria-labelledby={hid}>
+    <article className="com" id={`c-${c.id}`} aria-labelledby={hid}>
       <header className="ans-head">
         <Avatar name={c.author.displayName} size="sm" />
         <h3 className="ans-who" id={hid}>

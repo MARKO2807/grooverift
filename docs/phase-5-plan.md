@@ -14,7 +14,7 @@ _Drafted 2026-11-05 (session 24) after Phase 4 was accepted (D-091). **Status: A
 | 5.5 Profiles, follow and people search | ✅ built session 28 (D-098): `/@username` for every member with the P and B states, PUB-08, counts rule, lists with "Ukloni pratitelja", ACT-02, `follow_decline` (L7), `/settings/profile` with the username change (L8), `/settings/privacy` (SET-05, JO5), people search `/search` on `pg_trgm` + `unaccent` (migration 0005), `Viewer.status` required (L4); db suite 19 tests, e2e `profiles.spec.ts` (J4 E1–E7, E10, PUB-08, search) |
 | 5.6 Daily Drop editorial ⛳ | ✅ built session 29 (D-100): lifecycle with optimistic locking, ADM-04 calendar, ADM-05 editor (HR/EN side by side) and reserve, ADM-09 runs with "Publish now", ADM-01 warnings, `daily_drop.publish` at 00:00 UTC (advisory lock per date, savepoint, reserve fallback, retries, alerts), `editorial.check` at 08:00 UTC, admin withdraw (migration 0006), no edits after publishing (D-101); independent review fixed (`docs/security/review-5.6-editorial.md`); owner tries the editor |
 | 5.7 Daily Drop for members ⛳ | ✅ built session 30 (D-102): Home, Hub strip, archive, question page with sorts, dock composer, edit, delete with placeholder, comments, reaction and who reacted, PUB-07 with Open Graph, countdown, late line, "New answers" and E1; catalogue cards wait for 5.3b; owner answers a real question |
-| 5.8 Activity | ⏳ |
+| 5.8 Activity | ✅ built session 31 (D-103): one writer `notify` with grouping, ACT-01 by day with the requests row, every entry re-checked at render, block removes entries, read after render, 30-day prune; db suite 11 tests, e2e `activity.spec.ts` |
 | 5.9 Safety and moderation ⛳ | ⏳ |
 | 5.10 Settings, account and data ⛳ | ⏳ |
 | 5.11 Images | ⏳ waits for A7 |

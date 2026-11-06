@@ -690,7 +690,6 @@
   },
   "placeholder": {
     "mark": "Being built",
-    "activity": "Replies to your comments, reactions and new followers will be here.",
     "help": "Help and the feedback form will be here."
   },
   "settingsIndex": {
@@ -1264,5 +1263,22 @@
       "signIn": "Sign in",
       "aboutAlpha": "More about the alpha"
     }
+  },
+  "activity": {
+    "group": {
+      "today": "Today",
+      "week": "This week",
+      "earlier": "Earlier"
+    },
+    "comment": "<b>{name}</b> commented on your answer: “{excerpt}”",
+    "reactionOne": "<b>{a}</b> reacted to your answer.",
+    "reactionTwo": "Reactions to your answer: <b>{a}</b> and <b>{c}</b>.",
+    "reactionMany": "Reactions to your answer: <b>{a}</b>, <b>{c}</b> and {n} more.",
+    "follow": "<b>{name}</b> now follows you.",
+    "followAccept": "<b>{name}</b> accepted your follow request.",
+    "drop": "<b>The Daily Drop is here:</b> “{question}”",
+    "new": ", new",
+    "empty": "No notifications yet.",
+    "emptyText": "Comments and reactions on your answers and new followers show up here."
   }
 }

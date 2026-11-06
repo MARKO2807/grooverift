@@ -21,6 +21,7 @@ import {
 import { utcDate } from "@/lib/editorial/rules";
 import { isUniqueViolation, SafeDbError } from "./db-errors";
 import { loadGraphs, loadOwners, type OwnerRecord } from "./facts";
+import { notify } from "./notifications";
 import { consume } from "./rate-limit";
 
 export const ANSWER_MAX = 1500; // plan §1.2
@@ -177,15 +178,19 @@ export async function createComment(
   const text = clean(body);
   if (!text || text.length > COMMENT_MAX) return { ok: false, reason: "not-allowed" };
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
+  let id: string;
   try {
     const [row] = await db()
       .insert(comment)
       .values({ answerId, authorId: viewer.id, body: text })
       .returning({ id: comment.id });
-    return { ok: true, id: row!.id };
+    id = row!.id;
   } catch (e) {
     throw new SafeDbError("createComment", e);
   }
+  // Never about the own answer, never across a block (notify checks both).
+  await notify({ recipientId: live.authorId, actorId: viewer.id, type: "comment", targetId: id });
+  return { ok: true, id };
 }
 
 /** Soft delete of an own comment. Comments are flat, so nothing hangs on them and no placeholder is needed. */
@@ -225,12 +230,21 @@ export async function setReaction(
   if (!live || live.authorId === viewer.id || !(await canSeeAnswer(viewer, live.authorId)))
     return { ok: false, reason: "not-available" };
   if (!(await consume("react", viewer.id)).allowed) return { ok: false, reason: "too-many" };
-  if (on)
-    await db()
+  if (on) {
+    const added = await db()
       .insert(reaction)
       .values({ targetType: "answer", targetId: answerId, userId: viewer.id })
-      .onConflictDoNothing();
-  else
+      .onConflictDoNothing()
+      .returning({ userId: reaction.userId });
+    // Grouped: at most one Activity entry per hour per answer (plan §2); the own answer never reaches here.
+    if (added.length)
+      await notify({
+        recipientId: live.authorId,
+        actorId: viewer.id,
+        type: "reaction",
+        targetId: answerId,
+      });
+  } else
     await db()
       .delete(reaction)
       .where(

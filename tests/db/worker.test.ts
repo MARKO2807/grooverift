@@ -30,6 +30,10 @@ describe("worker and housekeeping", () => {
     expect(schedules.some((s) => s.name === JOBS.editorialCheck && s.cron === "0 8 * * *")).toBe(
       true,
     );
+    // Step 5.8: Activity entries older than 30 days are pruned at 03:50 UTC
+    expect(
+      schedules.some((s) => s.name === JOBS.pruneNotifications && s.cron === "50 3 * * *"),
+    ).toBe(true);
     await boss.stop({ graceful: false, timeout: 2000 });
   });
 

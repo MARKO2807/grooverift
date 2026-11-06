@@ -1,0 +1,100 @@
+/* Activity (step 5.8: ACT-01, D-068 (4)). Ported from design/prototypes/pulse/style.css (.act, .act-new, .act-ic,
+   .act-wave) on the --gr-* tokens. Each entry is one link; unread entries have a soft coral tint (not a dot),
+   with ", novo" for screen readers and an outline in forced colours. */
+@layer components {
+  .act-groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-4);
+  }
+  .act-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .act + .act {
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .act-link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--gr-space-3);
+    align-items: start;
+    min-height: var(--gr-size-target-min);
+    padding: var(--gr-space-3) var(--gr-space-2);
+    border-radius: var(--gr-radius-card);
+    color: inherit;
+    text-decoration: none;
+  }
+  .act-link:hover .act-txt {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .act-new .act-link {
+    background: linear-gradient(90deg, var(--gr-color-tint-coral-16), transparent 70%);
+  }
+  .act-ic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--gr-color-bg-surface);
+    color: var(--gr-color-highlight-text);
+  }
+  .act-ic svg {
+    width: 18px;
+    height: 18px;
+  }
+  .act-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .act-txt {
+    font: var(--gr-type-body-sm);
+    overflow-wrap: anywhere;
+  }
+  .act-txt b {
+    font-weight: var(--gr-font-weight-semibold);
+  }
+  .act-time {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .act-wave {
+    color: var(--gr-color-highlight-text);
+    padding-top: 2px;
+  }
+  .act-wave .wave-ic {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .screen-activity .set-list + .act-groups,
+  .screen-activity .set-list + .empty-b {
+    margin-top: var(--gr-space-4);
+  }
+  /* The comment a notification points at (HUB-03 #c-<id>) clears the top bar. */
+  .com {
+    scroll-margin-top: 88px;
+  }
+  @media (min-width: 600px) {
+    .act-link {
+      padding: var(--gr-space-4) var(--gr-space-3);
+    }
+  }
+  @media (forced-colors: active) {
+    .act-new .act-link {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}

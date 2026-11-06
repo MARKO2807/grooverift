@@ -38,7 +38,7 @@ src/
   app/[locale]/(auth)/join/       PUB-05 and onboarding (step 5.4): /join (invite, E1, E3), age, minor, language, account, username,
                                   reading, visibility, dna, dna-audience, how, reminder (push flag), done
   app/[locale]/invite/[token]/route.ts   the emailed link: token → httpOnly cookie → 303 /join (U-05); consumes nothing
-  app/[locale]/(app)/home, hub, activity   three tabs (Home and Hub placeholders until 5.7; Activity carries the ACT-02 row since 5.5)
+  app/[locale]/(app)/home, hub, activity   three tabs: HOME-01, HUB-01 (5.7); ACT-01 Activity with the ACT-02 row on top (5.8)
   app/[locale]/(app)/me            the Profile tab's fixed target: redirects to /@<own username> (me/dna stays the editor)
   app/[locale]/(app)/search        DISC-05 α people search (step 5.5), private, rate-limited
   app/[locale]/(app)/activity/requests   ACT-02 follow requests
@@ -97,6 +97,11 @@ src/
                                   delete, comment, react, poll), present.ts (server: views → client props, dates)
   components/drop/                answer-card, reaction-button, composer (dock + dialog), comments, sort-control, new-answers,
                                   countdown, parts (Drop head, peeks, late line, first Drop, past list), public-drop, share-button
+  lib/data/notifications.ts       Activity (5.8): notify (the one writer: never the own act, never across a block, grouping windows),
+                                  activityFor (every entry re-checked at render), markActivityRead, pruneNotifications (worker),
+                                  dropNotificationsBetween (called by blockMember)
+  lib/activity/actions.ts         "use server": markActivityReadAction (after the page rendered, never on GET)
+  components/activity/            activity-list (Danas / Ovaj tjedan / Ranije by the member's local day, unread tint)
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)
   lib/data/notices.ts             DSA notice storage
   lib/data/invitations.ts         createInvitation (one open per normalised email), invitationByToken (usable or not, no reason),

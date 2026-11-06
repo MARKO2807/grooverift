@@ -690,7 +690,6 @@
   },
   "placeholder": {
     "mark": "U izradi",
-    "activity": "Ovdje će biti odgovori na tvoje komentare, reakcije i novi pratitelji.",
     "help": "Ovdje će biti pomoć i obrazac za povratne informacije."
   },
   "settingsIndex": {
@@ -1264,5 +1263,22 @@
       "signIn": "Prijavi se",
       "aboutAlpha": "Više o alfi"
     }
+  },
+  "activity": {
+    "group": {
+      "today": "Danas",
+      "week": "Ovaj tjedan",
+      "earlier": "Ranije"
+    },
+    "comment": "<b>{name}</b> komentira tvoj odgovor: „{excerpt}”",
+    "reactionOne": "<b>{a}</b> reagira na tvoj odgovor.",
+    "reactionTwo": "Reakcije na tvoj odgovor: <b>{a}</b> i <b>{c}</b>.",
+    "reactionMany": "Reakcije na tvoj odgovor: <b>{a}</b>, <b>{c}</b> i još {n}.",
+    "follow": "<b>{name}</b> te sada prati.",
+    "followAccept": "<b>{name}</b> prihvaća tvoj zahtjev za praćenje.",
+    "drop": "<b>Daily Drop je stigao:</b> „{question}”",
+    "new": ", novo",
+    "empty": "Još nema obavijesti.",
+    "emptyText": "Ovdje stižu komentari i reakcije na tvoje odgovore te novi pratitelji."
   }
 }
