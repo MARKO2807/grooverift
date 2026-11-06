@@ -30,6 +30,10 @@ services:
         sync: false # Render generates only 32 hex characters; the guard needs 43+: paste `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
       - key: IP_HEADERS
         value: x-forwarded-for
+      - key: SENTRY_DSN
+        sync: false # error tracking, Sentry EU (D-111); set by hand on web and worker
+      - key: SENTRY_ENVIRONMENT
+        value: staging
       - key: EMAIL_TRANSPORT
         sync: false # set once the provider is chosen (A7); production refuses to start without one
       - key: EMAIL_FROM
@@ -63,6 +67,10 @@ services:
         sync: false # paste the same value as the web service (the audit IP hash key)
       - key: IP_HEADERS
         value: x-forwarded-for # the worker serves no requests, but the shared production guard requires it
+      - key: SENTRY_DSN
+        sync: false # error tracking, Sentry EU (D-111); set by hand on web and worker
+      - key: SENTRY_ENVIRONMENT
+        value: staging
       - key: EMAIL_TRANSPORT
         sync: false # the worker mails the Daily Drop staff alerts (step 5.6)
       - key: EMAIL_FROM

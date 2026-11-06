@@ -17,6 +17,12 @@ import {
   utcDate,
 } from "@/lib/editorial/rules";
 import { env } from "@/lib/env";
+import {
+  flushWorkerSentry,
+  initWorkerSentry,
+  reportWorkerError,
+  trackJobErrors,
+} from "@/lib/monitoring/worker";
 
 // The job worker (ADR-0002: pg-boss on the same PostgreSQL). Housekeeping since Phase 4; the Daily Drop
 // publication (idempotent by UTC date, step 5.6) and its daily look ahead; push delivery comes in 5.12.
@@ -49,7 +55,12 @@ export function publishDateOf(data: PublishData | null | undefined, createdOn: D
 
 export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgBoss> {
   const boss = new PgBoss({ connectionString: env().DATABASE_URL, schema: "pgboss" });
-  boss.on("error", (error) => console.error("[worker]", error));
+  await initWorkerSentry();
+  trackJobErrors(boss);
+  boss.on("error", (error) => {
+    console.error("[worker]", error);
+    reportWorkerError(error);
+  });
   await boss.start();
 
   await boss.createQueue(JOBS.pruneThrottle);
@@ -166,14 +177,17 @@ if (isCli) {
     .then((boss) => {
       const stop = async () => {
         await boss.stop({ graceful: true, timeout: 10_000 });
+        await flushWorkerSentry();
         await closeDb();
         process.exit(0);
       };
       process.on("SIGINT", stop);
       process.on("SIGTERM", stop);
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.error("[worker] failed to start:", error instanceof Error ? error.message : error);
+      reportWorkerError(error, "start");
+      await flushWorkerSentry();
       process.exitCode = 1;
     });
 }
