@@ -21,6 +21,22 @@ const schema = z.object({
   EMAIL_FILE: z.string().default(".mail-outbox.jsonl"),
   // The file transport is for end-to-end tests only; CI and the Playwright config set this flag.
   E2E_EMAIL_FILE: z.string().optional(),
+  // Cloudflare R2 object storage (A7, D-113): the bucket lives in the EU jurisdiction, so the endpoint must be the
+  // jurisdiction-specific one (`https://<account-id>.eu.r2.cloudflarestorage.com`); a non-EU endpoint is refused.
+  // Optional until step 5.11 uses it.
+  R2_ENDPOINT: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z
+      .url()
+      .refine(
+        (v) => new URL(v).hostname.endsWith(".eu.r2.cloudflarestorage.com"),
+        "R2_ENDPOINT must be the EU jurisdiction endpoint (*.eu.r2.cloudflarestorage.com)",
+      )
+      .optional(),
+  ),
+  R2_BUCKET: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
   // Comma-separated request headers that carry the client IP, in order of trust (Better Auth
   // `advanced.ipAddress.ipAddressHeaders`). Empty locally (no proxy); REQUIRED in production, or every
   // client would share one rate-limit bucket and one lockout pair.

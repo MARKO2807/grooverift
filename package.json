@@ -29,6 +29,7 @@
     "db:seed-genres": "tsx src/lib/db/seed-genres.ts",
     "admin:bootstrap": "tsx src/lib/db/bootstrap-admin.ts",
     "sentry:test": "tsx src/lib/monitoring/sentry-test.ts",
+    "r2:test": "tsx src/lib/storage/r2-test.ts",
     "genres:build": "node scripts/build-genre-seed.mjs",
     "worker": "tsx src/worker.ts",
     "job": "tsx src/run-job.ts",

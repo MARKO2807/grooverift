@@ -42,6 +42,14 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: R2_ENDPOINT
+        value: https://e3ef72eabb70f4ba8cc27a6baef5bd78.eu.r2.cloudflarestorage.com # EU jurisdiction (D-113); not a secret
+      - key: R2_BUCKET
+        value: grooverift-staging-media
+      - key: R2_ACCESS_KEY_ID
+        sync: false # R2 API token scoped to the bucket, Object Read & Write; set by hand on web and worker
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
 
   - type: worker
     name: grooverift-staging-worker
@@ -74,6 +82,14 @@ services:
       - key: EMAIL_TRANSPORT
         sync: false # the worker mails the Daily Drop staff alerts (step 5.6)
       - key: EMAIL_FROM
+        sync: false
+      - key: R2_ENDPOINT
+        value: https://e3ef72eabb70f4ba8cc27a6baef5bd78.eu.r2.cloudflarestorage.com # EU jurisdiction (D-113); not a secret
+      - key: R2_BUCKET
+        value: grooverift-staging-media
+      - key: R2_ACCESS_KEY_ID
+        sync: false # R2 API token scoped to the bucket, Object Read & Write; set by hand on web and worker
+      - key: R2_SECRET_ACCESS_KEY
         sync: false
 
 databases:
