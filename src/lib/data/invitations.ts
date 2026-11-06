@@ -77,7 +77,8 @@ export type CreateInviteResult =
  */
 export async function createInvitation(input: {
   email: string;
-  invitedBy: string;
+  /** Null only for the first-admin bootstrap (`npm run admin:bootstrap`), when no admin exists yet. */
+  invitedBy: string | null;
   locale: InviteLocale;
 }): Promise<CreateInviteResult> {
   const email = normalizeEmail(input.email);

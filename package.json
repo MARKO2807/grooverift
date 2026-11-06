@@ -27,6 +27,7 @@
     "db:migrate": "tsx src/lib/db/migrate.ts",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed-genres": "tsx src/lib/db/seed-genres.ts",
+    "admin:bootstrap": "tsx src/lib/db/bootstrap-admin.ts",
     "genres:build": "node scripts/build-genre-seed.mjs",
     "worker": "tsx src/worker.ts",
     "job": "tsx src/run-job.ts",
