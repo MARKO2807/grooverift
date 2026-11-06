@@ -1,0 +1,420 @@
+/* Safety and moderation (step 5.9): SAFE-01 to SAFE-08 and ADM-10/11. Ported from design/prototypes/pulse/style.css
+   (round 12b, D-075: .rep-*, .status-pill, .sor-*, .sub-hero, .rel-chip.is-muted, .dock-locked) on the --gr-* tokens.
+   No glow, no decoration: dashed outlines mark what only the viewer sees (muted), quiet tints mark states. */
+@layer components {
+  /* ---------- report (SAFE-01) ---------- */
+  .report .eyebrow {
+    margin: 0 0 calc(var(--gr-space-1) * -1);
+  }
+  .rep-q {
+    font: var(--gr-type-title-3);
+    margin: 0 0 var(--gr-space-1);
+    padding: 0;
+  }
+  .rep-q:focus,
+  .rep-q span:focus,
+  .sub-hero-t:focus {
+    outline: none;
+  }
+  .rep-cats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .rep-cats .choice {
+    padding: 8px var(--gr-space-3);
+  }
+  .rep-cats .choice:has(input:checked) {
+    padding: 7px calc(var(--gr-space-3) - 1px);
+  }
+  .rep-target {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: var(--gr-space-3);
+    border-radius: 0 var(--gr-radius-control) var(--gr-radius-control) 0;
+    background: var(--gr-color-bg-surface);
+    border-left: var(--gr-border-width-thick) solid var(--gr-color-border-strong);
+    font: var(--gr-type-body-sm);
+    overflow-wrap: anywhere;
+  }
+  .dialog:has(.report) {
+    max-width: 32rem;
+    max-height: calc(100dvh - 2 * var(--gr-space-4));
+    overflow-y: auto;
+  }
+  .dialog-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .textarea-sm {
+    min-height: 0;
+  }
+
+  /* ---------- confirmation heroes (report received, account fine, restricted) ---------- */
+  .sub-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gr-space-1);
+    padding: var(--gr-space-4) 0;
+    text-align: center;
+  }
+  .sub-hero > svg {
+    width: 40px;
+    height: 40px;
+    color: var(--gr-color-state-success);
+  }
+  .sub-hero-wait > svg {
+    color: var(--gr-color-highlight-text);
+  }
+  .sub-hero-t {
+    font: var(--gr-type-title-3);
+    margin: 0;
+  }
+
+  /* ---------- mute mark on a profile (D-075 owner addition) ---------- */
+  .rel-chip.is-muted {
+    border-style: dashed;
+    color: var(--gr-color-text-secondary);
+  }
+
+  /* ---------- restriction where posting happens (SAFE-07, D-075 (5) A) ---------- */
+  .rst-hint {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    margin: 0;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) dashed var(--gr-color-highlight-border);
+    background: var(--gr-color-highlight-bg);
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-primary);
+  }
+  .rst-hint svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    color: var(--gr-color-highlight-text);
+  }
+  .dock-locked {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--gr-space-2);
+  }
+  .dock-locked .rst-hint {
+    width: 100%;
+  }
+
+  /* ---------- my reports (SAFE-04) ---------- */
+  .status-pill {
+    flex: none;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 10px;
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    white-space: nowrap;
+  }
+  .status-pill.is-review {
+    border-color: var(--gr-color-highlight-border);
+    color: var(--gr-color-highlight-text);
+    background: var(--gr-color-highlight-bg);
+  }
+  .status-pill.is-done {
+    border-color: var(--gr-color-state-success);
+    color: var(--gr-color-state-success);
+  }
+  .rep-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: var(--gr-space-4);
+  }
+  .rep-head p {
+    margin: 0;
+  }
+  .rep-steps {
+    list-style: none;
+    margin: 0 0 var(--gr-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-3);
+    padding-left: 4px;
+  }
+  .rep-steps li {
+    display: flex;
+    gap: var(--gr-space-3);
+    align-items: flex-start;
+    color: var(--gr-color-text-secondary);
+  }
+  .rep-steps li.on {
+    color: var(--gr-color-text-primary);
+  }
+  .rep-dot {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+    border-radius: 50%;
+    border: 2px solid var(--gr-color-border-strong);
+  }
+  .rep-steps li.on .rep-dot {
+    background: var(--gr-color-state-success);
+    border-color: var(--gr-color-state-success);
+  }
+
+  /* ---------- statement of reasons (SAFE-05, D-075 (4) A) ---------- */
+  .sor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-3);
+    text-align: left;
+  }
+  .sor-date {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    margin: 0;
+  }
+  .sor .sub-h {
+    font: var(--gr-type-title-3);
+    margin: 0;
+  }
+  .sor-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .sor-list > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-1);
+    padding: var(--gr-space-3);
+  }
+  .sor-list > div + div {
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .sor-list dt {
+    font: var(--gr-type-eyebrow);
+    letter-spacing: var(--gr-type-eyebrow-letter-spacing);
+    text-transform: uppercase;
+    color: var(--gr-color-text-secondary);
+  }
+  .sor-list dd {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    margin: 0;
+    font: var(--gr-type-body-sm);
+    min-width: 0;
+  }
+  .sor-list dd p {
+    margin: 0;
+  }
+  .sor-list dd .sor-item,
+  .sor-list dd .appeal {
+    align-self: stretch;
+  }
+  .sor-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: var(--gr-space-2) var(--gr-space-3);
+    border-left: var(--gr-border-width-thick) solid var(--gr-color-border-strong);
+    background: var(--gr-color-bg-canvas);
+    border-radius: 0 var(--gr-radius-control) var(--gr-radius-control) 0;
+    font: var(--gr-type-body-sm);
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+  .sor-revoked,
+  .sor-sent {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    margin: 0;
+    color: var(--gr-color-state-success);
+    font: var(--gr-type-body-sm);
+  }
+  .sor-revoked svg {
+    flex: none;
+    margin-top: 2px;
+  }
+  .sor-more summary {
+    font: var(--gr-type-label);
+    color: var(--gr-color-text-link);
+    cursor: pointer;
+    min-height: var(--gr-size-target-min);
+    display: flex;
+    align-items: center;
+  }
+  .sor-more[open] summary {
+    margin-bottom: var(--gr-space-2);
+  }
+
+  /* ---------- block and mute lists (SAFE-08) ---------- */
+  .bl-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .bl-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-3);
+    min-height: var(--gr-size-target-min);
+    padding: var(--gr-space-2) 0;
+  }
+  .bl-row + .bl-row {
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .bl-row .set-txt {
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .bl-row .set-t,
+  .bl-row .set-d {
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- moderation (ADM-10, ADM-11) ---------- */
+  .mod-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .mod-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-3);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    background: var(--gr-color-bg-surface);
+  }
+  .mod-row.prio-0 {
+    border-left: var(--gr-border-width-thick) solid var(--gr-color-state-danger);
+  }
+  .mod-row.prio-1 {
+    border-left: var(--gr-border-width-thick) solid var(--gr-color-state-warning);
+  }
+  .mod-main {
+    flex: 1 1 16rem;
+    min-width: 0;
+  }
+  .mod-main p {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .mod-act {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-3);
+    align-items: center;
+  }
+  .mod-act .btn {
+    flex: none;
+    min-width: var(--gr-size-target-min);
+  }
+  .mod-prio {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    vertical-align: middle;
+  }
+  .mod-prio.prio-0 {
+    border-color: var(--gr-color-state-danger);
+    color: var(--gr-color-state-danger);
+  }
+  .mod-prio.prio-1 {
+    border-color: var(--gr-color-state-warning);
+    color: var(--gr-color-state-warning);
+  }
+  .mod-conflict {
+    color: var(--gr-color-state-warning);
+  }
+  .mod-tabs {
+    flex-wrap: wrap;
+  }
+  .mod-case .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+  }
+  .mod-reports,
+  .mod-history {
+    margin: 0;
+    padding-left: 1.2em;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-3);
+  }
+  .mod-reports p {
+    margin: 0;
+  }
+  .mod-details {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    margin: 0;
+  }
+  .mod-url {
+    overflow-wrap: anywhere;
+    font: var(--gr-type-body-sm);
+  }
+  .mod-notice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-1);
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .mod-notice p {
+    margin: 0;
+  }
+  .mod-decide .choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (forced-colors: active) {
+    .status-pill,
+    .mod-prio,
+    .rel-chip.is-muted,
+    .rst-hint {
+      border-color: CanvasText;
+    }
+  }
+}

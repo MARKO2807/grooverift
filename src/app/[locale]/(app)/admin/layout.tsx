@@ -56,6 +56,11 @@ export default async function AdminLayout({
             {t("nav.editorial")}
           </Link>
         ) : null}
+        {gate.role === "moderator" || gate.role === "admin" ? (
+          <Link href="/admin/moderation" className="btn btn-secondary btn-sm">
+            {t("nav.moderation")}
+          </Link>
+        ) : null}
         <Link href="/admin/flags" className="btn btn-secondary btn-sm">
           {t("nav.flags")}
         </Link>

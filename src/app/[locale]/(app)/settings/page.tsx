@@ -10,7 +10,10 @@ import {
   IconMail,
   IconShield,
   IconUser,
+  IconBlock,
+  IconShield as IconStatus,
 } from "@/components/ui/icons";
+import { blockMuteCounts } from "@/lib/data/safety";
 import { memberPage } from "@/lib/auth/member-page";
 import { roleOf } from "@/lib/auth/session";
 import { STAFF_ROLES } from "@/lib/auth/roles";
@@ -32,11 +35,28 @@ export default async function SettingsIndexPage({
   const session = await memberPage(locale, "/settings");
   const t = await getTranslations("settingsIndex");
   const th = await getTranslations("home");
+  const ts = await getTranslations("safety");
+  const counts = await blockMuteCounts(session.user.id);
   const rows = [
     { href: "/settings/profile", Icon: IconUser, title: t("profile"), text: t("profileText") },
     { href: "/settings/privacy", Icon: IconEye, title: t("privacy"), text: t("privacyText") },
     { href: "/settings/security", Icon: IconShield, title: t("security"), text: t("securityText") },
     { href: "/settings/account", Icon: IconMail, title: t("account"), text: t("accountText") },
+    {
+      href: "/settings/blocked",
+      Icon: IconBlock,
+      title: ts("lists.title"),
+      text:
+        counts.blocked || counts.muted
+          ? ts("lists.summary", { blocked: counts.blocked, muted: counts.muted })
+          : ts("lists.nobody"),
+    },
+    {
+      href: "/settings/status",
+      Icon: IconStatus,
+      title: ts("status.title"),
+      text: ts("status.rowText"),
+    },
   ];
   if (STAFF_ROLES.includes(roleOf(session)))
     rows.push({ href: "/admin", Icon: IconLockSimple, title: th("admin"), text: "" });

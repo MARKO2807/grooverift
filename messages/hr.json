@@ -266,7 +266,8 @@
       "audit": "Dnevnik",
       "label": "Administracijski izbornik",
       "invites": "Pozivnice",
-      "editorial": "Uredništvo"
+      "editorial": "Uredništvo",
+      "moderation": "Moderacija"
     },
     "overview": {
       "role": "Tvoja uloga: {role}",
@@ -275,7 +276,12 @@
       "audit": "Zapisi u dnevniku",
       "title": "Pregled",
       "dropTitle": "Daily Drop",
-      "toEditorial": "Na urednički kalendar"
+      "toEditorial": "Na urednički kalendar",
+      "modTitle": "Moderacija",
+      "modUrgent": "Hitnih slučajeva: {count}",
+      "modOpen": "Otvoreno: {count}",
+      "modAppeals": "Žalbe: {count}",
+      "toModeration": "Otvori moderaciju"
     },
     "members": {
       "title": "Članovi",
@@ -1023,7 +1029,6 @@
     "cancel": "Odustani",
     "more": "Više opcija: profil {name}",
     "moreTitle": "@{username}",
-    "moreSoon": "Utišavanje i prijava stižu uskoro.",
     "share": "Podijeli",
     "shareCopied": "Poveznica je kopirana.",
     "shareFailed": "Kopiraj poveznicu: {url}",
@@ -1037,8 +1042,6 @@
     "blocked": "@{username} je na popisu blokiranih. Ne vidite se dok blokada traje.",
     "blockedTitle": "Ovaj račun je na tvom popisu blokiranih",
     "blockedText": "Ne vidite se dok blokada traje. Praćenja su uklonjena u oba smjera.",
-    "unblock": "Odblokiraj",
-    "unblocked": "Blokada je uklonjena. Praćenja se ne vraćaju sama.",
     "privateTitle": "Ovaj profil je privatan.",
     "privateText": "Zatraži praćenje da vidiš Music DNA i povijest odgovora. Odgovore na Daily Drop ionako vidiš uz svako pitanje.",
     "minimalNote": "Ostatak profila vide članovi.",
@@ -1158,16 +1161,10 @@
     "edited": "uređeno",
     "more": "Više opcija za odgovor: {name}",
     "moreTitle": "Odgovor: @{username}",
-    "moreSoon": "Utišavanje i prijava stižu uskoro.",
     "shareAnswer": "Podijeli poveznicu",
     "shareQuestion": "Podijeli pitanje",
     "linkCopied": "Poveznica je kopirana.",
     "linkFailed": "Kopiraj poveznicu: {url}",
-    "blockAuthor": "Blokiraj @{username}",
-    "blockTitle": "Blokirati @{username}?",
-    "blockText": "Ne vidite se dok ste prijavljeni: profil, odgovori i komentari nestaju u oba smjera. Praćenja i zahtjevi između vas se uklanjaju, u oba smjera. Ta osoba ne dobije obavijest. Blokadu možeš ukloniti bilo kad; praćenja se ne vraćaju.",
-    "blockConfirm": "Blokiraj",
-    "blocked": "@{username} je na popisu blokiranih. Ne vidite se dok blokada traje.",
     "readMore": "Pročitaj više",
     "readLess": "Prikaži manje",
     "reaction": "Sviđa mi se",
@@ -1243,7 +1240,8 @@
       "paused": "Daily Drop je na pauzi. Tekst je ostao ovdje.",
       "tooLong": "Tekst je predug. Skrati ga do dopuštene duljine.",
       "empty": "Napiši nešto prije objave.",
-      "generic": "Objava nije uspjela. Tekst je ostao ovdje, pokušaj ponovno."
+      "generic": "Objava nije uspjela. Tekst je ostao ovdje, pokušaj ponovno.",
+      "restricted": "Objavljivanje ti je trenutačno ograničeno."
     },
     "first": {
       "title": "Prvo pitanje stiže {date}",
@@ -1280,6 +1278,445 @@
     "drop": "<b>Daily Drop je stigao:</b> „{question}”",
     "new": ", novo",
     "empty": "Još nema obavijesti.",
-    "emptyText": "Ovdje stižu komentari i reakcije na tvoje odgovore te novi pratitelji."
+    "emptyText": "Ovdje stižu komentari i reakcije na tvoje odgovore te novi pratitelji.",
+    "moderation": "<b>Odluka moderacije</b> o tvom računu ili sadržaju. Pročitaj obrazloženje.",
+    "appeal": {
+      "upheld": "<b>Žalba je pregledana:</b> odluka ostaje.",
+      "overturned": "<b>Žalba je prihvaćena:</b> odluka je poništena."
+    },
+    "report": {
+      "action": "<b>Tvoja prijava je odlučena:</b> poduzete su mjere.",
+      "none": "<b>Tvoja prijava je odlučena:</b> kršenje pravila nije pronađeno."
+    }
+  },
+  "safety": {
+    "cancel": "Odustani",
+    "menu": {
+      "mute": "Utišaj @{username}",
+      "unmute": "Poništi utišavanje",
+      "block": "Blokiraj @{username}",
+      "reportProfile": "Prijavi profil",
+      "reportAnswer": "Prijavi odgovor",
+      "reportComment": "Prijavi komentar",
+      "commentMore": "Više za komentar: {name}",
+      "commentTitle": "Komentar @{username}"
+    },
+    "mute": {
+      "title": "Utišati @{username}?",
+      "text": "Odgovori i komentari te osobe sklopit će ti se u jedan redak koji možeš otvoriti. Ta osoba to ne zna i ništa se drugo ne mijenja.",
+      "confirm": "Utišaj",
+      "done": "Utišano: @{username}. Ta osoba to ne zna.",
+      "undo": "Poništi",
+      "undone": "Utišavanje je poništeno."
+    },
+    "block": {
+      "title": "Blokirati @{username}?",
+      "fact1": "Ni ti ni @{username} ne vidite profile, odgovore i komentare jedno drugoga dok ste prijavljeni.",
+      "fact2": "Praćenje prestaje u oba smjera, a zahtjevi se brišu.",
+      "fact3": "Ta osoba ne dobije obavijest, ali može primijetiti da tvoj profil više ne vidi.",
+      "fact4": "Ime i opis javnog profila i dalje se mogu otvoriti bez prijave, preko poveznice. Privatni profil je jača zaštita.",
+      "fact5": "Odblokirati možeš bilo kad. Praćenje se tada ne vraća samo.",
+      "alsoReport": "Prijavi i ovaj račun",
+      "confirm": "Blokiraj",
+      "done": "Blokirano. @{username} više ne vidi tvoj profil ni odgovore."
+    },
+    "unblock": {
+      "button": "Odblokiraj",
+      "title": "Odblokirati @{username}?",
+      "fact1": "Praćenje se ne vraća samo.",
+      "fact2": "@{username} opet može vidjeti tvoj profil i odgovore, ovisno o tvojim postavkama privatnosti.",
+      "fact3": "Ta osoba ne dobije obavijest.",
+      "confirm": "Odblokiraj",
+      "done": "Odblokirano: @{username}."
+    },
+    "report": {
+      "title": "Prijava",
+      "step": "Prijava · korak {n} od 3",
+      "question": "Što nije u redu?",
+      "pick": "Odaberi što nije u redu.",
+      "next": "Nastavi",
+      "back": "Natrag",
+      "detailsLabel": "Detalji",
+      "optional": "neobavezno",
+      "detailsHint": "Što se dogodilo? Pomaže moderatoru.",
+      "chars": "{count} / {max}",
+      "private": "Osoba koju prijavljuješ ne saznaje tko ju je prijavio. Prijavu pregledava čovjek.",
+      "send": "Pošalji prijavu",
+      "retry": "Pokušaj ponovno",
+      "copyright": "Za autorska prava zakon traži poseban obrazac s podacima o djelu i nositelju prava. Radi i bez računa.",
+      "openForm": "Otvori obrazac",
+      "doneTitle": "Prijava je primljena.",
+      "doneText": "Pregledava je čovjek iz tima. Odluku vidiš u Postavkama, pod Status računa → Moje prijave. U alfi to može potrajati do nekoliko dana.",
+      "also": "Želiš li još nešto u vezi @{username}?",
+      "done": "Gotovo"
+    },
+    "target": {
+      "profile": "Profil @{username}",
+      "answer": "Odgovor @{username}",
+      "comment": "Komentar @{username}"
+    },
+    "cat": {
+      "harassment": {
+        "name": "Uznemiravanje ili zlostavljanje",
+        "desc": "Vrijeđanje, ponižavanje, ciljano napadanje."
+      },
+      "hate": {
+        "name": "Mržnja",
+        "desc": "Napadi na ljude zbog toga tko su."
+      },
+      "threat": {
+        "name": "Prijetnje ili nasilje",
+        "desc": "Prijetnja ozljedom ili poticanje nasilja. Ima prednost u pregledu."
+      },
+      "sexual": {
+        "name": "Seksualni sadržaj"
+      },
+      "minor": {
+        "name": "Osoba mlađa od 18",
+        "desc": "Račun ili sadržaj maloljetne osobe. Ima prednost u pregledu."
+      },
+      "impersonation": {
+        "name": "Lažno predstavljanje",
+        "desc": "Glumi drugu osobu, izvođača ili tvrtku. Ima prednost u pregledu."
+      },
+      "spam": {
+        "name": "Spam ili prijevara"
+      },
+      "copyright": {
+        "name": "Autorska prava",
+        "desc": "Tuđa glazba, tekst ili slika bez dopuštenja."
+      },
+      "ai_generated": {
+        "name": "Sadržaj iz AI-ja kao vlastiti",
+        "desc": "Tekst ili slika koju je napravio AI, a predstavlja se kao ljudski rad."
+      },
+      "private_info": {
+        "name": "Tuđi privatni podaci",
+        "desc": "Adresa, broj, fotografije ili poruke bez pristanka."
+      },
+      "other": {
+        "name": "Nešto drugo"
+      }
+    },
+    "error": {
+      "signedOut": "Prijavi se pa pokušaj ponovno.",
+      "notAllowed": "Ovo trenutačno ne možeš napraviti.",
+      "notAvailable": "Ovo više nije dostupno.",
+      "tooMany": "Previše pokušaja. Pričekaj malo pa pokušaj ponovno.",
+      "generic": "Nešto nije u redu. Pokušaj ponovno.",
+      "invalid": "Provjeri tekst: prazan je ili predug.",
+      "closed": "Rok za žalbu je istekao.",
+      "exists": "Žalba na ovu odluku već je poslana.",
+      "copyright": "Za autorska prava koristi obrazac."
+    },
+    "chip": {
+      "muted": "Utišano",
+      "mutedSr": "Utišano, vidiš samo ti"
+    },
+    "restricted": {
+      "hint": "Objavljivanje je ograničeno do {date}.",
+      "why": "Zašto?"
+    },
+    "kind": {
+      "content_removal": "Uklanjanje sadržaja",
+      "notice": "Napomena",
+      "warning": "Upozorenje",
+      "restriction": "Ograničenje",
+      "suspension": "Suspenzija",
+      "ban": "Trajno zatvaranje"
+    },
+    "title": {
+      "notice": "Napomena moderacije",
+      "warning": "Upozorenje",
+      "restriction": "Objavljivanje je ograničeno do {date}",
+      "suspension": "Račun je suspendiran do {date}",
+      "ban": "Račun je trajno zatvoren",
+      "removed": {
+        "answer": "Odgovor je uklonjen",
+        "comment": "Komentar je uklonjen",
+        "profile": "Sadržaj profila je uklonjen"
+      },
+      "removedWarning": {
+        "answer": "Odgovor je uklonjen, uz upozorenje",
+        "comment": "Komentar je uklonjen, uz upozorenje",
+        "profile": "Sadržaj profila je uklonjen, uz upozorenje"
+      }
+    },
+    "effect": {
+      "content_removal": "Sadržaj je uklonjen. Bez drugih posljedica za račun.",
+      "notice": "Bez posljedica za račun.",
+      "warning": "Ovo je upozorenje. Sljedeći prekršaj može značiti ograničenje objavljivanja.",
+      "restriction": "Do {date} ne možeš objavljivati odgovore ni komentare. Čitanje, reakcije i praćenje rade. Ograničenje prestaje samo.",
+      "suspension": "Do {date} ne možeš koristiti GrooveRift. Profil, odgovori i komentari skriveni su drugima dok traje.",
+      "ban": "Račun je trajno zatvoren. Profil, odgovori i komentari skriveni su drugima."
+    },
+    "how": {
+      "report": "Prijava člana i pregled moderatora, bez automatskog odlučivanja.",
+      "notice": "Prijava nezakonitog sadržaja (DSA) i pregled moderatora, bez automatskog odlučivanja.",
+      "staff": "Pregled moderatora, bez automatskog odlučivanja."
+    },
+    "rule": {
+      "respect": "Bez uznemiravanja",
+      "hate": "Bez mržnje",
+      "violence": "Bez prijetnji i nasilja",
+      "sexual": "Bez seksualnog sadržaja",
+      "adults": "Samo za punoljetne",
+      "authentic": "Bez lažnog predstavljanja",
+      "spam": "Bez spama i prijevara",
+      "copyright": "Poštuj autorska prava",
+      "ai": "Ne predstavljaj AI kao svoj rad",
+      "privacy": "Poštuj tuđu privatnost",
+      "illegal": "Ništa nezakonito"
+    },
+    "itemType": {
+      "answer": "Odgovor",
+      "comment": "Komentar",
+      "profile": "Profil"
+    },
+    "sor": {
+      "what": "Što",
+      "rule": "Pravilo",
+      "decision": "Odluka",
+      "how": "Kako je odlučeno",
+      "appeal": "Žalba",
+      "dropOf": "Daily Drop {date}",
+      "noCopy": "Kopija sadržaja više ne postoji.",
+      "guidelines": "Pravila zajednice",
+      "alsoRemoved": "Sadržaj je uklonjen.",
+      "reporterHidden": "Tko je prijavio, ne otkrivamo.",
+      "revoked": "Odluka je poništena nakon žalbe.",
+      "appealUntil": "Možeš se žaliti do {date}. Žalbu pregledava druga osoba iz tima, kad je to moguće.",
+      "appealClosed": "Rok za žalbu istekao je {date}.",
+      "appealNone": "Na ovu odluku nema žalbe.",
+      "appealSent": "Žalba je poslana {date}. Pregledava je druga osoba iz tima, kad je to moguće. Dok traje pregled, odluka ostaje na snazi.",
+      "appealUpheld": "Žalba je pregledana: odluka ostaje.",
+      "appealOverturned": "Žalba je prihvaćena: odluka je poništena.",
+      "draft": "Nacrt: tekst obrazloženja još prolazi pravni pregled."
+    },
+    "appeal": {
+      "label": "Zašto misliš da je odluka pogrešna?",
+      "help": "Žalbu pregledava druga osoba iz tima, kad je to moguće. Dok traje pregled, odluka ostaje na snazi.",
+      "empty": "Napiši zašto misliš da je odluka pogrešna.",
+      "send": "Pošalji žalbu",
+      "sent": "Žalba je poslana. Ishod stiže u Aktivnost i ovdje."
+    },
+    "status": {
+      "title": "Status računa",
+      "rowText": "Odluke moderacije i tvoje prijave",
+      "fine": "Račun je u redu",
+      "fineText": "Nema aktivnih ograničenja.",
+      "restricted": "Objavljivanje je ograničeno do {date}",
+      "restrictedText": "Čitanje, reakcije i praćenje rade.",
+      "readWhy": "Pročitaj obrazloženje",
+      "notices": "Obavijesti i odluke",
+      "noticesCount": "{count, plural, one {# odluka} few {# odluke} other {# odluka}} · zadnja {date}",
+      "noticesNone": "Nema ničega",
+      "reports": "Moje prijave",
+      "reportsCount": "{count, plural, one {# prijava} few {# prijave} other {# prijava}}{open, plural, =0 {} other { · u pregledu}}",
+      "reportsNone": "Nema prijava",
+      "note": "Svaka odluka moderacije dolazi s obrazloženjem: što, koje pravilo, što je odlučeno i kako se žaliti.",
+      "notice": "Odluka",
+      "report": "Prijava",
+      "appealSent": "žalba poslana",
+      "revoked": "poništeno",
+      "noticesEmpty": "Nema odluka.",
+      "noticesEmptyText": "Ako moderacija nešto odluči o tvom sadržaju, obrazloženje stiže ovdje.",
+      "reportsEmpty": "Nema prijava.",
+      "reportsEmptyText": "Prijave šalješ kroz ⋯ na odgovoru, komentaru ili profilu.",
+      "reportsNote": "Vidiš samo stanje svojih prijava. O drugoj osobi ne saznaješ ništa, ni ona o tebi.",
+      "waiting": "čeka",
+      "notYet": ", još nije",
+      "outcome": {
+        "action": "Poduzete su mjere",
+        "none": "Nema kršenja pravila"
+      },
+      "thanksAction": "Hvala na prijavi. Poduzete su mjere prema Pravilima zajednice; zbog privatnosti ne možemo reći koje.",
+      "thanksNone": "Hvala na prijavi. Pregledom nismo našli kršenje Pravila zajednice. Ako se nešto ponovi, slobodno prijavi opet.",
+      "inReview": "Prijavu pregledava čovjek. U alfi to može potrajati do nekoliko dana."
+    },
+    "reportStatus": {
+      "received": "Primljeno",
+      "review": "U pregledu",
+      "done": "Odlučeno"
+    },
+    "lists": {
+      "title": "Blokirani i utišani",
+      "summary": "Blokirano: {blocked} · Utišano: {muted}",
+      "nobody": "Nitko",
+      "blocked": "Blokirani",
+      "muted": "Utišani",
+      "blockedEmpty": "Nema blokiranih računa.",
+      "mutedEmpty": "Nema utišanih računa.",
+      "blockedNote": "Blokirani ne vide tvoj profil ni odgovore, a ti ne vidiš njihove. Ne dobiju obavijest o tome.",
+      "mutedNote": "Utišane i dalje možeš posjetiti, samo su njihovi odgovori i komentari sklopljeni. Oni to ne znaju."
+    },
+    "hold": {
+      "pageTitle": "Status računa",
+      "title": {
+        "restriction": "Objavljivanje je ograničeno do {date}",
+        "suspension": "Račun je suspendiran do {date}",
+        "ban": "Račun je trajno zatvoren"
+      },
+      "lead": {
+        "restriction": "Do tada ne možeš objavljivati odgovore ni komentare. Sve ostalo radi: čitanje, reakcije i praćenje. Ograničenje prestaje samo.",
+        "suspension": "Do tada ne možeš koristiti GrooveRift. Profil i odgovori skriveni su drugima. Ovdje je obrazloženje i žalba.",
+        "ban": "GrooveRift više ne možeš koristiti. Profil i odgovori skriveni su drugima. Ovdje je obrazloženje i žalba."
+      },
+      "why": "Obrazloženje",
+      "continue": "Nastavi",
+      "signOut": "Odjavi se"
+    }
+  },
+  "moderation": {
+    "title": "Moderacija",
+    "dsa": "DSA",
+    "tabs": {
+      "label": "Moderacija",
+      "open": "Otvoreno ({count})",
+      "closed": "Odlučeno",
+      "appeals": "Žalbe ({count})"
+    },
+    "priority": {
+      "0": "Hitno",
+      "1": "Prednost",
+      "2": "Obično"
+    },
+    "target": {
+      "profile": "Profil",
+      "answer": "Odgovor",
+      "comment": "Komentar",
+      "notice": "DSA prijava"
+    },
+    "state": {
+      "open": "otvoren",
+      "in_progress": "u radu",
+      "decided": "odlučen",
+      "closed": "zatvoren"
+    },
+    "outcome": {
+      "action": "Poduzete mjere",
+      "none": "Nema kršenja"
+    },
+    "kind": {
+      "content_removal": "Samo uklanjanje sadržaja",
+      "notice": "Napomena",
+      "warning": "Upozorenje",
+      "restriction": "Ograničenje objavljivanja",
+      "suspension": "Suspenzija",
+      "ban": "Trajno zatvaranje računa"
+    },
+    "status": {
+      "active": "aktivan račun",
+      "suspended": "suspendiran",
+      "banned": "trajno zatvoren",
+      "deactivated": "deaktiviran",
+      "pending_deletion": "čeka brisanje",
+      "deleted": "izbrisan"
+    },
+    "current": {
+      "live": "Sadržaj je još vidljiv.",
+      "deleted": "Autor je sadržaj izbrisao.",
+      "removed": "Sadržaj je uklonjen.",
+      "missing": "Sadržaja više nema."
+    },
+    "queue": {
+      "empty": "Nema otvorenih slučajeva.",
+      "emptyClosed": "Još nema odlučenih slučajeva.",
+      "meta": "{reports, plural, =0 {bez prijava članova} one {# prijava} few {# prijave} other {# prijava}} · {date}",
+      "assignee": {
+        "me": "radiš ga ti",
+        "other": "radi ga netko drugi"
+      },
+      "conflict": {
+        "self": "Slučaj je o tebi: ne možeš ga otvoriti.",
+        "involved": "Sukob interesa: odluči samo ako nema nikoga drugog."
+      },
+      "open": "Otvori",
+      "take": "Preuzmi",
+      "other": "Drugi moderator"
+    },
+    "case": {
+      "back": "Natrag na moderaciju",
+      "forbidden": "Ovo ne možeš otvoriti: dodijeljeno je nekom drugom, o tebi je ili u tome sudjeluješ.",
+      "opened": "Otvoren {date}",
+      "logged": "Svaki pregled dokaza se bilježi.",
+      "conflict": {
+        "involved": "Sudjeluješ u ovom slučaju: tvoja je prijava ili te netko u njemu blokirao. Odluči samo ako nema nikoga drugog i upiši razlog."
+      },
+      "subject": "Prijavljeni član",
+      "copy": "Kopija u trenutku prijave",
+      "captured": "spremljeno {date}",
+      "noCopy": "Nema kopije sadržaja.",
+      "editedSince": "uređeno nakon prijave",
+      "openInApp": "Otvori u aplikaciji",
+      "reports": "{count, plural, one {# prijava} few {# prijave} other {# prijava}}",
+      "reportN": "Prijava {n}",
+      "reportersHidden": "Prijavitelji se ne prikazuju ni moderatorima.",
+      "notices": "DSA prijave",
+      "url": "Poveznica:",
+      "notifier": "Podnositelj: {name}, {email}",
+      "notifierNone": "Podnositelj nije ostavio podatke.",
+      "history": "Ranije odluke o ovom članu",
+      "revoked": "poništeno",
+      "decision": "Odluka",
+      "byYou": "tvoja odluka",
+      "decide": "Odluka",
+      "release": "Vrati u red"
+    },
+    "decide": {
+      "outcome": "Ishod",
+      "outcome_none": "Nema kršenja pravila",
+      "outcome_action": "Poduzmi mjeru",
+      "noneHelp": "Prijavitelji dobiju obavijest da kršenje nije pronađeno. Član o kojem je slučaj ne dobije ništa.",
+      "kind": "Mjera",
+      "days": "Trajanje",
+      "daysN": "{count, plural, one {# dan} few {# dana} other {# dana}}",
+      "remove": "Ukloni i prijavljeni sadržaj",
+      "rule": "Pravilo",
+      "statement": "Obrazloženje za člana",
+      "statementHelp": "Ovo član čita pod „Odluka”. Napiši što je točno prekršeno i zašto, bez imena prijavitelja.",
+      "freshNote": "Za suspenziju ili trajno zatvaranje treba ti prijava u zadnjih 15 minuta.",
+      "override": "Razlog zašto ipak odlučuješ ti",
+      "overrideHelp": "Bilježi se u revizijski zapis.",
+      "submit": "Donesi odluku",
+      "done": "Odluka je spremljena."
+    },
+    "appeal": {
+      "title": "Žalbe",
+      "empty": "Nema otvorenih žalbi.",
+      "meta": "Žalba {sent} · odluka {decided}",
+      "own": "Ovo je tvoja odluka: bolje je da žalbu pregleda netko drugi.",
+      "ownWarn": "Ovo je tvoja odluka. Žalbu bi trebala pregledati druga osoba iz tima; ako je nema, pregledaj je pažljivo i iznova.",
+      "one": "Žalba: {kind}",
+      "decision": "Odluka na koju se član žali",
+      "memberText": "Tekst žalbe ({date})",
+      "decide": "Ishod žalbe",
+      "outcome": "Ishod",
+      "upheld": "Odluka ostaje",
+      "overturned": "Odluka se poništava",
+      "text": "Obrazloženje za člana",
+      "textHelp": "Član ovo čita uz ishod žalbe. Poništena odluka vraća uklonjeni sadržaj i račun.",
+      "submit": "Spremi ishod",
+      "done": "Ishod žalbe je spremljen.",
+      "involved": "Sukob interesa: tvoja je prijava u ovom slučaju ili te netko u njemu blokirao. Odluči samo ako nema nikoga drugog i upiši razlog."
+    },
+    "error": {
+      "forbidden": "Ovo ne možeš napraviti na ovom slučaju.",
+      "override": "Upiši razlog zašto ipak odlučuješ ti.",
+      "decided": "Ovo je već odlučeno.",
+      "kind": "Odaberi mjeru.",
+      "rule": "Odaberi pravilo.",
+      "statement": "Napiši obrazloženje za člana.",
+      "statementLong": "Obrazloženje je predugo (najviše 2.000 znakova).",
+      "days": "Odaberi trajanje.",
+      "removeTarget": "Ovdje se sadržaj ne može ukloniti.",
+      "subject": "Iza ovoga nema člana: zabilježi samo napomenu.",
+      "fresh": "Za ovu mjeru odjavi se i ponovno prijavi, pa pokušaj opet.",
+      "tooMany": "Previše radnji. Pričekaj malo.",
+      "generic": "Nešto nije u redu. Pokušaj ponovno.",
+      "text": "Napiši obrazloženje za člana.",
+      "gone": "Slučaj više nije otvoren.",
+      "staffSubject": "Admina se u aplikaciji ne može suspendirati ni trajno zatvoriti."
+    }
   }
 }

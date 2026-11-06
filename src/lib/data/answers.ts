@@ -23,6 +23,7 @@ import { isUniqueViolation, SafeDbError } from "./db-errors";
 import { loadGraphs, loadOwners, type OwnerRecord } from "./facts";
 import { notify } from "./notifications";
 import { consume } from "./rate-limit";
+import { activeRestriction } from "./safety";
 
 export const ANSWER_MAX = 1500; // plan §1.2
 export const COMMENT_MAX = 750; // plan §1.2
@@ -31,13 +32,19 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type AnswerResult =
   | { ok: true; id: string }
-  | { ok: false; reason: "not-available" | "already-answered" | "not-allowed" | "too-many" };
+  | {
+      ok: false;
+      reason: "not-available" | "already-answered" | "not-allowed" | "too-many" | "restricted";
+    };
 export type WriteResult =
-  { ok: true } | { ok: false; reason: "not-available" | "not-allowed" | "too-many" };
+  { ok: true } | { ok: false; reason: "not-available" | "not-allowed" | "too-many" | "restricted" };
 
-/** Only an active member who finished onboarding writes (fresh facts from loadViewer); restrictions come in 5.9. */
+/** Only an active member who finished onboarding writes (fresh facts from loadViewer); see also restricted(). */
 const mayWrite = (viewer: Viewer): viewer is Viewer & { id: string } =>
   !!viewer.id && viewer.status === "active" && viewer.onboarded !== false;
+
+/** SAFE-07: a posting restriction refuses new answers, edits and comments while it lasts (deleting stays). */
+const restricted = async (viewerId: string) => !!(await activeRestriction(viewerId));
 
 async function isPublished(questionId: string): Promise<boolean> {
   if (!UUID.test(questionId)) return false;
@@ -92,6 +99,7 @@ export async function createAnswer(
   if (!(await isPublished(questionId))) return { ok: false, reason: "not-available" };
   const text = clean(body);
   if (!text || text.length > ANSWER_MAX) return { ok: false, reason: "not-allowed" };
+  if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   try {
     const [row] = await db()
@@ -116,6 +124,7 @@ export async function editOwnAnswer(
   if (!live || live.authorId !== viewer.id) return { ok: false, reason: "not-available" };
   const text = clean(body);
   if (!text || text.length > ANSWER_MAX) return { ok: false, reason: "not-allowed" };
+  if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("contentEdit", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   const rows = await db()
     .update(answer)
@@ -177,6 +186,7 @@ export async function createComment(
     return { ok: false, reason: "not-available" };
   const text = clean(body);
   if (!text || text.length > COMMENT_MAX) return { ok: false, reason: "not-allowed" };
+  if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   let id: string;
   try {

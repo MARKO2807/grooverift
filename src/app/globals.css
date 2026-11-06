@@ -9,6 +9,7 @@
 @import "../styles/editorial.css";
 @import "../styles/drop.css";
 @import "../styles/activity.css";
+@import "../styles/safety.css";
 
 @layer base {
   html {

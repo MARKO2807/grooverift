@@ -34,6 +34,13 @@ describe("worker and housekeeping", () => {
     expect(
       schedules.some((s) => s.name === JOBS.pruneNotifications && s.cron === "50 3 * * *"),
     ).toBe(true);
+    // Step 5.9: expired suspensions every 15 minutes, moderation copies daily at 04:00 UTC
+    expect(
+      schedules.some((s) => s.name === JOBS.liftSuspensions && s.cron === "*/15 * * * *"),
+    ).toBe(true);
+    expect(schedules.some((s) => s.name === JOBS.purgeSnapshots && s.cron === "0 4 * * *")).toBe(
+      true,
+    );
     await boss.stop({ graceful: false, timeout: 2000 });
   });
 

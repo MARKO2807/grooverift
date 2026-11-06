@@ -35,6 +35,7 @@ export async function ProfileScreen({
   appUrl: string;
 }) {
   const t = await getTranslations("profile");
+  const ts = await getTranslations("safety");
   const f = await getFormatter();
   const paused = (await flagState("music_dna")) === "paused";
   const [dna, history] = await Promise.all([
@@ -58,6 +59,16 @@ export async function ProfileScreen({
             </h1>
             <p className="meta">
               <span>@{view.username}</span>
+              {view.muted ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  {/* D-075: only the viewer sees it; the muted member never learns of it. */}
+                  <span className="rel-chip is-muted">
+                    <span aria-hidden="true">{ts("chip.muted")}</span>
+                    <span className="sr-only">{ts("chip.mutedSr")}</span>
+                  </span>
+                </>
+              ) : null}
               {mutual ? (
                 <>
                   <span aria-hidden="true">·</span>
@@ -108,6 +119,7 @@ export async function ProfileScreen({
               displayName={view.displayName}
               shareable={!view.targetPrivate}
               shareUrl={`${appUrl}${locale === "en" ? "/en" : ""}${profileHref}`}
+              muted={view.muted}
             />
           </div>
         ) : null}
@@ -328,7 +340,11 @@ export async function BlockedByYouScreen({
         <IconLock />
         <p className="empty-t">{t("blockedTitle")}</p>
         <p>{t("blockedText")}</p>
-        <UnblockButton targetId={view.ownerId} username={view.username} />
+        <UnblockButton
+          targetId={view.ownerId}
+          username={view.username}
+          displayName={view.displayName}
+        />
       </div>
     </div>
   );

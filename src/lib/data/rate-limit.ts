@@ -26,6 +26,9 @@ export const LIMITS = {
   contentEdit: { limit: 60, windowSeconds: 3600 }, // edits and deletions of own answers and comments (step 5.7)
   react: { limit: 300, windowSeconds: 3600 }, // reaction toggles per member (step 5.7)
   dropPoll: { limit: 120, windowSeconds: 3600 }, // the "new answers" check on an open question page (step 5.7)
+  appeal: { limit: 5, windowSeconds: 86400 }, // SAFE-06 appeals per member (step 5.9)
+  safety: { limit: 120, windowSeconds: 3600 }, // mute, unmute, acknowledge (step 5.9)
+  moderation: { limit: 300, windowSeconds: 3600 }, // staff case and appeal writes (step 5.9)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

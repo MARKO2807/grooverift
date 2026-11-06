@@ -3,7 +3,9 @@ import { PgBoss, type JobWithMetadata } from "pg-boss";
 import { pruneThrottle } from "@/lib/auth/lockout";
 import { audit } from "@/lib/audit";
 import { closeDb } from "@/lib/db/client";
+import { purgeSnapshots } from "@/lib/data/moderation";
 import { pruneNotifications } from "@/lib/data/notifications";
+import { liftExpiredSuspensions } from "@/lib/data/safety";
 import { pruneRateLimits } from "@/lib/data/rate-limit";
 import { dailyCheck, runPublication } from "@/lib/editorial/publication";
 import {
@@ -24,6 +26,8 @@ export const JOBS = {
   publishDrop: "daily_drop.publish",
   editorialCheck: "editorial.check",
   pruneNotifications: "activity.prune",
+  liftSuspensions: "moderation.lift",
+  purgeSnapshots: "moderation.purge",
 } as const;
 
 type PublishData = { date?: string };
@@ -65,6 +69,26 @@ export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgB
     await pruneNotifications();
   });
   await boss.schedule(JOBS.pruneNotifications, "50 3 * * *", {}, { tz: "UTC" });
+
+  // Step 5.9: a suspension that ran out is lifted every 15 minutes (the member's own next page view lifts it too),
+  // so their content comes back for others without waiting for them to return.
+  await boss.createQueue(JOBS.liftSuspensions);
+  await boss.work(JOBS.liftSuspensions, async () => {
+    const n = await liftExpiredSuspensions();
+    if (n)
+      await audit({ actorType: "system", action: "moderation.suspension.lifted", metadata: { n } });
+  });
+  await boss.schedule(JOBS.liftSuspensions, "*/15 * * * *", {}, { tz: "UTC" });
+
+  // J5 E9: moderation copies of decided cases go after their purge date (90 days, longer while an appeal is
+  // possible); daily at 04:00 UTC.
+  await boss.createQueue(JOBS.purgeSnapshots);
+  await boss.work(JOBS.purgeSnapshots, async () => {
+    const n = await purgeSnapshots();
+    if (n)
+      await audit({ actorType: "system", action: "moderation.snapshots.purged", metadata: { n } });
+  });
+  await boss.schedule(JOBS.purgeSnapshots, "0 4 * * *", {}, { tz: "UTC" });
 
   // The Daily Drop at 00:00 UTC (J6). The run itself is idempotent by date, so a duplicate job, a restart or
   // "Publish now" at the same moment cannot publish twice. A failed run throws, and pg-boss retries it with

@@ -5,22 +5,31 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar } from "@/components/profile/avatar";
 import { Dialog } from "@/components/ui/dialog";
-import { IconBell, IconBlock, IconMore, IconPencil, IconShare, IconX } from "@/components/ui/icons";
+import {
+  IconBell,
+  IconBlock,
+  IconMore,
+  IconPencil,
+  IconShare,
+  IconWarning,
+  IconX,
+} from "@/components/ui/icons";
 import { useToast } from "@/components/ui/toast";
+import { useSafety } from "@/components/safety/safety-dialogs";
 import { deleteAnswerAction } from "@/lib/drop/actions";
 import { CLAMP_CHARS, type AnswerCardData } from "@/lib/drop/rules";
-import { blockAction } from "@/lib/profile/actions";
 import { ReactionButton } from "./reaction-button";
 import { When } from "./when";
 
 // One answer (HUB-02, HUB-03; J3, pulse answerItem): an article whose heading names the author, the neutral date
 // (D-036), the text collapsed after a few lines with a button (E14), the reaction (D-056) and the comments link.
 // The viewer's own answer shows its count without a button, and Edit and Delete. Muted authors collapse to one
-// line with "Prikaži" (SAFE-03, the author is never told). The ⋯ menu offers the link and Block (D-075); Mute
-// and Report join it in step 5.9 with their own flows.
+// line with "Prikaži" (SAFE-03, the author is never told). The ⋯ menu offers the link, Mute, Block and Report
+// (D-075, step 5.9; the dialogs are shared with the profile and comment menus).
 
 // i18n-keys: drop.error.signedOut drop.error.notAllowed drop.error.notAvailable drop.error.alreadyAnswered
 // i18n-keys: drop.error.tooMany drop.error.paused drop.error.tooLong drop.error.empty drop.error.generic
+// i18n-keys: drop.error.restricted
 
 export const EDIT_EVENT = "gr:edit-answer";
 
@@ -39,6 +48,7 @@ export function AnswerCard({
   shareUrl: string;
 }) {
   const t = useTranslations("drop");
+  const ts = useTranslations("safety");
   const toast = useToast();
   const router = useRouter();
   const hid = useId();
@@ -46,10 +56,17 @@ export function AnswerCard({
   const [open, setOpen] = useState(solo);
   const [shown, setShown] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [confirm, setConfirm] = useState<"delete" | "block" | null>(null);
+  const [confirm, setConfirm] = useState(false);
   const [pending, startTransition] = useTransition();
   const H = `h${headingLevel}` as const;
   const long = !solo && a.body.length > CLAMP_CHARS;
+  const safety = useSafety({
+    person: a.author,
+    report: { type: "answer", id: a.id, preview: excerptOf(a.body) },
+    muted: a.muted,
+    // On the answer's own page the author is gone from view after a block: back to the question (J5).
+    afterBlock: solo ? () => router.replace(`/drop/${date}`) : undefined,
+  });
 
   if (a.muted && !shown && !solo) {
     return (
@@ -94,15 +111,17 @@ export function AnswerCard({
       } else toast.show(t(`error.${r.reason}`));
     });
 
-  const block = (close: () => void) =>
-    startTransition(async () => {
-      const r = await blockAction(a.author.id);
-      close();
-      if (r.ok) {
-        toast.show(t("blocked", { username: a.author.username }));
-        router.refresh();
-      } else toast.show(t("error.generic"));
-    });
+  const pick = (fn: () => void) => () => {
+    setMenu(false);
+    fn();
+  };
+
+  const unmute = async () => {
+    setMenu(false);
+    const r = await safety.unmute();
+    toast.show(r.ok ? ts("mute.undone") : ts(`error.${r.reason}`));
+    if (r.ok) router.refresh();
+  };
 
   return (
     <article className={`ans${a.mine && !solo ? " ans-mine" : ""}`} aria-labelledby={hid}>
@@ -172,11 +191,7 @@ export function AnswerCard({
             <IconPencil />
             {t("edit")}
           </button>
-          <button
-            type="button"
-            className="btn btn-danger btn-sm"
-            onClick={() => setConfirm("delete")}
-          >
+          <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirm(true)}>
             <IconX />
             {t("delete")}
           </button>
@@ -193,31 +208,32 @@ export function AnswerCard({
             <IconShare />
             {t("shareAnswer")}
           </button>
-          <button
-            type="button"
-            className="menu-item"
-            onClick={() => {
-              setMenu(false);
-              setConfirm("block");
-            }}
-          >
+          {safety.muted ? (
+            <button type="button" className="menu-item" onClick={unmute}>
+              <IconBell />
+              {ts("menu.unmute")}
+            </button>
+          ) : (
+            <button type="button" className="menu-item" onClick={pick(safety.openMute)}>
+              <IconBell />
+              {ts("menu.mute", { username: a.author.username })}
+            </button>
+          )}
+          <button type="button" className="menu-item" onClick={pick(safety.openBlock)}>
             <IconBlock />
-            {t("blockAuthor", { username: a.author.username })}
+            {ts("menu.block", { username: a.author.username })}
           </button>
-          <p className="menu-note">{t("moreSoon")}</p>
+          <button type="button" className="menu-item" onClick={pick(safety.openReport)}>
+            <IconWarning />
+            {ts("menu.reportAnswer")}
+          </button>
         </div>
       </Dialog>
 
-      <Dialog
-        title={
-          confirm === "block" ? t("blockTitle", { username: a.author.username }) : t("deleteTitle")
-        }
-        isOpen={confirm !== null}
-        onOpenChange={(o) => !o && setConfirm(null)}
-      >
+      <Dialog title={t("deleteTitle")} isOpen={confirm} onOpenChange={setConfirm}>
         {(close) => (
           <div className="form-stack">
-            <p>{confirm === "block" ? t("blockText") : t("deleteText")}</p>
+            <p>{t("deleteText")}</p>
             <div className="foot-row">
               <button type="button" className="btn btn-secondary" onClick={close}>
                 {t("cancel")}
@@ -226,16 +242,23 @@ export function AnswerCard({
                 type="button"
                 className="btn btn-danger"
                 disabled={pending}
-                onClick={() => (confirm === "block" ? block(close) : remove(close))}
+                onClick={() => remove(close)}
               >
-                {confirm === "block" ? t("blockConfirm") : t("deleteConfirm")}
+                {t("deleteConfirm")}
               </button>
             </div>
           </div>
         )}
       </Dialog>
+      {safety.dialogs}
     </article>
   );
+}
+
+/** The quoted excerpt in the report sheet (step 2): the first 140 characters. */
+function excerptOf(body: string): string {
+  const flat = body.replace(/s+/g, " ").trim();
+  return flat.length > 140 ? `${flat.slice(0, 139).trimEnd()}…` : flat;
 }
 
 /** A deleted or removed answer that keeps its replies readable (J3 E5, E6). */

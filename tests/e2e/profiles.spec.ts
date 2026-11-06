@@ -190,11 +190,16 @@ test.describe("profiles and following (J4)", () => {
     // The owner blocks from the ⋯ menu on the requester's profile, with the facts in the confirmation (D-075).
     await page.goto(`/@${req.username}`);
     await page.getByRole("button", { name: `Više opcija: profil ${req.displayName}` }).click();
-    await page.getByRole("dialog").getByRole("button", { name: "Blokiraj" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: `Blokiraj @${req.username}` })
+      .click();
     const confirm = page.getByRole("dialog");
-    await expect(confirm.getByText("Praćenja i zahtjevi između vas se uklanjaju")).toBeVisible();
-    await confirm.getByRole("button", { name: "Blokiraj" }).click();
-    await expect(toast(page, `@${req.username} je na popisu blokiranih`)).toBeVisible();
+    await expect(
+      confirm.getByText("Praćenje prestaje u oba smjera, a zahtjevi se brišu."),
+    ).toBeVisible();
+    await confirm.getByRole("button", { name: "Blokiraj", exact: true }).click();
+    await expect(toast(page, `Blokirano. @${req.username}`)).toBeVisible();
 
     // E1: the pending request is gone; the blocked side gets SYS-01 with 404 and finds nothing in search.
     await page.goto("/activity/requests");
@@ -214,8 +219,11 @@ test.describe("profiles and following (J4)", () => {
     await page.goto(`/@${req.username}`);
     await expect(page.getByText("Ovaj račun je na tvom popisu blokiranih")).toBeVisible();
     await expectNoAxeViolations(page);
+    // Unblock asks first and says follows do not come back (J5, step 5.9).
     await page.getByRole("button", { name: "Odblokiraj" }).click();
-    await expect(toast(page, "Blokada je uklonjena.")).toBeVisible();
+    await expect(page.getByRole("dialog").getByText("Praćenje se ne vraća samo.")).toBeVisible();
+    await page.getByRole("dialog").getByRole("button", { name: "Odblokiraj" }).click();
+    await expect(toast(page, `Odblokirano: @${req.username}.`)).toBeVisible();
     await expect(relation(page, "Prati")).toBeVisible();
     await other.page.goto(`/@${owner.username}`);
     await expect(relation(other.page, "Zatraži praćenje")).toBeVisible();

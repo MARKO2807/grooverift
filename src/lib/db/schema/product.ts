@@ -592,8 +592,22 @@ export const moderationCase = pgTable(
     deadline: at("deadline"),
     createdAt: createdAt(),
     updatedAt: at("updated_at").notNull().defaultNow(),
+    /** Step 5.9: "action" (an enforcement action was taken) or "none" (no violation found). */
+    outcome: text("outcome"),
+    decidedBy: userRefNull("decided_by"),
+    decidedAt: at("decided_at"),
   },
-  (t) => [index("moderation_case_state_idx").on(t.state, t.priority, t.createdAt)],
+  (t) => [
+    index("moderation_case_state_idx").on(t.state, t.priority, t.createdAt),
+    // J5 E4: one open case per reported object; every further report joins it.
+    uniqueIndex("moderation_case_open_target_uq")
+      .on(t.targetType, t.targetId)
+      .where(sql`${t.state} in ('open', 'in_progress')`),
+    check(
+      "moderation_case_outcome",
+      sql`${t.outcome} is null or ${t.outcome} in ('action', 'none')`,
+    ),
+  ],
 );
 
 /** The reporter id never leaves the staff API (matrix: reporterIdentity). */
@@ -605,6 +619,8 @@ export const report = pgTable(
     targetType: text("target_type").notNull(),
     targetId: uuid("target_id").notNull(),
     targetOwnerId: userRefNull("target_owner_id"),
+    /** The reported member's handle when the report was made (SAFE-04 shows it; never a live lookup, review 5.9 M4). */
+    targetHandle: text("target_handle"),
     category: reportCategory("category").notNull(),
     details: text("details"),
     status: reportStatus("status").notNull().default("open"),
@@ -614,6 +630,11 @@ export const report = pgTable(
   (t) => [
     index("report_case_idx").on(t.caseId),
     index("report_reporter_idx").on(t.reporterId, t.createdAt),
+    // One open report per reporter and object: a second tap answers "received" without a new row.
+    uniqueIndex("report_open_uq")
+      .on(t.reporterId, t.targetType, t.targetId)
+      .where(sql`${t.status} in ('open', 'in_review')`),
+    check("report_details_len", sql`${t.details} is null or char_length(${t.details}) <= 500`),
   ],
 );
 
@@ -635,22 +656,42 @@ export const enforcementAction = pgTable(
     decidedBy: userRefNull("decided_by"),
     revokedAt: at("revoked_at"),
     createdAt: createdAt(),
+    /** SAFE-06: the member may appeal until this moment (DSA Art. 20(1): at least six months). */
+    appealUntil: at("appeal_until"),
+    /** SAFE-07: the member saw the full-screen notice of a restriction once ("Nastavi"). */
+    acknowledgedAt: at("acknowledged_at"),
+    /** The decision also removed the reported answer or comment (e.g. "removed, with a warning", D-075). */
+    removesContent: boolean("removes_content").notNull().default(false),
   },
-  (t) => [index("enforcement_subject_idx").on(t.subjectUserId, t.startsAt)],
+  (t) => [
+    index("enforcement_subject_idx").on(t.subjectUserId, t.startsAt),
+    check("enforcement_sor_len", sql`char_length(${t.statementOfReasons}) between 1 and 2000`),
+  ],
 );
 
-export const appeal = pgTable("appeal", {
-  id: id(),
-  actionId: uuid("action_id")
-    .notNull()
-    .references(() => enforcementAction.id),
-  appellantId: userRefNull("appellant_id"),
-  text: text("text").notNull(),
-  status: appealStatus("status").notNull().default("open"),
-  reviewerId: userRefNull("reviewer_id"),
-  decidedAt: at("decided_at"),
-  createdAt: createdAt(),
-});
+export const appeal = pgTable(
+  "appeal",
+  {
+    id: id(),
+    actionId: uuid("action_id")
+      .notNull()
+      .references(() => enforcementAction.id),
+    appellantId: userRefNull("appellant_id"),
+    text: text("text").notNull(),
+    status: appealStatus("status").notNull().default("open"),
+    reviewerId: userRefNull("reviewer_id"),
+    decidedAt: at("decided_at"),
+    createdAt: createdAt(),
+    /** ADM-11: the reviewer's reasons, shown to the member with the outcome (DSA Art. 20(5)). */
+    outcomeText: text("outcome_text"),
+  },
+  (t) => [
+    // SAFE-06, basic appeal: one appeal per decision.
+    uniqueIndex("appeal_action_uq").on(t.actionId),
+    index("appeal_status_idx").on(t.status, t.createdAt),
+    check("appeal_text_len", sql`char_length(${t.text}) between 1 and 1000`),
+  ],
+);
 
 /** Invariant 7: every staff view of private content or evidence is recorded. Append-only (migration trigger). */
 export const evidenceAccess = pgTable(

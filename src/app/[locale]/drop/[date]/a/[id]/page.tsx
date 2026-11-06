@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { answerThread } from "@/lib/data/answers";
 import { publishedOn } from "@/lib/data/drops";
 import { loadOwner } from "@/lib/data/facts";
+import { activeRestriction } from "@/lib/data/safety";
 import { dropLocale, toCard, toComment } from "@/lib/drop/present";
 import { env } from "@/lib/env";
 import { flagState } from "@/lib/flags";
@@ -56,10 +57,11 @@ export default async function AnswerPage({ params }: { params: Params }) {
   const thread = await answerThread(viewer, id);
   if (!thread || thread.questionId !== q.id) notAvailable();
   const t = await getTranslations("drop");
-  const [dropPaused, commentsPaused, me] = await Promise.all([
+  const [dropPaused, commentsPaused, me, restriction] = await Promise.all([
     flagState("daily_drop").then((s) => s === "paused"),
     flagState("comments").then((s) => s === "paused"),
     loadOwner(viewer.id),
+    activeRestriction(viewer.id),
   ]);
   const a = thread.answer;
   const who = a.kind === "answer" ? a.author.displayName : null;
@@ -103,7 +105,15 @@ export default async function AnswerPage({ params }: { params: Params }) {
       {dropPaused || commentsPaused ? (
         <FeaturePaused feature={dropPaused ? "daily_drop" : "comments"} />
       ) : a.kind === "answer" ? (
-        <CommentForm answerId={a.id} privateProfile={me?.profile !== "public"} />
+        <CommentForm
+          answerId={a.id}
+          privateProfile={me?.profile !== "public"}
+          restriction={
+            restriction
+              ? { until: restriction.endsAt.toISOString(), noticeId: restriction.id }
+              : null
+          }
+        />
       ) : (
         <p className="hint">{t("noNewComments")}</p>
       )}

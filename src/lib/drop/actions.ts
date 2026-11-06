@@ -63,13 +63,15 @@ async function guarded<T>(where: string, run: () => Promise<T>, failed: T): Prom
 const GENERIC = { ok: false, reason: "generic" } as const;
 
 const mapReason = (r: string): DropFailure =>
-  r === "already-answered"
-    ? "alreadyAnswered"
-    : r === "too-many"
-      ? "tooMany"
-      : r === "not-allowed"
-        ? "notAllowed"
-        : "notAvailable";
+  r === "restricted"
+    ? "restricted"
+    : r === "already-answered"
+      ? "alreadyAnswered"
+      : r === "too-many"
+        ? "tooMany"
+        : r === "not-allowed"
+          ? "notAllowed"
+          : "notAvailable";
 
 /** Post an answer to the question that was on screen (the composer carries its id, J3 E1). */
 export async function postAnswerAction(questionId: string, body: string): Promise<DropResult> {

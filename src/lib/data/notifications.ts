@@ -12,13 +12,16 @@ import { and, desc, eq, gte, inArray, isNull, lte, sql } from "drizzle-orm";
 import { relationship, ownerVisibleAtAll, type Graph } from "@/lib/authz";
 import { db, type Db } from "@/lib/db/client";
 import {
+  appeal,
   comment,
   dailyDropAnswer as answer,
   dailyDropQuestion as question,
+  enforcementAction,
   follow,
   mute,
   notification,
   reaction,
+  report,
 } from "@/lib/db/schema";
 import { utcDate } from "@/lib/editorial/rules";
 import { publishedOn } from "./drops";
@@ -26,6 +29,9 @@ import { loadGraphs, loadOwners, loadViewer, type OwnerRecord } from "./facts";
 import { pendingRequestCount } from "./graph";
 
 export const NOTIFICATION_TYPES = ["comment", "reaction", "follow", "follow_accept"] as const;
+/** From GrooveRift, not from a person (step 5.9): they arrive even from a blocked staff member (J5 E3). */
+export const SYSTEM_TYPES = ["moderation", "appeal", "report_update"] as const;
+export type SystemType = (typeof SYSTEM_TYPES)[number];
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
 /** How long a group stays open: a new event inside the window marks the entry unread instead of adding one. */
@@ -125,6 +131,32 @@ export async function notify(input: NotifyInput): Promise<boolean> {
   }
 }
 
+/**
+ * A notice from GrooveRift (a moderation decision, an appeal outcome, the outcome of the member's own report).
+ * No actor, no grouping, no content: the target id only, re-checked at render like every other row.
+ */
+export async function notifySystem(input: {
+  recipientId: string;
+  type: SystemType;
+  targetId: string;
+}): Promise<boolean> {
+  try {
+    await db()
+      .insert(notification)
+      .values({
+        recipientId: input.recipientId,
+        type: input.type,
+        actorId: null,
+        targetType: input.type === "report_update" ? "report" : "enforcement_action",
+        targetId: input.targetId,
+      });
+    return true;
+  } catch (error) {
+    console.error("[notify] failed:", input.type, error instanceof Error ? error.name : "unknown");
+    return false;
+  }
+}
+
 /** A block removes every notification between the pair, both ways (J5: "removed or rendered without details"). */
 export async function dropNotificationsBetween(tx: Tx | Db, a: string, b: string): Promise<void> {
   await tx.delete(notification).where(
@@ -182,7 +214,16 @@ export type ActivityItem =
       href: string;
     }
   | { kind: "follow" | "follow_accept"; id: string; at: Date; unread: boolean; actor: Person }
-  | { kind: "drop"; id: string; at: Date; unread: false; question: string; href: string };
+  | { kind: "drop"; id: string; at: Date; unread: false; question: string; href: string }
+  | {
+      kind: "moderation" | "appeal" | "report_update";
+      id: string;
+      at: Date;
+      unread: boolean;
+      /** moderation: the decision kind; appeal: upheld or overturned; report_update: action or none. */
+      detail: string;
+      href: string;
+    };
 
 const excerpt = (body: string) => {
   const flat = body.replace(/\s+/g, " ").trim();
@@ -269,6 +310,40 @@ export async function activityFor(viewerId: string, locale: "hr" | "en"): Promis
         .orderBy(desc(reaction.createdAt))
     : [];
 
+  // System notices (step 5.9): only while the decision, appeal or report is still the viewer's own.
+  const sysIds = (t: SystemType) =>
+    rows.filter((r) => r.type === t && r.targetId).map((r) => r.targetId!);
+  const actionIds = [...sysIds("moderation"), ...sysIds("appeal")];
+  const reportIds = sysIds("report_update");
+  const [actions, appeals, reports] = await Promise.all([
+    actionIds.length
+      ? db()
+          .select({ id: enforcementAction.id, kind: enforcementAction.kind })
+          .from(enforcementAction)
+          .where(
+            and(
+              inArray(enforcementAction.id, actionIds),
+              eq(enforcementAction.subjectUserId, viewerId),
+            ),
+          )
+      : [],
+    actionIds.length
+      ? db()
+          .select({ actionId: appeal.actionId, status: appeal.status })
+          .from(appeal)
+          .where(and(inArray(appeal.actionId, actionIds), eq(appeal.appellantId, viewerId)))
+      : [],
+    reportIds.length
+      ? db()
+          .select({ id: report.id, status: report.status })
+          .from(report)
+          .where(and(inArray(report.id, reportIds), eq(report.reporterId, viewerId)))
+      : [],
+  ]);
+  const actionKind = new Map(actions.map((a) => [a.id, a.kind as string]));
+  const appealStatus = new Map(appeals.map((a) => [a.actionId, a.status as string]));
+  const reportStatus = new Map(reports.map((r) => [r.id, r.status as string]));
+
   // Everyone who appears: actors of rows and every reactor.
   const people = [
     ...new Set([
@@ -320,8 +395,31 @@ export async function activityFor(viewerId: string, locale: "hr" | "en"): Promis
   const items: ActivityItem[] = [];
   for (const r of rows) {
     const unread = !r.readAt;
-    const type = r.type as NotificationType;
-    if (type === "comment") {
+    const type = r.type as NotificationType | SystemType;
+    if (type === "moderation" || type === "appeal") {
+      const kind = actionKind.get(r.targetId ?? "");
+      const status = appealStatus.get(r.targetId ?? "");
+      if (!kind || (type === "appeal" && (!status || status === "open"))) continue;
+      items.push({
+        kind: type,
+        id: r.id,
+        at: r.createdAt,
+        unread,
+        detail: type === "appeal" ? status! : kind,
+        href: `/settings/status/notices/${r.targetId}`,
+      });
+    } else if (type === "report_update") {
+      const status = reportStatus.get(r.targetId ?? "");
+      if (status !== "resolved" && status !== "dismissed") continue;
+      items.push({
+        kind: type,
+        id: r.id,
+        at: r.createdAt,
+        unread,
+        detail: status === "resolved" ? "action" : "none",
+        href: `/settings/status/reports/${r.targetId}`,
+      });
+    } else if (type === "comment") {
       const c = commentById.get(r.targetId ?? "");
       const actor = visible(r.actorId);
       if (!c || !actor || !c.date) continue;

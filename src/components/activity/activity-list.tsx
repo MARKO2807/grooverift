@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { Avatar } from "@/components/profile/avatar";
 import { When } from "@/components/drop/when";
 import { Wave } from "@/components/drop/reaction-button";
-import { IconCalendar } from "@/components/ui/icons";
+import { IconCalendar, IconShield } from "@/components/ui/icons";
 import { markActivityReadAction } from "@/lib/activity/actions";
 
 type Person = { username: string; displayName: string };
@@ -32,10 +32,20 @@ export type ActivityRow =
       href: string;
     }
   | { kind: "follow" | "follow_accept"; id: string; at: string; unread: boolean; actor: Person }
-  | { kind: "drop"; id: string; at: string; unread: false; question: string; href: string };
+  | { kind: "drop"; id: string; at: string; unread: false; question: string; href: string }
+  | {
+      kind: "moderation" | "appeal" | "report_update";
+      id: string;
+      at: string;
+      unread: boolean;
+      detail: string;
+      href: string;
+    };
 
 type Group = "today" | "week" | "earlier";
 // i18n-keys: activity.group.today activity.group.week activity.group.earlier
+// i18n-keys: activity.moderation activity.appeal.upheld activity.appeal.overturned
+// i18n-keys: activity.report.action activity.report.none
 
 /** Danas / Ovaj tjedan / Ranije (D-068 (4)) by the member's own calendar day; the server groups by UTC day. */
 function groupOf(at: string, now: Date, local: boolean): Group {
@@ -92,6 +102,12 @@ export function ActivityList({ rows, upTo }: { rows: ActivityRow[]; upTo: string
         return t.rich("followAccept", { name: r.actor.displayName, b });
       case "drop":
         return t.rich("drop", { question: r.question, b });
+      case "moderation":
+        return t.rich("moderation", { b });
+      case "appeal":
+        return t.rich(`appeal.${r.detail === "overturned" ? "overturned" : "upheld"}`, { b });
+      case "report_update":
+        return t.rich(`report.${r.detail === "action" ? "action" : "none"}`, { b });
     }
   };
 
@@ -102,11 +118,22 @@ export function ActivityList({ rows, upTo }: { rows: ActivityRow[]; upTo: string
           <IconCalendar />
         </span>
       );
+    if ("detail" in r)
+      return (
+        <span className="act-ic" aria-hidden="true">
+          <IconShield />
+        </span>
+      );
     const who = r.kind === "reaction" ? r.actors[0]! : r.actor;
     return <Avatar name={who.displayName} size="sm" />;
   };
 
-  const href = (r: ActivityRow) => ("href" in r ? r.href : `/@${r.actor.username}`);
+  const href = (r: ActivityRow) =>
+    "href" in r
+      ? r.href
+      : r.kind === "follow" || r.kind === "follow_accept"
+        ? `/@${r.actor.username}`
+        : "/activity";
 
   return (
     <div className="act-groups">

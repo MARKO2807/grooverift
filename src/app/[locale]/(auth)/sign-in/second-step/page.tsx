@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { safeReturnTo } from "@/lib/routing/paths";
 import { redirect } from "@/i18n/navigation";
 import { AuthScreen } from "@/components/auth/auth-screen";
 import { SecondStepForm } from "@/components/auth/second-step-form";
@@ -24,10 +25,7 @@ export default async function SecondStepPage({
   const sp = await searchParams;
   if (await getSession()) redirect({ href: "/home", locale });
   const t = await getTranslations("auth.secondStep");
-  const returnTo =
-    sp.returnTo && sp.returnTo.startsWith("/") && !sp.returnTo.startsWith("//")
-      ? sp.returnTo
-      : "/home";
+  const returnTo = safeReturnTo(sp.returnTo);
   return (
     <AuthScreen title={t("title")} icon={<IconShield />} centered>
       <SecondStepForm returnTo={returnTo} />

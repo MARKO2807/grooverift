@@ -28,6 +28,7 @@ export type DropFailure =
   | "paused"
   | "tooLong"
   | "empty"
+  | "restricted"
   | "generic";
 
 /** An answer as the client components receive it (dates as ISO strings). */

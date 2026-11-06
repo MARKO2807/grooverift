@@ -5,25 +5,35 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Avatar } from "@/components/profile/avatar";
 import { Dialog } from "@/components/ui/dialog";
-import { IconLock, IconUsers, IconWarning } from "@/components/ui/icons";
+import {
+  IconBell,
+  IconBlock,
+  IconLock,
+  IconMore,
+  IconUsers,
+  IconWarning,
+} from "@/components/ui/icons";
 import { useToast } from "@/components/ui/toast";
+import { useSafety } from "@/components/safety/safety-dialogs";
+import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { deleteCommentAction, postCommentAction } from "@/lib/drop/actions";
 import { COMMENT_MAX, type DropFailure } from "@/lib/drop/rules";
 import { When } from "./when";
 
 // Comments under one answer (HUB-03; J3 "replies", pulse answer screen). Flat in the alpha, oldest first. A blocked
 // pair or a hidden account shows "Ovaj komentar nije dostupan." (D-019, S-17); a muted author collapses with
-// "Prikaži" (SAFE-03). The composer names its audience (D-020: everyone who can see the answer, also when the
+// "Prikaži" (SAFE-03). Other members' comments carry a ⋯ menu with Mute, Block and Report (step 5.9). The composer names its audience (D-020: everyone who can see the answer, also when the
 // commenter's profile is private) and keeps the text when posting fails (JR4).
 
 // i18n-keys: drop.error.signedOut drop.error.notAllowed drop.error.notAvailable drop.error.alreadyAnswered
 // i18n-keys: drop.error.tooMany drop.error.paused drop.error.tooLong drop.error.empty drop.error.generic
+// i18n-keys: drop.error.restricted
 
 export type CommentData =
   | {
       kind: "comment";
       id: string;
-      author: { username: string; displayName: string };
+      author: { id: string; username: string; displayName: string };
       body: string;
       createdAt: string;
       mine: boolean;
@@ -38,7 +48,23 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
   const hid = useId();
   const [shown, setShown] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [menu, setMenu] = useState(false);
   const [pending, startTransition] = useTransition();
+  const ts = useTranslations("safety");
+  const flat = c.body.replace(/s+/g, " ").trim();
+  const safety = useSafety({
+    person: c.author,
+    report: {
+      type: "comment",
+      id: c.id,
+      preview: flat.length > 140 ? `${flat.slice(0, 139).trimEnd()}…` : flat,
+    },
+    muted: c.muted,
+  });
+  const pick = (fn: () => void) => () => {
+    setMenu(false);
+    fn();
+  };
 
   if (c.muted && !shown)
     return (
@@ -79,8 +105,46 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
         <span className="ans-time">
           <When at={c.createdAt} />
         </span>
+        {c.mine ? null : (
+          <button
+            type="button"
+            className="iconbtn ans-more"
+            aria-label={ts("menu.commentMore", { name: c.author.displayName })}
+            aria-haspopup="dialog"
+            onClick={() => setMenu(true)}
+          >
+            <IconMore />
+          </button>
+        )}
       </header>
       <p className="com-text">{c.body}</p>
+      {c.mine ? null : (
+        <>
+          <Dialog
+            title={ts("menu.commentTitle", { username: c.author.username })}
+            isOpen={menu}
+            onOpenChange={setMenu}
+          >
+            <div className="menu">
+              {safety.muted ? null : (
+                <button type="button" className="menu-item" onClick={pick(safety.openMute)}>
+                  <IconBell />
+                  {ts("menu.mute", { username: c.author.username })}
+                </button>
+              )}
+              <button type="button" className="menu-item" onClick={pick(safety.openBlock)}>
+                <IconBlock />
+                {ts("menu.block", { username: c.author.username })}
+              </button>
+              <button type="button" className="menu-item" onClick={pick(safety.openReport)}>
+                <IconWarning />
+                {ts("menu.reportComment")}
+              </button>
+            </div>
+          </Dialog>
+          {safety.dialogs}
+        </>
+      )}
       {c.mine ? (
         <button type="button" className="link com-del" onClick={() => setConfirm(true)}>
           {t("delete")}
@@ -138,9 +202,11 @@ export function CommentList({ comments }: { comments: CommentData[] }) {
 export function CommentForm({
   answerId,
   privateProfile,
+  restriction = null,
 }: {
   answerId: string;
   privateProfile: boolean;
+  restriction?: Restriction | null;
 }) {
   const t = useTranslations("drop");
   const toast = useToast();
@@ -151,6 +217,7 @@ export function CommentForm({
   const [pending, startTransition] = useTransition();
   const length = text.trim().length;
   const over = length > COMMENT_MAX;
+  if (restriction) return <RestrictionHint r={restriction} />;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();

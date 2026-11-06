@@ -39,7 +39,14 @@ export async function requireRole(...roles: Role[]): Promise<Session> {
   if (!roles.includes(role)) throw new Forbidden("ROLE");
   if (role !== "member" && !session.user.twoFactorEnabled)
     throw new Forbidden("TWO_FACTOR_REQUIRED");
+  // Review 5.9 L1: a suspended or banned account keeps no staff power (status read fresh, not from the session).
+  if (role !== "member" && !(await isActive(session.user.id))) throw new Forbidden("ROLE");
   return session;
+}
+
+async function isActive(userId: string): Promise<boolean> {
+  const { loadViewer } = await import("@/lib/data/facts");
+  return (await loadViewer({ id: userId, role: "member" })).status === "active";
 }
 
 export type StaffGate =

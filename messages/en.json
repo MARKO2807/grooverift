@@ -266,7 +266,8 @@
       "audit": "Audit log",
       "label": "Admin menu",
       "invites": "Invitations",
-      "editorial": "Editorial"
+      "editorial": "Editorial",
+      "moderation": "Moderation"
     },
     "overview": {
       "role": "Your role: {role}",
@@ -275,7 +276,12 @@
       "audit": "Audit entries",
       "title": "Overview",
       "dropTitle": "Daily Drop",
-      "toEditorial": "To the editorial calendar"
+      "toEditorial": "To the editorial calendar",
+      "modTitle": "Moderation",
+      "modUrgent": "Urgent cases: {count}",
+      "modOpen": "Open: {count}",
+      "modAppeals": "Appeals: {count}",
+      "toModeration": "Open moderation"
     },
     "members": {
       "title": "Members",
@@ -1023,7 +1029,6 @@
     "cancel": "Cancel",
     "more": "More options: profile of {name}",
     "moreTitle": "@{username}",
-    "moreSoon": "Mute and Report arrive soon.",
     "share": "Share",
     "shareCopied": "Link copied.",
     "shareFailed": "Copy the link: {url}",
@@ -1037,8 +1042,6 @@
     "blocked": "@{username} is on your block list. You do not see each other while the block stands.",
     "blockedTitle": "This account is on your block list",
     "blockedText": "You do not see each other while the block stands. Follows were removed both ways.",
-    "unblock": "Unblock",
-    "unblocked": "Block removed. Follows do not come back on their own.",
     "privateTitle": "This profile is private.",
     "privateText": "Request to follow to see the Music DNA and the answer history. Daily Drop answers are visible with every question anyway.",
     "minimalNote": "Members see the rest of the profile.",
@@ -1158,16 +1161,10 @@
     "edited": "edited",
     "more": "More options for the answer: {name}",
     "moreTitle": "Answer: @{username}",
-    "moreSoon": "Mute and report are coming soon.",
     "shareAnswer": "Share link",
     "shareQuestion": "Share question",
     "linkCopied": "Link copied.",
     "linkFailed": "Copy the link: {url}",
-    "blockAuthor": "Block @{username}",
-    "blockTitle": "Block @{username}?",
-    "blockText": "You no longer see each other while signed in: profile, answers and comments disappear both ways. Follows and requests between you are removed, both ways. They are not notified. You can unblock any time; follows do not come back.",
-    "blockConfirm": "Block",
-    "blocked": "@{username} is on your block list. You do not see each other while the block stands.",
     "readMore": "Read more",
     "readLess": "Show less",
     "reaction": "Like",
@@ -1243,7 +1240,8 @@
       "paused": "The Daily Drop is paused. Your text is still here.",
       "tooLong": "The text is too long. Shorten it to the limit.",
       "empty": "Write something before posting.",
-      "generic": "Posting didn't work. Your text is still here; try again."
+      "generic": "Posting didn't work. Your text is still here; try again.",
+      "restricted": "Posting is restricted for you right now."
     },
     "first": {
       "title": "The first question arrives on {date}",
@@ -1280,6 +1278,445 @@
     "drop": "<b>The Daily Drop is here:</b> “{question}”",
     "new": ", new",
     "empty": "No notifications yet.",
-    "emptyText": "Comments and reactions on your answers and new followers show up here."
+    "emptyText": "Comments and reactions on your answers and new followers show up here.",
+    "moderation": "<b>A moderation decision</b> about your account or content. Read the reasons.",
+    "appeal": {
+      "upheld": "<b>Appeal reviewed:</b> the decision stands.",
+      "overturned": "<b>Appeal accepted:</b> the decision is reversed."
+    },
+    "report": {
+      "action": "<b>Your report was decided:</b> action was taken.",
+      "none": "<b>Your report was decided:</b> no breach was found."
+    }
+  },
+  "safety": {
+    "cancel": "Cancel",
+    "menu": {
+      "mute": "Mute @{username}",
+      "unmute": "Unmute",
+      "block": "Block @{username}",
+      "reportProfile": "Report profile",
+      "reportAnswer": "Report answer",
+      "reportComment": "Report comment",
+      "commentMore": "More for the comment by {name}",
+      "commentTitle": "Comment by @{username}"
+    },
+    "mute": {
+      "title": "Mute @{username}?",
+      "text": "Their answers and comments will fold into one line you can open. They won't know, and nothing else changes.",
+      "confirm": "Mute",
+      "done": "Muted: @{username}. They don't know.",
+      "undo": "Undo",
+      "undone": "Unmuted."
+    },
+    "block": {
+      "title": "Block @{username}?",
+      "fact1": "Neither you nor @{username} will see each other's profiles, answers and comments while signed in.",
+      "fact2": "Follows end both ways, and requests are removed.",
+      "fact3": "They aren't notified, but they may notice they can no longer see your profile.",
+      "fact4": "The name and bio of a public profile can still be opened without signing in, through a link. A private profile is the stronger option.",
+      "fact5": "You can unblock any time. Follows don't come back on their own.",
+      "alsoReport": "Also report this account",
+      "confirm": "Block",
+      "done": "Blocked. @{username} can no longer see your profile or answers."
+    },
+    "unblock": {
+      "button": "Unblock",
+      "title": "Unblock @{username}?",
+      "fact1": "Follows don't come back on their own.",
+      "fact2": "@{username} can see your profile and answers again, depending on your privacy settings.",
+      "fact3": "They aren't notified.",
+      "confirm": "Unblock",
+      "done": "Unblocked: @{username}."
+    },
+    "report": {
+      "title": "Report",
+      "step": "Report · step {n} of 3",
+      "question": "What's wrong?",
+      "pick": "Choose what's wrong.",
+      "next": "Continue",
+      "back": "Back",
+      "detailsLabel": "Details",
+      "optional": "optional",
+      "detailsHint": "What happened? It helps the moderator.",
+      "chars": "{count} / {max}",
+      "private": "The person you report never learns who reported them. A person reviews every report.",
+      "send": "Send report",
+      "retry": "Try again",
+      "copyright": "For copyright the law asks for a separate form with details about the work and the right holder. It works without an account too.",
+      "openForm": "Open the form",
+      "doneTitle": "Report received.",
+      "doneText": "A person on our team reviews it. You'll see the decision in Settings, under Account status → My reports. In the alpha this may take a few days.",
+      "also": "Anything else about @{username}?",
+      "done": "Done"
+    },
+    "target": {
+      "profile": "Profile @{username}",
+      "answer": "Answer by @{username}",
+      "comment": "Comment by @{username}"
+    },
+    "cat": {
+      "harassment": {
+        "name": "Harassment or bullying",
+        "desc": "Insults, humiliation, targeted attacks."
+      },
+      "hate": {
+        "name": "Hate",
+        "desc": "Attacks on people for who they are."
+      },
+      "threat": {
+        "name": "Threats or violence",
+        "desc": "A threat of harm or a call to violence. Reviewed first."
+      },
+      "sexual": {
+        "name": "Sexual content"
+      },
+      "minor": {
+        "name": "Someone under 18",
+        "desc": "An account or content of a minor. Reviewed first."
+      },
+      "impersonation": {
+        "name": "Impersonation",
+        "desc": "Pretends to be another person, an artist or a company. Reviewed first."
+      },
+      "spam": {
+        "name": "Spam or scam"
+      },
+      "copyright": {
+        "name": "Copyright",
+        "desc": "Someone else's music, text or image without permission."
+      },
+      "ai_generated": {
+        "name": "AI content passed off as own",
+        "desc": "Text or images made by AI, presented as human work."
+      },
+      "private_info": {
+        "name": "Someone's private information",
+        "desc": "An address, a number, photos or messages shared without consent."
+      },
+      "other": {
+        "name": "Something else"
+      }
+    },
+    "error": {
+      "signedOut": "Sign in and try again.",
+      "notAllowed": "You can't do this right now.",
+      "notAvailable": "This is no longer available.",
+      "tooMany": "Too many attempts. Wait a little and try again.",
+      "generic": "Something went wrong. Try again.",
+      "invalid": "Check the text: it's empty or too long.",
+      "closed": "The time to appeal has passed.",
+      "exists": "An appeal against this decision was already sent.",
+      "copyright": "For copyright, use the form."
+    },
+    "chip": {
+      "muted": "Muted",
+      "mutedSr": "Muted, only you can see this"
+    },
+    "restricted": {
+      "hint": "Posting is restricted until {date}.",
+      "why": "Why?"
+    },
+    "kind": {
+      "content_removal": "Content removal",
+      "notice": "Note",
+      "warning": "Warning",
+      "restriction": "Restriction",
+      "suspension": "Suspension",
+      "ban": "Permanent closure"
+    },
+    "title": {
+      "notice": "Moderation note",
+      "warning": "Warning",
+      "restriction": "Posting is restricted until {date}",
+      "suspension": "Account suspended until {date}",
+      "ban": "Account permanently closed",
+      "removed": {
+        "answer": "Answer removed",
+        "comment": "Comment removed",
+        "profile": "Profile content removed"
+      },
+      "removedWarning": {
+        "answer": "Answer removed, with a warning",
+        "comment": "Comment removed, with a warning",
+        "profile": "Profile content removed, with a warning"
+      }
+    },
+    "effect": {
+      "content_removal": "The content was removed. No other consequence for the account.",
+      "notice": "No consequence for the account.",
+      "warning": "This is a warning. A further breach may mean a posting restriction.",
+      "restriction": "Until {date} you can't post answers or comments. Reading, reactions and following still work. The restriction ends by itself.",
+      "suspension": "Until {date} you can't use GrooveRift. Your profile, answers and comments are hidden from others meanwhile.",
+      "ban": "The account is permanently closed. Your profile, answers and comments are hidden from others."
+    },
+    "how": {
+      "report": "A member's report and a moderator's review, with no automated decision-making.",
+      "notice": "An illegal content notice (DSA) and a moderator's review, with no automated decision-making.",
+      "staff": "A moderator's review, with no automated decision-making."
+    },
+    "rule": {
+      "respect": "No harassment",
+      "hate": "No hate",
+      "violence": "No threats or violence",
+      "sexual": "No sexual content",
+      "adults": "Adults only",
+      "authentic": "No impersonation",
+      "spam": "No spam or scams",
+      "copyright": "Respect copyright",
+      "ai": "Don't pass off AI as your own work",
+      "privacy": "Respect others' privacy",
+      "illegal": "Nothing illegal"
+    },
+    "itemType": {
+      "answer": "Answer",
+      "comment": "Comment",
+      "profile": "Profile"
+    },
+    "sor": {
+      "what": "What",
+      "rule": "Rule",
+      "decision": "Decision",
+      "how": "How it was decided",
+      "appeal": "Appeal",
+      "dropOf": "Daily Drop {date}",
+      "noCopy": "The copy of the content no longer exists.",
+      "guidelines": "Community Guidelines",
+      "alsoRemoved": "The content was removed.",
+      "reporterHidden": "We don't reveal who reported.",
+      "revoked": "The decision was reversed after an appeal.",
+      "appealUntil": "You can appeal until {date}. Another person on the team reviews appeals where possible.",
+      "appealClosed": "The time to appeal ended on {date}.",
+      "appealNone": "This decision can't be appealed.",
+      "appealSent": "Appeal sent on {date}. Another person on the team reviews it where possible. The decision stays in force meanwhile.",
+      "appealUpheld": "Appeal reviewed: the decision stands.",
+      "appealOverturned": "Appeal accepted: the decision is reversed.",
+      "draft": "Draft: the wording of statements of reasons is still under legal review."
+    },
+    "appeal": {
+      "label": "Why do you think the decision is wrong?",
+      "help": "Another person on the team reviews appeals where possible. The decision stays in force meanwhile.",
+      "empty": "Write why you think the decision is wrong.",
+      "send": "Send appeal",
+      "sent": "Appeal sent. The outcome arrives in Activity and here."
+    },
+    "status": {
+      "title": "Account status",
+      "rowText": "Moderation decisions and your reports",
+      "fine": "Your account is in good standing",
+      "fineText": "No active restrictions.",
+      "restricted": "Posting is restricted until {date}",
+      "restrictedText": "Reading, reactions and following still work.",
+      "readWhy": "Read the reasons",
+      "notices": "Notices and decisions",
+      "noticesCount": "{count, plural, one {# decision} other {# decisions}} · latest {date}",
+      "noticesNone": "Nothing here",
+      "reports": "My reports",
+      "reportsCount": "{count, plural, one {# report} other {# reports}}{open, plural, =0 {} other { · in review}}",
+      "reportsNone": "No reports",
+      "note": "Every moderation decision comes with reasons: what, which rule, what was decided and how to appeal.",
+      "notice": "Decision",
+      "report": "Report",
+      "appealSent": "appeal sent",
+      "revoked": "reversed",
+      "noticesEmpty": "No decisions.",
+      "noticesEmptyText": "If moderation decides anything about your content, the reasons arrive here.",
+      "reportsEmpty": "No reports.",
+      "reportsEmptyText": "You send reports from ⋯ on an answer, a comment or a profile.",
+      "reportsNote": "You only see the status of your own reports. You learn nothing about the other person, and they learn nothing about you.",
+      "waiting": "waiting",
+      "notYet": ", not yet",
+      "outcome": {
+        "action": "Action was taken",
+        "none": "No rule was broken"
+      },
+      "thanksAction": "Thanks for reporting. Action was taken under the Community Guidelines; for privacy reasons we can't say which.",
+      "thanksNone": "Thanks for reporting. Our review found no breach of the Community Guidelines. If it happens again, feel free to report again.",
+      "inReview": "A person reviews your report. In the alpha this may take a few days."
+    },
+    "reportStatus": {
+      "received": "Received",
+      "review": "In review",
+      "done": "Decided"
+    },
+    "lists": {
+      "title": "Blocked and muted",
+      "summary": "Blocked: {blocked} · Muted: {muted}",
+      "nobody": "Nobody",
+      "blocked": "Blocked",
+      "muted": "Muted",
+      "blockedEmpty": "No blocked accounts.",
+      "mutedEmpty": "No muted accounts.",
+      "blockedNote": "Blocked accounts can't see your profile or answers, and you can't see theirs. They aren't notified.",
+      "mutedNote": "You can still visit muted accounts; only their answers and comments are folded. They don't know."
+    },
+    "hold": {
+      "pageTitle": "Account status",
+      "title": {
+        "restriction": "Posting is restricted until {date}",
+        "suspension": "Account suspended until {date}",
+        "ban": "Account permanently closed"
+      },
+      "lead": {
+        "restriction": "Until then you can't post answers or comments. Everything else works: reading, reactions and following. The restriction ends by itself.",
+        "suspension": "Until then you can't use GrooveRift. Your profile and answers are hidden from others. The reasons and the appeal are below.",
+        "ban": "You can no longer use GrooveRift. Your profile and answers are hidden from others. The reasons and the appeal are below."
+      },
+      "why": "Reasons",
+      "continue": "Continue",
+      "signOut": "Sign out"
+    }
+  },
+  "moderation": {
+    "title": "Moderation",
+    "dsa": "DSA",
+    "tabs": {
+      "label": "Moderation",
+      "open": "Open ({count})",
+      "closed": "Decided",
+      "appeals": "Appeals ({count})"
+    },
+    "priority": {
+      "0": "Urgent",
+      "1": "Priority",
+      "2": "Normal"
+    },
+    "target": {
+      "profile": "Profile",
+      "answer": "Answer",
+      "comment": "Comment",
+      "notice": "DSA notice"
+    },
+    "state": {
+      "open": "open",
+      "in_progress": "in progress",
+      "decided": "decided",
+      "closed": "closed"
+    },
+    "outcome": {
+      "action": "Action taken",
+      "none": "No breach"
+    },
+    "kind": {
+      "content_removal": "Content removal only",
+      "notice": "Note",
+      "warning": "Warning",
+      "restriction": "Posting restriction",
+      "suspension": "Suspension",
+      "ban": "Permanent account closure"
+    },
+    "status": {
+      "active": "active account",
+      "suspended": "suspended",
+      "banned": "permanently closed",
+      "deactivated": "deactivated",
+      "pending_deletion": "pending deletion",
+      "deleted": "deleted"
+    },
+    "current": {
+      "live": "The content is still visible.",
+      "deleted": "The author deleted the content.",
+      "removed": "The content was removed.",
+      "missing": "The content no longer exists."
+    },
+    "queue": {
+      "empty": "No open cases.",
+      "emptyClosed": "No decided cases yet.",
+      "meta": "{reports, plural, =0 {no member reports} one {# report} other {# reports}} · {date}",
+      "assignee": {
+        "me": "you're on it",
+        "other": "someone else is on it"
+      },
+      "conflict": {
+        "self": "This case is about you: you can't open it.",
+        "involved": "Conflict of interest: decide only if nobody else can."
+      },
+      "open": "Open",
+      "take": "Take",
+      "other": "Another moderator"
+    },
+    "case": {
+      "back": "Back to moderation",
+      "forbidden": "You can't open this: it's assigned to someone else, it's about you, or you're involved.",
+      "opened": "Opened {date}",
+      "logged": "Every view of the evidence is logged.",
+      "conflict": {
+        "involved": "You're involved in this case: you reported it, or someone in it blocked you. Decide only if nobody else can, and state the reason."
+      },
+      "subject": "Reported member",
+      "copy": "Copy at the time of the report",
+      "captured": "saved {date}",
+      "noCopy": "No copy of the content.",
+      "editedSince": "edited after the report",
+      "openInApp": "Open in the app",
+      "reports": "{count, plural, one {# report} other {# reports}}",
+      "reportN": "Report {n}",
+      "reportersHidden": "Reporters aren't shown, not even to moderators.",
+      "notices": "DSA notices",
+      "url": "Link:",
+      "notifier": "Notifier: {name}, {email}",
+      "notifierNone": "The notifier left no details.",
+      "history": "Earlier decisions about this member",
+      "revoked": "reversed",
+      "decision": "Decision",
+      "byYou": "your decision",
+      "decide": "Decision",
+      "release": "Return to the queue"
+    },
+    "decide": {
+      "outcome": "Outcome",
+      "outcome_none": "No breach of the rules",
+      "outcome_action": "Take action",
+      "noneHelp": "Reporters are told no breach was found. The member the case is about hears nothing.",
+      "kind": "Action",
+      "days": "Duration",
+      "daysN": "{count, plural, one {# day} other {# days}}",
+      "remove": "Also remove the reported content",
+      "rule": "Rule",
+      "statement": "Reasons for the member",
+      "statementHelp": "The member reads this under “Decision”. Say exactly what was breached and why, without naming reporters.",
+      "freshNote": "A suspension or a permanent closure needs a sign-in within the last 15 minutes.",
+      "override": "Why you decide anyway",
+      "overrideHelp": "This goes into the audit log.",
+      "submit": "Decide",
+      "done": "Decision saved."
+    },
+    "appeal": {
+      "title": "Appeals",
+      "empty": "No open appeals.",
+      "meta": "Appeal {sent} · decision {decided}",
+      "own": "This is your decision: someone else should review the appeal.",
+      "ownWarn": "This is your decision. Another person on the team should review the appeal; if there is none, review it carefully and afresh.",
+      "one": "Appeal: {kind}",
+      "decision": "The decision appealed",
+      "memberText": "Appeal text ({date})",
+      "decide": "Appeal outcome",
+      "outcome": "Outcome",
+      "upheld": "The decision stands",
+      "overturned": "The decision is reversed",
+      "text": "Reasons for the member",
+      "textHelp": "The member reads this with the outcome. Reversing restores removed content and the account.",
+      "submit": "Save outcome",
+      "done": "Appeal outcome saved.",
+      "involved": "Conflict of interest: you reported this case or someone in it blocked you. Decide only if nobody else can, and state the reason."
+    },
+    "error": {
+      "forbidden": "You can't do this on this case.",
+      "override": "State why you decide anyway.",
+      "decided": "This was already decided.",
+      "kind": "Choose an action.",
+      "rule": "Choose a rule.",
+      "statement": "Write the reasons for the member.",
+      "statementLong": "The reasons are too long (2,000 characters at most).",
+      "days": "Choose a duration.",
+      "removeTarget": "Content can't be removed here.",
+      "subject": "There's no member behind this: record a note only.",
+      "fresh": "For this action, sign out and sign in again, then try again.",
+      "tooMany": "Too many actions. Wait a little.",
+      "generic": "Something went wrong. Try again.",
+      "text": "Write the reasons for the member.",
+      "gone": "The case is no longer open.",
+      "staffSubject": "An admin account can't be suspended or closed from inside the app."
+    }
   }
 }

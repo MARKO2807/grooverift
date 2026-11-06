@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { Dialog } from "@/components/ui/dialog";
-import { IconBlock, IconMore, IconShare } from "@/components/ui/icons";
+import { IconBell, IconBlock, IconMore, IconShare, IconWarning } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/toast";
-import { blockAction, unblockAction } from "@/lib/profile/actions";
+import { useSafety } from "@/components/safety/safety-dialogs";
 
-// The ⋯ menu on another member's profile (IA10, D-074): Share (public profiles only) and Block with the J5 facts
-// in the confirmation (D-075). Mute and Report join the menu in step 5.9 with their own flows (SAFE-01, SAFE-03).
-// The blocker's own view (J4 B state) offers Unblock.
+// The ⋯ menu on another member's profile (IA10, D-074, D-075): Share (public profiles only), Mute or Unmute, Block
+// and Report, each with its own flow (SAFE-01 to SAFE-03; the "arrive soon" note is gone, D-099 (3)). The blocker's
+// own view (J4 B state) offers Unblock with the J5 facts, and Report (J5 E2: reporting stays possible after a block).
+
+// i18n-keys: safety.error.signedOut safety.error.notAllowed safety.error.notAvailable safety.error.tooMany
+// i18n-keys: safety.error.generic
 
 export function ProfileMenu({
   targetId,
@@ -18,22 +20,24 @@ export function ProfileMenu({
   displayName,
   shareable,
   shareUrl,
+  muted,
 }: {
   targetId: string;
   username: string;
   displayName: string;
   shareable: boolean;
   shareUrl: string;
+  muted: boolean;
 }) {
   const t = useTranslations("profile");
+  const ts = useTranslations("safety");
   const toast = useToast();
-  const router = useRouter();
   const [menu, setMenu] = useState(false);
-  const [confirm, setConfirm] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const person = { id: targetId, username, displayName };
+  const safety = useSafety({ person, report: { type: "profile", id: targetId }, muted });
 
-  const share = async (close: () => void) => {
-    close();
+  const share = async () => {
+    setMenu(false);
     try {
       if (navigator.share) {
         await navigator.share({ url: shareUrl, title: displayName });
@@ -46,15 +50,16 @@ export function ProfileMenu({
     }
   };
 
-  const block = (close: () => void) =>
-    startTransition(async () => {
-      const r = await blockAction(targetId);
-      close();
-      if (r.ok) {
-        toast.show(t("blocked", { username }));
-        router.refresh();
-      } else toast.show(t(`error.${r.reason}`));
-    });
+  const pick = (fn: () => void) => () => {
+    setMenu(false);
+    fn();
+  };
+
+  const unmute = async () => {
+    setMenu(false);
+    const r = await safety.unmute();
+    toast.show(r.ok ? ts("mute.undone") : ts(`error.${r.reason}`));
+  };
 
   return (
     <>
@@ -68,80 +73,73 @@ export function ProfileMenu({
         <IconMore />
       </button>
       <Dialog title={t("moreTitle", { username })} isOpen={menu} onOpenChange={setMenu}>
-        {(close) => (
-          <div className="menu">
-            {shareable ? (
-              <button type="button" className="menu-item" onClick={() => share(close)}>
-                <IconShare />
-                {t("share")}
-              </button>
-            ) : null}
-            <button
-              type="button"
-              className="menu-item"
-              onClick={() => {
-                close();
-                setConfirm(true);
-              }}
-            >
-              <IconBlock />
-              {t("block")}
+        <div className="menu">
+          {shareable ? (
+            <button type="button" className="menu-item" onClick={share}>
+              <IconShare />
+              {t("share")}
             </button>
-            <p className="menu-note">{t("moreSoon")}</p>
-          </div>
-        )}
+          ) : null}
+          {safety.muted ? (
+            <button type="button" className="menu-item" onClick={unmute}>
+              <IconBell />
+              {ts("menu.unmute")}
+            </button>
+          ) : (
+            <button type="button" className="menu-item" onClick={pick(safety.openMute)}>
+              <IconBell />
+              {ts("menu.mute", { username })}
+            </button>
+          )}
+          <button type="button" className="menu-item" onClick={pick(safety.openBlock)}>
+            <IconBlock />
+            {ts("menu.block", { username })}
+          </button>
+          <button type="button" className="menu-item" onClick={pick(safety.openReport)}>
+            <IconWarning />
+            {ts("menu.reportProfile")}
+          </button>
+        </div>
       </Dialog>
-      <Dialog title={t("blockTitle", { username })} isOpen={confirm} onOpenChange={setConfirm}>
-        {(close) => (
-          <div className="form-stack">
-            <ul className="facts">
-              <li>{t("blockFact1")}</li>
-              <li>{t("blockFact2")}</li>
-              <li>{t("blockFact3")}</li>
-            </ul>
-            <p className="hint">{t("blockNote")}</p>
-            <div className="foot-row">
-              <button type="button" className="btn btn-secondary" onClick={close}>
-                {t("cancel")}
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                aria-disabled={pending || undefined}
-                onClick={() => !pending && block(close)}
-              >
-                {t("blockConfirm")}
-              </button>
-            </div>
-          </div>
-        )}
-      </Dialog>
+      {safety.dialogs}
     </>
   );
 }
 
-export function UnblockButton({ targetId, username }: { targetId: string; username: string }) {
-  const t = useTranslations("profile");
-  const toast = useToast();
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+/** The J4 B state: Unblock (with the J5 unblock facts) and Report. */
+export function UnblockButton({
+  targetId,
+  username,
+  displayName,
+}: {
+  targetId: string;
+  username: string;
+  displayName: string;
+}) {
+  const ts = useTranslations("safety");
+  const safety = useSafety({
+    person: { id: targetId, username, displayName },
+    report: { type: "profile", id: targetId },
+  });
   return (
-    <button
-      type="button"
-      className="btn btn-secondary"
-      aria-disabled={pending || undefined}
-      onClick={() =>
-        !pending &&
-        startTransition(async () => {
-          const r = await unblockAction(targetId);
-          if (r.ok) {
-            toast.show(t("unblocked", { username }));
-            router.refresh();
-          } else toast.show(t(`error.${r.reason}`));
-        })
-      }
-    >
-      {t("unblock")}
-    </button>
+    <div className="rel-row">
+      <button
+        type="button"
+        className="btn btn-secondary"
+        aria-haspopup="dialog"
+        onClick={safety.openUnblock}
+      >
+        {ts("unblock.button")}
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        aria-haspopup="dialog"
+        onClick={safety.openReport}
+      >
+        {ts("menu.reportProfile")}
+      </button>
+      {safety.dialogs}
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { safeReturnTo } from "@/lib/routing/paths";
 import { redirect } from "@/i18n/navigation";
 import { AuthScreen } from "@/components/auth/auth-screen";
 import { SignInForm } from "@/components/auth/sign-in-form";
@@ -28,10 +29,7 @@ export default async function SignInPage({
   if (session) redirect({ href: "/home", locale });
 
   const t = await getTranslations("auth.signIn");
-  const returnTo =
-    sp.returnTo && sp.returnTo.startsWith("/") && !sp.returnTo.startsWith("//")
-      ? sp.returnTo
-      : "/home";
+  const returnTo = safeReturnTo(sp.returnTo);
   const e = env();
   const googleEnabled = Boolean(e.GOOGLE_CLIENT_ID && e.GOOGLE_CLIENT_SECRET);
 

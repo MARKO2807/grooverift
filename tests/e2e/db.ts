@@ -175,3 +175,54 @@ export const publishedToday = async (date: string) =>
       [date],
     )
   ).length > 0;
+
+// ---- Safety and moderation (step 5.9) ----
+
+/**
+ * A moderation decision about a member written straight into the database (the decision flow itself is tested
+ * through ADM-10 in safety.spec.ts): a restriction or a suspension for `days`, with the account status a suspension
+ * sets. Returns the action id.
+ */
+export async function insertEnforcement(
+  userId: string,
+  kind: "restriction" | "suspension",
+  days: number,
+  statement: string,
+): Promise<string> {
+  const [row] = await query<{ id: string }>(
+    `insert into enforcement_action (subject_user_id, kind, statement_of_reasons, rule_ref, ends_at, appeal_until)
+     values ($1, $2, $3, 'respect', now() + ($4 || ' days')::interval, now() + interval '183 days') returning id`,
+    [userId, kind, statement, String(days)],
+  );
+  if (kind === "suspension")
+    await query(`update "user" set status = 'suspended' where id = $1`, [userId]);
+  return row!.id;
+}
+
+export async function usernameOf(email: string): Promise<string> {
+  const [row] = await query<{ username: string }>(
+    `select p.username from profile p join "user" u on u.id = p.user_id where u.email = $1`,
+    [email.toLowerCase()],
+  );
+  if (!row) throw new Error(`no profile for ${email}`);
+  return row.username;
+}
+
+/** The moderation case for a reported object (the queue rows carry no content to find it by). */
+export async function caseIdFor(targetId: string): Promise<string> {
+  const [row] = await query<{ id: string }>(
+    `select id from moderation_case where target_id = $1 order by created_at desc limit 1`,
+    [targetId],
+  );
+  if (!row) throw new Error(`no case for ${targetId}`);
+  return row.id;
+}
+
+/** Test cleanup: cases cannot be deleted (evidence_access keeps them), so open ones about test objects are closed. */
+export async function closeCasesFor(targetIds: string[]) {
+  if (!targetIds.length) return;
+  await query(
+    `update moderation_case set state = 'closed', outcome = 'none', decided_at = now() where target_id = any($1::uuid[]) and state in ('open', 'in_progress')`,
+    [targetIds],
+  );
+}

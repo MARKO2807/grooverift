@@ -41,6 +41,7 @@ import {
 } from "@/lib/profile/constants";
 import { isUniqueViolation } from "./db-errors";
 import { loadGraph, loadGraphs, loadOwner, loadOwners, type OwnerRecord } from "./facts";
+import { isMuted } from "./safety";
 import { acceptAllPending, notifyAccepted, pendingRequestCount } from "./graph";
 
 // Re-exported for the data-layer callers (onboarding, actions, tests); client code imports @/lib/profile/constants.
@@ -74,6 +75,8 @@ export type ProfileView =
       self: boolean;
       /** The viewer's own relationship to the owner (blocked pairs never get here). */
       relation: Relation;
+      /** The viewer muted this member (the "Utišano" chip, D-075; only the viewer ever sees it). */
+      muted: boolean;
       username: string;
       displayName: string;
       /** Only the sections the viewer may see are present; hidden ones are omitted, not "locked" (PROF-01). */
@@ -156,6 +159,7 @@ export async function profileByUsername(viewer: Viewer, raw: string): Promise<Pr
     ownerId: owner.id,
     self: isSelf,
     relation: { follows: graph.follows, followedBy: graph.followedBy },
+    muted: !isSelf && (await isMuted(viewer.id, owner.id)),
     username: owner.username ?? username,
     displayName: owner.displayName,
     bio: sections.bio ? row.bio : undefined,

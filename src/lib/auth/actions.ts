@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies, headers } from "next/headers";
+import { safeReturnTo as safeRelative } from "@/lib/routing/paths";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { APIError } from "better-auth/api";
@@ -41,10 +42,7 @@ const strip = (code: FormDataEntryValue | null) =>
 
 /** Where to send the member after sign-in: only a relative path on this site (no open redirect). */
 function safeReturnTo(value: FormDataEntryValue | null, fallback = "/home"): string {
-  const v = String(value ?? "");
-  if (!v.startsWith("/") || v.startsWith("//") || v.includes("\\") || v.includes("://"))
-    return fallback;
-  return v;
+  return safeRelative(value, fallback);
 }
 
 function mapError(error: unknown): FormState {

@@ -46,6 +46,10 @@ const MEMBER = [
   "/@luka/followers",
   "/search?q=luka",
   "/activity/requests",
+  "/settings/status", // SAFE-04/05 hub (step 5.9)
+  "/settings/status/notices",
+  "/settings/status/reports",
+  "/settings/blocked", // SAFE-08
   "/@nobody",
 ];
 

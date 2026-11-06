@@ -26,7 +26,7 @@ export const toComment = (c: CommentItem): CommentData =>
     : {
         kind: "comment",
         id: c.id,
-        author: { username: c.author.username, displayName: c.author.displayName },
+        author: { id: c.author.id, username: c.author.username, displayName: c.author.displayName },
         body: c.body,
         createdAt: c.createdAt.toISOString(),
         mine: c.mine,

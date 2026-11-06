@@ -13,6 +13,7 @@ import {
   IconWarning,
 } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/toast";
+import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { editAnswerAction, postAnswerAction } from "@/lib/drop/actions";
 import { ANSWER_MAX, type DropFailure } from "@/lib/drop/rules";
 import { EDIT_EVENT } from "./answer-card";
@@ -25,6 +26,7 @@ import { EDIT_EVENT } from "./answer-card";
 
 // i18n-keys: drop.error.signedOut drop.error.notAllowed drop.error.notAvailable drop.error.alreadyAnswered
 // i18n-keys: drop.error.tooMany drop.error.paused drop.error.tooLong drop.error.empty drop.error.generic
+// i18n-keys: drop.error.restricted
 
 export const COMPOSE_EVENT = "gr:compose";
 
@@ -34,11 +36,14 @@ export function AnswerDock({
   privateProfile,
   paused,
   autoOpen = false,
+  restriction = null,
 }: {
   questionId: string;
   mine: { id: string; body: string } | null;
   privateProfile: boolean;
   paused: boolean;
+  /** SAFE-07: a posting restriction replaces the field (and Edit) with the hint (D-075 (5) A). */
+  restriction?: Restriction | null;
   /** "Odgovori" on Home and Hub links here with ?compose=1: the sheet opens once the page is ready. */
   autoOpen?: boolean;
 }) {
@@ -78,13 +83,13 @@ export function AnswerDock({
   });
 
   useEffect(() => {
-    if (autoOpen && !mine && !paused && !opened.current) {
+    if (autoOpen && !mine && !paused && !restriction && !opened.current) {
       opened.current = true;
       // Opening a sheet is a client-only step after hydration; the URL keeps no trace of it.
       window.history.replaceState(null, "", window.location.pathname);
       window.dispatchEvent(new CustomEvent(COMPOSE_EVENT));
     }
-  }, [autoOpen, mine, paused]);
+  }, [autoOpen, mine, paused, restriction]);
 
   if (paused)
     return (
@@ -93,6 +98,19 @@ export function AnswerDock({
           <IconPause />
           <span>{t("dockPaused")}</span>
         </p>
+      </div>
+    );
+
+  if (restriction)
+    return (
+      <div className="dock dock-locked">
+        {mine ? (
+          <p className="dock-done">
+            <IconCheck />
+            <span>{t("dockDone")}</span>
+          </p>
+        ) : null}
+        <RestrictionHint r={restriction} />
       </div>
     );
 
