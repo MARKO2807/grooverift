@@ -269,6 +269,195 @@
     }
   }
 
+  /* ---------- artists (step 5.3b): typeahead results and generated tiles, from the prototype's .result / .art ---------- */
+  .dna-add .results {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--gr-color-bg-canvas);
+    border-radius: var(--gr-radius-control);
+  }
+  .dna-add .results > .hint {
+    padding: var(--gr-space-3);
+  }
+  .result {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: var(--gr-space-3);
+    text-align: left;
+    padding: var(--gr-space-2) var(--gr-space-2);
+    min-height: 56px;
+    border: 0;
+    border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    background: none;
+    color: var(--gr-color-text-primary);
+    cursor: pointer;
+  }
+  .result:hover {
+    background: var(--gr-color-bg-high);
+  }
+  .result[aria-disabled="true"] {
+    opacity: var(--gr-opacity-disabled);
+    cursor: default;
+  }
+  .r-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .r-title {
+    font: var(--gr-type-label);
+    font-size: var(--gr-font-size-md);
+    overflow-wrap: anywhere;
+  }
+  .r-meta {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+    overflow-wrap: anywhere;
+  }
+  .r-add {
+    color: var(--gr-color-text-link);
+    display: inline-flex;
+    padding: 0 var(--gr-space-2);
+  }
+  .result-skel {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-rows: 12px 10px;
+    gap: 6px 12px;
+    align-items: center;
+    padding: var(--gr-space-3) var(--gr-space-2);
+    border-bottom: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .result-skel span {
+    background: var(--gr-color-bg-high);
+    border-radius: 6px;
+    height: 100%;
+  }
+  .result-skel span:first-child {
+    grid-row: span 2;
+    height: 44px;
+    border-radius: 50%;
+  }
+  .result-skel span:last-child {
+    width: 60%;
+  }
+  .cat-err {
+    display: flex;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+    padding: var(--gr-space-3);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-state-warning-bg);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-state-warning);
+    font: var(--gr-type-body-sm);
+  }
+  .cat-err > svg {
+    color: var(--gr-color-state-warning);
+    width: var(--gr-size-icon-md);
+    height: var(--gr-size-icon-md);
+    flex: none;
+  }
+  .cat-err > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    align-items: flex-start;
+  }
+  .art {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--gr-radius-full);
+    overflow: hidden;
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    background: var(--gr-color-bg-high);
+    color: #f1f3f7;
+    font: var(--gr-font-weight-bold) 0.9375rem/1 var(--gr-font-family-heading);
+    text-shadow: 0 1px 2px #0b0d1299;
+  }
+  .art.sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  .art.lg {
+    width: 64px;
+    height: 64px;
+    font-size: 1.25rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .result-skel span {
+      animation: gr-skel 1.2s ease-in-out infinite alternate;
+    }
+  }
+  html[data-motion="reduced"] .result-skel span {
+    animation: none;
+  }
+  @keyframes gr-skel {
+    to {
+      opacity: 0.55;
+    }
+  }
+
+  /* Onboarding (ONB-05): the artists picked so far, one row each with Remove. */
+  .picked-artists {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .picked-artists li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-3);
+    min-height: 48px;
+    padding: var(--gr-space-1) 0 var(--gr-space-1) var(--gr-space-1);
+  }
+  .picked-artists li + li {
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .pa-name {
+    font: var(--gr-type-label);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- CAT-01, the artist page (step 5.3b) ---------- */
+  .cat-head {
+    display: flex;
+    align-items: center;
+    gap: var(--gr-space-4);
+    padding: var(--gr-space-2) 0 var(--gr-space-4);
+  }
+  .cat-head-txt {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-1);
+    min-width: 0;
+  }
+  .cat-dis {
+    font: var(--gr-type-body);
+    overflow-wrap: anywhere;
+  }
+  .cat-facts {
+    font: var(--gr-type-body-sm);
+    color: var(--gr-color-text-secondary);
+  }
+  .dna-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .dna-name a:hover {
+    text-decoration: underline;
+  }
+
   /* ---------- the profile block ---------- */
   .me-dna {
     display: flex;

@@ -125,7 +125,8 @@
     "mailFailed": "Poruka nije poslana, pa pozivnica nije stvorena. Pokušaj ponovno.",
     "bioInvalid": "Bio ima do 200 znakova, bez posebnih kontrolnih znakova.",
     "usernameTooSoon": "Korisničko ime mijenja se najviše jednom u 30 dana.",
-    "usernameSame": "To je već tvoje korisničko ime."
+    "usernameSame": "To je već tvoje korisničko ime.",
+    "catalogDown": "Katalog izvođača trenutačno ne radi, pa ništa nije spremljeno. Pokušaj ponovno ili nastavi bez izvođača."
   },
   "settings": {
     "security": {
@@ -824,10 +825,11 @@
     "orderHint": "Prva tri žanra najviše oblikuju Spiralu.",
     "minHint": "Music DNA ima najmanje dva žanra, pa prvo dodaj novi.",
     "fullGenres": "Najviše {max} žanrova. Ukloni jedan da dodaš drugi.",
+    "fullArtists": "Najviše {max} izvođača. Ukloni jednog da dodaš drugog.",
     "noGenres": "Još nema žanrova.",
     "noArtists": "Još nema izvođača. Neobavezno.",
-    "artistsSoon": "Dodavanje izvođača stiže uskoro, kad katalog izvođača proradi.",
     "addGenre": "Dodaj žanr",
+    "addArtist": "Dodaj izvođača",
     "close": "Zatvori",
     "searchLabel": "Traži žanr",
     "searchHint": "Upiši naziv, npr. „heavy metal”. Dodir dodaje žanr na kraj popisa.",
@@ -857,7 +859,26 @@
       "signedOut": "Prijava je istekla. Prijavi se ponovno.",
       "notAllowed": "Ovaj račun trenutačno ne može mijenjati Music DNA.",
       "paused": "Music DNA je trenutačno pauziran.",
-      "generic": "Promjena nije spremljena."
+      "generic": "Promjena nije spremljena.",
+      "catalog": "Katalog trenutačno ne radi. Tvoj Music DNA je sačuvan.",
+      "fullArtists": "Najviše {max} izvođača. Ukloni jednog da dodaš drugog.",
+      "duplicateArtist": "Taj izvođač je već u tvom Music DNA.",
+      "notFoundArtist": "Tog izvođača više nema u katalogu."
+    },
+    "artist": {
+      "searchLabel": "Traži izvođača",
+      "hint": "Npr. „Let 3”, „Björk” ili „Metallica”. Izvođači dolaze iz kataloga MusicBrainz.",
+      "idle": "Upiši barem dva slova.",
+      "empty": "Nema rezultata za „{q}”. Provjeri pisanje.",
+      "down": "Katalog trenutačno ne radi.",
+      "downKept": "Tvoji odabiri su sačuvani.",
+      "downShort": "Katalog ne radi",
+      "retry": "Pokušaj ponovno",
+      "count": "{n, plural, one {# rezultat} few {# rezultata} other {# rezultata}}",
+      "none": "Nema rezultata",
+      "resultsLabel": "Izvođači iz kataloga",
+      "add": "Dodaj",
+      "added": "Dodano"
     }
   },
   "join": {
@@ -993,10 +1014,12 @@
       "moreResults": "Ovo su najpoznatiji. Nema tvog? Nastavi pisati.",
       "artists": "Izvođači",
       "artistsOpt": "neobavezno",
-      "artistsSoon": "Izvođače ćeš moći dodati uskoro, u uređivaču Music DNA.",
       "skip": "Preskoči",
       "next": "Nastavi",
-      "submitting": "Spremam…"
+      "submitting": "Spremam…",
+      "artistsHint": "Dodaj do 10 izvođača koje rado slušaš. Možeš i kasnije, u uređivaču Music DNA.",
+      "artistsPicked": "Odabrani izvođači",
+      "artistsFull": "Odabrano je 10 izvođača, koliko najviše može."
     },
     "dnaAudience": {
       "title": "Tko vidi tvoj Music DNA?",
@@ -1960,5 +1983,13 @@
       "guidelines": "Pravila zajednice",
       "abuseNote": "Neprimjeren sadržaj ili račun prijavi preko ⋯ na odgovoru ili profilu, ne ovdje."
     }
+  },
+  "artist": {
+    "title": "Izvođač",
+    "unavailable": "Ovaj izvođač više nije dostupan u izvoru (MusicBrainz). Ostaje u Music DNA-u dok ga ne ukloniš.",
+    "links": "Poveznice",
+    "musicbrainz": "Pogledaj na MusicBrainzu",
+    "newTab": "(otvara se u novoj kartici)",
+    "source": "Podaci o izvođaču: MusicBrainz (CC0)."
   }
 }

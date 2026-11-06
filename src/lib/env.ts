@@ -37,6 +37,12 @@ const schema = z.object({
   R2_BUCKET: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
+  // MusicBrainz (A4, D-108, step 5.3b): the project contact for the User-Agent MusicBrainz requires. Without it the
+  // artist catalogue reads as unavailable ("Katalog trenutačno ne radi.").
+  MUSICBRAINZ_CONTACT: z.preprocess((v) => (v === "" ? undefined : v), z.string().optional()),
+  // "1" answers artist searches from a small fixed list instead of MusicBrainz (end-to-end tests, offline work).
+  // Refused in production unless the end-to-end flag is set too.
+  CATALOG_STUB: z.enum(["0", "1"]).default("0"),
   // Comma-separated request headers that carry the client IP, in order of trust (Better Auth
   // `advanced.ipAddress.ipAddressHeaders`). Empty locally (no proxy); REQUIRED in production, or every
   // client would share one rate-limit bucket and one lockout pair.
@@ -79,6 +85,9 @@ export function env(): Env {
       throw new Error(
         "IP_HEADERS must name the client-IP header in production (Render: true-client-ip).",
       );
+    }
+    if (data.CATALOG_STUB === "1" && data.E2E_EMAIL_FILE !== "1") {
+      throw new Error("CATALOG_STUB=1 is for end-to-end tests only, never in production.");
     }
     if (data.BETTER_AUTH_SECRET.length < 43) {
       throw new Error(

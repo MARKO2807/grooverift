@@ -39,7 +39,13 @@ export default async function DnaPage({ params }: { params: Promise<{ locale: st
   ]);
   return (
     <AuthScreen title={t("title")} back={page.back} progress={page.progress}>
-      <DnaPicker suggestions={suggestions} initial={own.genres} />
+      <DnaPicker
+        suggestions={suggestions}
+        initial={own.genres}
+        initialArtists={own.artists.flatMap((a) =>
+          a.mbid ? [{ mbid: a.mbid, name: a.name }] : [],
+        )}
+      />
     </AuthScreen>
   );
 }

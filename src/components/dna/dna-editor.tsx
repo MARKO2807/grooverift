@@ -17,8 +17,11 @@ import {
   IconX,
 } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/toast";
-import type { DnaAudienceState, DnaGenre, MusicDna } from "@/lib/data/music-dna";
+import { ArtistSearch } from "./artist-search";
+import { ArtistTile } from "./artist-tile";
+import type { ArtistOption, DnaArtist, DnaAudienceState, MusicDna } from "@/lib/data/music-dna";
 import {
+  addArtistAction,
   addGenreAction,
   moveDnaAction,
   removeDnaAction,
@@ -46,6 +49,7 @@ import {
 // i18n-keys: dna.audienceDesc.everyone dna.audienceDesc.followers dna.audienceDesc.me
 // i18n-keys: dna.error.duplicate dna.error.full dna.error.minimum dna.error.stale dna.error.notFound
 // i18n-keys: dna.error.tooMany dna.error.signedOut dna.error.notAllowed dna.error.paused dna.error.generic
+// i18n-keys: dna.error.catalog dna.error.fullArtists dna.error.duplicateArtist dna.error.notFoundArtist
 const ERROR_KEY: Record<DnaFailure, string> = {
   duplicate: "duplicate",
   full: "full",
@@ -57,7 +61,11 @@ const ERROR_KEY: Record<DnaFailure, string> = {
   notAllowed: "notAllowed",
   paused: "paused",
   generic: "generic",
+  catalog: "catalog",
 };
+
+type Kind = "genre" | "artist";
+type Row = { entryId: string; name: string };
 
 type Failure = { text: string; retry?: () => void };
 
@@ -75,6 +83,7 @@ export function DnaEditor({
   const [dna, setDna] = useState(initial);
   const [audience, setAudience] = useState(initialAudience);
   const [adding, setAdding] = useState(false);
+  const [addingArtist, setAddingArtist] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GenreOption[] | null>(null);
   const [live, setLive] = useState("");
@@ -106,22 +115,27 @@ export function DnaEditor({
     requestAnimationFrame(() => setLive(text));
   };
 
-  const errorText = (reason: DnaFailure | undefined) =>
-    t(`error.${ERROR_KEY[reason ?? "generic"]}`, { max: GENRE_MAX });
+  const errorText = (reason: DnaFailure | undefined, kind: Kind = "genre") => {
+    if (kind === "artist" && reason === "full") return t("error.fullArtists", { max: ARTIST_MAX });
+    if (kind === "artist" && reason === "duplicate") return t("error.duplicateArtist");
+    if (kind === "artist" && reason === "not-found") return t("error.notFoundArtist");
+    return t(`error.${ERROR_KEY[reason ?? "generic"]}`, { max: GENRE_MAX });
+  };
 
   /** Applies a server answer: the list always follows the server, a failure is shown with Retry where it helps. */
-  const settle = (r: DnaActionResult, retry?: () => void) => {
+  const settle = (r: DnaActionResult, retry?: () => void, kind: Kind = "genre") => {
     if (r.dna) setDna(r.dna);
     if (r.ok) {
       setFailure(null);
       return true;
     }
-    const retryable = r.reason === "generic" || r.reason === "tooMany";
-    setFailure({ text: errorText(r.reason), retry: retryable ? retry : undefined });
+    const retryable = r.reason === "generic" || r.reason === "tooMany" || r.reason === "catalog";
+    setFailure({ text: errorText(r.reason, kind), retry: retryable ? retry : undefined });
     return false;
   };
 
   const picked = new Set(dna.genres.map((g) => g.id));
+  const artistFull = dna.artists.length >= ARTIST_MAX;
   const genreFull = dna.genres.length >= GENRE_MAX;
   const atMinimum = dna.genres.length <= GENRE_MIN;
 
@@ -165,23 +179,40 @@ export function DnaEditor({
     go();
   };
 
-  const remove = (g: DnaGenre, index: number) => {
+  const addArtist = (a: ArtistOption) => {
+    const go = () =>
+      startTransition(async () => {
+        const r = await addArtistAction("mb", a.mbid);
+        if (settle(r, go, "artist")) {
+          announce(t("added", { name: a.name }));
+          if (r.entryId) focus(`[data-k="rm-${r.entryId}"]`);
+        } else if (r.reason === "duplicate" && r.entryId) {
+          focus(`[data-k="rm-${r.entryId}"]`);
+        }
+      });
+    go();
+  };
+
+  const remove = (kind: Kind, g: Row, index: number) => {
     const go = () =>
       startTransition(async () => {
         const r = await removeDnaAction(g.entryId);
-        if (!settle(r, go)) return;
+        if (!settle(r, go, kind)) return;
         announce(t("removed", { name: g.name }));
-        const rest = r.dna?.genres ?? [];
+        const rest: Row[] = (kind === "genre" ? r.dna?.genres : r.dna?.artists) ?? [];
         const next = rest[Math.min(index, rest.length - 1)];
-        focus(next ? `[data-k="rm-${next.entryId}"]` : `[data-k="dna-add-genre"]`);
+        focus(next ? `[data-k="rm-${next.entryId}"]` : `[data-k="dna-add-${kind}"]`);
         const removed = r.removed;
-        if (removed?.kind === "genre") {
+        if (removed?.kind === kind) {
           toast.show(t("removed", { name: g.name }), {
             label: t("undo"),
             onPress: () =>
               startTransition(async () => {
-                const u = await addGenreAction(removed.subjectId, removed.position);
-                if (settle(u)) {
+                const u =
+                  kind === "genre"
+                    ? await addGenreAction(removed.subjectId, removed.position)
+                    : await addArtistAction("id", removed.subjectId, removed.position);
+                if (settle(u, undefined, kind)) {
                   announce(t("restored", { name: g.name }));
                   if (u.entryId) focus(`[data-k="rm-${u.entryId}"]`);
                 }
@@ -192,16 +223,23 @@ export function DnaEditor({
     go();
   };
 
-  const move = (g: DnaGenre, index: number, direction: -1 | 1) => {
+  const move = (kind: Kind, g: Row, index: number, direction: -1 | 1) => {
     const before = dna;
-    const expected = before.genres.map((x) => x.entryId);
+    const list: Row[] = kind === "genre" ? before.genres : before.artists;
+    const expected = list.map((x) => x.entryId);
     const j = index + direction;
-    if (j < 0 || j >= before.genres.length) return;
+    if (j < 0 || j >= list.length) return;
     // Optimistic for reorder only (J2 E1); a failure rolls back visibly.
-    const genres = [...before.genres];
-    [genres[index], genres[j]] = [genres[j]!, genres[index]!];
-    setDna({ ...before, genres });
-    const edge = j === 0 || j === genres.length - 1;
+    if (kind === "genre") {
+      const genres = [...before.genres];
+      [genres[index], genres[j]] = [genres[j]!, genres[index]!];
+      setDna({ ...before, genres });
+    } else {
+      const artists = [...before.artists];
+      [artists[index], artists[j]] = [artists[j]!, artists[index]!];
+      setDna({ ...before, artists });
+    }
+    const edge = j === 0 || j === list.length - 1;
     const same = `[data-k="${direction < 0 ? "up" : "down"}-${g.entryId}"]`;
     const other = `[data-k="${direction < 0 ? "down" : "up"}-${g.entryId}"]`;
     focus(edge ? other : same);
@@ -209,7 +247,7 @@ export function DnaEditor({
     startTransition(async () => {
       const r = await moveDnaAction(g.entryId, direction, expected);
       if (!r.ok && !r.dna) setDna(before);
-      settle(r, () => move(g, index, direction));
+      settle(r, () => move(kind, g, index, direction), kind);
     });
   };
 
@@ -320,7 +358,7 @@ export function DnaEditor({
                     data-k={`up-${g.entryId}`}
                     aria-label={t("moveUp", { name: g.name })}
                     disabled={i === 0 || locked}
-                    onClick={() => move(g, i, -1)}
+                    onClick={() => move("genre", g, i, -1)}
                   >
                     <IconCaretUp />
                   </button>
@@ -330,7 +368,7 @@ export function DnaEditor({
                     data-k={`down-${g.entryId}`}
                     aria-label={t("moveDown", { name: g.name })}
                     disabled={i === dna.genres.length - 1 || locked}
-                    onClick={() => move(g, i, 1)}
+                    onClick={() => move("genre", g, i, 1)}
                   >
                     <IconCaretDown />
                   </button>
@@ -347,7 +385,7 @@ export function DnaEditor({
                         setFailure({ text: errorText("minimum") });
                         return;
                       }
-                      remove(g, i);
+                      remove("genre", g, i);
                     }}
                   >
                     <IconX />
@@ -470,24 +508,102 @@ export function DnaEditor({
         </h2>
         {dna.artists.length ? (
           <ol className="dna-rows" aria-label={t("artistsOrder")}>
-            {dna.artists.map((a, i) => (
-              <li key={a.entryId} className="dna-row">
-                <span className="dna-swatch" aria-hidden="true" />
+            {dna.artists.map((a: DnaArtist, i) => (
+              <li key={a.entryId} className="dna-row dna-row-artist">
+                <ArtistTile name={a.name} size="sm" />
                 <span className="dna-pos" aria-hidden="true">
                   {i + 1}
                 </span>
                 <span className="dna-name">
                   {a.name}
-                  {a.unavailable ? <span className="dna-fam"> · {t("unavailable")}</span> : null}
+                  {a.unavailable ? (
+                    <span className="dna-fam"> · {t("unavailable")}</span>
+                  ) : a.disambiguation ? (
+                    <span className="dna-fam"> · {a.disambiguation}</span>
+                  ) : null}
+                  <span className="sr-only">, {t("position", { n: i + 1 })}</span>
                 </span>
-                <span />
+                <span className="dna-btns">
+                  <button
+                    type="button"
+                    className="iconbtn sm"
+                    data-k={`up-${a.entryId}`}
+                    aria-label={t("moveUp", { name: a.name })}
+                    disabled={i === 0 || locked}
+                    onClick={() => move("artist", a, i, -1)}
+                  >
+                    <IconCaretUp />
+                  </button>
+                  <button
+                    type="button"
+                    className="iconbtn sm"
+                    data-k={`down-${a.entryId}`}
+                    aria-label={t("moveDown", { name: a.name })}
+                    disabled={i === dna.artists.length - 1 || locked}
+                    onClick={() => move("artist", a, i, 1)}
+                  >
+                    <IconCaretDown />
+                  </button>
+                  <button
+                    type="button"
+                    className="iconbtn sm dna-x"
+                    data-k={`rm-${a.entryId}`}
+                    aria-label={t("remove", { name: a.name })}
+                    disabled={locked}
+                    onClick={() => remove("artist", a, i)}
+                  >
+                    <IconX />
+                  </button>
+                </span>
               </li>
             ))}
           </ol>
         ) : (
           <p className="set-empty">{t("noArtists")}</p>
         )}
-        <p className="hint">{t("artistsSoon")}</p>
+
+        {artistFull ? (
+          <p className="hint">{t("fullArtists", { max: ARTIST_MAX })}</p>
+        ) : addingArtist ? (
+          <div className="dna-add" id="dna-add-artist-panel">
+            <div className="dna-add-head">
+              <label className="label" htmlFor="f-artist">
+                {t("artist.searchLabel")}
+              </label>
+              <button
+                type="button"
+                className="link"
+                onClick={() => {
+                  setAddingArtist(false);
+                  focus(`[data-k="dna-add-artist"]`);
+                }}
+              >
+                {t("close")}
+              </button>
+            </div>
+            <ArtistSearch
+              inputId="f-artist"
+              disabled={locked || pending}
+              pickedMbids={new Set(dna.artists.flatMap((a) => (a.mbid ? [a.mbid] : [])))}
+              onPick={addArtist}
+              onFailure={(reason) => setFailure({ text: errorText(reason, "artist") })}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm dna-addbtn"
+            data-k="dna-add-artist"
+            disabled={locked}
+            onClick={() => {
+              setAddingArtist(true);
+              focus("#f-artist");
+            }}
+          >
+            <IconPlus />
+            {t("addArtist")}
+          </button>
+        )}
       </section>
 
       <p className="meta">{t("saveNote")}</p>

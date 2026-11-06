@@ -7,7 +7,9 @@ import type { FormState } from "@/lib/auth/actions";
 import { dnaAction } from "@/lib/onboarding/actions";
 import { searchGenresAction } from "@/lib/music/actions";
 import { SEARCH_LIMIT, type GenreOption } from "@/lib/music/genre-search";
-import { GENRE_MAX, GENRE_MIN } from "@/lib/music/limits";
+import { ARTIST_MAX, GENRE_MAX, GENRE_MIN } from "@/lib/music/limits";
+import { ArtistSearch } from "@/components/dna/artist-search";
+import { ArtistTile } from "@/components/dna/artist-tile";
 import { FieldError } from "@/components/ui/field";
 import { IconCheck, IconPlus, IconSearch, IconX } from "@/components/ui/icons";
 import { Notice } from "@/components/ui/notice";
@@ -19,15 +21,21 @@ type Found = { q: string; list: GenreOption[]; failed: boolean };
 /**
  * ONB-05 (J1 step 7, D-053, D-063 (4)): the main genres as toggle chips, "+ Još žanrova" opens the search for the
  * other 2,000; the live Spirala above shows the picks. Nothing is saved until Continue (the picks travel as
- * repeated `genre` fields in pick order); Skip keeps nothing. Artists arrive with the catalogue client (5.3b).
+ * repeated `genre` fields in pick order); Skip keeps nothing. Artists (step 5.3b) come from the catalogue typeahead and
+ * travel the same way, as repeated `artist` fields holding MusicBrainz ids.
  */
+export type PickedArtist = { mbid: string; name: string };
+
 export function DnaPicker({
   suggestions,
   initial,
+  initialArtists,
 }: {
   suggestions: GenreOption[];
   initial: GenreOption[];
+  initialArtists: PickedArtist[];
 }) {
+  const td = useTranslations("dna");
   const t = useTranslations("join.dna");
   const te = useTranslations("authErrors");
   const ts = useTranslations("spirala");
@@ -37,6 +45,10 @@ export function DnaPicker({
   useFormErrorFocus(state, formRef, summaryRef);
   const id = useId();
   const [picked, setPicked] = useState<GenreOption[]>(initial);
+  const [artists, setArtists] = useState<PickedArtist[]>(initialArtists);
+  const [artistLive, setArtistLive] = useState("");
+  const [artistError, setArtistError] = useState<string | null>(null);
+  const artistsFull = artists.length >= ARTIST_MAX;
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState<Found | null>(null);
@@ -196,11 +208,70 @@ export function DnaPicker({
           </div>
         ) : null}
       </div>
-      <div className="group">
-        <h2 className="group-title">
+      {artists.map((a) => (
+        <input key={a.mbid} type="hidden" name="artist" value={a.mbid} />
+      ))}
+      <div className="group" role="group" aria-labelledby={`${id}-artists`}>
+        <h2 className="group-title" id={`${id}-artists`}>
           {t("artists")} <span className="opt">{t("artistsOpt")}</span>
         </h2>
-        <p className="help">{t("artistsSoon")}</p>
+        <p className="help">{t("artistsHint")}</p>
+        {artists.length ? (
+          <ul className="picked-artists" aria-label={t("artistsPicked")}>
+            {artists.map((a) => (
+              <li key={a.mbid}>
+                <ArtistTile name={a.name} size="sm" />
+                <span className="pa-name">{a.name}</span>
+                <button
+                  type="button"
+                  className="iconbtn sm"
+                  data-k={`artrm-${a.mbid}`}
+                  aria-label={td("remove", { name: a.name })}
+                  onClick={() => {
+                    setArtists((list) => list.filter((x) => x.mbid !== a.mbid));
+                    setArtistLive(td("removed", { name: a.name }));
+                  }}
+                >
+                  <IconX />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {artistError ? <p className="status-line">{artistError}</p> : null}
+        {artistsFull ? (
+          <p className="help">{t("artistsFull")}</p>
+        ) : (
+          <div className="dna-add">
+            <label className="label-sm" htmlFor={`${id}-artist`}>
+              {td("artist.searchLabel")}
+            </label>
+            <ArtistSearch
+              inputId={`${id}-artist`}
+              disabled={false}
+              pickedMbids={new Set(artists.map((a) => a.mbid))}
+              onPick={(a) => {
+                setArtistError(null);
+                setArtists((list) =>
+                  list.length >= ARTIST_MAX || list.some((x) => x.mbid === a.mbid)
+                    ? list
+                    : [...list, { mbid: a.mbid, name: a.name }],
+                );
+                setArtistLive(td("added", { name: a.name }));
+              }}
+              onFailure={(reason) =>
+                setArtistError(
+                  td(
+                    `error.${reason === "tooMany" ? "tooMany" : reason === "signedOut" ? "signedOut" : "generic"}`,
+                  ),
+                )
+              }
+            />
+          </div>
+        )}
+        <p className="sr-only" role="status" aria-live="polite">
+          {artistLive}
+        </p>
       </div>
       <Buttons skip={t("skip")} next={t("next")} busy={t("submitting")} />
     </form>

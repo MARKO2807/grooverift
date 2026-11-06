@@ -43,6 +43,7 @@ export default defineConfig({
       EMAIL_FILE: ".mail-outbox.jsonl",
       E2E_EMAIL_FILE: "1", // the only way the file transport is accepted in production mode (CI)
       E2E_SPECIMENS: "1", // the Spirala specimen page (src/app/[locale]/specimen) for the shell tests
+      CATALOG_STUB: "1", // artist searches from the fixed list in src/lib/catalog/stub.ts, never MusicBrainz
     },
   },
 });

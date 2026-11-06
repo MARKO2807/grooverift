@@ -14,6 +14,8 @@ import {
   type GenreOption,
 } from "@/lib/music/genre-search";
 import { ARTIST_MAX, GENRE_MAX, GENRE_MIN, type DnaAudience } from "@/lib/music/limits";
+import { catalogClient } from "@/lib/catalog/client";
+import { foldName } from "@/lib/catalog/musicbrainz";
 import { resolveCanonicalId } from "./catalog";
 import { loadGraph, loadOwner } from "./facts";
 
@@ -119,6 +121,8 @@ export type DnaGenre = GenreOption & { entryId: string };
 export type DnaArtist = {
   entryId: string;
   id: string;
+  /** The MusicBrainz id (null only for artists not from MusicBrainz). */
+  mbid: string | null;
   name: string;
   disambiguation: string | null;
   /** J2 E5: still listed, labelled "No longer available from the source". */
@@ -145,11 +149,19 @@ async function readDna(userId: string, locale: Locale): Promise<MusicDna> {
     const g = e.kind === "genre" && e.genreId ? cat.rows.get(e.genreId) : undefined;
     if (g) genres.push({ ...toOption(g, cat.rows, locale), entryId: e.entryId });
   }
-  const artistIds = entries.flatMap((e) => (e.kind === "artist" && e.artistId ? [e.artistId] : []));
+  // J2 E4: an entry follows a merge to the canonical artist; two entries that now name the same artist show once,
+  // at the higher position. The rows themselves are never rewritten (invariant 3).
+  const artistEntries = entries.filter((e) => e.kind === "artist" && e.artistId);
+  const canonical = await Promise.all(artistEntries.map((e) => resolveCanonicalId(e.artistId!)));
+  const canonicalOf = new Map(
+    artistEntries.map((e, i) => [e.entryId, canonical[i] ?? e.artistId!]),
+  );
+  const artistIds = [...new Set(canonicalOf.values())];
   const found = artistIds.length
     ? await db()
         .select({
           id: artist.id,
+          mbid: artist.mbid,
           name: artist.name,
           disambiguation: artist.disambiguation,
           availability: artist.availability,
@@ -158,13 +170,18 @@ async function readDna(userId: string, locale: Locale): Promise<MusicDna> {
         .where(inArray(artist.id, artistIds))
     : [];
   const byId = new Map(found.map((a) => [a.id, a]));
-  const artists: DnaArtist[] = entries.flatMap((e) => {
-    const a = e.kind === "artist" && e.artistId ? byId.get(e.artistId) : undefined;
+  const shown = new Set<string>();
+  const artists: DnaArtist[] = artistEntries.flatMap((e) => {
+    const id = canonicalOf.get(e.entryId)!;
+    if (shown.has(id)) return [];
+    shown.add(id);
+    const a = byId.get(id);
     return a
       ? [
           {
             entryId: e.entryId,
             id: a.id,
+            mbid: a.mbid,
             name: a.name,
             disambiguation: a.disambiguation,
             unavailable: a.availability === "unavailable",
@@ -247,7 +264,11 @@ async function lockMember(tx: Tx, userId: string) {
 
 async function orderedIds(tx: Tx, userId: string, kind: DnaKind) {
   return tx
-    .select({ id: musicDnaEntry.id, genreId: musicDnaEntry.genreId })
+    .select({
+      id: musicDnaEntry.id,
+      genreId: musicDnaEntry.genreId,
+      artistId: musicDnaEntry.artistId,
+    })
     .from(musicDnaEntry)
     .where(and(eq(musicDnaEntry.userId, userId), eq(musicDnaEntry.kind, kind)))
     .orderBy(asc(musicDnaEntry.position), asc(musicDnaEntry.createdAt));
@@ -408,6 +429,164 @@ export async function moveDnaEntry(
     return { ok: true as const };
   });
   return { ...result, dna: await readDna(userId, locale) };
+}
+
+// ---------------------------------------------------------------- artists (step 5.3b)
+
+/**
+ * Adds an artist (our id, already stored from MusicBrainz) at the end, or at `position` (Undo). Refuses an unknown
+ * artist, a duplicate after following redirects (invariant 5) and an eleventh artist. Artists have no minimum
+ * (J2 E6).
+ */
+export async function addDnaArtist(
+  userId: string,
+  artistId: string,
+  locale: Locale,
+  position?: number,
+): Promise<DnaWrite> {
+  const target = UUID.test(artistId) ? await resolveCanonicalId(artistId) : null;
+  const [row] = target
+    ? await db().select({ id: artist.id }).from(artist).where(eq(artist.id, target))
+    : [];
+  const result = await db().transaction(async (tx) => {
+    await lockMember(tx, userId);
+    if (!row) return { ok: false as const, reason: "not-found" as const };
+    const current = await orderedIds(tx, userId, "artist");
+    const canonical = await Promise.all(current.map((e) => resolveCanonicalId(e.artistId!)));
+    const dupAt = canonical.findIndex((c, i) => (c ?? current[i]!.artistId) === row.id);
+    if (dupAt >= 0)
+      return { ok: false as const, reason: "duplicate" as const, entryId: current[dupAt]!.id };
+    if (current.length >= ARTIST_MAX) return { ok: false as const, reason: "full" as const };
+    const at = Math.max(0, Math.min(position ?? current.length, current.length));
+    const [inserted] = await tx
+      .insert(musicDnaEntry)
+      .values({ userId, kind: "artist", artistId: row.id, position: current.length })
+      .returning({ id: musicDnaEntry.id });
+    const ids = current.map((e) => e.id);
+    ids.splice(at, 0, inserted!.id);
+    await renumber(tx, userId, ids);
+    return { ok: true as const, entryId: inserted!.id };
+  });
+  return { ...result, dna: await readDna(userId, locale) };
+}
+
+/**
+ * Onboarding (ONB-05, step 5.3b): the member's artist picks (our ids, already stored from MusicBrainz) in one go, in
+ * pick order, replacing what the step saved before. Unknown ids are refused as a whole; at most ARTIST_MAX.
+ */
+export async function replaceDnaArtists(
+  userId: string,
+  artistIds: readonly string[],
+): Promise<{ ok: true } | { ok: false; reason: "not-found" | "count" }> {
+  const unique = [...new Set(artistIds)];
+  if (unique.length > ARTIST_MAX) return { ok: false, reason: "count" };
+  if (unique.some((id) => !UUID.test(id))) return { ok: false, reason: "not-found" };
+  const found = unique.length
+    ? await db().select({ id: artist.id }).from(artist).where(inArray(artist.id, unique))
+    : [];
+  if (found.length !== unique.length) return { ok: false, reason: "not-found" };
+  await db().transaction(async (tx) => {
+    await lockMember(tx, userId);
+    await tx
+      .delete(musicDnaEntry)
+      .where(and(eq(musicDnaEntry.userId, userId), eq(musicDnaEntry.kind, "artist")));
+    if (unique.length) {
+      await tx.insert(musicDnaEntry).values(
+        unique.map((artistId, position) => ({
+          userId,
+          kind: "artist" as const,
+          artistId,
+          position,
+        })),
+      );
+    }
+  });
+  return { ok: true };
+}
+
+/**
+ * MusicBrainz tags that name one of our main genres differently (our list keeps "Alternative" and "Film music" as
+ * main genres, D-062). Used only when the tag itself is not one of our genres.
+ */
+const TAG_ALIASES: Record<string, string> = {
+  "alternative rock": "alternative",
+  soundtrack: "film music",
+  "film score": "film music",
+};
+
+/** One typeahead result (D-060 (2)): the main genres, and country and years only when names repeat (J2 E8). */
+export type ArtistOption = {
+  mbid: string;
+  name: string;
+  /** Up to two genre names from our catalogue, in the member's language. */
+  genres: string[];
+  /** The country's name in the member's language. */
+  country: string | null;
+  years: string | null;
+  disambiguation: string | null;
+  /** Another result has the same name: show country, years and the disambiguation. */
+  sameName: boolean;
+  /** Already in the member's Music DNA. */
+  picked: boolean;
+};
+
+const regionNames: Partial<Record<Locale, Intl.DisplayNames>> = {};
+function countryName(code: string | null, locale: Locale): string | null {
+  if (!code) return null;
+  try {
+    regionNames[locale] ??= new Intl.DisplayNames([locale], { type: "region" });
+    return regionNames[locale]!.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/**
+ * Artist search for the editor, through the MusicBrainz client (queue, cache). Throws CatalogUnavailable when the
+ * catalogue cannot answer; the action turns that into "Katalog trenutačno ne radi.".
+ */
+export async function findArtists(
+  userId: string,
+  query: string,
+  locale: Locale,
+): Promise<ArtistOption[]> {
+  const [cat, found, own] = await Promise.all([
+    catalogue(),
+    catalogClient().searchArtists(query, 8),
+    db()
+      .select({ mbid: artist.mbid })
+      .from(musicDnaEntry)
+      .innerJoin(artist, eq(artist.id, musicDnaEntry.artistId))
+      .where(and(eq(musicDnaEntry.userId, userId), eq(musicDnaEntry.kind, "artist"))),
+  ]);
+  const byEnglish = new Map<string, GenreRow>();
+  for (const g of cat.rows.values()) if (g.active) byEnglish.set(g.nameEn.toLowerCase(), g);
+  const ownIds = new Set(own.map((r) => r.mbid));
+  const names = new Map<string, number>();
+  for (const a of found) names.set(foldName(a.name), (names.get(foldName(a.name)) ?? 0) + 1);
+  return found.map((a) => {
+    const genres: string[] = [];
+    for (const t of a.tags) {
+      const g = byEnglish.get(t.name) ?? byEnglish.get(TAG_ALIASES[t.name] ?? "");
+      if (g && !genres.includes(nameIn(g, locale))) genres.push(nameIn(g, locale));
+      if (genres.length === 2) break;
+    }
+    const years = a.beginYear
+      ? a.endYear
+        ? `${a.beginYear}–${a.endYear}`
+        : String(a.beginYear)
+      : null;
+    return {
+      mbid: a.mbid,
+      name: a.name,
+      genres,
+      country: countryName(a.country, locale),
+      years,
+      disambiguation: a.disambiguation,
+      sameName: (names.get(foldName(a.name)) ?? 0) > 1,
+      picked: ownIds.has(a.mbid),
+    };
+  });
 }
 
 export const DNA_LIMITS = { GENRE_MIN, GENRE_MAX, ARTIST_MAX } as const;

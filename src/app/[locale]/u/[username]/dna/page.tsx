@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
+import { ArtistTile } from "@/components/dna/artist-tile";
 import { Spirala } from "@/components/motifs/spirala";
 import { Avatar } from "@/components/profile/avatar";
 import { FeaturePaused } from "@/components/system/states";
@@ -96,14 +97,16 @@ export default async function ProfileDnaPage({ params }: { params: Params }) {
               <ol className="dna-rows">
                 {dna.artists.map((a, i) => (
                   <li key={a.id} className="dna-row">
-                    <span className="dna-swatch" aria-hidden="true" />
+                    <ArtistTile name={a.name} size="sm" />
                     <span className="dna-pos" aria-hidden="true">
                       {i + 1}
                     </span>
                     <span className="dna-name">
-                      {a.name}
+                      <Link href={`/artist/${a.id}`}>{a.name}</Link>
                       {a.unavailable ? (
                         <span className="dna-fam"> · {td("unavailable")}</span>
+                      ) : a.disambiguation ? (
+                        <span className="dna-fam"> · {a.disambiguation}</span>
                       ) : null}
                     </span>
                     <span />

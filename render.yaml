@@ -50,6 +50,8 @@ services:
         sync: false # R2 API token scoped to the bucket, Object Read & Write; set by hand on web and worker
       - key: R2_SECRET_ACCESS_KEY
         sync: false
+      - key: MUSICBRAINZ_CONTACT
+        sync: false # the project contact for the MusicBrainz User-Agent (A4, D-108); web only, without it the artist catalogue reads as down
 
   - type: worker
     name: grooverift-staging-worker

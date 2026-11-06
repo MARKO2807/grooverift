@@ -14,7 +14,9 @@ import { getSession, roleOf } from "@/lib/auth/session";
 import { logDbError } from "@/lib/data/db-errors";
 import { loadViewer } from "@/lib/data/facts";
 import { accountExists, invitationByToken } from "@/lib/data/invitations";
-import { replaceDnaGenres } from "@/lib/data/music-dna";
+import { CatalogUnavailable } from "@/lib/catalog/musicbrainz";
+import { artistFromMbid } from "@/lib/data/catalog";
+import { replaceDnaArtists, replaceDnaGenres } from "@/lib/data/music-dna";
 import {
   createOnboardingProfile,
   finishOnboarding,
@@ -37,7 +39,7 @@ import { normalizeUsername, usernameAvailable } from "@/lib/data/profiles";
 import { consume } from "@/lib/data/rate-limit";
 import { env } from "@/lib/env";
 import { flagState } from "@/lib/flags";
-import { DNA_AUDIENCES, GENRE_MAX, type DnaAudience } from "@/lib/music/limits";
+import { ARTIST_MAX, DNA_AUDIENCES, GENRE_MAX, type DnaAudience } from "@/lib/music/limits";
 import {
   ADULT_COOKIE,
   adultConfirmed,
@@ -314,6 +316,7 @@ export async function visibilityAction(_prev: FormState, form: FormData): Promis
 }
 
 /** ONB-05: the picks arrive as repeated `genre` fields in pick order; Skip (or no picks) keeps nothing. */
+// i18n-keys: authErrors.catalogDown
 export async function dnaAction(_prev: FormState, form: FormData): Promise<FormState> {
   const m = await member("dna");
   const skip = form.get("skip") === "1";
@@ -323,18 +326,42 @@ export async function dnaAction(_prev: FormState, form: FormData): Promise<FormS
         .getAll("genre")
         .map(String)
         .filter((id) => UUID.test(id));
+  // Artists travel as MusicBrainz ids in pick order (step 5.3b); each is stored on first use.
+  const mbids = skip
+    ? []
+    : [
+        ...new Set(
+          form
+            .getAll("artist")
+            .map(String)
+            .filter((id) => UUID.test(id)),
+        ),
+      ];
   if (ids.length > GENRE_MAX) return { fieldErrors: { genres: "dnaCount" } };
   if (ids.length === 1) return { fieldErrors: { genres: "dnaCount" } };
-  if ((await flagState("music_dna")) === "paused" && ids.length) return { error: "generic" };
+  if (mbids.length > ARTIST_MAX) return { error: "generic" };
+  if ((await flagState("music_dna")) === "paused" && (ids.length || mbids.length))
+    return { error: "generic" };
   try {
+    const artistIds: string[] = [];
+    for (const mbid of mbids) {
+      const ref = await artistFromMbid(mbid);
+      if (ref.ok) artistIds.push(ref.id); // an artist gone from the source is left out
+    }
     const result = await replaceDnaGenres(m.userId, ids, m.locale);
     if (!result.ok)
       return { fieldErrors: { genres: result.reason === "count" ? "dnaCount" : "generic" } };
+    const artists = await replaceDnaArtists(m.userId, artistIds);
+    if (!artists.ok) return { error: "generic" };
   } catch (e) {
+    if (e instanceof CatalogUnavailable) {
+      console.warn(`[catalog] dnaAction: ${e.message}`);
+      return { error: "catalogDown" };
+    }
     logDbError("dnaAction", e);
     return { error: "generic" };
   }
-  return advance(m, "dna", ids.length > 0);
+  return advance(m, "dna", ids.length > 0 || mbids.length > 0);
 }
 
 /** ONB-05 while Music DNA is paused (SYS-04): continue without picks; the pointer still moves on. */

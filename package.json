@@ -27,6 +27,7 @@
     "db:migrate": "tsx src/lib/db/migrate.ts",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed-genres": "tsx src/lib/db/seed-genres.ts",
+    "catalog:genre-mbids": "tsx src/lib/db/fill-genre-mbids.ts",
     "admin:bootstrap": "tsx src/lib/db/bootstrap-admin.ts",
     "sentry:test": "tsx src/lib/monitoring/sentry-test.ts",
     "r2:test": "tsx src/lib/storage/r2-test.ts",

@@ -125,7 +125,8 @@
     "mailFailed": "The message wasn't sent, so no invitation was created. Try again.",
     "bioInvalid": "The bio has up to 200 characters and no control characters.",
     "usernameTooSoon": "The username can change at most once every 30 days.",
-    "usernameSame": "That is already your username."
+    "usernameSame": "That is already your username.",
+    "catalogDown": "The artist catalogue is not working right now, so nothing was saved. Try again or continue without artists."
   },
   "settings": {
     "security": {
@@ -824,10 +825,11 @@
     "orderHint": "The first three genres shape the Spirala most.",
     "minHint": "Music DNA has at least two genres, so add a new one first.",
     "fullGenres": "At most {max} genres. Remove one to add another.",
+    "fullArtists": "At most {max} artists. Remove one to add another.",
     "noGenres": "No genres yet.",
     "noArtists": "No artists yet. Optional.",
-    "artistsSoon": "Adding artists comes soon, once the artist catalogue is connected.",
     "addGenre": "Add a genre",
+    "addArtist": "Add an artist",
     "close": "Close",
     "searchLabel": "Search genres",
     "searchHint": "Type a name, for example “heavy metal”. A tap adds the genre to the end of the list.",
@@ -857,7 +859,26 @@
       "signedOut": "Your sign-in has expired. Please sign in again.",
       "notAllowed": "This account cannot change Music DNA right now.",
       "paused": "Music DNA is paused right now.",
-      "generic": "The change was not saved."
+      "generic": "The change was not saved.",
+      "catalog": "The catalogue is not working right now. Your Music DNA is safe.",
+      "fullArtists": "At most {max} artists. Remove one to add another.",
+      "duplicateArtist": "That artist is already in your Music DNA.",
+      "notFoundArtist": "That artist is no longer in the catalogue."
+    },
+    "artist": {
+      "searchLabel": "Search artists",
+      "hint": "For example “Let 3”, “Björk” or “Metallica”. Artists come from the MusicBrainz catalogue.",
+      "idle": "Type at least two letters.",
+      "empty": "No results for “{q}”. Check the spelling.",
+      "down": "The catalogue is not working right now.",
+      "downKept": "Your choices are kept.",
+      "downShort": "Catalogue down",
+      "retry": "Try again",
+      "count": "{n, plural, one {# result} other {# results}}",
+      "none": "No results",
+      "resultsLabel": "Artists from the catalogue",
+      "add": "Add",
+      "added": "Added"
     }
   },
   "join": {
@@ -993,10 +1014,12 @@
       "moreResults": "These are the best known. Not yours? Keep typing.",
       "artists": "Artists",
       "artistsOpt": "optional",
-      "artistsSoon": "You'll be able to add artists soon, in the Music DNA editor.",
       "skip": "Skip",
       "next": "Continue",
-      "submitting": "Saving…"
+      "submitting": "Saving…",
+      "artistsHint": "Add up to 10 artists you love. You can also do it later, in the Music DNA editor.",
+      "artistsPicked": "Chosen artists",
+      "artistsFull": "10 artists chosen, the most there can be."
     },
     "dnaAudience": {
       "title": "Who sees your Music DNA?",
@@ -1960,5 +1983,13 @@
       "guidelines": "Community guidelines",
       "abuseNote": "Report inappropriate content or accounts through ⋯ on the answer or profile, not here."
     }
+  },
+  "artist": {
+    "title": "Artist",
+    "unavailable": "This artist is no longer available from the source (MusicBrainz). It stays in a Music DNA until it is removed.",
+    "links": "Links",
+    "musicbrainz": "View on MusicBrainz",
+    "newTab": "(opens in a new tab)",
+    "source": "Artist data: MusicBrainz (CC0)."
   }
 }
