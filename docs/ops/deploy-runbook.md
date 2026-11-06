@@ -26,7 +26,7 @@ _Written 2026-11-05 (session 22) so the owner can create the external accounts i
    1. `npm run admin:bootstrap -- invite <owner address>` prints an invitation link (Croatian, 14 days); it is not emailed.
    2. Open the link, sign up, finish onboarding, enable two-factor.
    3. `npm run admin:bootstrap -- promote <owner address>` gives that account the admin role. Both steps are written to the audit log as system actions.
-7. Acceptance for 4.11: delete the three resources and recreate them from the blueprint once more; a clean deploy must work twice.
+7. Acceptance for 4.11: a clean deploy from the blueprint must work twice. The first was staging (session 34, D-110); **the second is the creation of production from the same `render.yaml` (owner, D-115)**, not a teardown of staging. When production is created, follow this runbook from §1 without manual steps that are not written here, then run the §6 client-IP checklist; anything done by hand that the runbook lacks is added to it before the deploy counts.
 8. Review Render's DPA and subprocessor list (ADR-0002 consequence) before any real person's data enters staging.
 
 ## 2. Cloudflare R2 (EU jurisdiction), about $0–1 per month
