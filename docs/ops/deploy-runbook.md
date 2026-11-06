@@ -35,7 +35,13 @@ Needed by Phase 5 (avatars and media), not by Phase 4. When created: a bucket wi
 
 ## 3. Transactional email (security and account messages only, OQ-32)
 
-Options from the Phase 2 research: Scaleway Transactional Email (EU, pay per message) or a fallback such as Brevo (EU). Steps: create the account; add the sending domain (`grooverift.com`) with SPF, DKIM and DMARC records; create an API key; then Claude adds the provider transport to `src/lib/auth/email.ts` (one function) and sets `EMAIL_TRANSPORT=<provider>`, `EMAIL_FROM=GrooveRift <no-reply@grooverift.com>` plus the provider's key variable. Until then staging cannot send verification mail, so sign-up on staging stays off (`sign_up` flag off by default).
+**Chosen: ZeptoMail (Zoho, EU data centre), D-110.** The project already runs its mailbox on Zoho Mail EU (D-108) and the ZeptoMail DNS records were added then. Scaleway TEM stays the fallback. Steps:
+1. Sign in to ZeptoMail with the Zoho EU account (the console host must be `zeptomail.zoho.eu`; if it opens on `.com`, stop: the data must stay in the EU).
+2. Domains: `grooverift.com` must show SPF and DKIM verified (added in D-108). Add a DMARC record if none exists yet (`_dmarc`, start with `p=none`).
+3. Mail Agents: one agent "grooverift-staging". In its settings, **turn off open and click tracking** (one-time links must not be rewritten).
+4. Mail Agent → SMTP/API → API: copy the **API host** shown in the sample (the EU host) and create a **Send Mail token**.
+5. On Render, web service and worker: `EMAIL_TRANSPORT=zeptomail`, `EMAIL_FROM=GrooveRift <no-reply@grooverift.com>`, `ZEPTOMAIL_API_URL=<the host, e.g. https://api.zeptomail.eu>`, `ZEPTOMAIL_TOKEN=<the token>` (never in a chat or a commit).
+6. Check: request a password reset for the admin account on staging; the mail arrives, the sender shows GrooveRift, SPF/DKIM/DMARC pass in the headers.
 
 ## 4. Google sign-in (free)
 

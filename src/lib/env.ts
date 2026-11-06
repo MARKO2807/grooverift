@@ -13,7 +13,11 @@ const schema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   EMAIL_FROM: z.string().default("GrooveRift <no-reply@localhost>"),
-  EMAIL_TRANSPORT: z.enum(["console", "file", "none"]).default("console"),
+  EMAIL_TRANSPORT: z.enum(["console", "file", "none", "zeptomail"]).default("console"),
+  // ZeptoMail (A7, D-110): the API host from the console's "Send mail" page (EU accounts use the EU host) and the
+  // Send Mail token. Required when EMAIL_TRANSPORT=zeptomail.
+  ZEPTOMAIL_API_URL: z.preprocess((v) => (v === "" ? undefined : v), z.url().optional()),
+  ZEPTOMAIL_TOKEN: z.string().optional(),
   EMAIL_FILE: z.string().default(".mail-outbox.jsonl"),
   // The file transport is for end-to-end tests only; CI and the Playwright config set this flag.
   E2E_EMAIL_FILE: z.string().optional(),
@@ -48,6 +52,12 @@ export function env(): Env {
       throw new Error(
         `EMAIL_TRANSPORT=${data.EMAIL_TRANSPORT} is not allowed in production: configure a provider (A7).`,
       );
+    }
+    if (
+      data.EMAIL_TRANSPORT === "zeptomail" &&
+      (!data.ZEPTOMAIL_API_URL || !data.ZEPTOMAIL_TOKEN)
+    ) {
+      throw new Error("EMAIL_TRANSPORT=zeptomail needs ZEPTOMAIL_API_URL and ZEPTOMAIL_TOKEN.");
     }
     if (!data.IP_HEADERS.trim() && data.E2E_EMAIL_FILE !== "1") {
       throw new Error(
