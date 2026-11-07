@@ -32,9 +32,9 @@ Local development accounts (`*@example.test`, seeded by `npm run db:seed`) are f
 
 | Place | Holds |
 |---|---|
-| Render → `grooverift-staging` → Environment | `BETTER_AUTH_SECRET`, `EMAIL_TRANSPORT`, `EMAIL_FROM`, `ZEPTOMAIL_API_URL`, `ZEPTOMAIL_TOKEN`, `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `IP_HEADERS` |
-| Render → `grooverift-staging-worker` → Environment | the same secret, email, Sentry and R2 values (no Google keys) |
-| `C:\Users\marko\Desktop\GrooveRift\.env.local` (ignored by git, this machine only) | local `BETTER_AUTH_SECRET`, `MUSICBRAINZ_CONTACT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, local database and mail settings |
+| Render → `grooverift-staging` → Environment | `BETTER_AUTH_SECRET`, `EMAIL_TRANSPORT`, `EMAIL_FROM`, `ZEPTOMAIL_API_URL`, `ZEPTOMAIL_TOKEN`, `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `IP_HEADERS`, `MUSICBRAINZ_CONTACT`; after owner checklist §6 also `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` (step 5.12) |
+| Render → `grooverift-staging-worker` → Environment | the same secret, email, Sentry and R2 values (no Google keys); the same VAPID pair as the web service (it sends the reminders) |
+| `C:\Users\marko\Desktop\GrooveRift\.env.local` (ignored by git, this machine only) | local `BETTER_AUTH_SECRET`, `MUSICBRAINZ_CONTACT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, a local VAPID pair (step 5.12), local database and mail settings |
 | The owner's password manager (recommended) | every login above, second-factor backup codes, and a copy of each secret that cannot be shown again (Google client secret, ZeptoMail token, R2 secret access key) |
 
 ## 4. The owner's tidy-up checklist

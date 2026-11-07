@@ -100,6 +100,13 @@ src/
   lib/data/notifications.ts       Activity (5.8): notify (the one writer: never the own act, never across a block, grouping windows),
                                   activityFor (every entry re-checked at render), markActivityRead, pruneNotifications (worker),
                                   dropNotificationsBetween (called by blockMember)
+  lib/data/push.ts                Push (5.12, D-117): devices bound to the session (saveSubscription, removeSubscription,
+                                  setDevicePause, deviceFor), pushChoices/setPushType/setReminder, pushSocial (new Activity
+                                  entries and follow requests; prefs, mute, status), remindersDue/runReminders (OQ-11, claim first)
+  lib/push/                       rules.ts (pure: types, defaults, pause, zone arithmetic, payloads without names or text),
+                                  crypto.ts (keys at rest, AES-256-GCM), send.ts (web-push, VAPID, push-service allowlist, test
+                                  transport), actions.ts ("use server"), browser.ts (client: support, permission, subscription)
+  public/sw.js                    the hand-written service worker: push and notificationclick only, no fetch handler, no cache
   lib/activity/actions.ts         "use server": markActivityReadAction (after the page rendered, never on GET)
   components/activity/            activity-list (Danas / Ovaj tjedan / Ranije by the member's local day, unread tint)
   lib/data/rate-limit.ts          the general limiter (hashed keys, fixed windows, LIMITS per scope)
@@ -134,7 +141,8 @@ src/
   lib/admin/actions.ts            setRole, setFlag, createInvite (50/day, mails the link), revokeInvite (admin only, re-checked server-side)
   lib/auth/member-page.ts         memberPage: signed-in pages; a member who has not finished onboarding is sent to their next step
   worker.ts                       pg-boss: auth.throttle.prune and data.rate_limit.prune daily; daily_drop.publish at 00:00 UTC (retries
-                                  with backoff, date from the cron tick, catch-up at start); editorial.check at 08:00 UTC (step 5.6)
+                                  with backoff, date from the cron tick, catch-up at start); editorial.check at 08:00 UTC (step 5.6);
+                                  push.reminders every 5 minutes (step 5.12)
 tests/unit/                       Vitest (policy 32, password, recovery codes, i18n)
 tests/db/                         Vitest against the database (lockout, audit trigger, flags, worker, data layer and invariants, migrations up/down)
 tests/e2e/                        Playwright + axe-core (landing, public pages, shell, not-available, auth flows, security headers), phone and desktop

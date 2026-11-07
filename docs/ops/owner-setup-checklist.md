@@ -41,10 +41,20 @@ The exact clicks and the environment values are in [`deploy-runbook.md`](deploy-
 
 Send Claude only the **names** of what you created (service names, bucket name, region). Put secrets straight into Render's environment settings yourself; never paste them into the chat (CLAUDE.md: never paste credentials into prompts).
 
-Push notifications (step 5.12) need **no account**: Claude generates the VAPID keys locally and you paste the private one into Render.
+Push notifications (step 5.12) need **no account**: you generate the VAPID keys yourself in your own terminal and put them into Render (§6).
 
 ## 5. What Claude does when each item lands
 
 - Mailbox and MetaBrainz → step 5.3 (catalogue and Music DNA) can start.
 - A7 → step 4.11 (staging, runbook §6 checks), 5.11 (images), the real-device push check in 5.12.
 - Counsel → the legal pages lose their draft mark; invitations can be planned (owner approval, Master Prompt §2A.8).
+
+## 6. Push notifications on staging (step 5.12, D-117)
+
+No account and no cost. Four steps, then the real-device check the plan asks for.
+
+1. **Make a VAPID key pair for staging** in your own terminal (PowerShell in the project folder, not in the Claude chat, so the private key never lands in a transcript): `npx web-push generate-vapid-keys`. It prints a Public Key (87 characters) and a Private Key (43 characters). Use a new pair for staging, not the one in `.env.local`.
+2. **Render, both services** (`grooverift-staging` web **and** `grooverift-staging-worker`): Environment → add `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` with the same two values on both → Save. Render redeploys. (The worker sends the Daily Drop reminders, the web service everything else.) Changing the pair later means every device has to turn notifications on again.
+3. **Turn the flag on**: `https://grooverift-staging.onrender.com/admin/flags` → `push` → on. From now on the onboarding has the reminder step and Postavke has **Obavijesti**.
+4. **iPhone (iOS 16.4 or later):** open the staging address in **Safari** → Dijeli → **Dodaj na početni zaslon** → open GrooveRift from the Home Screen → sign in → Postavke → Obavijesti → switch **Obavijesti na ovom mobitelu** on → Allow. **Android:** Chrome → sign in → the same switch → Allow.
+5. **Check:** set the reminder to the next full hour that is at least a few minutes away (Vrijeme), and wait: "Daily Drop je stigao" with the question, within five minutes of the time, if a question is published today. For a social push, use a second account (for example the "Marko Admin" test account) to comment on your answer: "Novi komentar na tvoj odgovor". Tap a notification: it opens the question or Activity. Then try "Pauziraj na 1 sat" (nothing arrives) and "Odjavi se" (nothing arrives on that phone any more).
