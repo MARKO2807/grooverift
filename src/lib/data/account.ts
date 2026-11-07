@@ -36,6 +36,7 @@ import {
   user,
   verification,
 } from "@/lib/db/schema";
+import { eraseMemberImages } from "./media";
 import { isUniqueViolation, logDbError } from "./db-errors";
 
 export type AccountFacts = {
@@ -393,6 +394,13 @@ export const PURGE_MAX_FAILURES = 5;
 async function purgeOne(req: { id: string; userId: string }, now: Date): Promise<boolean> {
   let email: string | undefined;
   try {
+    // D-121: the member's images go first, outside the transaction (object storage is not transactional) and while
+    // media.owner_id still names them; only for a member still in the grace period.
+    const [pending] = await db()
+      .select({ status: user.status })
+      .from(user)
+      .where(eq(user.id, req.userId));
+    const images = pending?.status === "pending_deletion" ? await eraseMemberImages(req.userId) : 0;
     const steps = await db().transaction(async (tx) => {
       // Lock the request so two workers never purge the same member; a cancelled one is skipped.
       const [open] = await tx
@@ -417,6 +425,7 @@ async function purgeOne(req: { id: string; userId: string }, now: Date): Promise
       if (u && isRole(u.role) && STAFF_ROLES.includes(u.role)) throw new Error("staff role");
       email = u?.email;
       const steps = u ? await eraseMember(tx, req.userId, now) : { user: "already-gone" };
+      if (u) steps.images = String(images);
       await tx
         .update(deletionRequest)
         .set({ completedAt: now, steps })

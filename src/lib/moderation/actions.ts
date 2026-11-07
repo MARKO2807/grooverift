@@ -92,6 +92,7 @@ export type DecisionInput = {
   statement?: unknown;
   days?: unknown;
   removeContent?: unknown;
+  removeImage?: unknown;
   override?: unknown;
 };
 
@@ -108,6 +109,7 @@ function parseDecision(input: DecisionInput): Decision | null {
     statement: typeof input.statement === "string" ? input.statement : "",
     days: Number.isFinite(days) ? days : undefined,
     removeContent: input.removeContent === true,
+    removeImage: input.removeImage === true,
   };
 }
 

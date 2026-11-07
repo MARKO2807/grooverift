@@ -15,8 +15,9 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { editAnswerAction, postAnswerAction } from "@/lib/drop/actions";
-import { ANSWER_MAX, type DropFailure } from "@/lib/drop/rules";
+import { ANSWER_MAX, type DropFailure, type PostImageData } from "@/lib/drop/rules";
 import { EDIT_EVENT } from "./answer-card";
+import { ImagePicker, imageForm, type PickedImage } from "./image-picker";
 
 // The dock and the answer composer (HUB-02; J3 "read and answer", pulse dock and composerForm). The dock sits at
 // the foot of the column above the tab bar; it opens the composer in a sheet. The composer carries the question
@@ -26,7 +27,7 @@ import { EDIT_EVENT } from "./answer-card";
 
 // i18n-keys: drop.error.signedOut drop.error.notAllowed drop.error.notAvailable drop.error.alreadyAnswered
 // i18n-keys: drop.error.tooMany drop.error.paused drop.error.tooLong drop.error.empty drop.error.generic
-// i18n-keys: drop.error.restricted
+// i18n-keys: drop.error.restricted drop.error.imageTooLarge drop.error.imageFormat drop.error.imageOff
 
 export const COMPOSE_EVENT = "gr:compose";
 
@@ -37,9 +38,12 @@ export function AnswerDock({
   paused,
   autoOpen = false,
   restriction = null,
+  imagesOn = false,
 }: {
   questionId: string;
-  mine: { id: string; body: string } | null;
+  mine: { id: string; body: string; image?: PostImageData | null } | null;
+  /** D-120: the `post_images` flag; off hides "Dodaj sliku" (an existing image can still be removed). */
+  imagesOn?: boolean;
   privateProfile: boolean;
   paused: boolean;
   /** SAFE-07: a posting restriction replaces the field (and Edit) with the hint (D-075 (5) A). */
@@ -57,6 +61,7 @@ export function AnswerDock({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<DropFailure | null>(null);
+  const [picked, setPicked] = useState<PickedImage | null>(null);
   const [pending, startTransition] = useTransition();
   const opened = useRef(false);
 
@@ -64,6 +69,7 @@ export function AnswerDock({
     if (!mine) return;
     setEditing(true);
     setDraft(mine.body);
+    setPicked(mine.image ? { kind: "kept", image: mine.image, alt: mine.image.alt ?? "" } : null);
     setError(null);
     setOpen(true);
   };
@@ -123,13 +129,15 @@ export function AnswerDock({
     if (over) return setError("tooLong");
     setError(null);
     startTransition(async () => {
+      const files = imageForm(picked, editing ? (mine?.image ?? null) : null);
       const r =
         editing && mine
-          ? await editAnswerAction(mine.id, draft)
-          : await postAnswerAction(questionId, draft);
+          ? await editAnswerAction(mine.id, draft, files)
+          : await postAnswerAction(questionId, draft, files);
       if (r.ok) {
         setOpen(false);
         setDraft("");
+        setPicked(null);
         toast.show(editing ? t("saved") : t("posted"));
         router.refresh();
       } else setError(r.reason);
@@ -190,6 +198,16 @@ export function AnswerDock({
             <p className={`char-count${over ? " is-over" : ""}`} id={countId}>
               {t("chars", { count: length, max: ANSWER_MAX })}
             </p>
+            {imagesOn || picked ? (
+              <ImagePicker
+                value={picked}
+                onChange={(next) => {
+                  setError(null);
+                  setPicked(next);
+                }}
+                onProblem={setError}
+              />
+            ) : null}
             {privateProfile ? (
               <div className="notice" id={audId}>
                 <IconLock />

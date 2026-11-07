@@ -1,5 +1,5 @@
 {
-  "id": "7b7e638c-64b8-474b-b8d5-82e72571cbd2",
+  "id": "bf122d92-f1fd-4141-985f-69d413fa5441",
   "prevId": "e4df2c88-cdbf-4940-ad4c-119168e0e995",
   "version": "7",
   "dialect": "postgresql",
@@ -2709,6 +2709,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "removed_image_id": {
+          "name": "removed_image_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -3778,12 +3784,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "held_until": {
-          "name": "held_until",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {

@@ -15,12 +15,15 @@ import {
   dailyDropAnswer as answer,
   dailyDropQuestion as question,
   follow,
+  media,
   mute,
   reaction,
 } from "@/lib/db/schema";
 import { utcDate } from "@/lib/editorial/rules";
 import { isUniqueViolation, SafeDbError } from "./db-errors";
 import { loadGraphs, loadOwners, type OwnerRecord } from "./facts";
+import type { Processed } from "@/lib/media/process";
+import { dropMedia, imageMeta, storeMedia, type ImageMeta } from "./media";
 import { notify } from "./notifications";
 import { consume } from "./rate-limit";
 import { activeRestriction } from "./safety";
@@ -85,6 +88,17 @@ async function canSeeAnswer(viewer: Viewer, authorId: string): Promise<boolean> 
   return canViewContent("dropAnswer", viewer, { author }, graphs.get(authorId)).allowed;
 }
 
+/**
+ * D-121: one image per answer and per comment, with the optional description. The caller has checked the
+ * `post_images` flag and re-encoded the file; here it is stored only after every other check has passed.
+ */
+export type PostImage = { image: Processed; alt: string | null };
+/** Editing an answer's image: a new one replaces the old, `remove` takes it away, `alt` changes the description. */
+export type ImageChange = { replace?: PostImage; remove?: boolean; alt?: string | null };
+
+const storePostImage = (kind: "answer_image" | "comment_image", ownerId: string, img: PostImage) =>
+  storeMedia({ kind, ownerId, image: img.image, alt: img.alt });
+
 const clean = (body: unknown) =>
   typeof body === "string" ? body.replace(/\r\n?/g, "\n").trim() : "";
 
@@ -94,6 +108,7 @@ export async function createAnswer(
   viewer: Viewer,
   questionId: string,
   body: string,
+  image?: PostImage | null,
 ): Promise<AnswerResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   if (!(await isPublished(questionId))) return { ok: false, reason: "not-available" };
@@ -101,13 +116,15 @@ export async function createAnswer(
   if (!text || text.length > ANSWER_MAX) return { ok: false, reason: "not-allowed" };
   if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
+  const imageId = image ? await storePostImage("answer_image", viewer.id, image) : null;
   try {
     const [row] = await db()
       .insert(answer)
-      .values({ questionId, authorId: viewer.id, body: text })
+      .values({ questionId, authorId: viewer.id, body: text, imageId })
       .returning({ id: answer.id });
     return { ok: true, id: row!.id };
   } catch (e) {
+    await dropMedia([imageId]);
     if (isUniqueViolation(e)) return { ok: false, reason: "already-answered" };
     throw new SafeDbError("createAnswer", e);
   }
@@ -118,6 +135,7 @@ export async function editOwnAnswer(
   viewer: Viewer,
   answerId: string,
   body: string,
+  change: ImageChange = {},
 ): Promise<WriteResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   const live = await liveAnswer(answerId);
@@ -126,9 +144,18 @@ export async function editOwnAnswer(
   if (!text || text.length > ANSWER_MAX) return { ok: false, reason: "not-allowed" };
   if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("contentEdit", viewer.id)).allowed) return { ok: false, reason: "too-many" };
+  const [before] = await db()
+    .select({ imageId: answer.imageId })
+    .from(answer)
+    .where(eq(answer.id, answerId));
+  const newImage = change.replace
+    ? await storePostImage("answer_image", viewer.id, change.replace)
+    : null;
+  const imageSet: { imageId?: string | null } =
+    change.replace || change.remove ? { imageId: newImage } : {};
   const rows = await db()
     .update(answer)
-    .set({ body: text, editedAt: new Date() })
+    .set({ body: text, editedAt: new Date(), ...imageSet })
     .where(
       and(
         eq(answer.id, answerId),
@@ -138,7 +165,14 @@ export async function editOwnAnswer(
       ),
     )
     .returning({ id: answer.id });
-  return rows.length ? { ok: true } : { ok: false, reason: "not-available" };
+  if (!rows.length) {
+    await dropMedia([newImage]);
+    return { ok: false, reason: "not-available" };
+  }
+  if (change.replace || change.remove) await dropMedia([before?.imageId]);
+  else if (change.alt !== undefined && before?.imageId)
+    await db().update(media).set({ alt: change.alt }).where(eq(media.id, before.imageId));
+  return { ok: true };
 }
 
 /**
@@ -148,7 +182,11 @@ export async function editOwnAnswer(
  */
 export async function deleteOwnAnswer(viewerId: string, answerId: string): Promise<boolean> {
   if (!UUID.test(answerId)) return false;
-  return db().transaction(async (tx) => {
+  const [before] = await db()
+    .select({ imageId: answer.imageId })
+    .from(answer)
+    .where(eq(answer.id, answerId));
+  const done = await db().transaction(async (tx) => {
     const rows = await tx
       .update(answer)
       .set({ deletedAt: new Date() })
@@ -165,8 +203,12 @@ export async function deleteOwnAnswer(viewerId: string, answerId: string): Promi
     await tx
       .delete(reaction)
       .where(and(eq(reaction.targetType, "answer"), eq(reaction.targetId, answerId)));
+    // D-121: the image goes with the answer (a moderation copy that names it keeps it until its own date).
+    await tx.update(answer).set({ imageId: null }).where(eq(answer.id, answerId));
     return true;
   });
+  if (done) await dropMedia([before?.imageId]);
+  return done;
 }
 
 // ============================================================ Comment writes
@@ -179,6 +221,7 @@ export async function createComment(
   viewer: Viewer,
   answerId: string,
   body: string,
+  image?: PostImage | null,
 ): Promise<AnswerResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   const live = await liveAnswer(answerId);
@@ -189,13 +232,15 @@ export async function createComment(
   if (await restricted(viewer.id)) return { ok: false, reason: "restricted" };
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   let id: string;
+  const imageId = image ? await storePostImage("comment_image", viewer.id, image) : null;
   try {
     const [row] = await db()
       .insert(comment)
-      .values({ answerId, authorId: viewer.id, body: text })
+      .values({ answerId, authorId: viewer.id, body: text, imageId })
       .returning({ id: comment.id });
     id = row!.id;
   } catch (e) {
+    await dropMedia([imageId]);
     throw new SafeDbError("createComment", e);
   }
   // Never about the own answer, never across a block (notify checks both).
@@ -208,9 +253,13 @@ export async function deleteOwnComment(viewer: Viewer, commentId: string): Promi
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   if (!UUID.test(commentId)) return { ok: false, reason: "not-available" };
   if (!(await consume("contentEdit", viewer.id)).allowed) return { ok: false, reason: "too-many" };
+  const [before] = await db()
+    .select({ imageId: comment.imageId })
+    .from(comment)
+    .where(eq(comment.id, commentId));
   const rows = await db()
     .update(comment)
-    .set({ deletedAt: new Date() })
+    .set({ deletedAt: new Date(), imageId: null })
     .where(
       and(
         eq(comment.id, commentId),
@@ -220,6 +269,7 @@ export async function deleteOwnComment(viewer: Viewer, commentId: string): Promi
       ),
     )
     .returning({ id: comment.id });
+  if (rows.length) await dropMedia([before?.imageId]); // D-121: the image goes with the comment
   return rows.length ? { ok: true } : { ok: false, reason: "not-available" };
 }
 
@@ -324,6 +374,8 @@ export type AnswerView = {
   reactions: number;
   reacted: boolean;
   comments: number;
+  /** D-121: the answer's image, served by /api/media to viewers who may see the answer. */
+  image: ImageMeta | null;
 };
 /** A deleted or removed answer that still has replies the viewer can see (J3 E5, E6): only a placeholder. */
 export type AnswerPlaceholder = {
@@ -399,13 +451,14 @@ async function followedBy(viewerId: string | null, ids: readonly string[]): Prom
 async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
   const authorIds = rows.filter((r) => r.authorId).map((r) => r.authorId!);
   const ids = rows.map((r) => r.id);
-  const [owners, graphs, comments, reactions, muted, followed] = await Promise.all([
+  const [owners, graphs, comments, reactions, muted, followed, images] = await Promise.all([
     loadOwners(authorIds),
     loadGraphs(viewer.id, authorIds),
     commentCounts(viewer, ids),
     reactionsFor(viewer, ids),
     mutedBy(viewer.id, authorIds),
     followedBy(viewer.id, authorIds),
+    imageMeta(rows.filter((r) => !r.deletedAt && !r.removedAt).map((r) => r.imageId)),
   ]);
   const out: AnswerItem[] = [];
   for (const r of rows) {
@@ -446,6 +499,7 @@ async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
       reactions: re?.count ?? 0,
       reacted: re?.reacted ?? false,
       comments: n,
+      image: r.imageId ? (images.get(r.imageId) ?? null) : null,
     });
   }
   return out;
@@ -524,6 +578,8 @@ export type CommentItem =
       editedAt: Date | null;
       mine: boolean;
       muted: boolean;
+      /** D-121: the comment's image, if any. */
+      image: ImageMeta | null;
     }
   /** Blocked pair or a hidden account: "This comment isn't available" (D-019, S-17). */
   | { kind: "unavailable"; id: string };
@@ -557,10 +613,11 @@ export async function answerThread(viewer: Viewer, answerId: string): Promise<An
     )
     .orderBy(asc(comment.createdAt));
   const ids = rows.filter((r) => r.authorId).map((r) => r.authorId!);
-  const [owners, graphs, muted] = await Promise.all([
+  const [owners, graphs, muted, images] = await Promise.all([
     loadOwners(ids),
     loadGraphs(viewer.id, ids),
     mutedBy(viewer.id, ids),
+    imageMeta(rows.map((r) => r.imageId)),
   ]);
   const comments: CommentItem[] = [];
   for (const c of rows) {
@@ -585,6 +642,7 @@ export async function answerThread(viewer: Viewer, answerId: string): Promise<An
       editedAt: c.editedAt,
       mine: viewer.id === o.id,
       muted: muted.has(o.id),
+      image: c.imageId ? (images.get(c.imageId) ?? null) : null,
     });
   }
   return { questionId: row.a.questionId, date: row.date, answer: item, comments };

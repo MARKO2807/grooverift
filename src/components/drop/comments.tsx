@@ -17,8 +17,10 @@ import { useToast } from "@/components/ui/toast";
 import { useSafety } from "@/components/safety/safety-dialogs";
 import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { deleteCommentAction, postCommentAction } from "@/lib/drop/actions";
-import { COMMENT_MAX, type DropFailure } from "@/lib/drop/rules";
+import { COMMENT_MAX, type DropFailure, type PostImageData } from "@/lib/drop/rules";
 import { When } from "./when";
+import { PostImage } from "./post-image";
+import { ImagePicker, imageForm, type PickedImage } from "./image-picker";
 
 // Comments under one answer (HUB-03; J3 "replies", pulse answer screen). Flat in the alpha, oldest first. A blocked
 // pair or a hidden account shows "Ovaj komentar nije dostupan." (D-019, S-17); a muted author collapses with
@@ -38,6 +40,7 @@ export type CommentData =
       createdAt: string;
       mine: boolean;
       muted: boolean;
+      image: PostImageData | null;
     }
   | { kind: "unavailable"; id: string };
 
@@ -51,13 +54,14 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
   const [menu, setMenu] = useState(false);
   const [pending, startTransition] = useTransition();
   const ts = useTranslations("safety");
-  const flat = c.body.replace(/s+/g, " ").trim();
+  const flat = c.body.replace(/\s+/g, " ").trim();
   const safety = useSafety({
     person: c.author,
     report: {
       type: "comment",
       id: c.id,
       preview: flat.length > 140 ? `${flat.slice(0, 139).trimEnd()}…` : flat,
+      hasImage: !!c.image,
     },
     muted: c.muted,
   });
@@ -118,6 +122,7 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
         )}
       </header>
       <p className="com-text">{c.body}</p>
+      {c.image ? <PostImage image={c.image} author={c.author.displayName} /> : null}
       {c.mine ? null : (
         <>
           <Dialog
@@ -203,10 +208,13 @@ export function CommentForm({
   answerId,
   privateProfile,
   restriction = null,
+  imagesOn = false,
 }: {
   answerId: string;
   privateProfile: boolean;
   restriction?: Restriction | null;
+  /** D-120: the `post_images` flag. */
+  imagesOn?: boolean;
 }) {
   const t = useTranslations("drop");
   const toast = useToast();
@@ -214,6 +222,7 @@ export function CommentForm({
   const fid = useId();
   const [text, setText] = useState("");
   const [error, setError] = useState<DropFailure | null>(null);
+  const [picked, setPicked] = useState<PickedImage | null>(null);
   const [pending, startTransition] = useTransition();
   const length = text.trim().length;
   const over = length > COMMENT_MAX;
@@ -225,9 +234,10 @@ export function CommentForm({
     if (over) return setError("tooLong");
     setError(null);
     startTransition(async () => {
-      const r = await postCommentAction(answerId, text);
+      const r = await postCommentAction(answerId, text, imageForm(picked, null));
       if (r.ok) {
         setText("");
+        setPicked(null);
         toast.show(t("commentPosted"));
         router.refresh();
       } else setError(r.reason);
@@ -251,6 +261,16 @@ export function CommentForm({
       <p className={`char-count${over ? " is-over" : ""}`} id={`${fid}-n`}>
         {t("chars", { count: length, max: COMMENT_MAX })}
       </p>
+      {imagesOn ? (
+        <ImagePicker
+          value={picked}
+          onChange={(next) => {
+            setError(null);
+            setPicked(next);
+          }}
+          onProblem={setError}
+        />
+      ) : null}
       {privateProfile ? (
         <div className="notice" id={`${fid}-a`}>
           <IconLock />

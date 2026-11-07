@@ -52,6 +52,11 @@ export const SEED_FLAGS = [
     state: "off",
     note: "Daily Drop push and the reminder step in onboarding (step 5.12; D-093 (1))",
   },
+  {
+    key: "post_images",
+    state: "on",
+    note: "Member images in answers and comments (step 5.11; D-120, D-121); off stops new uploads",
+  },
 ] as const;
 
 /**

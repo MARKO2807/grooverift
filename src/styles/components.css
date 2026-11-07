@@ -614,6 +614,11 @@
   .dialog h2 {
     font: var(--gr-type-title-3);
   }
+  .dialog.dialog-wide {
+    max-width: min(96vw, 64rem);
+    max-height: 96vh;
+    overflow: auto;
+  }
 
   /* ---------- forced colours (keep this block last) ---------- */
   @media (forced-colors: active) {

@@ -1346,7 +1346,10 @@
       "tooLong": "The text is too long. Shorten it to the limit.",
       "empty": "Write something before posting.",
       "generic": "Posting didn't work. Your text is still here; try again.",
-      "restricted": "Posting is restricted for you right now."
+      "restricted": "Posting is restricted for you right now.",
+      "imageTooLarge": "The image is larger than 5 MB. Choose a smaller one.",
+      "imageFormat": "Only JPG, PNG or WebP is accepted, and this image can't be opened.",
+      "imageOff": "Adding images is switched off right now. Post without the image."
     },
     "first": {
       "title": "The first question arrives on {date}",
@@ -1366,6 +1369,18 @@
       "joinText": "GrooveRift is in a closed alpha: members invite people they know. If you have an account, sign in and we'll bring you back to this question.",
       "signIn": "Sign in",
       "aboutAlpha": "More about the alpha"
+    },
+    "image": {
+      "add": "Add image",
+      "replace": "Replace",
+      "remove": "Remove image",
+      "preview": "The chosen image",
+      "altLabel": "Image description (optional)",
+      "altHelp": "For screen readers and when the image doesn't load. If you leave it empty, it reads “Image added by” and your name.",
+      "altFallback": "Image added by {name}",
+      "open": "Open image: {alt}",
+      "viewerTitle": "Image",
+      "close": "Close"
     }
   },
   "activity": {
@@ -1453,7 +1468,8 @@
       "doneTitle": "Report received.",
       "doneText": "A person on our team reviews it. You'll see the decision in Settings, under Account status → My reports. In the alpha this may take a few days.",
       "also": "Anything else about @{username}?",
-      "done": "Done"
+      "done": "Done",
+      "aboutImage": "The report is about the image"
     },
     "target": {
       "profile": "Profile @{username}",
@@ -1765,7 +1781,8 @@
       "decision": "Decision",
       "byYou": "your decision",
       "decide": "Decision",
-      "release": "Return to the queue"
+      "release": "Return to the queue",
+      "imageAlt": "The image from the reported content"
     },
     "decide": {
       "outcome": "Outcome",
@@ -1783,7 +1800,8 @@
       "override": "Why you decide anyway",
       "overrideHelp": "This goes into the audit log.",
       "submit": "Decide",
-      "done": "Decision saved."
+      "done": "Decision saved.",
+      "removeImage": "Remove only the image (the text stays)"
     },
     "appeal": {
       "title": "Appeals",

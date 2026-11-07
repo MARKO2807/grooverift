@@ -14,7 +14,7 @@ import { loadOwner } from "@/lib/data/facts";
 import { activeRestriction } from "@/lib/data/safety";
 import { dropLocale, toCard, toComment } from "@/lib/drop/present";
 import { env } from "@/lib/env";
-import { flagState } from "@/lib/flags";
+import { flagState, isEnabled } from "@/lib/flags";
 import { notAvailable, profileViewer } from "@/lib/profile/page";
 
 export const dynamic = "force-dynamic";
@@ -57,11 +57,12 @@ export default async function AnswerPage({ params }: { params: Params }) {
   const thread = await answerThread(viewer, id);
   if (!thread || thread.questionId !== q.id) notAvailable();
   const t = await getTranslations("drop");
-  const [dropPaused, commentsPaused, me, restriction] = await Promise.all([
+  const [dropPaused, commentsPaused, me, restriction, imagesOn] = await Promise.all([
     flagState("daily_drop").then((s) => s === "paused"),
     flagState("comments").then((s) => s === "paused"),
     loadOwner(viewer.id),
     activeRestriction(viewer.id),
+    isEnabled("post_images", { role: viewer.role, userId: viewer.id }),
   ]);
   const a = thread.answer;
   const who = a.kind === "answer" ? a.author.displayName : null;
@@ -107,6 +108,7 @@ export default async function AnswerPage({ params }: { params: Params }) {
       ) : a.kind === "answer" ? (
         <CommentForm
           answerId={a.id}
+          imagesOn={imagesOn}
           privateProfile={me?.profile !== "public"}
           restriction={
             restriction

@@ -112,6 +112,8 @@ export type Decision =
       days?: number;
       /** Remove the reported answer or comment as well (always true for content_removal). */
       removeContent: boolean;
+      /** D-121 (4): remove only the image of the answer or comment (ignored when the whole post goes). */
+      removeImage?: boolean;
     };
 
 export type DecisionError =
@@ -136,7 +138,8 @@ export function validateDecision(
   // A DSA notice about something that is not one of our objects: only a record of what was done ("notice").
   if (!hasSubject) return d.kind === "notice" && !d.removeContent ? null : "subject";
   const content = targetType === "answer" || targetType === "comment";
-  if ((d.kind === "content_removal" || d.removeContent) && !content) return "removeTarget";
+  if ((d.kind === "content_removal" || d.removeContent || d.removeImage) && !content)
+    return "removeTarget";
   if (d.kind === "restriction" && !RESTRICTION_DAYS.includes(d.days as never)) return "days";
   if (d.kind === "suspension" && !SUSPENSION_DAYS.includes(d.days as never)) return "days";
   return null;

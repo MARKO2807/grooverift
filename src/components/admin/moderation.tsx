@@ -100,12 +100,15 @@ export function DecisionForm({
   subjectless,
   involved,
   suggestedRule,
+  hasImage = false,
 }: {
   caseId: string;
   content: boolean;
   subjectless: boolean;
   involved: boolean;
   suggestedRule: Rule;
+  /** D-121 (4): the reported answer or comment still shows an image; it can be removed alone. */
+  hasImage?: boolean;
 }) {
   const t = useTranslations("moderation.decide");
   const tk = useTranslations("moderation.kind");
@@ -119,6 +122,7 @@ export function DecisionForm({
   const [days, setDays] = useState<number>(3);
   const [rule, setRule] = useState<Rule>(suggestedRule);
   const [remove, setRemove] = useState(content);
+  const [removeImage, setRemoveImage] = useState(false);
   const [statement, setStatement] = useState("");
   const [override, setOverride] = useState("");
   const [error, setError] = useState<ModerationFailure | null>(null);
@@ -141,6 +145,7 @@ export function DecisionForm({
         statement,
         days: dayOptions ? days : undefined,
         removeContent: content && (kind === "content_removal" || remove),
+        removeImage: hasImage && kind !== "content_removal" && !remove && removeImage,
         override: involved ? override : undefined,
       });
       if (r.ok) {
@@ -213,6 +218,16 @@ export function DecisionForm({
                 onChange={(e) => setRemove(e.target.checked)}
               />
               <span>{t("remove")}</span>
+            </label>
+          ) : null}
+          {hasImage && kind !== "content_removal" && !remove ? (
+            <label className="check-row">
+              <input
+                type="checkbox"
+                checked={removeImage}
+                onChange={(e) => setRemoveImage(e.target.checked)}
+              />
+              <span>{t("removeImage")}</span>
             </label>
           ) : null}
           <div className="field">

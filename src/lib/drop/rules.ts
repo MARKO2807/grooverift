@@ -29,7 +29,13 @@ export type DropFailure =
   | "tooLong"
   | "empty"
   | "restricted"
-  | "generic";
+  | "generic"
+  | "imageTooLarge"
+  | "imageFormat"
+  | "imageOff";
+
+/** D-121: an answer's or comment's image as the client sees it (served by /api/media/<id>). */
+export type PostImageData = { id: string; width: number; height: number; alt: string | null };
 
 /** An answer as the client components receive it (dates as ISO strings). */
 export type AnswerCardData = {
@@ -44,4 +50,5 @@ export type AnswerCardData = {
   reactions: number;
   reacted: boolean;
   comments: number;
+  image: PostImageData | null;
 };

@@ -36,7 +36,7 @@ const userRefNull = (name: string) =>
  * D-113), always re-encoded WebP without metadata. A row is reachable only through the parent that references it
  * (profile photo, artist photo, answer or comment image, feedback screenshot), and /api/media/<id> asks the policy
  * about that parent on every read. A row no parent references is swept with its object (`media.sweep`), unless a
- * moderation copy holds it (`held_until`, the D-107 evidence period).
+ * moderation copy (content_snapshot.content.imageId) still names it for the D-107 evidence period.
  */
 export const media = pgTable(
   "media",
@@ -53,8 +53,6 @@ export const media = pgTable(
     /** D-121 (3): the optional "Opis slike"; null means "Slika koju je dodao/dodala <name>". */
     alt: text("alt"),
     createdAt: createdAt(),
-    /** A moderation copy keeps the image until this moment even after its post is gone (content_snapshot). */
-    heldUntil: at("held_until"),
   },
   (t) => [
     index("media_owner_idx").on(t.ownerId),
@@ -774,6 +772,8 @@ export const enforcementAction = pgTable(
     acknowledgedAt: at("acknowledged_at"),
     /** The decision also removed the reported answer or comment (e.g. "removed, with a warning", D-075). */
     removesContent: boolean("removes_content").notNull().default(false),
+    /** D-121 (4): the decision removed only the image; kept so an overturned appeal can put it back. */
+    removedImageId: uuid("removed_image_id"),
   },
   (t) => [
     index("enforcement_subject_idx").on(t.subjectUserId, t.startsAt),

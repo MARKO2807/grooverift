@@ -3,7 +3,7 @@
 // follows the parent). A media id alone is worth nothing: an unreferenced row answers "not found" to everyone,
 // and every refusal has the same shape, so a URL never tells whether an image exists (U-02).
 import { randomUUID } from "node:crypto";
-import { and, eq, inArray, isNull, lt, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import {
   canViewContent,
   canViewProfileSection,
@@ -11,7 +11,7 @@ import {
   type StaffContext,
   type Viewer,
 } from "@/lib/authz";
-import { db, type Db } from "@/lib/db/client";
+import { db } from "@/lib/db/client";
 import {
   artistPhoto,
   comment,
@@ -71,32 +71,42 @@ export async function storeMedia(input: {
   return id;
 }
 
-/** Removes the object and the row at once (a replaced profile photo, a removed post image). */
+/** Image ids a moderation copy (content_snapshot, D-107) still names: kept until the copy itself is purged. */
+async function heldBySnapshot(ids: readonly string[]): Promise<Set<string>> {
+  if (!ids.length) return new Set();
+  const rows = await db()
+    .select({ id: sql<string>`${contentSnapshot.content}->>'imageId'` })
+    .from(contentSnapshot)
+    .where(
+      inArray(
+        sql<string>`${contentSnapshot.content}->>'imageId'`,
+        ids.map((i) => i),
+      ),
+    );
+  return new Set(rows.map((r) => r.id));
+}
+
+/**
+ * Removes the object and the row at once (a replaced profile photo, a deleted post's image). An image a moderation
+ * copy still names stays until the copy is purged; the sweep takes it then.
+ */
 export async function dropMedia(ids: readonly (string | null | undefined)[]): Promise<void> {
   const list = ids.filter(isMediaId);
   if (!list.length) return;
+  const held = await heldBySnapshot(list);
   const rows = await db()
-    .select({ id: media.id, key: media.storageKey, heldUntil: media.heldUntil })
+    .select({ id: media.id, key: media.storageKey })
     .from(media)
     .where(inArray(media.id, list));
   for (const r of rows) {
-    if (r.heldUntil && r.heldUntil > new Date()) continue; // a moderation copy still needs it; the sweep comes later
+    if (held.has(r.id)) continue;
     await deleteObject(r.key);
     await db().delete(media).where(eq(media.id, r.id));
   }
 }
 
-/** The moderation copy (D-107) keeps a reported image as long as the copy itself (content_snapshot.purge_after). */
-export async function holdMedia(tx: Db, id: string | null | undefined, until: Date): Promise<void> {
-  if (!isMediaId(id)) return;
-  await tx
-    .update(media)
-    .set({ heldUntil: until })
-    .where(and(eq(media.id, id), or(isNull(media.heldUntil), lt(media.heldUntil, until))));
-}
-
 /**
- * `media.sweep`: every row no parent references (and no moderation copy holds) goes, object first. Covers replaced
+ * `media.sweep`: every row no parent and no moderation copy references goes, object first. Covers replaced
  * photos, deleted posts, handled screenshots and uploads whose parent write never happened. Safe to run twice.
  */
 export async function sweepMedia(now: Date = new Date()): Promise<number> {
@@ -104,7 +114,7 @@ export async function sweepMedia(now: Date = new Date()): Promise<number> {
   const rows = await db().execute<{ id: string; storage_key: string }>(sql`
     select m.id, m.storage_key from ${media} m
     where m.created_at < ${cutoff.toISOString()}::timestamptz
-      and (m.held_until is null or m.held_until < ${now.toISOString()}::timestamptz)
+      and not exists (select 1 from ${contentSnapshot} s where s.content->>'imageId' = m.id::text)
       and not exists (select 1 from ${profile} p where p.photo_id = m.id)
       and not exists (select 1 from ${artistPhoto} ap where ap.media_id = m.id)
       and not exists (select 1 from ${answer} a where a.image_id = m.id)
@@ -333,4 +343,54 @@ export async function ownPhotoId(userId: string): Promise<string | null> {
     .from(profile)
     .where(eq(profile.userId, userId));
   return r?.photoId ?? null;
+}
+
+// ------------------------------------------------------------------ the member's own images (export, purge)
+
+export type OwnImage = {
+  id: string;
+  kind: MediaKind;
+  alt: string | null;
+  createdAt: Date;
+  key: string;
+};
+
+/** Every image the member uploaded that is still stored (the data copy, D-121; the purge). */
+export async function ownImages(userId: string): Promise<OwnImage[]> {
+  const rows = await db()
+    .select({
+      id: media.id,
+      kind: media.kind,
+      alt: media.alt,
+      createdAt: media.createdAt,
+      key: media.storageKey,
+    })
+    .from(media)
+    .where(eq(media.ownerId, userId));
+  return rows.map((r) => ({ ...r, kind: r.kind as MediaKind }));
+}
+
+/** The bytes of one of the member's own images, for the data copy. */
+export async function ownImageBytes(img: OwnImage): Promise<Buffer | null> {
+  return (await getObject(img.key))?.bytes ?? null;
+}
+
+/**
+ * The purge (D-121: images are deleted with the account): every reference to the member's images is cleared and the
+ * objects go, except those a moderation copy still names (they follow the copy's own date). Runs before the purge
+ * transaction, while media.owner_id still names the member.
+ */
+export async function eraseMemberImages(userId: string): Promise<number> {
+  const mine = await ownImages(userId);
+  if (!mine.length) return 0;
+  const ids = mine.map((m) => m.id);
+  await db().update(profile).set({ photoId: null }).where(inArray(profile.photoId, ids));
+  await db().update(answer).set({ imageId: null }).where(inArray(answer.imageId, ids));
+  await db().update(comment).set({ imageId: null }).where(inArray(comment.imageId, ids));
+  await db()
+    .update(feedbackReport)
+    .set({ screenshotId: null })
+    .where(inArray(feedbackReport.screenshotId, ids));
+  await dropMedia(ids);
+  return ids.length;
 }

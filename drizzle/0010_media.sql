@@ -1,6 +1,7 @@
 -- Step 5.11: images. One media table (re-encoded WebP in object storage), the artist photo with its credit, licence
--- snapshot and the admin hide (D-118), and one optional image reference on profiles, answers, comments and feedback
--- (D-078, D-121). Additive only: no existing row changes, no destructive statement.
+-- snapshot and the admin hide (D-118), one optional image reference on profiles, answers, comments and feedback
+-- (D-078, D-121), and the image an enforcement action removed (D-121 (4)). Additive only: no existing row changes,
+-- no destructive statement.
 CREATE TABLE "artist_photo" (
 	"artist_id" uuid PRIMARY KEY NOT NULL,
 	"media_id" uuid,
@@ -35,7 +36,6 @@ CREATE TABLE "media" (
 	"byte_size" integer NOT NULL,
 	"alt" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"held_until" timestamp with time zone,
 	CONSTRAINT "media_storage_key_unique" UNIQUE("storage_key"),
 	CONSTRAINT "media_kind" CHECK ("media"."kind" in ('profile_photo', 'artist_photo', 'answer_image', 'comment_image', 'feedback_screenshot')),
 	CONSTRAINT "media_alt_len" CHECK ("media"."alt" is null or char_length("media"."alt") <= 300),
@@ -44,6 +44,7 @@ CREATE TABLE "media" (
 --> statement-breakpoint
 ALTER TABLE "comment" ADD COLUMN "image_id" uuid;--> statement-breakpoint
 ALTER TABLE "daily_drop_answer" ADD COLUMN "image_id" uuid;--> statement-breakpoint
+ALTER TABLE "enforcement_action" ADD COLUMN "removed_image_id" uuid;--> statement-breakpoint
 ALTER TABLE "feedback_report" ADD COLUMN "screenshot_id" uuid;--> statement-breakpoint
 ALTER TABLE "profile" ADD COLUMN "photo_id" uuid;--> statement-breakpoint
 ALTER TABLE "artist_photo" ADD CONSTRAINT "artist_photo_artist_id_artist_id_fk" FOREIGN KEY ("artist_id") REFERENCES "public"."artist"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

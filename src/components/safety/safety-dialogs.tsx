@@ -41,7 +41,13 @@ import {
 // i18n-keys: safety.error.generic safety.error.invalid safety.error.closed safety.error.exists safety.error.copyright
 
 export type SafetyPerson = { id: string; username: string; displayName: string };
-export type ReportSubject = { type: ReportTarget; id: string; preview?: string };
+export type ReportSubject = {
+  type: ReportTarget;
+  id: string;
+  preview?: string;
+  /** D-121 (4): the answer or comment has an image; the member can say the report is about it. */
+  hasImage?: boolean;
+};
 
 type Open = "mute" | "block" | "unblock" | "report" | null;
 
@@ -346,6 +352,7 @@ function ReportDialog({
   const [cat, setCat] = useState<ReportCategory | null>(null);
   const [pickError, setPickError] = useState(false);
   const [details, setDetails] = useState("");
+  const [aboutImage, setAboutImage] = useState(false);
   const [error, setError] = useState<SafetyFailure | null>(null);
   const [pending, start] = useTransition();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -365,6 +372,7 @@ function ReportDialog({
         targetId: subject.id,
         category: cat,
         details,
+        aboutImage: !!subject.hasImage && aboutImage,
       });
       if (r.ok) go(3);
       else setError(r.reason);
@@ -452,6 +460,16 @@ function ReportDialog({
                 </>
               ) : (
                 <>
+                  {subject.hasImage ? (
+                    <label className="check-row">
+                      <input
+                        type="checkbox"
+                        checked={aboutImage}
+                        onChange={() => setAboutImage((x) => !x)}
+                      />
+                      <span>{t("report.aboutImage")}</span>
+                    </label>
+                  ) : null}
                   <div className="field">
                     <label className="label" htmlFor={`${id}-d`}>
                       {t("report.detailsLabel")} <span className="opt">{t("report.optional")}</span>

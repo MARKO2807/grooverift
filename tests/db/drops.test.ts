@@ -339,6 +339,7 @@ describe("the three sorts (plan §1.2)", () => {
     reactions: 99 - comments, // reactions never decide the order (§5)
     reacted: false,
     comments,
+    image: null,
   });
   const items = [view("a", 1, 3), view("b", 2, 0, true), view("c", 3, 3), view("d", 4, 1)];
   it("Recent is newest first", () => {

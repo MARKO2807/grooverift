@@ -114,6 +114,14 @@ export default async function CasePage({
               {copyText(s.content).map((line, j) => (
                 <span key={j}>{line}</span>
               ))}
+              {typeof s.content.imageId === "string" ? (
+                // eslint-disable-next-line @next/next/no-img-element -- the moderation copy's image, through the case
+                <img
+                  className="mod-img"
+                  src={`/api/media/${s.content.imageId}?case=${c.id}`}
+                  alt={t("case.imageAlt")}
+                />
+              ) : null}
             </blockquote>
           ))
         ) : (
@@ -229,6 +237,7 @@ export default async function CasePage({
             subjectless={!c.subject}
             involved={c.conflict === "involved"}
             suggestedRule={firstCat ? RULE_FOR_CATEGORY[firstCat] : "illegal"}
+            hasImage={c.current.state === "live" && !!c.current.hasImage}
           />
           {mine ? <ReleaseCase caseId={c.id} /> : null}
         </section>

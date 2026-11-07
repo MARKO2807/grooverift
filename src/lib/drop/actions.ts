@@ -15,7 +15,11 @@ import { logDbError } from "@/lib/data/db-errors";
 import { latestPublishedDate } from "@/lib/data/drops";
 import { loadViewer } from "@/lib/data/facts";
 import { consume } from "@/lib/data/rate-limit";
-import { flagState } from "@/lib/flags";
+import { flagState, isEnabled } from "@/lib/flags";
+import type { ImageChange, PostImage } from "@/lib/data/answers";
+import { processPostImage } from "@/lib/media/process";
+import { cleanAlt } from "@/lib/media/rules";
+import { fileBytes } from "@/lib/media/upload";
 import { ANSWER_MAX, COMMENT_MAX, type DropFailure } from "./rules";
 
 // Server actions for the Daily Drop (HUB-02, HUB-03; step 5.7, J3). The member always comes from the session
@@ -62,6 +66,37 @@ async function guarded<T>(where: string, run: () => Promise<T>, failed: T): Prom
 
 const GENERIC = { ok: false, reason: "generic" } as const;
 
+// i18n-keys: drop.error.imageTooLarge drop.error.imageFormat drop.error.imageOff
+
+/**
+ * D-121: the image part of a post, from a FormData ("image": the file, "alt": the description, "removeImage": "1").
+ * A new image needs the `post_images` flag on (D-120: it stops new uploads without touching the rest) and the upload
+ * limit; it is re-encoded before anything is stored. Removing or describing an existing image needs neither.
+ */
+async function imagePart(
+  viewer: Viewer & { id: string },
+  files: unknown,
+): Promise<{ change: ImageChange } | { fail: DropFailure }> {
+  if (!(files instanceof FormData)) return { change: {} };
+  const alt = files.has("alt") ? cleanAlt(files.get("alt")) : undefined;
+  const file = files.get("image");
+  if (file instanceof File && file.size > 0) {
+    if (!(await isEnabled("post_images", { role: viewer.role, userId: viewer.id })))
+      return { fail: "imageOff" };
+    if (!(await consume("upload", viewer.id)).allowed) return { fail: "tooMany" };
+    const bytes = await fileBytes(file);
+    if (bytes === "tooLarge") return { fail: "imageTooLarge" };
+    if (typeof bytes === "string") return { fail: "imageFormat" };
+    const processed = await processPostImage(bytes);
+    if (!processed.ok)
+      return { fail: processed.problem === "tooLarge" ? "imageTooLarge" : "imageFormat" };
+    const replace: PostImage = { image: processed.image, alt: alt ?? null };
+    return { change: { replace } };
+  }
+  if (files.get("removeImage") === "1") return { change: { remove: true } };
+  return { change: alt === undefined ? {} : { alt } };
+}
+
 const mapReason = (r: string): DropFailure =>
   r === "restricted"
     ? "restricted"
@@ -74,7 +109,11 @@ const mapReason = (r: string): DropFailure =>
           : "notAvailable";
 
 /** Post an answer to the question that was on screen (the composer carries its id, J3 E1). */
-export async function postAnswerAction(questionId: string, body: string): Promise<DropResult> {
+export async function postAnswerAction(
+  questionId: string,
+  body: string,
+  files?: FormData,
+): Promise<DropResult> {
   if (typeof questionId !== "string" || !UUID.test(questionId))
     return { ok: false, reason: "notAvailable" };
   const bad = checkText(body, ANSWER_MAX);
@@ -84,14 +123,20 @@ export async function postAnswerAction(questionId: string, body: string): Promis
     async () => {
       const m = await member(["daily_drop"]);
       if ("fail" in m) return { ok: false, reason: m.fail };
-      const r = await createAnswer(m.viewer, questionId, body);
+      const img = await imagePart(m.viewer, files);
+      if ("fail" in img) return { ok: false, reason: img.fail };
+      const r = await createAnswer(m.viewer, questionId, body, img.change.replace);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
   );
 }
 
-export async function editAnswerAction(answerId: string, body: string): Promise<DropResult> {
+export async function editAnswerAction(
+  answerId: string,
+  body: string,
+  files?: FormData,
+): Promise<DropResult> {
   if (typeof answerId !== "string" || !UUID.test(answerId))
     return { ok: false, reason: "notAvailable" };
   const bad = checkText(body, ANSWER_MAX);
@@ -101,7 +146,9 @@ export async function editAnswerAction(answerId: string, body: string): Promise<
     async () => {
       const m = await member(["daily_drop"]);
       if ("fail" in m) return { ok: false, reason: m.fail };
-      const r = await editOwnAnswer(m.viewer, answerId, body);
+      const img = await imagePart(m.viewer, files);
+      if ("fail" in img) return { ok: false, reason: img.fail };
+      const r = await editOwnAnswer(m.viewer, answerId, body, img.change);
       return r.ok ? { ok: true } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
@@ -126,7 +173,11 @@ export async function deleteAnswerAction(answerId: string): Promise<DropResult> 
   );
 }
 
-export async function postCommentAction(answerId: string, body: string): Promise<DropResult> {
+export async function postCommentAction(
+  answerId: string,
+  body: string,
+  files?: FormData,
+): Promise<DropResult> {
   if (typeof answerId !== "string" || !UUID.test(answerId))
     return { ok: false, reason: "notAvailable" };
   const bad = checkText(body, COMMENT_MAX);
@@ -136,7 +187,9 @@ export async function postCommentAction(answerId: string, body: string): Promise
     async () => {
       const m = await member(["daily_drop", "comments"]);
       if ("fail" in m) return { ok: false, reason: m.fail };
-      const r = await createComment(m.viewer, answerId, body);
+      const img = await imagePart(m.viewer, files);
+      if ("fail" in img) return { ok: false, reason: img.fail };
+      const r = await createComment(m.viewer, answerId, body, img.change.replace);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,

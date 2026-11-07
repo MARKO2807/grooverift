@@ -52,6 +52,9 @@ const mayReport = (v: Viewer): v is Viewer & { id: string } =>
 
 // ============================================================ Reports (SAFE-01)
 
+/** D-121 (4): the marker that starts the details of a report about an image (staff see it in ADM-10). */
+export const IMAGE_REPORT_TAG = "[image]";
+
 export type Resolved = {
   ownerId: string;
   objectType: ReportTarget;
@@ -87,6 +90,7 @@ export async function resolveTarget(
       .select({
         authorId: answer.authorId,
         body: answer.body,
+        imageId: answer.imageId,
         status: question.status,
         date: question.publishDate,
       })
@@ -95,12 +99,13 @@ export async function resolveTarget(
       .where(and(eq(answer.id, id), isNull(answer.deletedAt), isNull(answer.removedAt)));
     if (!a || a.status !== "published" || !a.date || a.date > utcDate()) return null;
     ownerId = a.authorId;
-    content = { body: a.body, date: a.date };
+    content = { body: a.body, date: a.date, ...(a.imageId ? { imageId: a.imageId } : {}) };
   } else {
     const [c] = await db()
       .select({
         authorId: comment.authorId,
         body: comment.body,
+        imageId: comment.imageId,
         answerId: comment.answerId,
         answerAuthorId: answer.authorId,
         status: question.status,
@@ -113,7 +118,12 @@ export async function resolveTarget(
     if (!c || c.status !== "published" || !c.date || c.date > utcDate()) return null;
     ownerId = c.authorId;
     threadAuthorId = c.answerAuthorId;
-    content = { body: c.body, date: c.date, answerId: c.answerId };
+    content = {
+      body: c.body,
+      date: c.date,
+      answerId: c.answerId,
+      ...(c.imageId ? { imageId: c.imageId } : {}),
+    };
   }
   if (!ownerId || ownerId === reporterId) return null;
   const owner = await loadOwner(ownerId);
@@ -210,6 +220,8 @@ export type ReportInput = {
   targetId: string;
   category: ReportCategory;
   details: string;
+  /** D-121 (4): about the answer's or comment's image; such reports go to the top of the queue. */
+  aboutImage?: boolean;
 };
 export type ReportResult =
   { ok: true } | { ok: false; reason: "not-available" | "not-allowed" | "too-many" | "copyright" };
@@ -228,7 +240,11 @@ export async function createReport(viewer: Viewer, input: ReportInput): Promise<
   if (!target) return { ok: false, reason: "not-available" };
   if (!(await consume("report", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   const reporterId = viewer.id;
-  const priority = reportPriority(input.category);
+  const aboutImage = !!input.aboutImage && !!target.content.imageId;
+  const priority = aboutImage ? 0 : reportPriority(input.category);
+  const shownDetails = aboutImage
+    ? `${IMAGE_REPORT_TAG}${details ? ` ${details}` : ""}`.slice(0, DETAILS_MAX)
+    : details;
   try {
     await db().transaction(async (tx) => {
       await caseLock(tx, target.objectType, target.objectId);
@@ -252,7 +268,7 @@ export async function createReport(viewer: Viewer, input: ReportInput): Promise<
         targetOwnerId: target.ownerId,
         targetHandle: String((target.content as { username?: string }).username ?? "") || null,
         category: input.category,
-        details: details || null,
+        details: shownDetails || null,
         caseId,
       });
     });

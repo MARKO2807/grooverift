@@ -16,12 +16,15 @@ export function Dialog({
   isOpen,
   onOpenChange,
   isDismissable = true,
+  wide = false,
 }: {
   title: string;
   children: React.ReactNode | ((close: () => void) => React.ReactNode);
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   isDismissable?: boolean;
+  /** Step 5.11: the image viewer uses nearly the whole screen (D-121 (2)). */
+  wide?: boolean;
 }) {
   return (
     <ModalOverlay
@@ -32,7 +35,7 @@ export function Dialog({
       isKeyboardDismissDisabled={!isDismissable}
     >
       <Modal>
-        <AriaDialog className="dialog">
+        <AriaDialog className={wide ? "dialog dialog-wide" : "dialog"}>
           {({ close }) => (
             <>
               <Heading slot="title">{title}</Heading>

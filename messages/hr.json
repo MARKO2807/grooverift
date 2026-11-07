@@ -1346,7 +1346,10 @@
       "tooLong": "Tekst je predug. Skrati ga do dopuštene duljine.",
       "empty": "Napiši nešto prije objave.",
       "generic": "Objava nije uspjela. Tekst je ostao ovdje, pokušaj ponovno.",
-      "restricted": "Objavljivanje ti je trenutačno ograničeno."
+      "restricted": "Objavljivanje ti je trenutačno ograničeno.",
+      "imageTooLarge": "Slika je veća od 5 MB. Odaberi manju.",
+      "imageFormat": "Prima se samo JPG, PNG ili WebP, a ova se slika ne može otvoriti.",
+      "imageOff": "Dodavanje slika je trenutačno isključeno. Objavi bez slike."
     },
     "first": {
       "title": "Prvo pitanje stiže {date}",
@@ -1366,6 +1369,18 @@
       "joinText": "GrooveRift je u zatvorenoj alfi: članovi pozivaju ljude koje znaju. Ako imaš račun, prijavi se i vraćamo te na ovo pitanje.",
       "signIn": "Prijavi se",
       "aboutAlpha": "Više o alfi"
+    },
+    "image": {
+      "add": "Dodaj sliku",
+      "replace": "Zamijeni",
+      "remove": "Ukloni sliku",
+      "preview": "Odabrana slika",
+      "altLabel": "Opis slike (neobavezno)",
+      "altHelp": "Za čitače zaslona i kad se slika ne učita. Ako ga ne upišeš, piše „Slika koju je dodao/dodala” i tvoje ime.",
+      "altFallback": "Slika koju je dodao/dodala {name}",
+      "open": "Otvori sliku: {alt}",
+      "viewerTitle": "Slika",
+      "close": "Zatvori"
     }
   },
   "activity": {
@@ -1453,7 +1468,8 @@
       "doneTitle": "Prijava je primljena.",
       "doneText": "Pregledava je čovjek iz tima. Odluku vidiš u Postavkama, pod Status računa → Moje prijave. U alfi to može potrajati do nekoliko dana.",
       "also": "Želiš li još nešto u vezi @{username}?",
-      "done": "Gotovo"
+      "done": "Gotovo",
+      "aboutImage": "Prijava se odnosi na sliku"
     },
     "target": {
       "profile": "Profil @{username}",
@@ -1765,7 +1781,8 @@
       "decision": "Odluka",
       "byYou": "tvoja odluka",
       "decide": "Odluka",
-      "release": "Vrati u red"
+      "release": "Vrati u red",
+      "imageAlt": "Slika iz prijavljenog sadržaja"
     },
     "decide": {
       "outcome": "Ishod",
@@ -1783,7 +1800,8 @@
       "override": "Razlog zašto ipak odlučuješ ti",
       "overrideHelp": "Bilježi se u revizijski zapis.",
       "submit": "Donesi odluku",
-      "done": "Odluka je spremljena."
+      "done": "Odluka je spremljena.",
+      "removeImage": "Ukloni samo sliku (tekst ostaje)"
     },
     "appeal": {
       "title": "Žalbe",

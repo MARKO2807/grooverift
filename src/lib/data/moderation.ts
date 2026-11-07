@@ -28,6 +28,7 @@ import {
   dailyDropQuestion as question,
   enforcementAction,
   evidenceAccess,
+  media,
   moderationCase,
   notice,
   profile,
@@ -343,6 +344,8 @@ export type CaseDetail = {
     state: "live" | "deleted" | "removed" | "missing";
     edited: boolean;
     href: string | null;
+    /** D-121 (4): the live answer or comment still shows an image (ADM-10 offers "remove only the image"). */
+    hasImage?: boolean;
   };
   /** Earlier decisions about the same member (graduated consequences). */
   history: {
@@ -373,6 +376,7 @@ async function currentState(c: CaseRow): Promise<CaseDetail["current"]> {
         deletedAt: answer.deletedAt,
         removedAt: answer.removedAt,
         editedAt: answer.editedAt,
+        imageId: answer.imageId,
         date: question.publishDate,
       })
       .from(answer)
@@ -383,6 +387,7 @@ async function currentState(c: CaseRow): Promise<CaseDetail["current"]> {
       state: a.removedAt ? "removed" : a.deletedAt ? "deleted" : "live",
       edited: !!a.editedAt && a.editedAt > c.createdAt,
       href: a.date ? `/drop/${a.date}/a/${c.targetId}` : null,
+      hasImage: !!a.imageId,
     };
   }
   if (c.targetType === "comment") {
@@ -391,6 +396,7 @@ async function currentState(c: CaseRow): Promise<CaseDetail["current"]> {
         deletedAt: comment.deletedAt,
         removedAt: comment.removedAt,
         answerId: comment.answerId,
+        imageId: comment.imageId,
         date: question.publishDate,
       })
       .from(comment)
@@ -402,6 +408,7 @@ async function currentState(c: CaseRow): Promise<CaseDetail["current"]> {
       state: x.removedAt ? "removed" : x.deletedAt ? "deleted" : "live",
       edited: false,
       href: x.date ? `/drop/${x.date}/a/${x.answerId}#c-${c.targetId}` : null,
+      hasImage: !!x.imageId,
     };
   }
   return missing;
@@ -602,6 +609,26 @@ export async function decideCase(
         decision.kind === "content_removal" ||
         (decision.removeContent && (c.targetType === "answer" || c.targetType === "comment"));
       until = appealUntil(now);
+      // D-121 (4): only the image goes; the moderation copy still names it, so it stays as evidence.
+      let removedImageId: string | null = null;
+      if (!removes && decision.removeImage && c.targetId) {
+        const target =
+          c.targetType === "answer" ? answer : c.targetType === "comment" ? comment : null;
+        if (target) {
+          const [row] = await tx
+            .update(target)
+            .set({ imageId: null })
+            .where(and(eq(target.id, c.targetId), isNotNull(target.imageId)))
+            .returning({ id: target.id });
+          if (row) {
+            const snap = await tx
+              .select({ imageId: sql<string | null>`${contentSnapshot.content}->>'imageId'` })
+              .from(contentSnapshot)
+              .where(eq(contentSnapshot.caseId, caseId));
+            removedImageId = snap.find((x) => x.imageId)?.imageId ?? null;
+          }
+        }
+      }
       const [a] = await tx
         .insert(enforcementAction)
         .values({
@@ -617,6 +644,7 @@ export async function decideCase(
           decidedBy: staff.id,
           appealUntil: until,
           removesContent: removes,
+          removedImageId,
         })
         .returning({ id: enforcementAction.id });
       actionId = a!.id;
@@ -946,6 +974,20 @@ export async function decideAppeal(
           await tx.update(answer).set({ removedAt: null }).where(eq(answer.id, a.targetId));
         else if (a.targetType === "comment")
           await tx.update(comment).set({ removedAt: null }).where(eq(comment.id, a.targetId));
+      }
+      // D-121 (4): an overturned image removal puts the image back if it is still kept.
+      if (a.removedImageId && a.targetId) {
+        const [kept] = await tx
+          .select({ id: media.id })
+          .from(media)
+          .where(eq(media.id, a.removedImageId));
+        const target =
+          a.targetType === "answer" ? answer : a.targetType === "comment" ? comment : null;
+        if (kept && target)
+          await tx
+            .update(target)
+            .set({ imageId: kept.id })
+            .where(and(eq(target.id, a.targetId), isNull(target.imageId)));
       }
       if (a.subjectUserId && (a.kind === "suspension" || a.kind === "ban"))
         await recomputeStatus(tx, a.subjectUserId, now);

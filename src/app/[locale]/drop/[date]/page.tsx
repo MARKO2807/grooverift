@@ -19,7 +19,7 @@ import { activeRestriction } from "@/lib/data/safety";
 import { dropLocale, toCard } from "@/lib/drop/present";
 import { asSort, PAGE_SIZE } from "@/lib/drop/rules";
 import { env } from "@/lib/env";
-import { flagState } from "@/lib/flags";
+import { flagState, isEnabled } from "@/lib/flags";
 import { notAvailable, profileViewer } from "@/lib/profile/page";
 
 export const dynamic = "force-dynamic";
@@ -82,11 +82,12 @@ export default async function DropPage({
   const t = await getTranslations("drop");
   const sort = asSort(sp.sort);
   const n = Math.max(PAGE_SIZE, Math.min(1000, Number(sp.n) || PAGE_SIZE));
-  const [answers, paused, me, restriction] = await Promise.all([
+  const [answers, paused, me, restriction, imagesOn] = await Promise.all([
     questionAnswers(viewer, q.id, sort),
     flagState("daily_drop").then((s) => s === "paused"),
     loadOwner(viewer.id),
     activeRestriction(viewer.id),
+    isEnabled("post_images", { role: viewer.role, userId: viewer.id }),
   ]);
   const shown = answers.items.slice(0, n);
   const faces = [
@@ -111,7 +112,12 @@ export default async function DropPage({
       dock={
         <AnswerDock
           questionId={q.id}
-          mine={answers.mine ? { id: answers.mine.id, body: answers.mine.body } : null}
+          mine={
+            answers.mine
+              ? { id: answers.mine.id, body: answers.mine.body, image: answers.mine.image }
+              : null
+          }
+          imagesOn={imagesOn}
           privateProfile={me?.profile !== "public"}
           paused={paused}
           autoOpen={sp.compose === "1"}

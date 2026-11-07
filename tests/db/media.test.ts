@@ -226,19 +226,27 @@ describe("unreferenced images and the sweep", () => {
     expect(await keyOf(img)).toBeUndefined();
   });
 
-  it("a moderation copy holds an image past the sweep until its own date", async () => {
+  it("a moderation copy holds an image past the sweep and drop until the copy is purged", async () => {
     const img = await media.storeMedia({
       kind: "comment_image",
       ownerId: ids.ana!,
       image: await processed("post"),
     });
-    const later = new Date(Date.now() + 5 * 60 * 60 * 1000);
-    await media.holdMedia(db(), img, later);
+    const [snap] = await db()
+      .insert(schema.contentSnapshot)
+      .values({
+        objectType: "comment",
+        objectId: "00000000-0000-4000-8000-0000000000bb",
+        content: { body: "x", imageId: img },
+        purgeAfter: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      })
+      .returning({ id: schema.contentSnapshot.id });
     await media.sweepMedia(new Date(Date.now() + 2 * 60 * 60 * 1000));
     expect(await keyOf(img)).toBeDefined();
-    await media.dropMedia([img]); // dropMedia also respects the hold
+    await media.dropMedia([img]); // dropMedia also leaves it to the copy
     expect(await keyOf(img)).toBeDefined();
-    await media.sweepMedia(new Date(Date.now() + 6 * 60 * 60 * 1000));
+    await db().delete(schema.contentSnapshot).where(eq(schema.contentSnapshot.id, snap!.id));
+    await media.sweepMedia(new Date(Date.now() + 2 * 60 * 60 * 1000));
     expect(await keyOf(img)).toBeUndefined();
   });
 

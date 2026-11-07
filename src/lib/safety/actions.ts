@@ -54,6 +54,8 @@ export async function reportAction(input: {
   targetId: unknown;
   category: unknown;
   details: unknown;
+  /** D-121 (4): the report is about the post's image. */
+  aboutImage?: unknown;
 }): Promise<SafetyResult> {
   const { targetType, targetId, category } = input ?? {};
   const details = typeof input?.details === "string" ? input.details : "";
@@ -65,7 +67,13 @@ export async function reportAction(input: {
     const viewer = await signedIn();
     if (!viewer) return { ok: false, reason: "signedOut" };
     if (!activeMember(viewer)) return { ok: false, reason: "notAllowed" };
-    const r = await createReport(viewer, { targetType, targetId, category, details });
+    const r = await createReport(viewer, {
+      targetType,
+      targetId,
+      category,
+      details,
+      aboutImage: input.aboutImage === true,
+    });
     if (r.ok) return { ok: true };
     const reason: SafetyFailure =
       r.reason === "too-many"

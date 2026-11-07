@@ -20,6 +20,7 @@ import { deleteAnswerAction } from "@/lib/drop/actions";
 import { CLAMP_CHARS, type AnswerCardData } from "@/lib/drop/rules";
 import { ReactionButton } from "./reaction-button";
 import { When } from "./when";
+import { PostImage } from "./post-image";
 
 // One answer (HUB-02, HUB-03; J3, pulse answerItem): an article whose heading names the author, the neutral date
 // (D-036), the text collapsed after a few lines with a button (E14), the reaction (D-056) and the comments link.
@@ -62,7 +63,7 @@ export function AnswerCard({
   const long = !solo && a.body.length > CLAMP_CHARS;
   const safety = useSafety({
     person: a.author,
-    report: { type: "answer", id: a.id, preview: excerptOf(a.body) },
+    report: { type: "answer", id: a.id, preview: excerptOf(a.body), hasImage: !!a.image },
     muted: a.muted,
     // On the answer's own page the author is gone from view after a block: back to the question (J5).
     afterBlock: solo ? () => router.replace(`/drop/${date}`) : undefined,
@@ -156,6 +157,7 @@ export function AnswerCard({
       <div className={`ans-text${long && !open ? " clamp" : ""}`} id={tid}>
         <p lang={a.language ?? undefined}>{a.body}</p>
       </div>
+      {a.image ? <PostImage image={a.image} author={a.author.displayName} /> : null}
       {long ? (
         <button
           type="button"
@@ -257,7 +259,7 @@ export function AnswerCard({
 
 /** The quoted excerpt in the report sheet (step 2): the first 140 characters. */
 function excerptOf(body: string): string {
-  const flat = body.replace(/s+/g, " ").trim();
+  const flat = body.replace(/\s+/g, " ").trim();
   return flat.length > 140 ? `${flat.slice(0, 139).trimEnd()}…` : flat;
 }
 

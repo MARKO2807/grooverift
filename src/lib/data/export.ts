@@ -51,6 +51,7 @@ import {
   usernameReservation,
 } from "@/lib/db/schema";
 import { isUniqueViolation, logDbError } from "./db-errors";
+import { ownImageBytes, ownImages } from "./media";
 import { consume } from "./rate-limit";
 
 export type ExportSummary = {
@@ -448,7 +449,34 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
     "decisions.json": { decisions: stamp(decisions), appeals: stamp(appeals) },
     "feedback.json": stamp(feedback),
     "notices.json": stamp(notices),
+    ...(await imageFiles(userId)),
   };
+}
+
+/** D-121: the member's own images (profile photo, answer and comment images, screenshots) with a list. */
+const IMAGE_BUDGET = 45 * 1024 * 1024;
+async function imageFiles(userId: string): Promise<Record<string, unknown>> {
+  const list = await ownImages(userId);
+  if (!list.length) return {};
+  const out: Record<string, unknown> = {};
+  const index: Record<string, unknown>[] = [];
+  let used = 0;
+  for (const img of list) {
+    const bytes = used < IMAGE_BUDGET ? await ownImageBytes(img) : null;
+    const fits = !!bytes && used + bytes.length <= IMAGE_BUDGET;
+    if (bytes && fits) {
+      out[`images/${img.id}.webp`] = bytes;
+      used += bytes.length;
+    }
+    index.push({
+      file: fits ? `images/${img.id}.webp` : null,
+      kind: img.kind,
+      description: img.alt,
+      createdAt: img.createdAt.toISOString(),
+    });
+  }
+  out["images.json"] = index;
+  return out;
 }
 
 const README = `GrooveRift: kopija tvojih podataka / a copy of your data
@@ -457,7 +485,8 @@ HR
 Ova ZIP datoteka sadrži podatke koje GrooveRift čuva o tvom računu, u JSON formatu:
 account.json (adresa, načini prijave, uređaji), profile.json, settings.json (privatnost, obavijesti, podsjetnik),
 music-dna.json, answers.json, comments.json, reactions.json, follows.json, blocks.json, mutes.json,
-reports.json (tvoje prijave), notices.json (prijave nezakonitog sadržaja), decisions.json (odluke moderacije o tebi i tvoje žalbe), feedback.json.
+reports.json (tvoje prijave), notices.json (prijave nezakonitog sadržaja), decisions.json (odluke moderacije o tebi i tvoje žalbe), feedback.json,
+images.json i mapa images/ (tvoje slike: slika profila, slike u odgovorima i komentarima, snimke zaslona).
 Drugi članovi navedeni su samo korisničkim imenom. Tko je prijavio tvoj sadržaj ne piše nigdje.
 Pitanja: kontakt za privatnost u aplikaciji (Postavke → O GrooveRiftu).
 
@@ -465,7 +494,8 @@ EN
 This ZIP file holds the data GrooveRift keeps about your account, as JSON:
 account.json (address, sign-in methods, devices), profile.json, settings.json (privacy, notifications, reminder),
 music-dna.json, answers.json, comments.json, reactions.json, follows.json, blocks.json, mutes.json,
-reports.json (reports you sent), notices.json (illegal-content notices), decisions.json (moderation decisions about you and your appeals), feedback.json.
+reports.json (reports you sent), notices.json (illegal-content notices), decisions.json (moderation decisions about you and your appeals), feedback.json,
+images.json and the images/ folder (your images: profile photo, answer and comment images, screenshots).
 Other members appear by @username only. Who reported your content is never included.
 Questions: the privacy contact in the app (Settings → About GrooveRift).
 `;
@@ -484,7 +514,10 @@ export async function zipFiles(files: Record<string, unknown>, at: Date): Promis
   zip.pipe(out);
   zip.append(README, { name: "README.txt", date: at });
   for (const [name, value] of Object.entries(files))
-    zip.append(JSON.stringify(value, null, 2) + "\n", { name, date: at });
+    zip.append(Buffer.isBuffer(value) ? value : JSON.stringify(value, null, 2) + "\n", {
+      name,
+      date: at,
+    });
   await zip.finalize();
   await done;
   return Buffer.concat(chunks);
