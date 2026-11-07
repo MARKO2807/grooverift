@@ -1,4 +1,3 @@
-import "server-only";
 import sharp, { type Metadata, type Sharp } from "sharp";
 import {
   ARTIST_PHOTO_EDGE,

@@ -113,6 +113,11 @@ export async function insertQuestion(
 /** Removes test questions with their answers, comments and reactions. */
 export async function removeQuestions(ids: string[]) {
   if (!ids.length) return;
+  // Step 5.11: artist cards have no foreign key to their answer or comment.
+  await query(
+    `delete from catalog_reference where owner_id in (select id from daily_drop_answer where question_id = any($1::uuid[])) or owner_id in (select c.id from comment c join daily_drop_answer a on a.id = c.answer_id where a.question_id = any($1::uuid[]))`,
+    [ids],
+  );
   await query(
     `delete from reaction where target_id in (select id from daily_drop_answer where question_id = any($1::uuid[]))`,
     [ids],

@@ -610,6 +610,11 @@
     flex-direction: column;
     gap: var(--gr-space-4);
     outline: none;
+    /* Step 5.11: a tall dialog (the composer with an image and artists) scrolls inside the screen, so its buttons
+       are always reachable (WCAG 1.4.10). */
+    max-height: calc(100dvh - 2 * var(--gr-space-4));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .dialog h2 {
     font: var(--gr-type-title-3);

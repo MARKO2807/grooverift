@@ -1,10 +1,10 @@
-import "server-only";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { env } from "@/lib/env";
 import { sha256Hex, signV4 } from "./sigv4";
 
-// Object storage for images (step 5.11). Cloudflare R2 in the EU jurisdiction (A7, D-113) on Render; a local folder
+// Object storage for images (step 5.11). No "server-only" import here or in src/lib/media/process.ts: the worker and
+// `npm run job` load these under tsx, outside Next, where that import throws. Cloudflare R2 in the EU jurisdiction (A7, D-113) on Render; a local folder
 // for development and the end-to-end tests (MEDIA_STORE=file, refused in production unless the e2e flag is set, as
 // for the email file transport). Keys are opaque ("<kind>/<uuid>.webp"); nothing in a key names a member. Objects
 // are never public: every read goes through /api/media/<id>, which asks the policy first.

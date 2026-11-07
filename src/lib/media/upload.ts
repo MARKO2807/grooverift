@@ -1,4 +1,3 @@
-import "server-only";
 import { MAX_UPLOAD_BYTES } from "./rules";
 
 /** Reads an uploaded file into memory, refusing anything over the limit before reading it (step 5.11). */
