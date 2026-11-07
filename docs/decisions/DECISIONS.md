@@ -174,7 +174,7 @@ Each question references the finding in [`../audit/2026-11-01-specification-audi
 | OQ-06 | Who moderates in the alpha, and is there a backup person? | Owner plus one named backup, or an explicit best-effort notice | A-07 |
 | ~~OQ-07~~ | ~~Alpha feature scope~~ | Resolved → D-092 (`docs/phase-5-plan.md` §1) | A-02 |
 | ~~OQ-08~~ | ~~Is Daily Drop push part of the alpha?~~ | Resolved → D-093 (1): yes, step 5.12 behind a flag | A-02, T-04 |
-| OQ-09 | Alpha data carries over into the beta? | Yes, no reset | A-05 |
+| OQ-09 | Alpha data carries over into the beta? | **CLOSED (D-119 (5), session 39; same question as OQ-34):** yes, with a 30-day notice and the copy and deletion as the way out. | A-05 |
 | OQ-10 | Age policy implementation. The owner confirmed 18+ only (D-051); what remains is how the 18+ gate is implemented and defended. | 18+ attestation, no DOB stored; counsel confirms | L-04 |
 
 ### Needed before the related feature is built
