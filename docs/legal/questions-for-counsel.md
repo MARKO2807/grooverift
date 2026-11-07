@@ -2,6 +2,7 @@
 
 - **Status:** prepared by Claude (Phase 2) from the audit and research.
 - **Purpose:** to make a paid consultation efficient. This is **not legal advice**. Answers should be recorded as decisions in `docs/decisions/DECISIONS.md`.
+- **Session 39 (D-123):** the owner will not engage a lawyer or accountant. **Claude researches every question here** from primary sources and records the findings in `docs/legal/research/` (one file per section, each answer with sources, a confidence level and the residual risk); the owner decides on that basis and carries the residual risk. Free official channels stay available when an answer is uncertain: AZOP (data protection), Porezna uprava / FINA / HGK / HOK (legal form, tax).
 - **Context to give the adviser:** GrooveRift is a free, invite-only, 18+ music-first social network run from Croatia. It has user posts, images, short videos (later), comments, DMs and editorial content. It is hosted in the EU (Render Frankfurt, a US company). There is no payment in beta; premium may come later. The closed alpha has 10–20 testers.
 
 ## A. Accountant / company formation (needed before the alpha)
