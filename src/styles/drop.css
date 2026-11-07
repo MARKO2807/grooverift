@@ -1119,4 +1119,66 @@
     flex-wrap: wrap;
     gap: var(--gr-space-2);
   }
+
+  /* ---------- artist cards in answers and comments (the 5.7 remainder, D-119 (6), (7)) ---------- */
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .card-art {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    min-height: var(--gr-size-target-min);
+    padding: var(--gr-space-1) var(--gr-space-3) var(--gr-space-1) var(--gr-space-1);
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+    background: var(--gr-color-bg-surface);
+    color: var(--gr-color-text-primary);
+    font: var(--gr-type-label);
+    text-decoration: none;
+  }
+  .card-art:hover {
+    border-color: var(--gr-color-border-strong);
+  }
+  .card-pick {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gr-space-2);
+  }
+  .card-pick .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gr-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chip-art {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gr-space-2);
+    padding: 2px 2px 2px var(--gr-space-1);
+    border-radius: var(--gr-radius-full);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+    font: var(--gr-type-label);
+  }
+  .chip-x {
+    width: var(--gr-size-target-min);
+    height: var(--gr-size-target-min);
+  }
+  .card-search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    width: 100%;
+  }
+  .mention-text {
+    overflow-wrap: anywhere;
+  }
 }

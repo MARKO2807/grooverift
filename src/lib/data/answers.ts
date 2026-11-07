@@ -23,6 +23,7 @@ import { utcDate } from "@/lib/editorial/rules";
 import { isUniqueViolation, SafeDbError } from "./db-errors";
 import { loadGraphs, loadOwners, type OwnerRecord } from "./facts";
 import type { Processed } from "@/lib/media/process";
+import { answersNaming, cardsFor, setCards, type ArtistCard } from "./cards";
 import { dropMedia, imageMeta, storeMedia, type ImageMeta } from "./media";
 import { notify } from "./notifications";
 import { consume } from "./rate-limit";
@@ -95,6 +96,8 @@ async function canSeeAnswer(viewer: Viewer, authorId: string): Promise<boolean> 
 export type PostImage = { image: Processed; alt: string | null };
 /** Editing an answer's image: a new one replaces the old, `remove` takes it away, `alt` changes the description. */
 export type ImageChange = { replace?: PostImage; remove?: boolean; alt?: string | null };
+/** Edits to an answer: its image, and (D-119 (6)) its artist cards when `artists` is given. */
+export type AnswerChange = ImageChange & { artists?: string[] };
 
 const storePostImage = (kind: "answer_image" | "comment_image", ownerId: string, img: PostImage) =>
   storeMedia({ kind, ownerId, image: img.image, alt: img.alt });
@@ -109,6 +112,7 @@ export async function createAnswer(
   questionId: string,
   body: string,
   image?: PostImage | null,
+  artists: readonly string[] = [],
 ): Promise<AnswerResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   if (!(await isPublished(questionId))) return { ok: false, reason: "not-available" };
@@ -122,6 +126,7 @@ export async function createAnswer(
       .insert(answer)
       .values({ questionId, authorId: viewer.id, body: text, imageId })
       .returning({ id: answer.id });
+    if (artists.length) await setCards("answer", row!.id, artists);
     return { ok: true, id: row!.id };
   } catch (e) {
     await dropMedia([imageId]);
@@ -135,7 +140,7 @@ export async function editOwnAnswer(
   viewer: Viewer,
   answerId: string,
   body: string,
-  change: ImageChange = {},
+  change: AnswerChange = {},
 ): Promise<WriteResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   const live = await liveAnswer(answerId);
@@ -172,6 +177,7 @@ export async function editOwnAnswer(
   if (change.replace || change.remove) await dropMedia([before?.imageId]);
   else if (change.alt !== undefined && before?.imageId)
     await db().update(media).set({ alt: change.alt }).where(eq(media.id, before.imageId));
+  if (change.artists) await setCards("answer", answerId, change.artists);
   return { ok: true };
 }
 
@@ -222,6 +228,7 @@ export async function createComment(
   answerId: string,
   body: string,
   image?: PostImage | null,
+  artists: readonly string[] = [],
 ): Promise<AnswerResult> {
   if (!mayWrite(viewer)) return { ok: false, reason: "not-allowed" };
   const live = await liveAnswer(answerId);
@@ -239,6 +246,7 @@ export async function createComment(
       .values({ answerId, authorId: viewer.id, body: text, imageId })
       .returning({ id: comment.id });
     id = row!.id;
+    if (artists.length) await setCards("comment", id, artists);
   } catch (e) {
     await dropMedia([imageId]);
     throw new SafeDbError("createComment", e);
@@ -376,6 +384,8 @@ export type AnswerView = {
   comments: number;
   /** D-121: the answer's image, served by /api/media to viewers who may see the answer. */
   image: ImageMeta | null;
+  /** D-119 (6): artist cards, at most five, in the member's order. */
+  artists: ArtistCard[];
 };
 /** A deleted or removed answer that still has replies the viewer can see (J3 E5, E6): only a placeholder. */
 export type AnswerPlaceholder = {
@@ -451,7 +461,7 @@ async function followedBy(viewerId: string | null, ids: readonly string[]): Prom
 async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
   const authorIds = rows.filter((r) => r.authorId).map((r) => r.authorId!);
   const ids = rows.map((r) => r.id);
-  const [owners, graphs, comments, reactions, muted, followed, images] = await Promise.all([
+  const [owners, graphs, comments, reactions, muted, followed, images, cards] = await Promise.all([
     loadOwners(authorIds),
     loadGraphs(viewer.id, authorIds),
     commentCounts(viewer, ids),
@@ -459,6 +469,10 @@ async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
     mutedBy(viewer.id, authorIds),
     followedBy(viewer.id, authorIds),
     imageMeta(rows.filter((r) => !r.deletedAt && !r.removedAt).map((r) => r.imageId)),
+    cardsFor(
+      "answer",
+      rows.filter((r) => !r.deletedAt && !r.removedAt).map((r) => r.id),
+    ),
   ]);
   const out: AnswerItem[] = [];
   for (const r of rows) {
@@ -500,6 +514,7 @@ async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
       reacted: re?.reacted ?? false,
       comments: n,
       image: r.imageId ? (images.get(r.imageId) ?? null) : null,
+      artists: cards.get(r.id) ?? [],
     });
   }
   return out;
@@ -580,6 +595,8 @@ export type CommentItem =
       muted: boolean;
       /** D-121: the comment's image, if any. */
       image: ImageMeta | null;
+      /** D-119 (6): artist cards. */
+      artists: ArtistCard[];
     }
   /** Blocked pair or a hidden account: "This comment isn't available" (D-019, S-17). */
   | { kind: "unavailable"; id: string };
@@ -613,11 +630,15 @@ export async function answerThread(viewer: Viewer, answerId: string): Promise<An
     )
     .orderBy(asc(comment.createdAt));
   const ids = rows.filter((r) => r.authorId).map((r) => r.authorId!);
-  const [owners, graphs, muted, images] = await Promise.all([
+  const [owners, graphs, muted, images, cards] = await Promise.all([
     loadOwners(ids),
     loadGraphs(viewer.id, ids),
     mutedBy(viewer.id, ids),
     imageMeta(rows.map((r) => r.imageId)),
+    cardsFor(
+      "comment",
+      rows.map((r) => r.id),
+    ),
   ]);
   const comments: CommentItem[] = [];
   for (const c of rows) {
@@ -643,6 +664,7 @@ export async function answerThread(viewer: Viewer, answerId: string): Promise<An
       mine: viewer.id === o.id,
       muted: muted.has(o.id),
       image: c.imageId ? (images.get(c.imageId) ?? null) : null,
+      artists: cards.get(c.id) ?? [],
     });
   }
   return { questionId: row.a.questionId, date: row.date, answer: item, comments };
@@ -664,4 +686,49 @@ export function peeks(items: AnswerItem[], n = 2): AnswerView[] {
   return items
     .filter((a): a is AnswerView => a.kind === "answer" && !a.mine && !a.muted)
     .slice(0, n);
+}
+
+// ============================================================ CAT-01: answers naming an artist
+
+export type Mention = { date: string; answer: AnswerView };
+
+/**
+ * CAT-01 (the 5.7 remainder): answers whose cards name the artist, newest first, each read through the same drop
+ * policy as the question page (published and dated up to today, D-021, blocks both ways, hidden authors, never
+ * visitors), so the list never shows what the viewer could not open.
+ */
+export async function answersMentioning(
+  viewer: Viewer,
+  artistId: string,
+  limit = 10,
+): Promise<Mention[]> {
+  if (!viewer.id) return [];
+  const ids = await answersNaming(artistId, 50);
+  if (!ids.length) return [];
+  const rows = await db()
+    .select({ a: answer, date: question.publishDate, status: question.status })
+    .from(answer)
+    .innerJoin(question, eq(question.id, answer.questionId))
+    .where(
+      and(
+        inArray(answer.id, ids),
+        isNull(answer.deletedAt),
+        isNull(answer.removedAt),
+        eq(question.status, "published"),
+        lte(question.publishDate, utcDate()),
+      ),
+    )
+    .orderBy(desc(answer.createdAt));
+  const dateOf = new Map(rows.map((r) => [r.a.id, r.date!]));
+  const items = await present(
+    viewer,
+    rows.map((r) => r.a),
+  );
+  const out: Mention[] = [];
+  for (const it of items) {
+    if (it.kind !== "answer" || it.muted) continue;
+    out.push({ date: dateOf.get(it.id)!, answer: it });
+    if (out.length >= limit) break;
+  }
+  return out;
 }

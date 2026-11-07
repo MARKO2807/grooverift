@@ -1381,6 +1381,17 @@
       "open": "Otvori sliku: {alt}",
       "viewerTitle": "Slika",
       "close": "Zatvori"
+    },
+    "cards": {
+      "label": "Izvođači",
+      "chosen": "Dodani izvođači",
+      "add": "Dodaj izvođača",
+      "remove": "Ukloni izvođača {name}",
+      "added": "Dodan izvođač {name}.",
+      "removed": "Uklonjen izvođač {name}.",
+      "searchLabel": "Pretraži izvođače",
+      "done": "Gotovo",
+      "full": "Najviše {max} izvođača po odgovoru ili komentaru."
     }
   },
   "activity": {
@@ -2058,7 +2069,8 @@
         "tooMany": "Previše promjena u kratkom vremenu. Pokušaj ponovno za sat.",
         "generic": "Nije spremljeno zbog greške kod nas. Pokušaj ponovno za minutu."
       }
-    }
+    },
+    "mentions": "U odgovorima"
   },
   "push": {
     "title": "Obavijesti",

@@ -17,10 +17,16 @@ import { useToast } from "@/components/ui/toast";
 import { useSafety } from "@/components/safety/safety-dialogs";
 import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { deleteCommentAction, postCommentAction } from "@/lib/drop/actions";
-import { COMMENT_MAX, type DropFailure, type PostImageData } from "@/lib/drop/rules";
+import {
+  COMMENT_MAX,
+  type ArtistCardData,
+  type DropFailure,
+  type PostImageData,
+} from "@/lib/drop/rules";
 import { When } from "./when";
 import { PostImage } from "./post-image";
 import { ImagePicker, imageForm, type PickedImage } from "./image-picker";
+import { ArtistCards, CardPicker, type CardPick } from "./artist-cards";
 
 // Comments under one answer (HUB-03; J3 "replies", pulse answer screen). Flat in the alpha, oldest first. A blocked
 // pair or a hidden account shows "Ovaj komentar nije dostupan." (D-019, S-17); a muted author collapses with
@@ -41,6 +47,7 @@ export type CommentData =
       mine: boolean;
       muted: boolean;
       image: PostImageData | null;
+      artists: ArtistCardData[];
     }
   | { kind: "unavailable"; id: string };
 
@@ -123,6 +130,7 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
       </header>
       <p className="com-text">{c.body}</p>
       {c.image ? <PostImage image={c.image} author={c.author.displayName} /> : null}
+      <ArtistCards artists={c.artists} />
       {c.mine ? null : (
         <>
           <Dialog
@@ -223,6 +231,7 @@ export function CommentForm({
   const [text, setText] = useState("");
   const [error, setError] = useState<DropFailure | null>(null);
   const [picked, setPicked] = useState<PickedImage | null>(null);
+  const [cards, setCards] = useState<CardPick[]>([]);
   const [pending, startTransition] = useTransition();
   const length = text.trim().length;
   const over = length > COMMENT_MAX;
@@ -234,10 +243,16 @@ export function CommentForm({
     if (over) return setError("tooLong");
     setError(null);
     startTransition(async () => {
-      const r = await postCommentAction(answerId, text, imageForm(picked, null));
+      const r = await postCommentAction(
+        answerId,
+        text,
+        imageForm(picked, null),
+        cards.map((c) => c.key),
+      );
       if (r.ok) {
         setText("");
         setPicked(null);
+        setCards([]);
         toast.show(t("commentPosted"));
         router.refresh();
       } else setError(r.reason);
@@ -261,6 +276,7 @@ export function CommentForm({
       <p className={`char-count${over ? " is-over" : ""}`} id={`${fid}-n`}>
         {t("chars", { count: length, max: COMMENT_MAX })}
       </p>
+      <CardPicker value={cards} onChange={setCards} />
       {imagesOn ? (
         <ImagePicker
           value={picked}

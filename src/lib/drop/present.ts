@@ -19,6 +19,7 @@ export const toCard = (a: AnswerView): AnswerCardData => ({
   reacted: a.reacted,
   comments: a.comments,
   image: a.image,
+  artists: a.artists,
 });
 
 export const toComment = (c: CommentItem): CommentData =>
@@ -38,6 +39,7 @@ export const toComment = (c: CommentItem): CommentData =>
         mine: c.mine,
         muted: c.muted,
         image: c.image,
+        artists: c.artists,
       };
 
 /** "četvrtak, 5. studenoga 2026." for a UTC calendar date, in the page's language. */

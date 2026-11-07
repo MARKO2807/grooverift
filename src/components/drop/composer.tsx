@@ -15,9 +15,15 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { RestrictionHint, type Restriction } from "@/components/safety/restriction-hint";
 import { editAnswerAction, postAnswerAction } from "@/lib/drop/actions";
-import { ANSWER_MAX, type DropFailure, type PostImageData } from "@/lib/drop/rules";
+import {
+  ANSWER_MAX,
+  type ArtistCardData,
+  type DropFailure,
+  type PostImageData,
+} from "@/lib/drop/rules";
 import { EDIT_EVENT } from "./answer-card";
 import { ImagePicker, imageForm, type PickedImage } from "./image-picker";
+import { CardPicker, picksFrom, type CardPick } from "./artist-cards";
 
 // The dock and the answer composer (HUB-02; J3 "read and answer", pulse dock and composerForm). The dock sits at
 // the foot of the column above the tab bar; it opens the composer in a sheet. The composer carries the question
@@ -41,7 +47,12 @@ export function AnswerDock({
   imagesOn = false,
 }: {
   questionId: string;
-  mine: { id: string; body: string; image?: PostImageData | null } | null;
+  mine: {
+    id: string;
+    body: string;
+    image?: PostImageData | null;
+    artists?: ArtistCardData[];
+  } | null;
   /** D-120: the `post_images` flag; off hides "Dodaj sliku" (an existing image can still be removed). */
   imagesOn?: boolean;
   privateProfile: boolean;
@@ -62,6 +73,7 @@ export function AnswerDock({
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<DropFailure | null>(null);
   const [picked, setPicked] = useState<PickedImage | null>(null);
+  const [cards, setCards] = useState<CardPick[]>([]);
   const [pending, startTransition] = useTransition();
   const opened = useRef(false);
 
@@ -70,6 +82,7 @@ export function AnswerDock({
     setEditing(true);
     setDraft(mine.body);
     setPicked(mine.image ? { kind: "kept", image: mine.image, alt: mine.image.alt ?? "" } : null);
+    setCards(picksFrom(mine.artists ?? []));
     setError(null);
     setOpen(true);
   };
@@ -130,14 +143,16 @@ export function AnswerDock({
     setError(null);
     startTransition(async () => {
       const files = imageForm(picked, editing ? (mine?.image ?? null) : null);
+      const picks = cards.map((c) => c.key);
       const r =
         editing && mine
-          ? await editAnswerAction(mine.id, draft, files)
-          : await postAnswerAction(questionId, draft, files);
+          ? await editAnswerAction(mine.id, draft, files, picks)
+          : await postAnswerAction(questionId, draft, files, picks);
       if (r.ok) {
         setOpen(false);
         setDraft("");
         setPicked(null);
+        setCards([]);
         toast.show(editing ? t("saved") : t("posted"));
         router.refresh();
       } else setError(r.reason);
@@ -198,6 +213,7 @@ export function AnswerDock({
             <p className={`char-count${over ? " is-over" : ""}`} id={countId}>
               {t("chars", { count: length, max: ANSWER_MAX })}
             </p>
+            <CardPicker value={cards} onChange={setCards} />
             {imagesOn || picked ? (
               <ImagePicker
                 value={picked}

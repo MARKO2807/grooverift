@@ -36,6 +36,10 @@ export type DropFailure =
 
 /** D-121: an answer's or comment's image as the client sees it (served by /api/media/<id>). */
 export type PostImageData = { id: string; width: number; height: number; alt: string | null };
+/** D-119 (6): an artist card as the client sees it. */
+export type ArtistCardData = { id: string; name: string; photoId: string | null };
+/** D-119 (6): at most five cards per answer or comment. */
+export const CARDS_MAX = 5;
 
 /** An answer as the client components receive it (dates as ISO strings). */
 export type AnswerCardData = {
@@ -51,4 +55,5 @@ export type AnswerCardData = {
   reacted: boolean;
   comments: number;
   image: PostImageData | null;
+  artists: ArtistCardData[];
 };

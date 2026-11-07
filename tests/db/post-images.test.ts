@@ -12,6 +12,7 @@ import { and, eq, gte, inArray, lte } from "drizzle-orm";
 const dir = mkdtempSync(path.join(tmpdir(), "gr-post-img-"));
 process.env.MEDIA_STORE = "file";
 process.env.MEDIA_DIR = dir;
+process.env.CATALOG_STUB = "1";
 
 const { closeDb, db } = await import("@/lib/db/client");
 const schema = await import("@/lib/db/schema");
@@ -23,6 +24,7 @@ const moderation = await import("@/lib/data/moderation");
 const account = await import("@/lib/data/account");
 const { collectMemberData } = await import("@/lib/data/export");
 const { processPostImage } = await import("@/lib/media/process");
+const { artistsFromPicks } = await import("@/lib/data/cards");
 
 const RUN = Date.now().toString(36);
 const ids: Record<string, string> = {};
@@ -328,5 +330,56 @@ describe("the data copy and the purge (D-121)", () => {
     await account.purgeDueAccounts(new Date(Date.now() + 31 * 24 * 60 * 60 * 1000));
     expect(onDisk(key)).toBe(false);
     expect(await keyOf(imageId)).toBeUndefined();
+  });
+});
+
+describe("artist cards (the 5.7 remainder, D-119 (6), (7))", () => {
+  const RADIOHEAD = "a74b1b7f-71a5-4011-9441-d0b5e4122711";
+  const BJORK = "87c5dedd-371d-4a53-9f7f-80522fb7f3cb";
+
+  it("picks resolve to our artists, at most five, no duplicates; malformed lists are refused", async () => {
+    const ids1 = await artistsFromPicks([`mb:${RADIOHEAD}`, `mb:${RADIOHEAD}`, `mb:${BJORK}`]);
+    expect(ids1).toHaveLength(2);
+    expect(await artistsFromPicks([`id:${ids1![0]}`])).toEqual([ids1![0]]);
+    expect(await artistsFromPicks(["mb:not-an-id"])).toBeNull();
+    expect(await artistsFromPicks(new Array(6).fill(`mb:${RADIOHEAD}`))).toBeNull();
+    expect(await artistsFromPicks(undefined)).toEqual([]);
+  });
+
+  it("cards show on the answer and comment, change on edit, and CAT-01 lists only answers the viewer may see", async () => {
+    const q = await question("1994-04-06");
+    const [radiohead, bjork] = (await artistsFromPicks([`mb:${RADIOHEAD}`, `mb:${BJORK}`]))!;
+    const a = await answers.createAnswer(await as("ana"), q, "Kid A", null, [radiohead!, bjork!]);
+    const answerId = a.ok ? a.id : "";
+    let view = await answers.questionAnswers(await as("ben"), q, "recent");
+    let seen = view.items.find((x) => x.kind === "answer" && x.id === answerId);
+    expect(seen?.kind === "answer" && seen.artists.map((c) => c.name)).toEqual([
+      "Radiohead",
+      "Björk",
+    ]);
+
+    await answers.editOwnAnswer(await as("ana"), answerId, "Kid A", { artists: [bjork!] });
+    view = await answers.questionAnswers(await as("ben"), q, "recent");
+    seen = view.items.find((x) => x.kind === "answer" && x.id === answerId);
+    expect(seen?.kind === "answer" && seen.artists.map((c) => c.name)).toEqual(["Björk"]);
+
+    const c = await answers.createComment(await as("ben"), answerId, "Da!", null, [radiohead!]);
+    const thread = await answers.answerThread(await as("ana"), answerId);
+    const com = thread?.comments.find((x) => x.kind === "comment" && x.id === (c.ok ? c.id : ""));
+    expect(com?.kind === "comment" && com.artists.map((x) => x.name)).toEqual(["Radiohead"]);
+
+    expect(
+      (await answers.answersMentioning(await as("ben"), bjork!)).map((m) => m.answer.id),
+    ).toContain(answerId);
+    expect(
+      await answers.answersMentioning({ id: null, role: "member", status: "active" }, bjork!),
+    ).toEqual([]);
+    await db().insert(schema.block).values({ blockerId: ids.ana!, blockedId: ids.cara! });
+    expect(
+      (await answers.answersMentioning(await as("cara"), bjork!)).map((m) => m.answer.id),
+    ).not.toContain(answerId);
+    await db()
+      .delete(schema.block)
+      .where(and(eq(schema.block.blockerId, ids.ana!), eq(schema.block.blockedId, ids.cara!)));
   });
 });

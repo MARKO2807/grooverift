@@ -1381,6 +1381,17 @@
       "open": "Open image: {alt}",
       "viewerTitle": "Image",
       "close": "Close"
+    },
+    "cards": {
+      "label": "Artists",
+      "chosen": "Artists added",
+      "add": "Add artist",
+      "remove": "Remove artist {name}",
+      "added": "Added {name}.",
+      "removed": "Removed {name}.",
+      "searchLabel": "Search artists",
+      "done": "Done",
+      "full": "At most {max} artists per answer or comment."
     }
   },
   "activity": {
@@ -2058,7 +2069,8 @@
         "tooMany": "Too many changes in a short time. Try again in an hour.",
         "generic": "Not saved because of an error on our side. Try again in a minute."
       }
-    }
+    },
+    "mentions": "In answers"
   },
   "push": {
     "title": "Notifications",

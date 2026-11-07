@@ -21,6 +21,7 @@ import { CLAMP_CHARS, type AnswerCardData } from "@/lib/drop/rules";
 import { ReactionButton } from "./reaction-button";
 import { When } from "./when";
 import { PostImage } from "./post-image";
+import { ArtistCards } from "./artist-cards";
 
 // One answer (HUB-02, HUB-03; J3, pulse answerItem): an article whose heading names the author, the neutral date
 // (D-036), the text collapsed after a few lines with a button (E14), the reaction (D-056) and the comments link.
@@ -158,6 +159,7 @@ export function AnswerCard({
         <p lang={a.language ?? undefined}>{a.body}</p>
       </div>
       {a.image ? <PostImage image={a.image} author={a.author.displayName} /> : null}
+      <ArtistCards artists={a.artists} />
       {long ? (
         <button
           type="button"

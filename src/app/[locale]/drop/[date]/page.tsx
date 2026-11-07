@@ -114,7 +114,12 @@ export default async function DropPage({
           questionId={q.id}
           mine={
             answers.mine
-              ? { id: answers.mine.id, body: answers.mine.body, image: answers.mine.image }
+              ? {
+                  id: answers.mine.id,
+                  body: answers.mine.body,
+                  image: answers.mine.image,
+                  artists: answers.mine.artists,
+                }
               : null
           }
           imagesOn={imagesOn}

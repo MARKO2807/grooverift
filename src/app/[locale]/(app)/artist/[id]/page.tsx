@@ -8,7 +8,10 @@ import { IconInfo } from "@/components/ui/icons";
 import { memberPage } from "@/lib/auth/member-page";
 import { roleOf } from "@/lib/auth/session";
 import { artistPhotoAdmin, photoOfArtist } from "@/lib/data/artist-photos";
+import { answersMentioning } from "@/lib/data/answers";
 import { artistPage } from "@/lib/data/catalog";
+import { Link } from "@/i18n/navigation";
+import { Avatar } from "@/components/profile/avatar";
 import { loadViewer } from "@/lib/data/facts";
 
 export const dynamic = "force-dynamic";
@@ -36,9 +39,10 @@ export default async function ArtistPage({ params }: { params: Params }) {
   if (a.redirectedFrom) redirect({ href: `/artist/${a.id}`, locale });
   // The admin role counts only with a second factor (loadViewer, review M3).
   const viewer = await loadViewer({ id: session.user.id, role: roleOf(session) });
-  const [photo, admin] = await Promise.all([
+  const [photo, admin, mentions] = await Promise.all([
     photoOfArtist(a.id),
     viewer.role === "admin" ? artistPhotoAdmin(a.id) : Promise.resolve(null),
+    answersMentioning(viewer, a.id),
   ]);
   const t = await getTranslations("artist");
   let country: string | null = null;
@@ -65,6 +69,34 @@ export default async function ArtistPage({ params }: { params: Params }) {
           <IconInfo />
           <span>{t("unavailable")}</span>
         </p>
+      ) : null}
+      {mentions.length ? (
+        <section className="set-group" aria-labelledby="h-mentions">
+          <h2 id="h-mentions" className="set-gt">
+            {t("mentions")}
+          </h2>
+          <ul className="set-list">
+            {mentions.map((m) => (
+              <li key={m.answer.id}>
+                <Link href={`/drop/${m.date}/a/${m.answer.id}`} className="set-link mention">
+                  <Avatar
+                    name={m.answer.author.displayName}
+                    size="sm"
+                    photo={m.answer.author.photoId}
+                  />
+                  <span className="set-txt">
+                    <span className="set-t">{m.answer.author.displayName}</span>
+                    <span className="set-d mention-text">
+                      {m.answer.body.length > 120
+                        ? `${m.answer.body.slice(0, 119).trimEnd()}…`
+                        : m.answer.body}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
       {a.mbid ? (
         <section className="set-group" aria-labelledby="h-links">

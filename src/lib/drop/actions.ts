@@ -17,6 +17,7 @@ import { loadViewer } from "@/lib/data/facts";
 import { consume } from "@/lib/data/rate-limit";
 import { flagState, isEnabled } from "@/lib/flags";
 import type { ImageChange, PostImage } from "@/lib/data/answers";
+import { artistsFromPicks } from "@/lib/data/cards";
 import { processPostImage } from "@/lib/media/process";
 import { cleanAlt } from "@/lib/media/rules";
 import { fileBytes } from "@/lib/media/upload";
@@ -113,6 +114,8 @@ export async function postAnswerAction(
   questionId: string,
   body: string,
   files?: FormData,
+  /** D-119 (6), (7): artist cards, "mb:<id>" or "id:<id>", at most five. */
+  artists?: string[],
 ): Promise<DropResult> {
   if (typeof questionId !== "string" || !UUID.test(questionId))
     return { ok: false, reason: "notAvailable" };
@@ -125,7 +128,9 @@ export async function postAnswerAction(
       if ("fail" in m) return { ok: false, reason: m.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const r = await createAnswer(m.viewer, questionId, body, img.change.replace);
+      const cards = await artistsFromPicks(artists);
+      if (!cards) return { ok: false, reason: "notAllowed" };
+      const r = await createAnswer(m.viewer, questionId, body, img.change.replace, cards);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
@@ -136,6 +141,8 @@ export async function editAnswerAction(
   answerId: string,
   body: string,
   files?: FormData,
+  /** The full list of cards after the edit; undefined leaves them as they are. */
+  artists?: string[],
 ): Promise<DropResult> {
   if (typeof answerId !== "string" || !UUID.test(answerId))
     return { ok: false, reason: "notAvailable" };
@@ -148,7 +155,9 @@ export async function editAnswerAction(
       if ("fail" in m) return { ok: false, reason: m.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const r = await editOwnAnswer(m.viewer, answerId, body, img.change);
+      const cards = artists === undefined ? undefined : await artistsFromPicks(artists);
+      if (cards === null) return { ok: false, reason: "notAllowed" };
+      const r = await editOwnAnswer(m.viewer, answerId, body, { ...img.change, artists: cards });
       return r.ok ? { ok: true } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
@@ -177,6 +186,7 @@ export async function postCommentAction(
   answerId: string,
   body: string,
   files?: FormData,
+  artists?: string[],
 ): Promise<DropResult> {
   if (typeof answerId !== "string" || !UUID.test(answerId))
     return { ok: false, reason: "notAvailable" };
@@ -189,7 +199,9 @@ export async function postCommentAction(
       if ("fail" in m) return { ok: false, reason: m.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const r = await createComment(m.viewer, answerId, body, img.change.replace);
+      const cards = await artistsFromPicks(artists);
+      if (!cards) return { ok: false, reason: "notAllowed" };
+      const r = await createComment(m.viewer, answerId, body, img.change.replace, cards);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,

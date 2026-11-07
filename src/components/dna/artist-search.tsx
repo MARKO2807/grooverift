@@ -33,8 +33,11 @@ export function ArtistSearch({
   pickedMbids,
   onPick,
   onFailure,
+  markSaved = true,
 }: {
   inputId: string;
+  /** Music DNA marks artists already saved there; the answer composer's cards do not (step 5.7 remainder). */
+  markSaved?: boolean;
   disabled: boolean;
   /** Artists already chosen in this view (the server also marks the saved ones). */
   pickedMbids: ReadonlySet<string>;
@@ -145,7 +148,7 @@ export function ArtistSearch({
         ) : null}
         {state.s === "ok"
           ? state.items.map((a) => {
-              const on = a.picked || pickedMbids.has(a.mbid);
+              const on = (markSaved && a.picked) || pickedMbids.has(a.mbid);
               const meta = artistMeta(a);
               return (
                 <li key={a.mbid}>
