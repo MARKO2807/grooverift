@@ -95,6 +95,26 @@ async function cleanQuestions() {
       .select({ id: schema.dailyDropAnswer.id })
       .from(schema.dailyDropAnswer)
       .where(inArray(schema.dailyDropAnswer.questionId, questionIds));
+    if (rows.length) {
+      // Card rows have no foreign key to their owner; they go with the answers and comments.
+      const coms = await db()
+        .select({ id: schema.comment.id })
+        .from(schema.comment)
+        .where(
+          inArray(
+            schema.comment.answerId,
+            rows.map((r) => r.id),
+          ),
+        );
+      await db()
+        .delete(schema.catalogReference)
+        .where(
+          inArray(schema.catalogReference.ownerId, [
+            ...rows.map((r) => r.id),
+            ...coms.map((c) => c.id),
+          ]),
+        );
+    }
     if (rows.length)
       await db()
         .delete(schema.comment)
