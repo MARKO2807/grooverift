@@ -236,7 +236,7 @@ export const auth = betterAuth({
       adminRoles: ["admin"],
       ac,
       roles,
-      allowImpersonatingAdmins: false,
+      allowImpersonatingAdmins: false, // and no impersonation at all: see roles.ts (D-119 (1))
     }),
     nextCookies(), // must stay last
   ],

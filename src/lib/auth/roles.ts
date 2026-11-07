@@ -14,12 +14,20 @@ export const statements = {
 
 export const ac = createAccessControl(statements);
 
+/**
+ * D-119 (1), OQ-35: admin impersonation is off for the alpha. No admin session (or a stolen one) can act as a member:
+ * the "impersonate" permissions are left out of the admin role, so Better Auth refuses /admin/impersonate-user.
+ * Revisit only with a support process, a banner, an audit trail and a notice to the member.
+ */
+const NO_IMPERSONATION = adminAc.statements.user.filter((p) => p !== "impersonate");
+
 export const roles = {
   member: ac.newRole({}),
   editor: ac.newRole({ editorial: ["read", "write", "schedule"] }),
   moderator: ac.newRole({ moderation: ["read", "act"] }),
   admin: ac.newRole({
     ...adminAc.statements,
+    user: NO_IMPERSONATION,
     editorial: ["read", "write", "schedule"],
     moderation: ["read", "act"],
     audit: ["read"],
