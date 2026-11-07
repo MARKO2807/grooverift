@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · korak 5.11: slike, odluke</title>
+<!-- Owner decision sketch (session 39, step 5.11): artist photos from Wikidata P18 / Wikimedia Commons (D-017, D-046 (2))
+     and the feedback screenshot retention. The profile photo itself is already decided (D-078) and listed under
+     "Napravljeno bez izbora". The artist "Pulsari" and every credit line are FICTIONAL examples; the photo is a drawn
+     stand-in, not a real photograph. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 56px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 82ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  .grid { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 18px; align-items: flex-start; }
+  .opt { width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p, .opt li { font: var(--gr-type-body-sm); margin: 0; }
+  .opt ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+  .pro::marker { content: "+  "; color: #6FD39B; }
+  .con::marker { content: "−  "; color: var(--gr-color-ember-coral); }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 82ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+  .scen { border-left: 3px solid var(--gr-color-ember-amber); padding: 4px 0 4px 14px; margin: 10px 0; max-width: 82ch; }
+
+  /* Phone frame and the app pieces (values from src/styles/dna.css and the tokens). */
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: 336px; }
+  .scr { border-radius: 22px; background: var(--gr-color-bg-canvas, #0B0D12); min-height: 520px; overflow: hidden; display: flex; flex-direction: column; }
+  .scr.short { min-height: 0; }
+  .top { display: flex; align-items: center; gap: 10px; padding: 14px 16px 6px; }
+  .top svg { width: 22px; height: 22px; color: var(--gr-color-text-primary); flex: none; }
+  .top .tt { font: var(--gr-type-title-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .body { padding: 8px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .art { width: 44px; height: 44px; border-radius: 9999px; overflow: hidden; display: inline-grid; place-items: center; flex: none; color: #f1f3f7;
+         font: 700 .9375rem/1 "Sora", sans-serif; text-shadow: 0 1px 2px #0b0d1299; position: relative; }
+  .art.lg { width: 64px; height: 64px; font-size: 1.25rem; }
+  .art.xl { width: 96px; height: 96px; }
+  .art svg, .ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .m1 { background: linear-gradient(130deg, rgb(255,120,106) 0%, #2A2F3B 72%, #12151C 100%); }
+  .m2 { background: linear-gradient(250deg, rgb(255,180,105) 0%, #2A2F3B 72%, #12151C 100%); }
+  .m3 { background: linear-gradient(40deg, rgb(255,98,107) 0%, #2A2F3B 72%, #12151C 100%); }
+  .head { display: flex; align-items: center; gap: 16px; }
+  .head .txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .name { font: var(--gr-type-title-2); margin: 0; }
+  .dis { font: var(--gr-type-body); margin: 0; color: var(--gr-color-text-primary); }
+  .facts { font: var(--gr-type-body-sm); margin: 0; color: var(--gr-color-text-secondary); }
+  .gt { font: var(--gr-type-label); color: var(--gr-color-text-secondary); margin: 6px 0 0; text-transform: none; }
+  .lnk { font: var(--gr-type-body-sm); color: var(--gr-color-text-link); text-decoration: underline; }
+  .meta { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin: 0; }
+  .credit { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); margin: 0; }
+  .credit a { color: var(--gr-color-text-secondary); text-decoration: underline; }
+  .ph { position: relative; overflow: hidden; }
+  .banner { height: 168px; margin: 0 -16px; }
+  .square { width: 100%; aspect-ratio: 1 / 1; border-radius: 18px; }
+  .ibtn { position: absolute; right: 8px; bottom: 8px; width: 32px; height: 32px; border-radius: 9999px; background: #0B0D12CC; border: 1px solid #ffffff33;
+          display: grid; place-items: center; color: #fff; font: 700 .875rem/1 "Sora", sans-serif; }
+  .xl-wrap { position: relative; }
+  .xl-wrap .ibtn { right: -4px; bottom: -4px; width: 30px; height: 30px; }
+  .sheet { margin-top: auto; background: var(--gr-color-bg-surface); border-radius: 20px 20px 0 0; padding: 14px 16px 18px; border-top: 1px solid var(--gr-color-border-strong);
+           display: flex; flex-direction: column; gap: 8px; }
+  .sheet .grab { width: 36px; height: 4px; border-radius: 4px; background: var(--gr-color-border-strong); align-self: center; }
+  .sheet h4 { font: var(--gr-type-title-3); margin: 0; }
+  .sheet p { font: var(--gr-type-body-sm); margin: 0; color: var(--gr-color-text-primary); }
+  .row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; min-height: 56px; border-bottom: 1px solid var(--gr-color-border-subtle); }
+  .row .n { font: var(--gr-type-label); }
+  .row .s { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); display: block; }
+  .row .act { font: var(--gr-type-label); color: var(--gr-color-text-link); }
+  .field { border: 1px solid var(--gr-color-border-strong); border-radius: 12px; padding: 10px 12px; font: var(--gr-type-body); color: var(--gr-color-text-primary); background: var(--gr-color-bg-surface); }
+  .btn { font: var(--gr-type-label); border-radius: 9999px; padding: 9px 16px; border: 1px solid var(--gr-color-border-strong); color: var(--gr-color-text-primary); background: none; align-self: flex-start; }
+  .btn.danger { border-color: var(--gr-color-ember-coral); color: var(--gr-color-ember-coral); }
+  .adm { background: var(--gr-color-bg-surface); border: 1px solid var(--gr-color-border-strong); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .adm .lbl { font: var(--gr-type-caption); color: var(--gr-color-highlight-text); }
+  .tag { font: var(--gr-type-caption); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 1px 8px; color: var(--gr-color-text-secondary); }
+  .lic { display: flex; flex-direction: column; gap: 6px; }
+  .lic div { display: flex; justify-content: space-between; gap: 8px; font: var(--gr-type-body-sm); padding: 6px 10px; border-radius: 10px; background: var(--gr-color-bg-surface); }
+  .lic .ok { color: #6FD39B; } .lic .no { color: var(--gr-color-ember-coral); }
+  .tl { display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--gr-color-border-strong); margin-left: 6px; padding-left: 14px; }
+  .tl div { position: relative; padding: 6px 0; font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .tl div::before { content: ""; position: absolute; left: -21px; top: 11px; width: 10px; height: 10px; border-radius: 9999px; background: var(--gr-color-border-strong); }
+  .tl div.del::before { background: var(--gr-color-ember-coral); }
+  .tl small { display: block; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- A drawn stand-in for a concert photo: stage light, a figure with a guitar. Not a real photograph. -->
+  <symbol id="photo" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="spot" cx="50%" cy="8%" r="80%"><stop offset="0" stop-color="#F6D9A8"/><stop offset=".35" stop-color="#7A4E8C"/><stop offset="1" stop-color="#140F22"/></radialGradient>
+      <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".18"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="400" height="300" fill="url(#spot)"/>
+    <path d="M170 0 L230 0 L300 300 L100 300 Z" fill="url(#haze)"/>
+    <circle cx="200" cy="92" r="30" fill="#1A1220"/>
+    <path d="M150 300 C150 210 160 140 200 132 C240 140 250 210 250 300 Z" fill="#1A1220"/>
+    <path d="M140 210 L268 170 L272 182 L146 224 Z" fill="#2B1D33"/>
+    <ellipse cx="170" cy="214" rx="34" ry="22" fill="#2B1D33"/>
+    <rect x="0" y="270" width="400" height="30" fill="#0D0A14"/>
+  </symbol>
+  <symbol id="back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="page">
+  <h1>Korak 5.11 · slike: odluke</h1>
+  <p>Šest pitanja, svako s primjerima svih opcija. Izvođač <b>„Pulsari”</b> i svi navodi autora su <b>izmišljeni primjeri</b>.
+  „Fotografija” je nacrtana zamjena, nije prava fotografija. Prave fotografije dolaze s Wikimedia Commonsa preko Wikidate
+  (svojstvo P18), samo pod slobodnim licencama i uz navod autora (D-017, D-046 (2)). Kopiramo ih na naš R2 i ne učitavamo ih s tuđeg poslužitelja.</p>
+  <nav class="toc" aria-label="Pitanja">
+    <a href="#q1">1 · Izgled stranice izvođača</a>
+    <a href="#q2">2 · Gdje stoji navod autora</a>
+    <a href="#q3">3 · Koje licence</a>
+    <a href="#q4">4 · Gdje se fotografije vide</a>
+    <a href="#q5">5 · Kontrola nad fotografijama</a>
+    <a href="#q6">6 · Snimka zaslona u povratnim info.</a>
+    <a href="#bez">Napravljeno bez izbora</a>
+  </nav>
+
+  <!-- Q1 -->
+  <h2 class="sec" id="q1">1 · Izgled stranice izvođača (CAT-01) s fotografijom</h2>
+  <p>Danas stranica izvođača ima monogram od 64 px uz opis. Kad postoji slobodna fotografija, gdje i koliko velika stoji?
+  Fotografije s Commonsa su vrlo različite: koncertne snimke, portreti, ponekad mutne ili položene.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Okrugla, u zaglavlju <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="head">
+            <span class="art xl"><svg><use href="#photo"/></svg></span>
+            <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div>
+          </div>
+          <p class="credit">Foto: Ivana Horvat · <a href="#q1">CC BY-SA 4.0</a> · <a href="#q1">Wikimedia Commons</a></p>
+          <p class="gt">Poveznice</p><span class="lnk">Pogledaj na MusicBrainzu</span>
+          <p class="meta">Podaci o izvođaču: MusicBrainz (CC0).</p>
+        </div>
+      </div></div>
+      <ul><li class="pro">Isti oblik kao monogram i fotografija profila, pa stranica izgleda isto sa i bez fotografije (D-017).</li>
+      <li class="pro">Mali krug skriva lošu kvalitetu, a uz izrez prema gornjoj trećini lice gotovo uvijek stane.</li>
+      <li class="con">Fotografija je mala i manje dojmljiva.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Široka, preko vrha</h3>
+      <div class="phone"><div class="scr">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="ph banner"><svg><use href="#photo"/></svg></div>
+          <p class="credit">Foto: Ivana Horvat · <a href="#q1">CC BY-SA 4.0</a> · <a href="#q1">Wikimedia Commons</a></p>
+          <div class="txt"><p class="name">Pulsari</p><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div>
+          <p class="gt">Poveznice</p><span class="lnk">Pogledaj na MusicBrainzu</span>
+        </div>
+      </div></div>
+      <ul><li class="pro">Najdojmljivije, kao na glazbenim servisima.</li>
+      <li class="con">Uspravne fotografije se jako režu, pa glava često ispadne iz kadra.</li>
+      <li class="con">Bez fotografije je vrh prazan ili ga treba popuniti nečim drugim. Dva različita izgleda iste stranice.</li>
+      <li class="con">Na Commonsu ima mnogo niskih rezolucija, koje na punoj širini izgledaju mutno.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Velika kvadratna kartica</h3>
+      <div class="phone"><div class="scr">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="ph square"><svg><use href="#photo"/></svg></div>
+          <p class="credit">Foto: Ivana Horvat · <a href="#q1">CC BY-SA 4.0</a> · <a href="#q1">Wikimedia Commons</a></p>
+          <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div>
+        </div>
+      </div></div>
+      <ul><li class="pro">Velika fotografija s manje rezanja od opcije B.</li>
+      <li class="con">Zauzima cijeli prvi ekran na mobitelu, a podaci padaju ispod.</li>
+      <li class="con">Isti problem kao B: bez fotografije stoji veliki monogram.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <h2 class="sec" id="q2">2 · Gdje stoji navod autora fotografije</h2>
+  <p>Slobodne licence traže da navedemo autora, licencu i izvor. Pitanje je gdje se to vidi. Licence CC BY 4.0 izričito dopuštaju
+  navod preko poveznice na stranicu koja ga sadrži, pa male pločice (Music DNA, pretraga) mogu voditi na stranicu izvođača s navodom.
+  Za starije verzije (2.0, 3.0) to bi trebao potvrditi pravnik. Upisat ću to kao pitanje za pravnika.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Redak ispod fotografije <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr short">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="head"><span class="art xl"><svg><use href="#photo"/></svg></span>
+          <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+          <p class="credit">Foto: <a href="#q2">Ivana Horvat</a> · <a href="#q2">CC BY-SA 4.0</a> · <a href="#q2">Wikimedia Commons</a></p>
+        </div>
+      </div></div>
+      <ul><li class="pro">Uvijek vidljiv, bez dodatnog dodira. To je najsigurnije za licencu.</li>
+      <li class="pro">Ime autora vodi na stranicu datoteke na Commonsu, a licenca na tekst licence.</li>
+      <li class="con">Jedan redak više na stranici.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Gumb „i” na fotografiji</h3>
+      <div class="phone"><div class="scr">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="head"><span class="xl-wrap"><span class="art xl"><svg><use href="#photo"/></svg></span><span class="ibtn" aria-label="O fotografiji">i</span></span>
+          <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+        </div>
+        <div class="sheet"><span class="grab"></span><h4>O fotografiji</h4>
+          <p>Autor: <a href="#q2">Ivana Horvat</a></p><p>Licenca: <a href="#q2">CC BY-SA 4.0</a></p><p>Izvor: <a href="#q2">Wikimedia Commons</a></p>
+          <span class="btn">Zatvori</span></div>
+      </div></div>
+      <ul><li class="pro">Čišća stranica.</li>
+      <li class="con">Navod je skriven iza gumba. Za licencu je to slabije od opcije A.</li>
+      <li class="con">Još jedan mali gumb, koji mora imati 24 px i ime za čitače zaslona.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Na dnu, u „Izvorima”</h3>
+      <div class="phone"><div class="scr short">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Pulsari</span></div>
+        <div class="body">
+          <div class="head"><span class="art xl"><svg><use href="#photo"/></svg></span>
+          <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+          <p class="gt">Poveznice</p><span class="lnk">Pogledaj na MusicBrainzu</span>
+          <p class="gt">Izvori</p>
+          <p class="meta">Podaci o izvođaču: MusicBrainz (CC0).<br>Fotografija: <a class="lnk" href="#q2">Ivana Horvat</a>, CC BY-SA 4.0, Wikimedia Commons.</p>
+        </div>
+      </div></div>
+      <ul><li class="pro">Svi izvori na jednom mjestu, uz postojeći MusicBrainz redak.</li>
+      <li class="con">Navod je daleko od fotografije. Na dužim stranicama (kad dođu odgovori koji spominju izvođača) bit će na samom dnu.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <h2 class="sec" id="q3">3 · Koje licence prihvaćamo</h2>
+  <p>Na Commonsu su samo slobodne licence, ali nisu sve jednako jednostavne. Fotografije glazbenika na Commonsu su vrlo često
+  <b>CC BY-SA</b> (dijeli pod istim uvjetima). Mi fotografiju samo izrežemo i smanjimo, a navod uz nju glasi „CC BY-SA 4.0”.
+  <b>GFDL</b> sama za sebe traži da se uz sliku priloži cijeli tekst licence, pa je preskačemo u svakoj opciji.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Sve koje traže samo navod <span class="rec">preporuka</span></h3>
+      <div class="lic">
+        <div><span>Javno vlasništvo, CC0</span><span class="ok">da</span></div>
+        <div><span>CC BY (sve verzije)</span><span class="ok">da</span></div>
+        <div><span>CC BY-SA (sve verzije)</span><span class="ok">da</span></div>
+        <div><span>Samo GFDL, nepoznata ili nejasna licenca</span><span class="no">ne → monogram</span></div>
+      </div>
+      <ul><li class="pro">Najviše fotografija. Većina poznatih izvođača ih dobije.</li>
+      <li class="con">Za SA licence pravnik treba potvrditi da izrez i smanjenje ne zahtijevaju ništa više od navoda. Upisat ću to kao pitanje.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Bez „share-alike”</h3>
+      <div class="lic">
+        <div><span>Javno vlasništvo, CC0</span><span class="ok">da</span></div>
+        <div><span>CC BY (sve verzije)</span><span class="ok">da</span></div>
+        <div><span>CC BY-SA</span><span class="no">ne → monogram</span></div>
+        <div><span>Samo GFDL, nepoznata</span><span class="no">ne → monogram</span></div>
+      </div>
+      <ul><li class="pro">Pravno najjednostavnije uz navod.</li>
+      <li class="con">Velik dio izvođača ostaje bez fotografije. Kasnije je lako proširiti na A.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Samo javno vlasništvo i CC0</h3>
+      <div class="lic">
+        <div><span>Javno vlasništvo, CC0</span><span class="ok">da</span></div>
+        <div><span>Sve ostalo</span><span class="no">ne → monogram</span></div>
+      </div>
+      <ul><li class="pro">Navod nije obavezan (iako bismo ga svejedno prikazivali).</li>
+      <li class="con">Gotovo nijedan izvođač ne bi imao fotografiju.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <h2 class="sec" id="q4">4 · Gdje se fotografije izvođača vide</h2>
+  <p>Fotografiju dohvaćamo kad izvođač prvi put uđe u naš katalog, odnosno kad ga netko doda u Music DNA. To radi pozadinski posao:
+  MusicBrainz → Wikidata → Commons → izrez → R2. Fotografija se pojavi za otprilike minutu. U rezultatima pretrage <b>ne možemo</b>
+  dohvaćati fotografije za svakog izvođača, jer MusicBrainz dopušta jedan upit u sekundi i osam rezultata trajalo bi osam sekundi.
+  Zato pretraga prikazuje fotografiju samo za izvođače koje već imamo.</p>
+  <div class="scen"><b>Primjer:</b> Ana prva doda „Pulsare”. Odmah vidi monogram, a minutu kasnije fotografiju. Kad sutra Ivan
+  u pretrazi upiše „Puls”, Pulsari su već s fotografijom, a nepoznati sastav „Pulsar Kid” još je s monogramom.</div>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Svugdje gdje se izvođač pojavljuje <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr short">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Music DNA</span></div>
+        <div class="body">
+          <div class="field">Puls</div>
+          <div>
+            <div class="row"><span class="art"><svg><use href="#photo"/></svg></span><span><span class="n">Pulsari</span><span class="s">Hrvatska</span></span><span class="act">Dodaj</span></div>
+            <div class="row"><span class="art m2">P</span><span><span class="n">Pulsar Kid</span><span class="s">Švedska</span></span><span class="act">Dodaj</span></div>
+            <div class="row"><span class="art m3">T</span><span><span class="n">The Pulse</span><span class="s">SAD</span></span><span class="act">Dodaj</span></div>
+          </div>
+          <p class="gt">Tvoji izvođači</p>
+          <div class="row"><span class="art"><svg><use href="#photo"/></svg></span><span class="n">Pulsari</span><span class="act">Ukloni</span></div>
+        </div>
+      </div></div>
+      <ul><li class="pro">Music DNA na profilu, urednik, onboarding (ONB-05), pretraga (poznati izvođači) i stranica izvođača.</li>
+      <li class="pro">Kasnije i kartice kataloga u odgovorima (ostatak 5.7).</li>
+      <li class="con">U istom popisu miješaju se fotografije i monogrami. Zato im dajemo isti krug i istu veličinu.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Samo na stranici izvođača</h3>
+      <div class="phone"><div class="scr short">
+        <div class="top"><svg><use href="#back"/></svg><span class="tt">Music DNA</span></div>
+        <div class="body">
+          <div class="field">Puls</div>
+          <div>
+            <div class="row"><span class="art m1">P</span><span><span class="n">Pulsari</span><span class="s">Hrvatska</span></span><span class="act">Dodaj</span></div>
+            <div class="row"><span class="art m2">P</span><span><span class="n">Pulsar Kid</span><span class="s">Švedska</span></span><span class="act">Dodaj</span></div>
+            <div class="row"><span class="art m3">T</span><span><span class="n">The Pulse</span><span class="s">SAD</span></span><span class="act">Dodaj</span></div>
+          </div>
+          <p class="gt">Tvoji izvođači</p>
+          <div class="row"><span class="art m1">P</span><span class="n">Pulsari</span><span class="act">Ukloni</span></div>
+        </div>
+      </div></div>
+      <ul><li class="pro">Popisi ostaju jednolični.</li>
+      <li class="con">Fotografija se vidi tek kad netko otvori stranicu izvođača, pa je tvoja želja za fotografijama većim dijelom neispunjena.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <h2 class="sec" id="q5">5 · Kontrola nad fotografijama izvođača</h2>
+  <p>Wikidata ponekad ima pogrešnu osobu (isto ime), staru ili lošu fotografiju, a nositelj prava može tražiti uklanjanje.
+  Što možemo napraviti?</p>
+  <div class="scen"><b>Primjer:</b> uz istoimenog DJ-a „Pulsar” stoji fotografija nekog drugog. Član to primijeti. Ti kao admin
+  fotografiju sakriješ, izvođač dobiva monogram i fotografija se ne vraća ni nakon osvježavanja.</div>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Admin „Sakrij fotografiju” + poveznica „Prijavi problem” <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr short"><div class="body">
+        <div class="head"><span class="art xl"><svg><use href="#photo"/></svg></span>
+        <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+        <p class="credit">Foto: Ivana Horvat · <a href="#q5">CC BY-SA 4.0</a> · <a href="#q5">Wikimedia Commons</a> · <a href="#q5">Prijavi problem</a></p>
+        <div class="adm"><span class="lbl">Vidiš samo ti (admin)</span><span class="btn danger">Sakrij fotografiju</span>
+        <span class="field" style="font-size:.875rem">Razlog: pogrešna osoba</span></div>
+      </div></div></div>
+      <ul><li class="pro">„Prijavi problem” otvara postojeći obrazac za DSA prijavu (PUB-11) s već upisanim izvođačem. Može ga koristiti i nositelj prava bez računa.</li>
+      <li class="pro">Skrivanje se bilježi s razlogom i može se poništiti.</li>
+      <li class="con">Još jedna poveznica u retku navoda.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Samo admin „Sakrij fotografiju”</h3>
+      <div class="phone"><div class="scr short"><div class="body">
+        <div class="head"><span class="art xl"><svg><use href="#photo"/></svg></span>
+        <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+        <p class="credit">Foto: Ivana Horvat · <a href="#q5">CC BY-SA 4.0</a> · <a href="#q5">Wikimedia Commons</a></p>
+        <div class="adm"><span class="lbl">Vidiš samo ti (admin)</span><span class="btn danger">Sakrij fotografiju</span></div>
+      </div></div></div>
+      <ul><li class="pro">Najjednostavnije.</li>
+      <li class="con">Problem ćeš saznati samo ako ga sam primijetiš ili ti netko piše preko „Pomoć”.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Kao A + članovi brzo označe „Pogrešna osoba?”</h3>
+      <div class="phone"><div class="scr short"><div class="body">
+        <div class="head"><span class="art xl"><svg><use href="#photo"/></svg></span>
+        <div class="txt"><p class="dis">hrvatski indie rock sastav</p><p class="facts">Hrvatska, 2009</p></div></div>
+        <p class="credit">Foto: Ivana Horvat · <a href="#q5">CC BY-SA 4.0</a> · <a href="#q5">Wikimedia Commons</a> · <a href="#q5">Prijavi problem</a></p>
+        <span class="btn">Pogrešna osoba?</span>
+      </div></div></div>
+      <ul><li class="pro">Članovi pomažu jednim dodirom.</li>
+      <li class="con">Novi red u admin sučelju i nova vrsta zapisa za vrlo rijedak slučaj. Prijave pogrešne osobe ionako stignu kroz A.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <h2 class="sec" id="q6">6 · Snimka zaslona u povratnim informacijama: koliko dugo je čuvamo</h2>
+  <p>D-078: snimka je neobavezna i osjetljiva (može prikazati tuđe odgovore, imena ili poruke), vidi je samo tim (ti) i briše se nakon
+  obrade. Treba odlučiti točan rok. Sama poruka i dalje ide po postojećem pravilu (D-109). Rok potvrđuje pravnik (B.3).</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Kad je riješena, najkasnije 90 dana <span class="rec">preporuka</span></h3>
+      <div class="tl"><div>Član pošalje poruku sa snimkom<small>dan 0</small></div>
+      <div>Ti pogledaš i označiš „Riješeno”<small>npr. dan 3</small></div>
+      <div class="del">Snimka se briše odmah<small>dan 3 (ako nikad ne označiš: dan 90)</small></div></div>
+      <ul><li class="pro">Najmanje čuvanja (GDPR, smanjenje podataka), a nema ni zaboravljenih snimki.</li>
+      <li class="con">Kad ponovno otvoriš riješenu poruku, snimke više nema.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · 30 dana nakon što je riješena</h3>
+      <div class="tl"><div>Poruka sa snimkom<small>dan 0</small></div>
+      <div>„Riješeno”<small>dan 3</small></div>
+      <div class="del">Snimka se briše<small>dan 33</small></div></div>
+      <ul><li class="pro">Vrijeme za provjeru je li problem stvarno riješen.</li>
+      <li class="con">Bez gornje granice, a neoznačene poruke čuvaju snimku zauvijek.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Zajedno s porukom</h3>
+      <div class="tl"><div>Poruka sa snimkom<small>dan 0</small></div>
+      <div class="del">Briše se kad se briše cijela poruka<small>po pravilu poruke</small></div></div>
+      <ul><li class="pro">Jedno pravilo za sve.</li>
+      <li class="con">Snimka se čuva puno dulje nego što treba, a to je suprotno D-078 („briše se nakon obrade”).</li></ul>
+    </div>
+  </div>
+
+  <!-- Built without a choice -->
+  <h2 class="sec" id="bez">Napravljeno bez izbora (iz odobrenih odluka)</h2>
+  <div class="note"><ul>
+    <li><b>Fotografija profila</b> (D-078): list s galerijom, kamerom i „Ukloni”, korak izreza sa zumom, JPG, PNG ili WebP do <b>5 MB</b>, smještena u prsten žanrova, vide je svi koji vide profil (i odjavljeni na PUB-08, D-076).</li>
+    <li>Svaku sliku ponovno kodiramo na poslužitelju (<code>sharp</code>). EXIF i GPS se brišu, a datoteke koje samo glume sliku (poliglot), prevelike ili s golemim dimenzijama odbijamo. Testovi to provjeravaju.</li>
+    <li>Fotografija profila privatnog člana ne ide preko javnog URL-a, nego preko provjere ovlasti (potpisani URL kratkog trajanja, D-017 / matrica pristupa).</li>
+    <li>Moderacija (ADM-10) dobiva akciju „Ukloni fotografiju profila” s razlogom, kao za ostali sadržaj (D-107).</li>
+    <li>Fotografije izvođača osvježavamo svakih 30 dana. Ako Wikidata promijeni ili ukloni sliku, pratimo promjenu, a sakrivenu ne vraćamo.</li>
+    <li>Fotografija izvođača je ukras, jer je ime uvijek napisano uz nju (alt=""). Na stranici izvođača navod autora je tekst koji čitač zaslona pročita.</li>
+    <li>Sve je iza zastavice <code>images</code>. Kad je isključena ili R2 ne radi, svugdje ostaje monogram (D-053, D-017).</li>
+    <li>Brisanje računa briše i fotografiju profila s R2 (proširenje 5.10 purge testa). Kopija podataka sadrži i originalnu (očišćenu) fotografiju.</li>
+  </ul></div>
+</div>
+</body>
+</html>
