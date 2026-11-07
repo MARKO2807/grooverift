@@ -1349,7 +1349,8 @@
       "restricted": "Posting is restricted for you right now.",
       "imageTooLarge": "The image is larger than 5 MB. Choose a smaller one.",
       "imageFormat": "Only JPG, PNG or WebP is accepted, and this image can't be opened.",
-      "imageOff": "Adding images is switched off right now. Post without the image."
+      "imageOff": "Adding images is switched off right now. Post without the image.",
+      "imageBusy": "We are processing a lot of images right now. Try again in a minute."
     },
     "first": {
       "title": "The first question arrives on {date}",
@@ -2144,7 +2145,8 @@
       "format": "Only JPG, PNG or WebP is accepted.",
       "decode": "This image can't be opened. Try another one.",
       "empty": "No image was chosen.",
-      "generic": "The image wasn't saved because of an error on our side. Try again in a minute."
+      "generic": "The image wasn't saved because of an error on our side. Try again in a minute.",
+      "busy": "We are processing a lot of images right now. Try again in a minute."
     }
   }
 }

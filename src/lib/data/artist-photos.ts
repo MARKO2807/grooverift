@@ -245,10 +245,20 @@ export async function refreshArtistPhoto(
       ownerId: null,
       image: processed.image,
     });
-    await db()
+    const written = await db()
       .insert(artistPhoto)
       .values({ artistId, mediaId, ...credit })
-      .onConflictDoUpdate({ target: artistPhoto.artistId, set: { mediaId, ...credit } });
+      .onConflictDoUpdate({
+        target: artistPhoto.artistId,
+        set: { mediaId, ...credit },
+        // Review 5.11 L2: hidden while we downloaded → keep it hidden and drop the new copy.
+        setWhere: isNull(artistPhoto.hiddenAt),
+      })
+      .returning({ id: artistPhoto.artistId });
+    if (!written.length) {
+      await dropMedia([mediaId]);
+      return "hidden";
+    }
     await dropMedia([oldMedia]);
     return "stored";
   } catch (e) {
@@ -318,7 +328,7 @@ export async function setArtistPhotoHidden(
     if (!why || why.length > 500) return { ok: false, reason: "invalid" };
     if (!(await hide(artistId, actorId, why))) return { ok: false, reason: "not-found" };
   } else {
-    // Shown again: the next photo job fetches the file anew (refresh_after now).
+    // Shown again: the next photo job checks it at once (refresh_after now); a soft notice hide still has its copy.
     const rows = await db()
       .update(artistPhoto)
       .set({ hiddenAt: null, hiddenBy: null, hiddenReason: null, refreshAfter: new Date() })
@@ -337,13 +347,41 @@ export async function setArtistPhotoHidden(
   return { ok: true };
 }
 
+/** Review 5.11 M1: at most this many photos are hidden by notices in a day; past it, notices only queue. */
+export const NOTICE_HIDES_PER_DAY = 10;
+
 /**
  * A notice about an artist photo saying "this is not this person" or "I am the photographer" hides it at once,
- * pending review (research item 9): the harm of a wrong or unlicensed photo outweighs a few hours of the tile.
+ * pending review (research item 9). Review 5.11 M1: the hide is soft (not served, the copy kept, so "Vrati
+ * fotografiju" needs no new download and a false notice costs nothing to undo), the caller requires the notifier's
+ * name and email, and only NOTICE_HIDES_PER_DAY such hides happen in a day across all notifiers.
  */
 export async function hidePhotoOnNotice(artistId: string, noticeId: string): Promise<boolean> {
   if (!UUID.test(artistId)) return false;
-  const done = await hide(artistId, null, `notice ${noticeId}`);
+  const since = new Date(Date.now() - DAY);
+  const [today] = await db()
+    .select({ n: sql<number>`count(*)::int` })
+    .from(artistPhoto)
+    .where(
+      and(
+        isNull(artistPhoto.hiddenBy),
+        sql`${artistPhoto.hiddenReason} like 'notice %'`,
+        sql`${artistPhoto.hiddenAt} > ${since.toISOString()}::timestamptz`,
+      ),
+    );
+  if ((today?.n ?? 0) >= NOTICE_HIDES_PER_DAY) return false;
+  const rows = await db()
+    .update(artistPhoto)
+    .set({ hiddenAt: new Date(), hiddenBy: null, hiddenReason: `notice ${noticeId}` })
+    .where(
+      and(
+        eq(artistPhoto.artistId, artistId),
+        eq(artistPhoto.status, "ok"),
+        isNull(artistPhoto.hiddenAt),
+      ),
+    )
+    .returning({ id: artistPhoto.artistId });
+  const done = rows.length > 0;
   if (done)
     await audit({
       actorType: "system",

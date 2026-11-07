@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ id: str
       // account or a removal reaches the viewer's own cache quickly.
       "Cache-Control":
         image.cache === "public"
-          ? "public, max-age=86400, stale-while-revalidate=604800"
+          ? "public, max-age=3600" // review 5.11 L3: a hidden photo leaves browser caches within the hour
           : "private, max-age=300",
       Vary: "Cookie",
     },

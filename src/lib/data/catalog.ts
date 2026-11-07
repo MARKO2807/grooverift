@@ -163,6 +163,20 @@ export async function artistFromMbid(mbid: string): Promise<ArtistRef> {
   return { ok: true, id: target };
 }
 
+/**
+ * For artist cards (review 5.11 M2): our id for a MusicBrainz id without ever calling MusicBrainz. Only an artist we
+ * already store, or one this process just showed in a search answer, resolves; anything else is null. The composer
+ * always searched first, so a real pick is one of these.
+ */
+export async function knownArtistFromMbid(mbid: string): Promise<string | null> {
+  if (!UUID.test(mbid)) return null;
+  const id = mbid.toLowerCase();
+  const stored = await storedByMbid(id);
+  if (stored && stored.availability === "available") return resolveCanonicalId(stored.id);
+  const recent = catalogClient().recent(id);
+  return recent ? upsertMbArtist(recent) : null;
+}
+
 /** CAT-01: one artist by our id (following redirects), with its MusicBrainz id; null when unknown. */
 export async function artistPage(id: string) {
   if (!UUID.test(id)) return null;

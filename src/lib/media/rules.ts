@@ -15,8 +15,11 @@ export const isMediaKind = (v: unknown): v is MediaKind =>
 
 /** D-078: the upload limit (the owner lowered it from 8 MB). */
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
-/** Decompression bombs: refuse anything that would decode to more pixels than this (8000 × 5000). */
-export const MAX_INPUT_PIXELS = 40_000_000;
+/**
+ * Decompression bombs: refuse anything that would decode to more pixels than this (6000 × 4000, a 24 MP phone photo).
+ * Review 5.11 H1: a flat 40 MP PNG of 166 KB took about 260 MB to decode; the output is at most 2048 px anyway.
+ */
+export const MAX_INPUT_PIXELS = 24_000_000;
 /** D-121: the long edge of a member image after re-encoding. */
 export const POST_IMAGE_EDGE = 2048;
 /** Screenshots keep enough detail to read, no more. */
@@ -71,7 +74,7 @@ export function sniffImage(bytes: Uint8Array): ImageFormat | null {
   return null;
 }
 
-export type UploadProblem = "empty" | "tooLarge" | "format";
+export type UploadProblem = "empty" | "tooLarge" | "format" | "busy";
 
 /** The checks that need no decoder: size and the sniffed format. */
 export function checkUpload(

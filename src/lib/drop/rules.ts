@@ -32,7 +32,8 @@ export type DropFailure =
   | "generic"
   | "imageTooLarge"
   | "imageFormat"
-  | "imageOff";
+  | "imageOff"
+  | "imageBusy";
 
 /** D-121: an answer's or comment's image as the client sees it (served by /api/media/<id>). */
 export type PostImageData = { id: string; width: number; height: number; alt: string | null };

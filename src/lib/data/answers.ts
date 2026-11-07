@@ -122,12 +122,16 @@ export async function createAnswer(
   if (!(await consume("post", viewer.id)).allowed) return { ok: false, reason: "too-many" };
   const imageId = image ? await storePostImage("answer_image", viewer.id, image) : null;
   try {
-    const [row] = await db()
-      .insert(answer)
-      .values({ questionId, authorId: viewer.id, body: text, imageId })
-      .returning({ id: answer.id });
-    if (artists.length) await setCards("answer", row!.id, artists);
-    return { ok: true, id: row!.id };
+    // Review 5.11 L5: the answer and its cards together, so a failure never leaves a stored answer reported as failed.
+    const id = await db().transaction(async (tx) => {
+      const [row] = await tx
+        .insert(answer)
+        .values({ questionId, authorId: viewer.id, body: text, imageId })
+        .returning({ id: answer.id });
+      if (artists.length) await setCards("answer", row!.id, artists, tx);
+      return row!.id;
+    });
+    return { ok: true, id };
   } catch (e) {
     await dropMedia([imageId]);
     if (isUniqueViolation(e)) return { ok: false, reason: "already-answered" };
@@ -241,12 +245,14 @@ export async function createComment(
   let id: string;
   const imageId = image ? await storePostImage("comment_image", viewer.id, image) : null;
   try {
-    const [row] = await db()
-      .insert(comment)
-      .values({ answerId, authorId: viewer.id, body: text, imageId })
-      .returning({ id: comment.id });
-    id = row!.id;
-    if (artists.length) await setCards("comment", id, artists);
+    id = await db().transaction(async (tx) => {
+      const [row] = await tx
+        .insert(comment)
+        .values({ answerId, authorId: viewer.id, body: text, imageId })
+        .returning({ id: comment.id });
+      if (artists.length) await setCards("comment", row!.id, artists, tx);
+      return row!.id;
+    });
   } catch (e) {
     await dropMedia([imageId]);
     throw new SafeDbError("createComment", e);
@@ -731,4 +737,10 @@ export async function answersMentioning(
     if (out.length >= limit) break;
   }
   return out;
+}
+
+/** Review 5.11 M2: the cheap check before an edit resolves anything (the edit itself checks again). */
+export async function ownsLiveAnswer(viewerId: string, answerId: string): Promise<boolean> {
+  const live = await liveAnswer(answerId);
+  return !!live && live.authorId === viewerId;
 }

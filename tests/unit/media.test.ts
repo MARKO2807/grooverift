@@ -138,6 +138,16 @@ describe("re-encoding", () => {
   });
 });
 
+describe("decoder memory (review 5.11 H1)", () => {
+  it("decodes one image at a time and answers busy past a short queue", async () => {
+    const input = await solid(1200, 900).jpeg().toBuffer();
+    const results = await Promise.all(Array.from({ length: 7 }, () => processPostImage(input)));
+    expect(results.filter((r) => r.ok)).toHaveLength(5); // one running, four waiting
+    expect(results.filter((r) => !r.ok && r.problem === "busy")).toHaveLength(2);
+    expect((await processPostImage(input)).ok).toBe(true); // free again afterwards
+  });
+});
+
 describe("crop arithmetic", () => {
   it("parses the sheet's fractions and refuses anything else", () => {
     expect(parseCrop("0.1,0.2,0.5")).toEqual({ x: 0.1, y: 0.2, size: 0.5 });

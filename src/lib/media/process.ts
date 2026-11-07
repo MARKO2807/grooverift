@@ -23,6 +23,28 @@ export type ProcessResult =
   { ok: true; image: Processed } | { ok: false; problem: UploadProblem | "decode" };
 
 const INPUT = { limitInputPixels: MAX_INPUT_PIXELS, failOn: "error", animated: false } as const;
+
+// Review 5.11 H1: the web service has 512 MB. No libvips operation cache, one libvips thread per image, and at most
+// one image decoded at a time in this process; a burst waits briefly in a short queue and is otherwise told "busy".
+sharp.cache(false);
+sharp.concurrency(1);
+const MAX_WAITING = 4;
+let running = 0;
+const waiting: (() => void)[] = [];
+
+async function oneAtATime<T>(run: () => Promise<T>): Promise<T | "busy"> {
+  if (running > 0) {
+    if (waiting.length >= MAX_WAITING) return "busy";
+    await new Promise<void>((resolve) => waiting.push(resolve));
+  }
+  running++;
+  try {
+    return await run();
+  } finally {
+    running--;
+    waiting.shift()?.();
+  }
+}
 const WEBP = { quality: 82, effort: 4 } as const;
 
 /** Width and height as the member sees the picture (EXIF orientations 5–8 swap them). */
@@ -43,6 +65,16 @@ async function guarded(
 ): Promise<ProcessResult> {
   const check = checkUpload(bytes);
   if (!check.ok) return check;
+  const r = await oneAtATime(() => decode(bytes, check.format, run));
+  return r === "busy" ? { ok: false, problem: "busy" } : r;
+}
+
+async function decode(
+  bytes: Buffer,
+  format: string,
+  run: (input: Buffer, size: { width: number; height: number }) => Promise<Processed>,
+): Promise<ProcessResult> {
+  const check = { format };
   try {
     const meta = await sharp(bytes, INPUT).metadata();
     // The sniffed format must be what the decoder found (a PNG header on a JPEG body is refused).
@@ -90,6 +122,11 @@ export function processProfilePhoto(bytes: Buffer, crop: CropBox | null): Promis
 export async function processArtistPhoto(bytes: Buffer): Promise<ProcessResult> {
   if (bytes.length === 0 || bytes.length > 15 * 1024 * 1024)
     return { ok: false, problem: "tooLarge" };
+  const r = await oneAtATime(() => artistDecode(bytes));
+  return r === "busy" ? { ok: false, problem: "busy" } : r;
+}
+
+async function artistDecode(bytes: Buffer): Promise<ProcessResult> {
   try {
     const meta = await sharp(bytes, INPUT).metadata();
     if (!["jpeg", "png", "webp"].includes(meta.format ?? ""))

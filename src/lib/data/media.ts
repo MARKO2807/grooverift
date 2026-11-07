@@ -17,6 +17,7 @@ import {
   comment,
   contentSnapshot,
   dailyDropAnswer as answer,
+  enforcementAction,
   dailyDropQuestion as question,
   feedbackReport,
   media,
@@ -71,19 +72,29 @@ export async function storeMedia(input: {
   return id;
 }
 
-/** Image ids a moderation copy (content_snapshot, D-107) still names: kept until the copy itself is purged. */
+/**
+ * Image ids still needed as evidence: named by a moderation copy (content_snapshot, D-107) until the copy is purged,
+ * or removed by a decision whose appeal window is open (review 5.11 M4 (b)), so an overturned appeal can restore it.
+ */
 async function heldBySnapshot(ids: readonly string[]): Promise<Set<string>> {
   if (!ids.length) return new Set();
-  const rows = await db()
-    .select({ id: sql<string>`${contentSnapshot.content}->>'imageId'` })
-    .from(contentSnapshot)
-    .where(
-      inArray(
-        sql<string>`${contentSnapshot.content}->>'imageId'`,
-        ids.map((i) => i),
+  const [copies, decisions] = await Promise.all([
+    db()
+      .select({ id: sql<string>`${contentSnapshot.content}->>'imageId'` })
+      .from(contentSnapshot)
+      .where(inArray(sql<string>`${contentSnapshot.content}->>'imageId'`, [...ids])),
+    db()
+      .select({ id: enforcementAction.removedImageId })
+      .from(enforcementAction)
+      .where(
+        and(
+          inArray(enforcementAction.removedImageId, [...ids]),
+          isNull(enforcementAction.revokedAt),
+          sql`(${enforcementAction.appealUntil} is null or ${enforcementAction.appealUntil} > now())`,
+        ),
       ),
-    );
-  return new Set(rows.map((r) => r.id));
+  ]);
+  return new Set([...copies.map((r) => r.id), ...decisions.map((r) => r.id!)]);
 }
 
 /**
@@ -115,6 +126,11 @@ export async function sweepMedia(now: Date = new Date()): Promise<number> {
     select m.id, m.storage_key from ${media} m
     where m.created_at < ${cutoff.toISOString()}::timestamptz
       and not exists (select 1 from ${contentSnapshot} s where s.content->>'imageId' = m.id::text)
+      and not exists (
+        select 1 from ${enforcementAction} e
+        where e.removed_image_id = m.id and e.revoked_at is null
+          and (e.appeal_until is null or e.appeal_until > ${now.toISOString()}::timestamptz)
+      )
       and not exists (select 1 from ${profile} p where p.photo_id = m.id)
       and not exists (select 1 from ${artistPhoto} ap where ap.media_id = m.id)
       and not exists (select 1 from ${answer} a where a.image_id = m.id)
@@ -247,7 +263,12 @@ async function caseImageAccess(viewer: Viewer, id: string, ctx: StaffContext): P
         sql`${contentSnapshot.content}->>'imageId' = ${id}`,
       ),
     );
-  return snap ? { allowed: true, cache: "private" } : NO;
+  if (snap) return { allowed: true, cache: "private" };
+  const [removed] = await db()
+    .select({ id: enforcementAction.id })
+    .from(enforcementAction)
+    .where(and(eq(enforcementAction.caseId, ctx.caseId), eq(enforcementAction.removedImageId, id)));
+  return removed ? { allowed: true, cache: "private" } : NO;
 }
 
 /**

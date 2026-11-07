@@ -38,6 +38,7 @@ export const LIMITS = {
   push: { limit: 60, windowSeconds: 3600 }, // notification switches, pause and device changes (step 5.12)
   upload: { limit: 30, windowSeconds: 3600 }, // image uploads per member: photos, post images, screenshots (5.11)
   artistPhoto: { limit: 60, windowSeconds: 3600 }, // admin hide and show of artist photos (step 5.11)
+  cards: { limit: 60, windowSeconds: 3600 }, // posts and edits that carry artist cards (review 5.11 M2)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

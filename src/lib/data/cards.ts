@@ -7,7 +7,7 @@ import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db, type Db } from "@/lib/db/client";
 import { artist, canonicalRedirect, catalogReference, dailyDropAnswer } from "@/lib/db/schema";
 import { tilePhotos } from "./artist-photos";
-import { artistFromMbid, resolveCanonicalId } from "./catalog";
+import { knownArtistFromMbid, resolveCanonicalId } from "./catalog";
 
 export const CARDS_MAX = 5;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,8 +17,9 @@ export type CardOwner = "answer" | "comment";
 
 /**
  * The composer's picks → our artist ids, deduplicated, at most five. A pick is "mb:<MusicBrainz id>" (just chosen
- * in the search, so artistFromMbid stores it without a further request) or "id:<artist id>" (a card the answer
- * already had, kept when editing). A pick that cannot be resolved is dropped. Null when the list is malformed.
+ * in the search: a stored artist or one from this process's recent search answers, never a MusicBrainz request,
+ * review 5.11 M2) or "id:<artist id>" (a card the answer already had, kept when editing). A pick that cannot be
+ * resolved is dropped. Null when the list is malformed.
  */
 export async function artistsFromPicks(picks: unknown): Promise<string[] | null> {
   if (picks === undefined || picks === null) return [];
@@ -29,10 +30,8 @@ export async function artistsFromPicks(picks: unknown): Promise<string[] | null>
     const [kind, value] = pick.split(":");
     if ((kind !== "mb" && kind !== "id") || !value || !UUID.test(value)) return null;
     let id: string | null = null;
-    if (kind === "mb") {
-      const r = await artistFromMbid(value.toLowerCase());
-      id = r.ok ? r.id : null;
-    } else id = await resolveCanonicalId(value);
+    if (kind === "mb") id = await knownArtistFromMbid(value);
+    else id = await resolveCanonicalId(value);
     if (id && !out.includes(id)) out.push(id);
   }
   return out;
@@ -43,7 +42,7 @@ export async function setCards(
   owner: CardOwner,
   ownerId: string,
   artistIds: readonly string[],
-  tx: Db = db(),
+  tx: Pick<Db, "delete" | "insert"> = db(),
 ): Promise<void> {
   await tx
     .delete(catalogReference)

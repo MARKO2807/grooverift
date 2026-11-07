@@ -24,7 +24,7 @@ import { ACCEPT, MAX_UPLOAD_BYTES } from "@/lib/media/rules";
 // strips EXIF and GPS. Nothing is uploaded until "Spremi".
 
 // i18n-keys: media.error.signedOut media.error.notAllowed media.error.tooMany media.error.tooLarge
-// i18n-keys: media.error.format media.error.decode media.error.empty media.error.generic
+// i18n-keys: media.error.format media.error.decode media.error.empty media.error.generic media.error.busy
 
 const VIEW = 220; // the circle's size in CSS pixels (kept in step with .crop-circ)
 const ZOOM_MAX = 2.5;

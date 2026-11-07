@@ -6,7 +6,7 @@ export const GRACE_DAYS = 30;
 /** Plan §1.2: the data copy is downloadable for 24 hours. */
 export const EXPORT_TTL_HOURS = 24;
 /** A copy larger than this fails instead of filling the database (alpha accounts are far below it). */
-export const EXPORT_MAX_BYTES = 50 * 1024 * 1024; // step 5.11: room for the member's images (45 MB budget)
+export const EXPORT_MAX_BYTES = 25 * 1024 * 1024; // step 5.11: room for the member's images (20 MB budget)
 /** A request still "requested" or "building" after this long is retried by the worker's sweep. */
 export const EXPORT_STALE_MINUTES = 5;
 /** After this many failed builds the request is marked failed and the member may ask again. */

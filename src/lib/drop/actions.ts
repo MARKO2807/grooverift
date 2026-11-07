@@ -16,7 +16,7 @@ import { latestPublishedDate } from "@/lib/data/drops";
 import { loadViewer } from "@/lib/data/facts";
 import { consume } from "@/lib/data/rate-limit";
 import { flagState, isEnabled } from "@/lib/flags";
-import type { ImageChange, PostImage } from "@/lib/data/answers";
+import { ownsLiveAnswer, type ImageChange, type PostImage } from "@/lib/data/answers";
 import { artistsFromPicks } from "@/lib/data/cards";
 import { processPostImage } from "@/lib/media/process";
 import { cleanAlt } from "@/lib/media/rules";
@@ -67,7 +67,18 @@ async function guarded<T>(where: string, run: () => Promise<T>, failed: T): Prom
 
 const GENERIC = { ok: false, reason: "generic" } as const;
 
-// i18n-keys: drop.error.imageTooLarge drop.error.imageFormat drop.error.imageOff
+// i18n-keys: drop.error.imageTooLarge drop.error.imageFormat drop.error.imageOff drop.error.imageBusy
+
+/** Review 5.11 M2: artist picks are resolved only after their own rate limit. Null = malformed or too many. */
+async function cardPart(
+  viewerId: string,
+  picks: unknown,
+): Promise<{ ids: string[] } | { fail: DropFailure }> {
+  if (Array.isArray(picks) && picks.length && !(await consume("cards", viewerId)).allowed)
+    return { fail: "tooMany" };
+  const ids = await artistsFromPicks(picks);
+  return ids ? { ids } : { fail: "notAllowed" };
+}
 
 /**
  * D-121: the image part of a post, from a FormData ("image": the file, "alt": the description, "removeImage": "1").
@@ -90,7 +101,14 @@ async function imagePart(
     if (typeof bytes === "string") return { fail: "imageFormat" };
     const processed = await processPostImage(bytes);
     if (!processed.ok)
-      return { fail: processed.problem === "tooLarge" ? "imageTooLarge" : "imageFormat" };
+      return {
+        fail:
+          processed.problem === "tooLarge"
+            ? "imageTooLarge"
+            : processed.problem === "busy"
+              ? "imageBusy"
+              : "imageFormat",
+      };
     const replace: PostImage = { image: processed.image, alt: alt ?? null };
     return { change: { replace } };
   }
@@ -128,9 +146,9 @@ export async function postAnswerAction(
       if ("fail" in m) return { ok: false, reason: m.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const cards = await artistsFromPicks(artists);
-      if (!cards) return { ok: false, reason: "notAllowed" };
-      const r = await createAnswer(m.viewer, questionId, body, img.change.replace, cards);
+      const cards = await cardPart(m.viewer.id, artists);
+      if ("fail" in cards) return { ok: false, reason: cards.fail };
+      const r = await createAnswer(m.viewer, questionId, body, img.change.replace, cards.ids);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
@@ -153,11 +171,16 @@ export async function editAnswerAction(
     async () => {
       const m = await member(["daily_drop"]);
       if ("fail" in m) return { ok: false, reason: m.fail };
+      if (!(await ownsLiveAnswer(m.viewer.id, answerId)))
+        return { ok: false, reason: "notAvailable" };
+      const cards = artists === undefined ? undefined : await cardPart(m.viewer.id, artists);
+      if (cards && "fail" in cards) return { ok: false, reason: cards.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const cards = artists === undefined ? undefined : await artistsFromPicks(artists);
-      if (cards === null) return { ok: false, reason: "notAllowed" };
-      const r = await editOwnAnswer(m.viewer, answerId, body, { ...img.change, artists: cards });
+      const r = await editOwnAnswer(m.viewer, answerId, body, {
+        ...img.change,
+        artists: cards?.ids,
+      });
       return r.ok ? { ok: true } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,
@@ -199,9 +222,9 @@ export async function postCommentAction(
       if ("fail" in m) return { ok: false, reason: m.fail };
       const img = await imagePart(m.viewer, files);
       if ("fail" in img) return { ok: false, reason: img.fail };
-      const cards = await artistsFromPicks(artists);
-      if (!cards) return { ok: false, reason: "notAllowed" };
-      const r = await createComment(m.viewer, answerId, body, img.change.replace, cards);
+      const cards = await cardPart(m.viewer.id, artists);
+      if ("fail" in cards) return { ok: false, reason: cards.fail };
+      const r = await createComment(m.viewer, answerId, body, img.change.replace, cards.ids);
       return r.ok ? { ok: true, id: r.id } : { ok: false, reason: mapReason(r.reason) };
     },
     GENERIC,

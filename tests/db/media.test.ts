@@ -373,11 +373,58 @@ describe("artist photos (D-118, research E.2)", () => {
     expect(await photos.photoOfArtist(id)).not.toBeNull();
   });
 
-  it("a notice saying 'not this person' hides the photo at once", async () => {
+  it("a notice saying 'not this person' hides the photo softly, at most ten a day (review 5.11 M1)", async () => {
     const id = await artistId(RADIOHEAD);
     await photos.refreshArtistPhoto(id);
+    const mediaId = (await photos.photoOfArtist(id))!.mediaId;
     expect(await photos.hidePhotoOnNotice(id, "00000000-0000-4000-8000-0000000000aa")).toBe(true);
     expect(await photos.photoOfArtist(id)).toBeNull();
+    expect(await media.imageForViewer(ANON, mediaId)).toBeNull();
     expect((await photos.artistPhotoAdmin(id))?.hidden).toBe(true);
+    expect(await keyOf(mediaId)).toBeDefined(); // soft: the copy stays until staff decide
+    // "Vrati fotografiju" brings it back without a new download (same file and revision).
+    expect(await photos.setArtistPhotoHidden(ids.admin!, id, false)).toEqual({ ok: true });
+    expect(await photos.refreshArtistPhoto(id)).toBe("kept");
+    expect((await photos.photoOfArtist(id))?.mediaId).toBe(mediaId);
+
+    // The daily cap: after ten notice hides in 24 hours, notices only queue.
+    const fakes = await db()
+      .insert(schema.artist)
+      .values(
+        Array.from({ length: photos.NOTICE_HIDES_PER_DAY }, (_, i) => ({
+          name: `Cap ${RUN} ${i}`,
+        })),
+      )
+      .returning({ id: schema.artist.id });
+    artistIds.push(...fakes.map((f) => f.id));
+    await db()
+      .insert(schema.artistPhoto)
+      .values(
+        fakes.map((f) => ({
+          artistId: f.id,
+          status: "none",
+          refreshAfter: new Date(Date.now() + 86_400_000),
+          hiddenAt: new Date(),
+          hiddenReason: "notice cap",
+        })),
+      );
+    expect(await photos.hidePhotoOnNotice(id, "00000000-0000-4000-8000-0000000000ab")).toBe(false);
+    expect(await photos.photoOfArtist(id)).not.toBeNull();
+    await db()
+      .delete(schema.artistPhoto)
+      .where(
+        inArray(
+          schema.artistPhoto.artistId,
+          fakes.map((f) => f.id),
+        ),
+      );
+    await db()
+      .delete(schema.artist)
+      .where(
+        inArray(
+          schema.artist.id,
+          fakes.map((f) => f.id),
+        ),
+      );
   });
 });

@@ -17,10 +17,18 @@ import { fileBytes } from "./upload";
 // as a reason key for the component's messages.
 
 // i18n-keys: media.error.signedOut media.error.notAllowed media.error.tooMany media.error.tooLarge
-// i18n-keys: media.error.format media.error.decode media.error.empty media.error.generic
+// i18n-keys: media.error.format media.error.decode media.error.empty media.error.generic media.error.busy
 
 export type MediaFailure =
-  "signedOut" | "notAllowed" | "tooMany" | "tooLarge" | "format" | "decode" | "empty" | "generic";
+  | "signedOut"
+  | "notAllowed"
+  | "tooMany"
+  | "tooLarge"
+  | "format"
+  | "decode"
+  | "empty"
+  | "busy"
+  | "generic";
 export type PhotoResult =
   { ok: true; photoId: string | null } | { ok: false; reason: MediaFailure };
 

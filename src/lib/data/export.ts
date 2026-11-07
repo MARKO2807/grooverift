@@ -454,7 +454,9 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
 }
 
 /** D-121: the member's own images (profile photo, answer and comment images, screenshots) with a list. */
-const IMAGE_BUDGET = 45 * 1024 * 1024;
+// Review 5.11 M5: the copy is built in the web process (512 MB); 20 MB of images until it moves to the worker or
+// streams to R2. Images past the budget are listed in images.json with file: null.
+const IMAGE_BUDGET = 20 * 1024 * 1024;
 async function imageFiles(userId: string): Promise<Record<string, unknown>> {
   const list = await ownImages(userId);
   if (!list.length) return {};

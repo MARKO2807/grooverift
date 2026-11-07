@@ -34,6 +34,7 @@ import { CardPicker, picksFrom, type CardPick } from "./artist-cards";
 // i18n-keys: drop.error.signedOut drop.error.notAllowed drop.error.notAvailable drop.error.alreadyAnswered
 // i18n-keys: drop.error.tooMany drop.error.paused drop.error.tooLong drop.error.empty drop.error.generic
 // i18n-keys: drop.error.restricted drop.error.imageTooLarge drop.error.imageFormat drop.error.imageOff
+// i18n-keys: drop.error.imageBusy
 
 export const COMPOSE_EVENT = "gr:compose";
 

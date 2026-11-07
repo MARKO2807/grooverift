@@ -17,12 +17,21 @@ function assertKey(key: string) {
   if (!KEY.test(key)) throw new Error("invalid storage key");
 }
 
+/**
+ * "r2" when configured (or asked for), else the local folder. In production the folder is only for the end-to-end
+ * run (env.ts refuses MEDIA_STORE=file otherwise); a production service without all four R2 values fails here, when
+ * an image is used, never silently on the instance's ephemeral disk (review 5.11 M3), and not at start-up (the worker
+ * must keep publishing).
+ */
 export function storeKind(): "r2" | "file" {
   const e = env();
   if (e.MEDIA_STORE) return e.MEDIA_STORE;
-  return e.R2_ENDPOINT && e.R2_BUCKET && e.R2_ACCESS_KEY_ID && e.R2_SECRET_ACCESS_KEY
-    ? "r2"
-    : "file";
+  if (e.R2_ENDPOINT && e.R2_BUCKET && e.R2_ACCESS_KEY_ID && e.R2_SECRET_ACCESS_KEY) return "r2";
+  if (e.NODE_ENV === "production" && e.E2E_EMAIL_FILE !== "1")
+    throw new Error(
+      "Images need R2 in production (R2_ENDPOINT, R2_BUCKET, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY).",
+    );
+  return "file";
 }
 
 // ------------------------------------------------------------------ R2

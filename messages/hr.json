@@ -1349,7 +1349,8 @@
       "restricted": "Objavljivanje ti je trenutačno ograničeno.",
       "imageTooLarge": "Slika je veća od 5 MB. Odaberi manju.",
       "imageFormat": "Prima se samo JPG, PNG ili WebP, a ova se slika ne može otvoriti.",
-      "imageOff": "Dodavanje slika je trenutačno isključeno. Objavi bez slike."
+      "imageOff": "Dodavanje slika je trenutačno isključeno. Objavi bez slike.",
+      "imageBusy": "Upravo obrađujemo puno slika. Pokušaj ponovno za minutu."
     },
     "first": {
       "title": "Prvo pitanje stiže {date}",
@@ -2144,7 +2145,8 @@
       "format": "Prima se samo JPG, PNG ili WebP.",
       "decode": "Ova se slika ne može otvoriti. Pokušaj s drugom.",
       "empty": "Nije odabrana nijedna slika.",
-      "generic": "Slika nije spremljena zbog greške kod nas. Pokušaj ponovno za minutu."
+      "generic": "Slika nije spremljena zbog greške kod nas. Pokušaj ponovno za minutu.",
+      "busy": "Upravo obrađujemo puno slika. Pokušaj ponovno za minutu."
     }
   }
 }

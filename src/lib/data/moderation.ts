@@ -615,17 +615,15 @@ export async function decideCase(
         const target =
           c.targetType === "answer" ? answer : c.targetType === "comment" ? comment : null;
         if (target) {
-          const [row] = await tx
-            .update(target)
-            .set({ imageId: null })
-            .where(and(eq(target.id, c.targetId), isNotNull(target.imageId)))
-            .returning({ id: target.id });
-          if (row) {
-            const snap = await tx
-              .select({ imageId: sql<string | null>`${contentSnapshot.content}->>'imageId'` })
-              .from(contentSnapshot)
-              .where(eq(contentSnapshot.caseId, caseId));
-            removedImageId = snap.find((x) => x.imageId)?.imageId ?? null;
+          // Review 5.11 M4 (b): the image shown now is the one removed and recorded, locked against a parallel edit.
+          const [current] = await tx
+            .select({ imageId: target.imageId })
+            .from(target)
+            .where(eq(target.id, c.targetId))
+            .for("update");
+          if (current?.imageId) {
+            await tx.update(target).set({ imageId: null }).where(eq(target.id, c.targetId));
+            removedImageId = current.imageId;
           }
         }
       }
@@ -983,11 +981,19 @@ export async function decideAppeal(
           .where(eq(media.id, a.removedImageId));
         const target =
           a.targetType === "answer" ? answer : a.targetType === "comment" ? comment : null;
+        // Review 5.11 L1: never onto a post deleted or removed meanwhile (the image would outlive it).
         if (kept && target)
           await tx
             .update(target)
             .set({ imageId: kept.id })
-            .where(and(eq(target.id, a.targetId), isNull(target.imageId)));
+            .where(
+              and(
+                eq(target.id, a.targetId),
+                isNull(target.imageId),
+                isNull(target.deletedAt),
+                isNull(target.removedAt),
+              ),
+            );
       }
       if (a.subjectUserId && (a.kind === "suspension" || a.kind === "ban"))
         await recomputeStatus(tx, a.subjectUserId, now);

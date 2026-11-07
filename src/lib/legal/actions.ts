@@ -67,7 +67,15 @@ export async function submitNoticeAction(
     if (!rate.allowed) return { error: "tooMany", values };
     const session = await getSession();
     const id = await storeNotice(result.value, session?.user.id ?? null);
-    if (photoArtist && photoReason && HIDES_AT_ONCE.includes(photoReason))
+    // Review 5.11 M1: only a notifier who gave a name and an email hides a photo at once (never an anonymous one).
+    if (
+      photoArtist &&
+      photoReason &&
+      HIDES_AT_ONCE.includes(photoReason) &&
+      result.value.name &&
+      result.value.email &&
+      result.value.category !== "csam"
+    )
       await hidePhotoOnNotice(photoArtist, id);
     await audit({
       actorType: session ? "member" : "system",
