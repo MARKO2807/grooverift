@@ -256,6 +256,27 @@ export function createMusicBrainzClient(opts: ClientOptions) {
       return result;
     },
 
+    /**
+     * The artist's Wikidata item from its URL relationships (step 5.11, D-118): "Q…" or null. Not cached here; the
+     * photo job runs once per artist and then every 30 days.
+     */
+    async wikidataId(mbid: string): Promise<string | null> {
+      const id = mbid.toLowerCase();
+      if (!UUID.test(id)) return null;
+      const { body } = await get(`/artist/${id}?fmt=json&inc=url-rels`);
+      const rels = Array.isArray(body?.relations) ? (body!.relations as Raw[]) : [];
+      for (const r of rels) {
+        if (r.type !== "wikidata") continue;
+        const url = (r.url as Raw | undefined)?.resource;
+        const m =
+          typeof url === "string"
+            ? /^https?:\/\/(?:www\.)?wikidata\.org\/wiki\/(Q\d{1,12})$/.exec(url)
+            : null;
+        if (m) return m[1]!;
+      }
+      return null;
+    },
+
     /** Every MusicBrainz genre (id and name), page by page; for filling `genre.mbid` (scripts only). */
     async allGenres(): Promise<{ mbid: string; name: string }[]> {
       const out: { mbid: string; name: string }[] = [];

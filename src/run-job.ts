@@ -1,17 +1,24 @@
 import "@/lib/load-env";
 import { purgeDueAccounts } from "@/lib/data/account";
+import { refreshArtistPhotos } from "@/lib/data/artist-photos";
+import { expireScreenshots } from "@/lib/data/feedback";
+import { sweepMedia } from "@/lib/data/media";
 import { sweepExports } from "@/lib/data/export";
 import { runReminders } from "@/lib/data/push";
 import { closeDb } from "@/lib/db/client";
 
 // Runs one housekeeping job once, outside pg-boss: for the owner (no need to wait for the worker's schedule) and
 // for the end-to-end suite (the purge after a grace period it shortened). Same functions the worker calls.
-// Usage: npm run job -- account.purge | account.export | push.reminders
+// Usage: npm run job -- account.purge | account.export | push.reminders | catalog.photos | media.sweep |
+//        feedback.screenshots
 
 const JOBS: Record<string, () => Promise<unknown>> = {
   "account.purge": () => purgeDueAccounts(),
   "account.export": () => sweepExports(),
   "push.reminders": () => runReminders().then((r) => console.log(r)),
+  "catalog.photos": () => refreshArtistPhotos(),
+  "media.sweep": () => sweepMedia(),
+  "feedback.screenshots": () => expireScreenshots(),
 };
 
 async function main() {

@@ -39,7 +39,7 @@ export default async function DropsPage({ params }: { params: Params }) {
       screen="narrow"
     >
       <Link href={`/@${view.username}`} className="fl-person mdrops-head">
-        <Avatar name={view.displayName} size="sm" />
+        <Avatar name={view.displayName} size="sm" photo={view.photoId} />
         <span className="set-txt">
           <span className="set-t">{view.displayName}</span>
           <span className="set-d">@{view.username}</span>

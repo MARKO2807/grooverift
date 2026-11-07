@@ -4,6 +4,9 @@ import { pruneThrottle } from "@/lib/auth/lockout";
 import { audit } from "@/lib/audit";
 import { closeDb } from "@/lib/db/client";
 import { purgeDueAccounts } from "@/lib/data/account";
+import { refreshArtistPhotos } from "@/lib/data/artist-photos";
+import { expireScreenshots } from "@/lib/data/feedback";
+import { sweepMedia } from "@/lib/data/media";
 import { sweepExports } from "@/lib/data/export";
 import { purgeSnapshots } from "@/lib/data/moderation";
 import { pruneNotifications } from "@/lib/data/notifications";
@@ -41,6 +44,9 @@ export const JOBS = {
   purgeAccounts: "account.purge",
   sweepExports: "account.export",
   reminders: "push.reminders",
+  artistPhotos: "catalog.photos",
+  sweepMedia: "media.sweep",
+  expireScreenshots: "feedback.screenshots",
 } as const;
 
 type PublishData = { date?: string };
@@ -134,6 +140,33 @@ export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgB
     if (r.delivered) console.log("[worker] reminders delivered:", r.delivered);
   });
   await boss.schedule(JOBS.reminders, REMINDER_TICK, {}, { tz: "UTC" });
+
+  // Step 5.11 (D-118): artist photos from Wikidata and Commons for artists new to the catalogue, and the 30-day
+  // check of the others, every five minutes in small batches (MusicBrainz allows one request per second).
+  await boss.createQueue(JOBS.artistPhotos);
+  await boss.work(JOBS.artistPhotos, async () => {
+    const r = await refreshArtistPhotos();
+    if (r.stored || r.failed) console.log("[worker] artist photos:", JSON.stringify(r));
+  });
+  await boss.schedule(JOBS.artistPhotos, "*/5 * * * *", {}, { tz: "UTC" });
+
+  // Images no parent references any more (replaced photos, deleted posts, handled screenshots) go with their
+  // objects, hourly; a moderation copy holds an image until its own purge date.
+  await boss.createQueue(JOBS.sweepMedia);
+  await boss.work(JOBS.sweepMedia, async () => {
+    const n = await sweepMedia();
+    if (n) await audit({ actorType: "system", action: "media.swept", metadata: { n } });
+  });
+  await boss.schedule(JOBS.sweepMedia, "25 * * * *", {}, { tz: "UTC" });
+
+  // D-118 (6): feedback screenshots go when handled and at the latest after 90 days; daily at 04:10 UTC.
+  await boss.createQueue(JOBS.expireScreenshots);
+  await boss.work(JOBS.expireScreenshots, async () => {
+    const n = await expireScreenshots();
+    if (n)
+      await audit({ actorType: "system", action: "feedback.screenshots.expired", metadata: { n } });
+  });
+  await boss.schedule(JOBS.expireScreenshots, "10 4 * * *", {}, { tz: "UTC" });
 
   // The Daily Drop at 00:00 UTC (J6). The run itself is idempotent by date, so a duplicate job, a restart or
   // "Publish now" at the same moment cannot publish twice. A failed run throws, and pg-boss retries it with

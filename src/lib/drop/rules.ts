@@ -34,7 +34,7 @@ export type DropFailure =
 /** An answer as the client components receive it (dates as ISO strings). */
 export type AnswerCardData = {
   id: string;
-  author: { id: string; username: string; displayName: string };
+  author: { id: string; username: string; displayName: string; photoId?: string | null };
   body: string;
   language: string | null;
   createdAt: string;

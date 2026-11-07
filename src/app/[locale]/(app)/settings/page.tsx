@@ -25,6 +25,7 @@ import {
 import { memberPage } from "@/lib/auth/member-page";
 import { STAFF_ROLES } from "@/lib/auth/roles";
 import { roleOf } from "@/lib/auth/session";
+import { ownPhotoId } from "@/lib/data/media";
 import { activeRestriction, blockMuteCounts } from "@/lib/data/safety";
 import { pushAvailable, pushChoices } from "@/lib/data/push";
 import { settingsSummary } from "@/lib/data/settings";
@@ -62,11 +63,12 @@ export default async function SettingsIndexPage({
   const tp = await getTranslations("settings.privacy");
   const ts = await getTranslations("safety");
   const f = await getFormatter();
-  const [summary, counts, restriction, push] = await Promise.all([
+  const [summary, counts, restriction, push, photoId] = await Promise.all([
     settingsSummary(userId),
     blockMuteCounts(userId),
     activeRestriction(userId),
     pushAvailable().then((ok) => (ok ? pushChoices(userId) : null)),
+    ownPhotoId(userId),
   ]);
   const name = summary?.displayName ?? session.user.name;
   const username = summary?.username ?? "";
@@ -165,7 +167,7 @@ export default async function SettingsIndexPage({
   return (
     <AppShell title={t("title")} backHref="/me" nav="settings" screen="narrow">
       <Link href="/settings/profile" className="set-me">
-        <Avatar name={name} size="sm" />
+        <Avatar name={name} size="sm" photo={photoId} />
         <span className="set-txt">
           <span className="set-t">{name}</span>
           <span className="set-d">

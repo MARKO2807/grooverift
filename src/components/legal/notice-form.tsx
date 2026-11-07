@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { submitNoticeAction, type NoticeFormState } from "@/lib/legal/actions";
-import { EXPLANATION_MAX, NOTICE_CATEGORIES } from "@/lib/legal/notice";
+import { EXPLANATION_MAX, NOTICE_CATEGORIES, PHOTO_REASONS } from "@/lib/legal/notice";
 import { FieldError, TextField } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
 import { ErrorSummary, SubmitButton, useFocusRef } from "@/components/ui/form-status";
@@ -12,9 +12,16 @@ import { IconCheck } from "@/components/ui/icons";
 // i18n-keys: notice.categories.csam notice.categories.hate notice.categories.threat notice.categories.privacy
 // i18n-keys: notice.categories.copyright notice.categories.fraud notice.categories.other
 // i18n-keys: notice.errors.generic notice.errors.tooMany
+// i18n-keys: notice.photo.reasons.wrongPerson notice.photo.reasons.author notice.photo.reasons.credit
+// i18n-keys: notice.photo.reasons.other
 
 /** PUB-11: the DSA Art. 16 notice form, usable without an account (components §4.2, §4.4). */
-export function NoticeForm() {
+export function NoticeForm({
+  photo,
+}: {
+  /** Step 5.11: a report about an artist photo ("Prijavi problem" in "O fotografiji"). */
+  photo?: { artistId: string; name: string; url: string };
+}) {
   const t = useTranslations("notice");
   const [state, action] = useActionState<NoticeFormState, FormData>(submitNoticeAction, {});
   const [category, setCategory] = useState<string>(state.values?.category ?? "");
@@ -64,6 +71,36 @@ export function NoticeForm() {
           </Notice>
         </ErrorSummary>
       ) : null}
+      {photo ? (
+        <fieldset
+          className="choices"
+          aria-invalid={fe.photoReason ? true : undefined}
+          aria-describedby={fe.photoReason ? `${id}-pr-err` : `${id}-pr-help`}
+        >
+          <legend>{t("photo.legend", { name: photo.name })}</legend>
+          <input type="hidden" name="photoArtist" value={photo.artistId} />
+          <p className="help" id={`${id}-pr-help`}>
+            {t("photo.help")}
+          </p>
+          {PHOTO_REASONS.map((r) => (
+            <label className="choice" key={r}>
+              <input
+                type="radio"
+                name="photoReason"
+                value={r}
+                defaultChecked={v.photoReason === r}
+              />
+              <span className="choice-mark" aria-hidden="true">
+                <IconCheck />
+              </span>
+              <span>{t(`photo.reasons.${r}`)}</span>
+            </label>
+          ))}
+          {fe.photoReason ? (
+            <FieldError id={`${id}-pr-err`} text={t(`errors.${fe.photoReason}`)} />
+          ) : null}
+        </fieldset>
+      ) : null}
       <fieldset
         className="choices"
         aria-invalid={catErr ? true : undefined}
@@ -94,7 +131,7 @@ export function NoticeForm() {
         type="text"
         inputMode="text"
         autoComplete="url"
-        defaultValue={v.url}
+        defaultValue={v.url ?? photo?.url}
         required
         error={fe.url ? t(`errors.${fe.url}`) : null}
       />

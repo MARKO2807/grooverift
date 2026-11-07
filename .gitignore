@@ -46,4 +46,5 @@ next-env.d.ts
 
 # --- Local mail outbox for the file transport (tests) ---
 .mail-outbox.jsonl
+.media-store/
 

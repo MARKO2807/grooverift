@@ -64,7 +64,7 @@ export async function DdMeta({
       {faces.length ? (
         <span className="stack" aria-hidden="true">
           {faces.slice(0, 3).map((a) => (
-            <Avatar key={a.id} name={a.author.displayName} size="xs" />
+            <Avatar key={a.id} name={a.author.displayName} size="xs" photo={a.author.photoId} />
           ))}
         </span>
       ) : null}
@@ -94,7 +94,7 @@ export async function Peeks({
         {peeks.map((a) => (
           <li key={a.id}>
             <Link href={`/drop/${date}/a/${a.id}`} className="peek">
-              <Avatar name={a.author.displayName} size="xs" />
+              <Avatar name={a.author.displayName} size="xs" photo={a.author.photoId} />
               <span className="peek-body">
                 <span className="peek-who">{a.author.displayName}</span>
                 <span className="peek-text" lang={a.language ?? undefined}>
@@ -110,7 +110,7 @@ export async function Peeks({
           {rest.length ? (
             <span className="stack" aria-hidden="true">
               {rest.slice(0, 3).map((a) => (
-                <Avatar key={a.id} name={a.author.displayName} size="xs" />
+                <Avatar key={a.id} name={a.author.displayName} size="xs" photo={a.author.photoId} />
               ))}
             </span>
           ) : null}

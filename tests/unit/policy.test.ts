@@ -309,6 +309,10 @@ describe("§2 content", () => {
     expect(
       canViewContent("media", MOD, { ...pub, parentPublic: false }, noGraph, CASE).allowed,
     ).toBe(true);
+    // Step 5.11: staff who see the parent the ordinary way (an answer on the Drop page) see its image too.
+    expect(
+      canViewContent("media", MOD, { ...pub, parentPublic: false, parentVisible: true }).allowed,
+    ).toBe(true);
   });
 
   it("counts and ranking use only member-visible content (D-021)", () => {

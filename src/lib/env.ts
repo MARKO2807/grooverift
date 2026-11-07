@@ -37,6 +37,10 @@ const schema = z.object({
   R2_BUCKET: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
+  // Where images live (step 5.11): "r2" (the default when the four R2 values are set) or "file", a local folder for
+  // development and the end-to-end tests. "file" is refused in production unless the end-to-end flag is set.
+  MEDIA_STORE: z.preprocess((v) => (v === "" ? undefined : v), z.enum(["r2", "file"]).optional()),
+  MEDIA_DIR: z.string().default(".media-store"),
   // MusicBrainz (A4, D-108, step 5.3b): the project contact for the User-Agent MusicBrainz requires. Without it the
   // artist catalogue reads as unavailable ("Katalog trenutačno ne radi.").
   MUSICBRAINZ_CONTACT: z.preprocess((v) => (v === "" ? undefined : v), z.string().optional()),
@@ -105,6 +109,9 @@ export function env(): Env {
     }
     if (data.CATALOG_STUB === "1" && data.E2E_EMAIL_FILE !== "1") {
       throw new Error("CATALOG_STUB=1 is for end-to-end tests only, never in production.");
+    }
+    if (data.MEDIA_STORE === "file" && data.E2E_EMAIL_FILE !== "1") {
+      throw new Error("MEDIA_STORE=file is for end-to-end tests only, never in production.");
     }
     if (data.BETTER_AUTH_SECRET.length < 43) {
       throw new Error(

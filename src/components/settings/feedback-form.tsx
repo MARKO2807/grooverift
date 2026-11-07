@@ -6,6 +6,7 @@ import { FieldError } from "@/components/ui/field";
 import { IconCheck, IconCheckCircle } from "@/components/ui/icons";
 import { Notice } from "@/components/ui/notice";
 import { sendFeedbackAction, type AccountFailure } from "@/lib/account/actions";
+import { ACCEPT, MAX_UPLOAD_BYTES } from "@/lib/media/rules";
 import {
   deviceLabel,
   FEEDBACK_KINDS,
@@ -21,7 +22,7 @@ import {
 // i18n-keys: account.feedback.screens.drop account.feedback.screens.activity account.feedback.screens.profile
 // i18n-keys: account.feedback.screens.settings account.feedback.screens.search account.feedback.screens.other
 // i18n-keys: account.error.signedOut account.error.tooMany account.error.generic account.error.invalid
-// i18n-keys: account.error.required
+// i18n-keys: account.error.required account.error.image
 
 /** The section of the app the member came from, never the path itself (it can hold another member's @name). */
 function screenOf(referrer: string): string {
@@ -44,7 +45,8 @@ const NO_LIST = { listStyle: "none", padding: 0, margin: 0 } as const;
 /**
  * SET-12 (D-078 (5), option A): one form with the type on top. Separate from abuse reports (Master Prompt §13);
  * the technical details are listed before sending and each can be unticked; a reply by email is a ticked choice.
- * The screenshot arrives with step 5.11 (A7).
+ * Step 5.11: an optional screenshot, seen by the team only, deleted when the message is handled and at the latest
+ * after 90 days (D-078, D-118 (6)); it is re-encoded on the server, so no location or device data travels with it.
  */
 export function FeedbackForm({ email }: { email: string }) {
   const t = useTranslations("account.feedback");
@@ -65,6 +67,9 @@ export function FeedbackForm({ email }: { email: string }) {
     {},
   );
   const [sent, setSent] = useState<null | { reply: boolean }>(null);
+  const [shot, setShot] = useState<{ file: File; url: string } | null>(null);
+  const shotInput = useRef<HTMLInputElement>(null);
+  useEffect(() => () => (shot ? URL.revokeObjectURL(shot.url) : undefined), [shot]);
   const [pending, start] = useTransition();
   const doneRef = useRef<HTMLParagraphElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -109,6 +114,7 @@ export function FeedbackForm({ email }: { email: string }) {
             setSent(null);
             setKind(null);
             setText("");
+            setShot(null);
           }}
         >
           {t("again")}
@@ -139,7 +145,12 @@ export function FeedbackForm({ email }: { email: string }) {
       (Object.keys(all) as FeedbackContextKey[]).filter((k) => include[k]).map((k) => [k, all[k]]),
     );
     start(async () => {
-      const r = await sendFeedbackAction({ kind, text, context: ctx, replyByEmail: reply });
+      let files: FormData | undefined;
+      if (shot) {
+        files = new FormData();
+        files.set("screenshot", shot.file);
+      }
+      const r = await sendFeedbackAction({ kind, text, context: ctx, replyByEmail: reply }, files);
       if (r.ok) setSent({ reply });
       else setErrors({ form: r.reason });
     });
@@ -197,6 +208,54 @@ export function FeedbackForm({ email }: { email: string }) {
           aria-invalid={errors.text ? true : undefined}
         />
         {errors.text ? <FieldError id={`${id}-text-err`} text={errors.text} /> : null}
+      </div>
+
+      <div className="field">
+        <span className="label" id={`${id}-shot-l`}>
+          {t("shot")}
+        </span>
+        <p className="help" id={`${id}-shot-help`}>
+          {t("shotHelp")}
+        </p>
+        <input
+          ref={shotInput}
+          type="file"
+          accept={ACCEPT}
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (!file) return;
+            if (file.size > MAX_UPLOAD_BYTES || !ACCEPT.split(",").includes(file.type)) {
+              setErrors((x) => ({ ...x, form: "image" }));
+              return;
+            }
+            setErrors((x) => ({ ...x, form: undefined }));
+            setShot({ file, url: URL.createObjectURL(file) });
+          }}
+        />
+        {shot ? (
+          <div className="fb-shot">
+            {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the chosen file */}
+            <img src={shot.url} alt={t("shotPreview")} />
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setShot(null)}
+            >
+              {t("shotRemove")}
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            aria-describedby={`${id}-shot-l ${id}-shot-help`}
+            onClick={() => shotInput.current?.click()}
+          >
+            {t("shotAdd")}
+          </button>
+        )}
       </div>
 
       <details

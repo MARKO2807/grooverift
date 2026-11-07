@@ -79,6 +79,8 @@ export type ProfileView =
       muted: boolean;
       username: string;
       displayName: string;
+      /** PROF-08 (step 5.11): part of the header, so whoever sees the identity sees the photo (D-078). */
+      photoId: string | null;
       /** Only the sections the viewer may see are present; hidden ones are omitted, not "locked" (PROF-01). */
       bio?: string | null;
       sections: Partial<Record<ProfileSection, true>>;
@@ -162,6 +164,7 @@ export async function profileByUsername(viewer: Viewer, raw: string): Promise<Pr
     muted: !isSelf && (await isMuted(viewer.id, owner.id)),
     username: owner.username ?? username,
     displayName: owner.displayName,
+    photoId: owner.photoId,
     bio: sections.bio ? row.bio : undefined,
     sections,
     minimal: identity.mode === "minimal",
@@ -224,6 +227,7 @@ export type Person = {
   id: string;
   username: string;
   displayName: string;
+  photoId: string | null;
   self: boolean;
   relation: Relation;
   /** The relationship button says "Request to follow" for a private profile. */
@@ -253,6 +257,7 @@ function person(viewer: Viewer, o: OwnerRecord, g: Graph): Person {
     id: o.id,
     username: o.username!,
     displayName: o.displayName,
+    photoId: o.photoId,
     self: viewer.id === o.id,
     relation: { follows: g.follows, followedBy: g.followedBy },
     targetPrivate: o.profile === "private",

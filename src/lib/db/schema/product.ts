@@ -30,6 +30,45 @@ const userRef = (name: string) => uuid(name).references(() => user.id, { onDelet
 const userRefNull = (name: string) =>
   uuid(name).references(() => user.id, { onDelete: "set null" });
 
+// ============================================================ Media (step 5.11)
+/**
+ * One stored image (D-078, D-118, D-120, D-121). The bytes live in object storage under `storage_key` (R2 in the EU,
+ * D-113), always re-encoded WebP without metadata. A row is reachable only through the parent that references it
+ * (profile photo, artist photo, answer or comment image, feedback screenshot), and /api/media/<id> asks the policy
+ * about that parent on every read. A row no parent references is swept with its object (`media.sweep`), unless a
+ * moderation copy holds it (`held_until`, the D-107 evidence period).
+ */
+export const media = pgTable(
+  "media",
+  {
+    id: id(),
+    kind: text("kind").notNull(),
+    /** The member who uploaded it; null for artist photos and after the purge. */
+    ownerId: userRefNull("owner_id"),
+    storageKey: text("storage_key").notNull().unique(),
+    contentType: text("content_type").notNull().default("image/webp"),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    /** D-121 (3): the optional "Opis slike"; null means "Slika koju je dodao/dodala <name>". */
+    alt: text("alt"),
+    createdAt: createdAt(),
+    /** A moderation copy keeps the image until this moment even after its post is gone (content_snapshot). */
+    heldUntil: at("held_until"),
+  },
+  (t) => [
+    index("media_owner_idx").on(t.ownerId),
+    check(
+      "media_kind",
+      sql`${t.kind} in ('profile_photo', 'artist_photo', 'answer_image', 'comment_image', 'feedback_screenshot')`,
+    ),
+    check("media_alt_len", sql`${t.alt} is null or char_length(${t.alt}) <= 300`),
+    check("media_size", sql`${t.width} > 0 and ${t.height} > 0 and ${t.byteSize} > 0`),
+  ],
+);
+
+const mediaRef = (name: string) => uuid(name).references(() => media.id, { onDelete: "set null" });
+
 // ============================================================ Identity
 export const invitationStatus = pgEnum("invitation_status", [
   "sent",
@@ -111,11 +150,14 @@ export const profile = pgTable(
       .default(sql`'{hr}'::text[]`),
     timeZone: text("time_zone").notNull().default("Europe/Zagreb"),
     usernameChangedAt: at("username_changed_at"),
+    /** PROF-08 (D-078): optional, seen by everyone who sees the profile. */
+    photoId: mediaRef("photo_id"),
     createdAt: createdAt(),
     updatedAt: at("updated_at").notNull().defaultNow(),
   },
   (t) => [
     uniqueIndex("profile_username_lower_uq").on(sql`lower(${t.username})`),
+    uniqueIndex("profile_photo_uq").on(t.photoId),
     check("profile_username_shape", sql`${t.username} ~ '^[a-z0-9_]{3,30}$'`),
     check("profile_bio_len", sql`char_length(${t.bio}) <= 200`),
     check("profile_display_name_len", sql`char_length(${t.displayName}) between 1 and 50`),
@@ -289,6 +331,52 @@ export const artist = pgTable(
     createdAt: createdAt(),
   },
   (t) => [index("artist_name_idx").on(sql`lower(${t.name})`)],
+);
+
+/**
+ * D-118: the artist photo from Wikidata P18 → Commons, copied to storage, with its credit. `status` "none" means no
+ * usable photo (no P18, a licence we do not accept, a failed download); the generated tile shows. `hiddenAt` is the
+ * admin's "Sakrij fotografiju" (D-118 (5)); a refresh never clears it.
+ */
+export const artistPhoto = pgTable(
+  "artist_photo",
+  {
+    artistId: uuid("artist_id")
+      .primaryKey()
+      .references(() => artist.id, { onDelete: "cascade" }),
+    mediaId: mediaRef("media_id"),
+    status: text("status").notNull(),
+    /** The Commons file name ("File:…"), so a refresh can tell whether the photo changed. */
+    commonsFile: text("commons_file"),
+    /** Commons' Artist field as plain text. */
+    author: text("author"),
+    /** The licensor's own attribution text (Commons "Attribution"), shown verbatim instead of the author if set. */
+    attribution: text("attribution"),
+    /** ObjectName, or the file name without its extension (CC 2.x/3.0 ask for the title). */
+    title: text("title"),
+    /** Commons' Credit line, if any. */
+    creditLine: text("credit_line"),
+    licence: text("licence"),
+    licenceUrl: text("licence_url"),
+    filePageUrl: text("file_page_url"),
+    checkedAt: at("checked_at").notNull().defaultNow(),
+    refreshAfter: at("refresh_after").notNull(),
+    hiddenAt: at("hidden_at"),
+    hiddenBy: userRefNull("hidden_by"),
+    hiddenReason: text("hidden_reason"),
+    failures: integer("failures").notNull().default(0),
+    /** The licence snapshot taken when the photo was stored (evidence for any claim; research E.2, item 2). */
+    snapshot: jsonb("snapshot").$type<Record<string, string | boolean | null>>(),
+  },
+  (t) => [
+    index("artist_photo_refresh_idx").on(t.refreshAfter),
+    uniqueIndex("artist_photo_media_uq").on(t.mediaId),
+    check("artist_photo_status", sql`${t.status} in ('ok', 'none')`),
+    check(
+      "artist_photo_reason_len",
+      sql`${t.hiddenReason} is null or char_length(${t.hiddenReason}) <= 500`,
+    ),
+  ],
 );
 
 export const externalId = pgTable(
@@ -470,6 +558,8 @@ export const dailyDropAnswer = pgTable(
     deletedAt: at("deleted_at"),
     /** Removed by moderation (enforcement action); shown as a placeholder, never served. */
     removedAt: at("removed_at"),
+    /** D-121 (1): at most one image (step 5.11). */
+    imageId: mediaRef("image_id"),
   },
   (t) => [
     uniqueIndex("daily_drop_answer_one_uq")
@@ -477,6 +567,7 @@ export const dailyDropAnswer = pgTable(
       .where(sql`${t.deletedAt} is null`),
     index("daily_drop_answer_question_idx").on(t.questionId, t.createdAt),
     index("daily_drop_answer_author_idx").on(t.authorId, t.createdAt),
+    uniqueIndex("daily_drop_answer_image_uq").on(t.imageId),
     // 1,500 characters (plan §1.2); the purge empties the body of a deleted answer that keeps a placeholder.
     check(
       "daily_drop_answer_len",
@@ -499,9 +590,12 @@ export const comment = pgTable(
     editedAt: at("edited_at"),
     deletedAt: at("deleted_at"),
     removedAt: at("removed_at"),
+    /** D-121 (1): at most one image (step 5.11). */
+    imageId: mediaRef("image_id"),
   },
   (t) => [
     index("comment_answer_idx").on(t.answerId, t.createdAt),
+    uniqueIndex("comment_image_uq").on(t.imageId),
     check(
       "comment_len",
       sql`char_length(${t.body}) <= 750 and (${t.deletedAt} is not null or char_length(${t.body}) >= 1)`,
@@ -778,8 +872,8 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () =>
 
 /**
  * SET-12 feedback and bug reports (Master Prompt §13), separate from abuse reports. `context` holds only the
- * technical details the member left ticked (screen, version, browser and device, time); the screenshot waits for
- * 5.11. Deleted with the account (D-109 (6)).
+ * technical details the member left ticked (screen, version, browser and device, time) and the optional
+ * screenshot (step 5.11). Deleted with the account (D-109 (6)).
  */
 export const feedbackReport = pgTable(
   "feedback_report",
@@ -797,9 +891,12 @@ export const feedbackReport = pgTable(
     locale: text("locale").notNull().default("hr"),
     handledBy: userRefNull("handled_by"),
     handledAt: at("handled_at"),
+    /** D-078, D-118 (6): team only; deleted when the message is handled, at the latest after 90 days. */
+    screenshotId: mediaRef("screenshot_id"),
   },
   (t) => [
     index("feedback_report_status_idx").on(t.status, t.createdAt),
+    uniqueIndex("feedback_report_screenshot_uq").on(t.screenshotId),
     check("feedback_report_kind", sql`${t.kind} in ('bug', 'idea', 'other')`),
     check("feedback_report_status", sql`${t.status} in ('new', 'done')`),
     check("feedback_report_text_len", sql`char_length(${t.text}) between 1 and 2000`),

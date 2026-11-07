@@ -192,7 +192,6 @@
       "bio": "Bio",
       "optional": "optional",
       "bioHelp": "Up to {max} characters. Visible without signing in if the profile is public.",
-      "photoLater": "A profile photo arrives once image storage is connected; until then the avatar is the first letter of your name.",
       "save": "Save",
       "saving": "Saving…",
       "saved": "Saved.",
@@ -203,7 +202,8 @@
       "change": "Change username",
       "changing": "Changing…",
       "renamed": "Your username has changed. Your profile is now at @{username}.",
-      "nextAt": "The next change is possible from {date}."
+      "nextAt": "The next change is possible from {date}.",
+      "photo": "Profile photo"
     },
     "privacy": {
       "title": "Privacy",
@@ -579,7 +579,9 @@
         "forbidden": "This needs the admin role and two-step verification.",
         "generic": "Not saved. Try again.",
         "tooMany": "Too many changes. Wait a moment."
-      }
+      },
+      "shotAlt": "Screenshot sent with the message",
+      "shotNote": "Deleted when you mark the message as handled, and 90 days after it was sent at the latest."
     }
   },
   "roles": {
@@ -688,7 +690,18 @@
       "emailInvalid": "Check the email, for example name@example.com.",
       "goodFaithRequired": "Confirm that the information is accurate.",
       "generic": "The report was not sent because of an error on our side. Try again in a minute.",
-      "tooMany": "Too many reports from this network in a short time. Try again in an hour."
+      "tooMany": "Too many reports from this network in a short time. Try again in an hour.",
+      "photoReasonRequired": "Choose what is wrong with the photo."
+    },
+    "photo": {
+      "legend": "What is wrong with the photo of {name}?",
+      "help": "If the photo shows someone else or you took the photo, we hide it at once until we have reviewed the report.",
+      "reasons": {
+        "wrongPerson": "The photo shows someone else",
+        "author": "I took this photo",
+        "credit": "The author's credit or the licence is wrong or incomplete",
+        "other": "Something else"
+      }
     }
   },
   "alphaPage": {
@@ -1821,7 +1834,8 @@
       "staff": "An account with a team role cannot be closed while it has the role. Ask an administrator to remove it first.",
       "state": "That is no longer possible. Refresh the page.",
       "reauth": "Sign in again to confirm.",
-      "invalid": "Check what you entered."
+      "invalid": "Check what you entered.",
+      "image": "The screenshot wasn't accepted: JPG, PNG or WebP up to 5 MB."
     },
     "close": {
       "title": "Deactivate or delete account",
@@ -1984,7 +1998,12 @@
       "privacy": "Privacy contact",
       "privacyText": "Questions about data, a copy of your data",
       "guidelines": "Community guidelines",
-      "abuseNote": "Report inappropriate content or accounts through ⋯ on the answer or profile, not here."
+      "abuseNote": "Report inappropriate content or accounts through ⋯ on the answer or profile, not here.",
+      "shot": "Screenshot (optional)",
+      "shotHelp": "Only our team sees it. It is deleted as soon as we have handled your message, and after 90 days at the latest. Note: it may show other people's names and posts. JPG, PNG or WebP up to 5 MB.",
+      "shotAdd": "Add a screenshot",
+      "shotRemove": "Remove screenshot",
+      "shotPreview": "The chosen screenshot"
     }
   },
   "artist": {
@@ -1993,7 +2012,35 @@
     "links": "Links",
     "musicbrainz": "View on MusicBrainz",
     "newTab": "(opens in a new tab)",
-    "source": "Artist data: MusicBrainz (CC0)."
+    "source": "Artist data: MusicBrainz (CC0).",
+    "photo": {
+      "about": "About the photo",
+      "author": "Author",
+      "title": "Title",
+      "licence": "Licence",
+      "publicDomain": "Public domain",
+      "source": "Source",
+      "credit": "Source note",
+      "modified": "The photo has been cropped and resized.",
+      "adaptation": "Crop: GrooveRift, from a work by {author}.",
+      "shareAlike": "This cropped version is available under the same licence ({licence}).",
+      "report": "Report a problem",
+      "newTab": "(opens in a new tab)",
+      "hide": "Hide photo",
+      "hideReason": "Reason (only the team sees it)",
+      "cancel": "Cancel",
+      "close": "Close",
+      "hidden": "The photo is hidden.",
+      "shown": "The photo comes back with the next check.",
+      "hiddenNote": "The photo is hidden. Reason: {reason}",
+      "show": "Show photo again",
+      "error": {
+        "notAllowed": "Only an administrator can do this.",
+        "invalid": "Enter a reason, at most 500 characters.",
+        "tooMany": "Too many changes in a short time. Try again in an hour.",
+        "generic": "Not saved because of an error on our side. Try again in a minute."
+      }
+    }
   },
   "push": {
     "title": "Notifications",
@@ -2033,6 +2080,41 @@
       "notOn": "Notifications on this device are not on.",
       "denied": "The browser refused notifications. Turn them on in the browser settings.",
       "failed": "The browser could not turn notifications on. Try again."
+    }
+  },
+  "media": {
+    "add": "Add photo",
+    "change": "Change photo",
+    "profileHint": "Optional. Everyone who can see your profile sees it.",
+    "sheetTitle": "Profile photo",
+    "gallery": "Choose from gallery",
+    "camera": "Take a photo",
+    "remove": "Remove photo",
+    "formats": "JPG, PNG or WebP up to 5 MB. Location data in the photo (EXIF) is removed when it is sent. Everyone who can see your profile sees it, signed out too if your profile is public.",
+    "close": "Close",
+    "cropTitle": "Adjust photo",
+    "cropArea": "Photo in the circle. Move it with the arrow keys.",
+    "moveGroup": "Move the photo",
+    "moveLeft": "Move left",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "moveRight": "Move right",
+    "zoom": "Zoom",
+    "cropHelp": "What is inside the circle is kept. Move the photo by dragging, with the buttons or with the arrow keys.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "photoSaved": "Profile photo saved.",
+    "photoRemoved": "Profile photo removed.",
+    "error": {
+      "signedOut": "Sign in again, then try once more.",
+      "notAllowed": "You can't change this right now.",
+      "tooMany": "Too many uploads in a short time. Try again in an hour.",
+      "tooLarge": "The image is larger than 5 MB. Choose a smaller one.",
+      "format": "Only JPG, PNG or WebP is accepted.",
+      "decode": "This image can't be opened. Try another one.",
+      "empty": "No image was chosen.",
+      "generic": "The image wasn't saved because of an error on our side. Try again in a minute."
     }
   }
 }

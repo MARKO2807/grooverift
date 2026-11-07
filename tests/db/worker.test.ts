@@ -48,6 +48,14 @@ describe("worker and housekeeping", () => {
     expect(schedules.some((s) => s.name === JOBS.sweepExports && s.cron === "*/5 * * * *")).toBe(
       true,
     );
+    // Step 5.11: artist photos every five minutes, the media sweep hourly, screenshots daily.
+    expect(schedules.some((s) => s.name === JOBS.artistPhotos && s.cron === "*/5 * * * *")).toBe(
+      true,
+    );
+    expect(schedules.some((s) => s.name === JOBS.sweepMedia && s.cron === "25 * * * *")).toBe(true);
+    expect(
+      schedules.some((s) => s.name === JOBS.expireScreenshots && s.cron === "10 4 * * *"),
+    ).toBe(true);
     // Step 5.12: the Daily Drop reminder tick every five minutes.
     expect(schedules.some((s) => s.name === JOBS.reminders && s.cron === "*/5 * * * *")).toBe(true);
     await boss.stop({ graceful: false, timeout: 2000 });

@@ -262,9 +262,11 @@ export function canViewContent(
     // Follows the parent object: the caller decides the parent first and passes the result;
     // non-public parents are served through signed, short-lived URLs (caller).
     if (facts.parentPublic) return allow();
-    if (staff) return throughCase(ctx);
     if (rel === "ANON" || rel === "BLOCKED") return deny(rel === "ANON" ? "anon" : "blocked");
-    return facts.parentVisible === true ? allow() : deny("private");
+    // Step 5.11: staff who may see the parent the ordinary way see its image too; anything else needs a case.
+    if (facts.parentVisible === true) return allow();
+    if (staff) return throughCase(ctx);
+    return deny("private");
   }
 
   switch (kind) {

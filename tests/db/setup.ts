@@ -9,3 +9,7 @@ const testEnv: Record<string, string> = {
   EMAIL_TRANSPORT: "none",
 };
 for (const [k, v] of Object.entries(testEnv)) if (!process.env[k]) process.env[k] = v;
+
+// Step 5.11: data modules now reach storage and image code marked "server-only"; tests run outside React.
+import { vi } from "vitest";
+vi.mock("server-only", () => ({}));

@@ -33,7 +33,7 @@ export type CommentData =
   | {
       kind: "comment";
       id: string;
-      author: { id: string; username: string; displayName: string };
+      author: { id: string; username: string; displayName: string; photoId?: string | null };
       body: string;
       createdAt: string;
       mine: boolean;
@@ -94,7 +94,7 @@ function CommentRow({ c }: { c: Extract<CommentData, { kind: "comment" }> }) {
   return (
     <article className="com" id={`c-${c.id}`} aria-labelledby={hid}>
       <header className="ans-head">
-        <Avatar name={c.author.displayName} size="sm" />
+        <Avatar name={c.author.displayName} size="sm" photo={c.author.photoId} />
         <h3 className="ans-who" id={hid}>
           <Link href={`/@${c.author.username}`} className="name">
             {c.author.displayName}

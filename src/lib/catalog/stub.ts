@@ -6,6 +6,9 @@
 // - A query containing "katalog-kvar" answers 503 every time: the "Katalog trenutačno ne radi." state.
 // - "Nirvana" returns two artists with the same name: the typeahead shows country and years for both (D-060 (2)).
 // - The lookup of OLD_LOW_MBID answers with the Low entry: a merged artist (J2 E4).
+// - Artist photos (step 5.11): Radiohead has a CC BY-SA 3.0 photo, Björk a non-commercial one (refused, D-118 (3)),
+//   Metallica a GFDL-only one (refused); the others have no Wikidata item. The photo is a generated square, and the
+//   author and file names are invented.
 
 type A = {
   id: string;
@@ -15,6 +18,8 @@ type A = {
   country?: string;
   "life-span"?: { begin?: string; end?: string };
   tags?: { name: string; count: number }[];
+  /** The Wikidata item, answered as a url-rel (inc=url-rels). */
+  wikidata?: string;
 };
 
 export const OLD_LOW_MBID = "00000000-0000-4000-8000-00000000c0de";
@@ -49,6 +54,7 @@ const ARTISTS: A[] = [
     id: "a74b1b7f-71a5-4011-9441-d0b5e4122711",
     name: "Radiohead",
     "sort-name": "Radiohead",
+    wikidata: "Q900001",
     country: "GB",
     "life-span": { begin: "1991" },
     tags: [
@@ -61,6 +67,7 @@ const ARTISTS: A[] = [
     id: "87c5dedd-371d-4a53-9f7f-80522fb7f3cb",
     name: "Björk",
     "sort-name": "Björk",
+    wikidata: "Q900002",
     country: "IS",
     "life-span": { begin: "1965-11-21" },
     tags: [
@@ -71,6 +78,7 @@ const ARTISTS: A[] = [
   {
     id: "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab",
     name: "Metallica",
+    wikidata: "Q900003",
     "sort-name": "Metallica",
     country: "US",
     "life-span": { begin: "1981-10-28" },
@@ -124,8 +132,92 @@ export const stubFetch: typeof fetch = async (input) => {
   if (m) {
     const id = m[1] === OLD_LOW_MBID ? ARTISTS.find((a) => a.name === "Low")!.id : m[1];
     const a = ARTISTS.find((x) => x.id === id);
-    return a ? json(a) : json({ error: "Not Found" }, 404);
+    if (!a) return json({ error: "Not Found" }, 404);
+    const { wikidata, ...rest } = a;
+    if (!url.searchParams.get("inc")?.includes("url-rels")) return json(rest);
+    const relations = wikidata
+      ? [{ type: "wikidata", url: { resource: `https://www.wikidata.org/wiki/${wikidata}` } }]
+      : [];
+    return json({ ...rest, relations });
   }
   if (path === "/genre/all") return json({ "genre-count": 0, genres: [] });
+  return json({ error: "Not Found" }, 404);
+};
+
+// ------------------------------------------------------------------ Wikidata and Commons (step 5.11)
+
+const PHOTOS: Record<
+  string,
+  { file: string; licence: string; licenceUrl: string; artist: string }
+> = {
+  Q900001: {
+    file: "File:Stub Radiohead live.jpg",
+    licence: "CC BY-SA 3.0",
+    licenceUrl: "https://creativecommons.org/licenses/by-sa/3.0",
+    artist: '<a href="//commons.wikimedia.org/wiki/User:Stub">Stub Fotograf</a>',
+  },
+  Q900002: {
+    file: "File:Stub Bjork.jpg",
+    licence: "CC BY-NC 2.0",
+    licenceUrl: "https://creativecommons.org/licenses/by-nc/2.0",
+    artist: "Stub",
+  },
+  Q900003: {
+    file: "File:Stub Metallica.jpg",
+    licence: "GFDL",
+    licenceUrl: "https://www.gnu.org/copyleft/fdl.html",
+    artist: "Stub",
+  },
+};
+
+/** A `fetch` for the Commons client: Wikidata claims, Commons imageinfo and the thumbnail, all invented. */
+export const commonsStubFetch: typeof fetch = async (input) => {
+  const url = new URL(
+    typeof input === "string" ? input : input instanceof URL ? input.href : input.url,
+  );
+  if (url.hostname === "www.wikidata.org") {
+    const photo = PHOTOS[url.searchParams.get("entity") ?? ""];
+    return json({
+      claims: photo
+        ? { P18: [{ rank: "normal", mainsnak: { datavalue: { value: photo.file.slice(5) } } }] }
+        : {},
+    });
+  }
+  if (url.hostname === "commons.wikimedia.org") {
+    const title = url.searchParams.get("titles") ?? "";
+    const photo = Object.values(PHOTOS).find((p) => p.file === title);
+    if (!photo) return json({ query: { pages: [{ title, missing: true }] } });
+    const slug = encodeURIComponent(title.slice(5).replace(/ /g, "_"));
+    return json({
+      query: {
+        pages: [
+          {
+            title,
+            imageinfo: [
+              {
+                thumburl: `https://upload.wikimedia.org/stub/${slug}`,
+                descriptionurl: `https://commons.wikimedia.org/wiki/File:${slug}`,
+                mime: "image/jpeg",
+                extmetadata: {
+                  LicenseShortName: { value: photo.licence },
+                  LicenseUrl: { value: photo.licenceUrl },
+                  Artist: { value: photo.artist },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  }
+  if (url.hostname === "upload.wikimedia.org") {
+    const { default: sharp } = await import("sharp");
+    const bytes = await sharp({
+      create: { width: 600, height: 800, channels: 3, background: { r: 64, g: 92, b: 160 } },
+    })
+      .jpeg()
+      .toBuffer();
+    return new Response(new Uint8Array(bytes), { headers: { "content-type": "image/jpeg" } });
+  }
   return json({ error: "Not Found" }, 404);
 };

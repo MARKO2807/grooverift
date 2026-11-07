@@ -1,6 +1,6 @@
 // The generated artist tile (owner, session 9; prototype catalog.js `tile`): one initial on a gradient from Coral to
-// Amber picked by the name, for every artist (no photos in the alpha). Decorative: the name is always written next
-// to it.
+// Amber picked by the name. Step 5.11 (D-118 (1), (4)): the artist photo takes the same round shape when one may
+// be shown there, so a page looks the same with or without it. Decorative: the name is always written next to it.
 
 const hash = (s: string) => {
   let h = 2166136261;
@@ -28,8 +28,24 @@ export function tileFor(name: string) {
   };
 }
 
-export function ArtistTile({ name, size }: { name: string; size?: "lg" | "sm" }) {
+export function ArtistTile({
+  name,
+  size,
+  photo,
+}: {
+  name: string;
+  size?: "lg" | "sm" | "xl";
+  /** The artist photo's media id (step 5.11), already filtered for where it may show. */
+  photo?: string | null;
+}) {
   const t = tileFor(name);
+  if (photo)
+    return (
+      <span className={`art has-photo${size ? ` ${size}` : ""}`} aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element -- served by /api/media */}
+        <img src={`/api/media/${photo}`} alt="" loading="lazy" decoding="async" />
+      </span>
+    );
   return (
     <span
       className={`art${size ? ` ${size}` : ""}`}

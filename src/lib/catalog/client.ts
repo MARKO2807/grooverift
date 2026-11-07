@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import { createMusicBrainzClient, type MusicBrainzClient } from "./musicbrainz";
-import { stubFetch } from "./stub";
+import { createCommonsClient, type CommonsClient } from "./commons";
+import { commonsStubFetch, stubFetch } from "./stub";
 
 // One MusicBrainz client per process, so the one-request-per-second queue and the caches are shared by every
 // request this process serves. Tests swap it with `setCatalogClient`.
@@ -19,4 +20,21 @@ export function catalogClient(): MusicBrainzClient {
 
 export function setCatalogClient(client: MusicBrainzClient | undefined) {
   g.__grMb = client;
+}
+
+const gc = globalThis as unknown as { __grCommons?: CommonsClient };
+
+/** The Wikidata and Commons client for artist photos (step 5.11); the stub answers offline under CATALOG_STUB=1. */
+export function commonsClient(): CommonsClient {
+  if (gc.__grCommons) return gc.__grCommons;
+  const e = env();
+  gc.__grCommons =
+    e.CATALOG_STUB === "1"
+      ? createCommonsClient({ contact: "stub", fetch: commonsStubFetch })
+      : createCommonsClient({ contact: e.MUSICBRAINZ_CONTACT });
+  return gc.__grCommons;
+}
+
+export function setCommonsClient(client: CommonsClient | undefined) {
+  gc.__grCommons = client;
 }

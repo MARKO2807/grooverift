@@ -52,7 +52,7 @@ export async function ProfileScreen({
       {view.self ? <PeopleSearchForm /> : null}
       <div className="pf-main">
         <div className="pm-head">
-          <Avatar name={view.displayName} genres={ringGenres} size="lg" />
+          <Avatar name={view.displayName} genres={ringGenres} size="lg" photo={view.photoId} />
           <div className="pm-id">
             <h1 className="prof-name pm-name" tabIndex={-1}>
               <span>{view.displayName}</span>

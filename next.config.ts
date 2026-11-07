@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   output: "standalone",
+  // Step 5.11: an image upload is at most 5 MB (D-078) plus the form fields; the action re-checks the size.
+  experimental: { serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },

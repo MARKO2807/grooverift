@@ -22,6 +22,8 @@ import { logDbError } from "@/lib/data/db-errors";
 import { buildExport, requestExport } from "@/lib/data/export";
 import { loadViewer } from "@/lib/data/facts";
 import { createFeedback } from "@/lib/data/feedback";
+import { processScreenshot } from "@/lib/media/process";
+import { fileBytes } from "@/lib/media/upload";
 import { consume } from "@/lib/data/rate-limit";
 import {
   isLocale,
@@ -54,7 +56,8 @@ export type AccountFailure =
   | "staff"
   | "state"
   | "reauth"
-  | "invalid";
+  | "invalid"
+  | "image";
 export type AccountResult = { ok: true } | { ok: false; reason: AccountFailure };
 
 /** The signed-in member with fresh facts; `allowPending` lets the grace-period screen through. */
@@ -377,12 +380,16 @@ export async function unlinkGoogleAction(): Promise<AccountResult> {
 
 // ============================================================ SET-12: feedback
 
-export async function sendFeedbackAction(input: {
-  kind: unknown;
-  text: unknown;
-  context: unknown;
-  replyByEmail: unknown;
-}): Promise<AccountResult> {
+export async function sendFeedbackAction(
+  input: {
+    kind: unknown;
+    text: unknown;
+    context: unknown;
+    replyByEmail: unknown;
+  },
+  /** Step 5.11 (D-078): the optional screenshot as "screenshot" in a FormData (files cannot travel in plain objects). */
+  files?: FormData,
+): Promise<AccountResult> {
   const text = typeof input?.text === "string" ? input.text : "";
   if (!isFeedbackKind(input?.kind)) return { ok: false, reason: "required" };
   if (!text.trim()) return { ok: false, reason: "required" };
@@ -394,12 +401,24 @@ export async function sendFeedbackAction(input: {
     async () => {
       const me = await current();
       if (!me) return { ok: false, reason: "signedOut" } as const;
+      let screenshot = null;
+      const file = files instanceof FormData ? files.get("screenshot") : null;
+      if (file instanceof File && file.size > 0) {
+        if (!(await consume("upload", me.viewer.id)).allowed)
+          return { ok: false, reason: "tooMany" } as const;
+        const bytes = await fileBytes(file);
+        if (typeof bytes === "string") return { ok: false, reason: "image" } as const;
+        const processed = await processScreenshot(bytes);
+        if (!processed.ok) return { ok: false, reason: "image" } as const;
+        screenshot = processed.image;
+      }
       const r = await createFeedback(me.viewer.id, {
         kind,
         text,
         context: input.context,
         replyByEmail: input.replyByEmail === true,
         locale,
+        screenshot,
       });
       if (!r.ok)
         return { ok: false, reason: r.reason === "too-many" ? "tooMany" : "invalid" } as const;

@@ -192,7 +192,6 @@
       "bio": "Bio",
       "optional": "neobavezno",
       "bioHelp": "Do {max} znakova. Vidi se i bez prijave ako je profil javan.",
-      "photoLater": "Slika profila stiže kad proradi pohrana slika; dotad je avatar prvo slovo imena.",
       "save": "Spremi",
       "saving": "Spremam…",
       "saved": "Spremljeno.",
@@ -203,7 +202,8 @@
       "change": "Promijeni korisničko ime",
       "changing": "Mijenjam…",
       "renamed": "Korisničko ime je promijenjeno. Tvoj profil je sada na @{username}.",
-      "nextAt": "Sljedeća promjena moguća je od {date}."
+      "nextAt": "Sljedeća promjena moguća je od {date}.",
+      "photo": "Slika profila"
     },
     "privacy": {
       "title": "Privatnost",
@@ -579,7 +579,9 @@
         "forbidden": "Za ovo treba uloga administratora i dvostruka provjera.",
         "generic": "Nije spremljeno. Pokušaj ponovno.",
         "tooMany": "Previše izmjena. Pričekaj malo."
-      }
+      },
+      "shotAlt": "Snimka zaslona uz poruku",
+      "shotNote": "Briše se kad označiš poruku kao riješenu, a najkasnije 90 dana nakon slanja."
     }
   },
   "roles": {
@@ -688,7 +690,18 @@
       "emailInvalid": "Provjeri e-poštu, na primjer ime@primjer.hr.",
       "goodFaithRequired": "Potvrdi da su podaci točni.",
       "generic": "Prijava nije poslana zbog greške kod nas. Pokušaj ponovno za minutu.",
-      "tooMany": "Previše prijava s ove mreže u kratkom vremenu. Pokušaj ponovno za sat."
+      "tooMany": "Previše prijava s ove mreže u kratkom vremenu. Pokušaj ponovno za sat.",
+      "photoReasonRequired": "Odaberi što nije u redu s fotografijom."
+    },
+    "photo": {
+      "legend": "Što nije u redu s fotografijom izvođača {name}?",
+      "help": "Ako na fotografiji nije ta osoba ili si ti autor fotografije, sakrivamo je odmah dok prijavu ne pregledamo.",
+      "reasons": {
+        "wrongPerson": "Na fotografiji nije ta osoba",
+        "author": "Ja sam autor ili autorica fotografije",
+        "credit": "Potpis autora ili licenca nisu točni ili su nepotpuni",
+        "other": "Nešto drugo"
+      }
     }
   },
   "alphaPage": {
@@ -1821,7 +1834,8 @@
       "staff": "Račun s ulogom u timu ne može se zatvoriti dok ima tu ulogu. Neka ti je administrator prvo ukloni.",
       "state": "To više nije moguće. Osvježi stranicu.",
       "reauth": "Za potvrdu se ponovno prijavi.",
-      "invalid": "Provjeri unos."
+      "invalid": "Provjeri unos.",
+      "image": "Snimka nije prihvaćena: JPG, PNG ili WebP do 5 MB."
     },
     "close": {
       "title": "Deaktiviraj ili izbriši račun",
@@ -1984,7 +1998,12 @@
       "privacy": "Kontakt za privatnost",
       "privacyText": "Pitanja o podacima, kopija podataka",
       "guidelines": "Pravila zajednice",
-      "abuseNote": "Neprimjeren sadržaj ili račun prijavi preko ⋯ na odgovoru ili profilu, ne ovdje."
+      "abuseNote": "Neprimjeren sadržaj ili račun prijavi preko ⋯ na odgovoru ili profilu, ne ovdje.",
+      "shot": "Snimka zaslona (neobavezno)",
+      "shotHelp": "Vidi je samo naš tim. Briše se čim riješimo poruku, a najkasnije nakon 90 dana. Pazi: na snimci mogu biti tuđa imena i objave. JPG, PNG ili WebP do 5 MB.",
+      "shotAdd": "Dodaj snimku zaslona",
+      "shotRemove": "Ukloni snimku",
+      "shotPreview": "Odabrana snimka zaslona"
     }
   },
   "artist": {
@@ -1993,7 +2012,35 @@
     "links": "Poveznice",
     "musicbrainz": "Pogledaj na MusicBrainzu",
     "newTab": "(otvara se u novoj kartici)",
-    "source": "Podaci o izvođaču: MusicBrainz (CC0)."
+    "source": "Podaci o izvođaču: MusicBrainz (CC0).",
+    "photo": {
+      "about": "O fotografiji",
+      "author": "Autor",
+      "title": "Naslov",
+      "licence": "Licenca",
+      "publicDomain": "Javno vlasništvo",
+      "source": "Izvor",
+      "credit": "Napomena izvora",
+      "modified": "Fotografija je izrezana i smanjena.",
+      "adaptation": "Izrez fotografije: GrooveRift, prema djelu koje je snimio/snimila {author}.",
+      "shareAlike": "Ova izrezana verzija dostupna je pod istom licencom ({licence}).",
+      "report": "Prijavi problem",
+      "newTab": "(otvara se u novoj kartici)",
+      "hide": "Sakrij fotografiju",
+      "hideReason": "Razlog (vidi ga samo tim)",
+      "cancel": "Odustani",
+      "close": "Zatvori",
+      "hidden": "Fotografija je sakrivena.",
+      "shown": "Fotografija se vraća s idućom provjerom.",
+      "hiddenNote": "Fotografija je sakrivena. Razlog: {reason}",
+      "show": "Vrati fotografiju",
+      "error": {
+        "notAllowed": "Ovo može samo administrator.",
+        "invalid": "Upiši razlog, najviše 500 znakova.",
+        "tooMany": "Previše promjena u kratkom vremenu. Pokušaj ponovno za sat.",
+        "generic": "Nije spremljeno zbog greške kod nas. Pokušaj ponovno za minutu."
+      }
+    }
   },
   "push": {
     "title": "Obavijesti",
@@ -2033,6 +2080,41 @@
       "notOn": "Obavijesti na ovom uređaju nisu uključene.",
       "denied": "Preglednik je odbio obavijesti. Uključuju se u postavkama preglednika.",
       "failed": "Preglednik nije uspio uključiti obavijesti. Pokušaj ponovno."
+    }
+  },
+  "media": {
+    "add": "Dodaj sliku",
+    "change": "Promijeni sliku",
+    "profileHint": "Nije obavezna. Vide je svi koji vide tvoj profil.",
+    "sheetTitle": "Slika profila",
+    "gallery": "Odaberi iz galerije",
+    "camera": "Snimi fotografiju",
+    "remove": "Ukloni sliku",
+    "formats": "JPG, PNG ili WebP do 5 MB. Podaci o lokaciji iz fotografije (EXIF) brišu se pri slanju. Vide je svi koji vide profil, i bez prijave ako je profil javan.",
+    "close": "Zatvori",
+    "cropTitle": "Namjesti sliku",
+    "cropArea": "Slika u krugu. Pomiči je tipkama sa strelicama.",
+    "moveGroup": "Pomakni sliku",
+    "moveLeft": "Pomakni ulijevo",
+    "moveUp": "Pomakni gore",
+    "moveDown": "Pomakni dolje",
+    "moveRight": "Pomakni udesno",
+    "zoom": "Povećanje",
+    "cropHelp": "Vidi se ono u krugu. Sliku pomičeš povlačenjem, gumbima ili tipkama sa strelicama.",
+    "cancel": "Odustani",
+    "save": "Spremi",
+    "saving": "Spremam…",
+    "photoSaved": "Slika profila je spremljena.",
+    "photoRemoved": "Slika profila je uklonjena.",
+    "error": {
+      "signedOut": "Prijavi se ponovno pa pokušaj još jednom.",
+      "notAllowed": "Ovo trenutačno ne možeš promijeniti.",
+      "tooMany": "Previše slanja u kratkom vremenu. Pokušaj ponovno za sat.",
+      "tooLarge": "Slika je veća od 5 MB. Odaberi manju.",
+      "format": "Prima se samo JPG, PNG ili WebP.",
+      "decode": "Ova se slika ne može otvoriti. Pokušaj s drugom.",
+      "empty": "Nije odabrana nijedna slika.",
+      "generic": "Slika nije spremljena zbog greške kod nas. Pokušaj ponovno za minutu."
     }
   }
 }

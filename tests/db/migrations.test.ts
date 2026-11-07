@@ -14,6 +14,7 @@ const scratchUrl = (() => {
   return u.toString();
 })();
 const DOWN = [
+  "0010_media",
   "0009_push",
   "0008_account_data",
   "0007_moderation",

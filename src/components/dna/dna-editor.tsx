@@ -510,7 +510,7 @@ export function DnaEditor({
           <ol className="dna-rows" aria-label={t("artistsOrder")}>
             {dna.artists.map((a: DnaArtist, i) => (
               <li key={a.entryId} className="dna-row dna-row-artist">
-                <ArtistTile name={a.name} size="sm" />
+                <ArtistTile name={a.name} size="sm" photo={a.photoId} />
                 <span className="dna-pos" aria-hidden="true">
                   {i + 1}
                 </span>

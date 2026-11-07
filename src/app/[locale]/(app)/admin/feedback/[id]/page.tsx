@@ -61,6 +61,13 @@ export default async function FeedbackDetailPage({
       ) : (
         <p className="meta">{t("noDetails")}</p>
       )}
+      {item.screenshotId ? (
+        <figure className="fb-shot">
+          {/* eslint-disable-next-line @next/next/no-img-element -- served by /api/media to admins only */}
+          <img src={`/api/media/${item.screenshotId}`} alt={t("shotAlt")} />
+          <figcaption className="meta">{t("shotNote")}</figcaption>
+        </figure>
+      ) : null}
       <p className="meta">{item.replyTo ? t("replyTo", { email: item.replyTo }) : t("noReply")}</p>
       <FeedbackTriage id={item.id} notes={item.notes} done={item.status === "done"} />
     </section>

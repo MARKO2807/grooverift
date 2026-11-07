@@ -1,7 +1,7 @@
 // SET-12 feedback and bug reports and ADM-15 (step 5.10; Master Prompt §13, D-078 (5), IA SET-12).
 // Separate from abuse reports: nothing here reaches the moderation queue. The member's address is shown to staff
 // only when they ticked "reply by email". Staff reach this through staffGate("admin") pages and actions.
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, lt, or, sql } from "drizzle-orm";
 import { audit } from "@/lib/audit";
 import {
   cleanFeedbackContext,
@@ -11,6 +11,9 @@ import {
 } from "@/lib/account/rules";
 import { db } from "@/lib/db/client";
 import { feedbackReport as feedback, profile, user } from "@/lib/db/schema";
+import type { Processed } from "@/lib/media/process";
+import { SCREENSHOT_DAYS } from "@/lib/media/rules";
+import { dropMedia, storeMedia } from "./media";
 import { consume } from "./rate-limit";
 
 export type FeedbackInput = {
@@ -19,6 +22,8 @@ export type FeedbackInput = {
   context: unknown;
   replyByEmail: boolean;
   locale: string;
+  /** Step 5.11 (D-078): the optional screenshot, already re-encoded (src/lib/media/process.ts). */
+  screenshot?: Processed | null;
 };
 
 export type FeedbackResult = { ok: true } | { ok: false; reason: "invalid" | "too-many" };
@@ -30,6 +35,9 @@ export async function createFeedback(
   const text = input.text.replace(/\r\n?/g, "\n").trim();
   if (!text || text.length > FEEDBACK_MAX) return { ok: false, reason: "invalid" };
   if (!(await consume("feedback", userId)).allowed) return { ok: false, reason: "too-many" };
+  const screenshotId = input.screenshot
+    ? await storeMedia({ kind: "feedback_screenshot", ownerId: userId, image: input.screenshot })
+    : null;
   const [row] = await db()
     .insert(feedback)
     .values({
@@ -39,6 +47,7 @@ export async function createFeedback(
       context: cleanFeedbackContext(input.context),
       replyByEmail: input.replyByEmail,
       locale: input.locale === "en" ? "en" : "hr",
+      screenshotId,
     })
     .returning({ id: feedback.id });
   await audit({
@@ -47,7 +56,7 @@ export async function createFeedback(
     action: "feedback.sent",
     targetType: "feedback_report",
     targetId: row!.id,
-    metadata: { kind: input.kind },
+    metadata: { kind: input.kind, screenshot: !!screenshotId },
   });
   return { ok: true };
 }
@@ -110,6 +119,8 @@ export type FeedbackDetail = {
   replyTo: string | null;
   notes: string;
   handledAt: Date | null;
+  /** The screenshot's media id (served to admins only through /api/media), until handled or 90 days. */
+  screenshotId: string | null;
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -139,6 +150,7 @@ export async function feedbackDetail(id: string): Promise<FeedbackDetail | null>
     replyTo: r.f.replyByEmail ? r.email : null,
     notes: r.f.triageNotes ?? "",
     handledAt: r.f.handledAt,
+    screenshotId: r.f.screenshotId,
   };
 }
 
@@ -151,9 +163,15 @@ export async function updateFeedback(
   if (!UUID.test(id)) return false;
   const notes = input.notes.trim();
   if (notes.length > FEEDBACK_NOTES_MAX) return false;
+  const [before] = await db()
+    .select({ screenshotId: feedback.screenshotId })
+    .from(feedback)
+    .where(eq(feedback.id, id));
   const rows = await db()
     .update(feedback)
     .set({
+      // D-118 (6): the screenshot goes as soon as the message is handled (reopening does not bring it back).
+      ...(input.done ? { screenshotId: null } : {}),
       triageNotes: notes || null,
       status: input.done ? "done" : "new",
       handledBy: input.done ? staffId : null,
@@ -162,6 +180,7 @@ export async function updateFeedback(
     .where(and(eq(feedback.id, id)))
     .returning({ id: feedback.id });
   if (!rows.length) return false;
+  if (input.done) await dropMedia([before?.screenshotId]);
   await audit({
     actorType: "staff",
     actorId: staffId,
@@ -170,4 +189,26 @@ export async function updateFeedback(
     targetId: id,
   });
   return true;
+}
+
+/**
+ * D-118 (6): screenshots of handled messages and every screenshot older than 90 days are removed (the worker runs
+ * this daily; `media.sweep` would catch an object left behind). Returns how many went.
+ */
+export async function expireScreenshots(now: Date = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - SCREENSHOT_DAYS * 24 * 60 * 60 * 1000);
+  const rows = await db()
+    .select({ id: feedback.id, screenshotId: feedback.screenshotId })
+    .from(feedback)
+    .where(
+      and(
+        isNotNull(feedback.screenshotId),
+        or(eq(feedback.status, "done"), lt(feedback.createdAt, cutoff)),
+      ),
+    );
+  for (const r of rows) {
+    await db().update(feedback).set({ screenshotId: null }).where(eq(feedback.id, r.id));
+    await dropMedia([r.screenshotId]);
+  }
+  return rows.length;
 }

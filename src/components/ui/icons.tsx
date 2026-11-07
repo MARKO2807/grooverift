@@ -4,6 +4,7 @@ import {
   BellIcon,
   BugBeetleIcon,
   CalendarDotsIcon,
+  CameraIcon,
   CaretDownIcon,
   CaretLeftIcon,
   CaretRightIcon,
@@ -24,6 +25,7 @@ import {
   GlobeHemisphereEastIcon,
   HandshakeIcon,
   HouseIcon,
+  ImageIcon,
   InfoIcon,
   LightbulbFilamentIcon,
   LightningIcon,
@@ -109,3 +111,6 @@ export const IconTrash = light(TrashIcon);
 export const IconDatabase = light(DatabaseIcon);
 export const IconSliders = light(SlidersHorizontalIcon);
 export const IconBug = light(BugBeetleIcon);
+// Step 5.11: images.
+export const IconCamera = light(CameraIcon);
+export const IconImage = light(ImageIcon);

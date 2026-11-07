@@ -43,7 +43,7 @@ export default async function DnaPage({ params }: { params: Promise<{ locale: st
         suggestions={suggestions}
         initial={own.genres}
         initialArtists={own.artists.flatMap((a) =>
-          a.mbid ? [{ mbid: a.mbid, name: a.name }] : [],
+          a.mbid ? [{ mbid: a.mbid, name: a.name, photoId: a.photoId }] : [],
         )}
       />
     </AuthScreen>

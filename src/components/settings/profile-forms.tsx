@@ -58,7 +58,6 @@ export function EditProfileForm({ displayName, bio }: { displayName: string; bio
         />
         {bioErr ? <FieldError id={`${id}-bio-err`} text={bioErr} /> : null}
       </div>
-      <p className="hint">{t("photoLater")}</p>
       <SubmitButton busyLabel={t("saving")}>{t("save")}</SubmitButton>
     </form>
   );

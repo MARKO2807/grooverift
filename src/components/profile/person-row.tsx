@@ -41,7 +41,7 @@ export async function PersonRow({
   return (
     <li className="fl-row">
       <Link href={`/@${person.username}`} className="fl-person">
-        <Avatar name={person.displayName} size="sm" />
+        <Avatar name={person.displayName} size="sm" photo={person.photoId} />
         <span className="set-txt">
           <span className="set-t">{person.displayName}</span>
           <span className="set-d">

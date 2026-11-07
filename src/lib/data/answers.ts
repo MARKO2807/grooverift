@@ -306,7 +306,7 @@ export async function whoReacted(viewer: Viewer, answerId: string): Promise<stri
 
 // ============================================================ Reads
 
-export type Author = { id: string; username: string; displayName: string };
+export type Author = { id: string; username: string; displayName: string; photoId?: string | null };
 
 export type AnswerView = {
   kind: "answer";
@@ -430,7 +430,12 @@ async function present(viewer: Viewer, rows: Row[]): Promise<AnswerItem[]> {
     out.push({
       kind: "answer",
       id: r.id,
-      author: { id: author.id, username: author.username, displayName: author.displayName },
+      author: {
+        id: author.id,
+        username: author.username,
+        displayName: author.displayName,
+        photoId: author.photoId,
+      },
       body: r.body,
       language: r.language,
       createdAt: r.createdAt,
@@ -574,7 +579,7 @@ export async function answerThread(viewer: Viewer, answerId: string): Promise<An
     comments.push({
       kind: "comment",
       id: c.id,
-      author: { id: o.id, username: o.username, displayName: o.displayName },
+      author: { id: o.id, username: o.username, displayName: o.displayName, photoId: o.photoId },
       body: c.body,
       createdAt: c.createdAt,
       editedAt: c.editedAt,

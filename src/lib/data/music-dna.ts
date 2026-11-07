@@ -17,6 +17,7 @@ import { ARTIST_MAX, GENRE_MAX, GENRE_MIN, type DnaAudience } from "@/lib/music/
 import { catalogClient } from "@/lib/catalog/client";
 import { foldName } from "@/lib/catalog/musicbrainz";
 import { resolveCanonicalId } from "./catalog";
+import { tilePhotos } from "./artist-photos";
 import { loadGraph, loadOwner } from "./facts";
 
 export type Locale = "hr" | "en";
@@ -127,6 +128,8 @@ export type DnaArtist = {
   disambiguation: string | null;
   /** J2 E5: still listed, labelled "No longer available from the source". */
   unavailable: boolean;
+  /** Step 5.11 (D-118 (4)): the artist photo where a small tile may show it (tilePhotos), else null. */
+  photoId: string | null;
 };
 export type MusicDna = { genres: DnaGenre[]; artists: DnaArtist[] };
 
@@ -170,6 +173,7 @@ async function readDna(userId: string, locale: Locale): Promise<MusicDna> {
         .where(inArray(artist.id, artistIds))
     : [];
   const byId = new Map(found.map((a) => [a.id, a]));
+  const photos = await tilePhotos(artistIds);
   const shown = new Set<string>();
   const artists: DnaArtist[] = artistEntries.flatMap((e) => {
     const id = canonicalOf.get(e.entryId)!;
@@ -185,6 +189,7 @@ async function readDna(userId: string, locale: Locale): Promise<MusicDna> {
             name: a.name,
             disambiguation: a.disambiguation,
             unavailable: a.availability === "unavailable",
+            photoId: photos.get(a.id) ?? null,
           },
         ]
       : [];
@@ -528,6 +533,8 @@ export type ArtistOption = {
   sameName: boolean;
   /** Already in the member's Music DNA. */
   picked: boolean;
+  /** Step 5.11: the photo of an artist already in our catalogue; a search never fetches one (D-118 (4)). */
+  photoId: string | null;
 };
 
 const regionNames: Partial<Record<Locale, Intl.DisplayNames>> = {};
@@ -562,6 +569,19 @@ export async function findArtists(
   const byEnglish = new Map<string, GenreRow>();
   for (const g of cat.rows.values()) if (g.active) byEnglish.set(g.nameEn.toLowerCase(), g);
   const ownIds = new Set(own.map((r) => r.mbid));
+  const known = found.length
+    ? await db()
+        .select({ id: artist.id, mbid: artist.mbid })
+        .from(artist)
+        .where(
+          inArray(
+            artist.mbid,
+            found.map((a) => a.mbid),
+          ),
+        )
+    : [];
+  const photos = await tilePhotos(known.map((k) => k.id));
+  const photoByMbid = new Map(known.map((k) => [k.mbid, photos.get(k.id) ?? null]));
   const names = new Map<string, number>();
   for (const a of found) names.set(foldName(a.name), (names.get(foldName(a.name)) ?? 0) + 1);
   return found.map((a) => {
@@ -585,6 +605,7 @@ export async function findArtists(
       disambiguation: a.disambiguation,
       sameName: (names.get(foldName(a.name)) ?? 0) > 1,
       picked: ownIds.has(a.mbid),
+      photoId: photoByMbid.get(a.mbid) ?? null,
     };
   });
 }

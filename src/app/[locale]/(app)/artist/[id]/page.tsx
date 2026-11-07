@@ -3,10 +3,13 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
-import { ArtistTile } from "@/components/dna/artist-tile";
+import { ArtistPhoto } from "@/components/dna/artist-photo";
 import { IconInfo } from "@/components/ui/icons";
 import { memberPage } from "@/lib/auth/member-page";
+import { roleOf } from "@/lib/auth/session";
+import { artistPhotoAdmin, photoOfArtist } from "@/lib/data/artist-photos";
 import { artistPage } from "@/lib/data/catalog";
+import { loadViewer } from "@/lib/data/facts";
 
 export const dynamic = "force-dynamic";
 
@@ -23,13 +26,20 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  * CAT-01 α (IA §5): an artist's name, the MusicBrainz description, country and years, the "no longer available"
  * state (J2 E5) and the link to the source. Members only, like everything that is not the Daily Drop question
  * (D-022). A merged id redirects to the canonical artist (invariant 5). Catalogue facts only, nothing about members.
+ * Step 5.11: the round photo from Commons with "O fotografiji" (D-118 (1), (2)); admins can hide it (D-118 (5)).
  */
 export default async function ArtistPage({ params }: { params: Params }) {
   const { locale, id } = await params;
-  await memberPage(locale, `/artist/${id}`);
+  const session = await memberPage(locale, `/artist/${id}`);
   const a = await artistPage(id);
   if (!a) notFound();
   if (a.redirectedFrom) redirect({ href: `/artist/${a.id}`, locale });
+  // The admin role counts only with a second factor (loadViewer, review M3).
+  const viewer = await loadViewer({ id: session.user.id, role: roleOf(session) });
+  const [photo, admin] = await Promise.all([
+    photoOfArtist(a.id),
+    viewer.role === "admin" ? artistPhotoAdmin(a.id) : Promise.resolve(null),
+  ]);
   const t = await getTranslations("artist");
   let country: string | null = null;
   if (a.country) {
@@ -44,7 +54,7 @@ export default async function ArtistPage({ params }: { params: Params }) {
   return (
     <AppShell title={a.name} backHref="/home" backHistory screen="narrow">
       <div className="cat-head">
-        <ArtistTile name={a.name} size="lg" />
+        <ArtistPhoto artistId={a.id} name={a.name} photo={photo} admin={admin} />
         <div className="cat-head-txt">
           {a.disambiguation ? <p className="cat-dis">{a.disambiguation}</p> : null}
           {facts ? <p className="cat-facts">{facts}</p> : null}

@@ -24,7 +24,7 @@ type Found = { q: string; list: GenreOption[]; failed: boolean };
  * repeated `genre` fields in pick order); Skip keeps nothing. Artists (step 5.3b) come from the catalogue typeahead and
  * travel the same way, as repeated `artist` fields holding MusicBrainz ids.
  */
-export type PickedArtist = { mbid: string; name: string };
+export type PickedArtist = { mbid: string; name: string; photoId?: string | null };
 
 export function DnaPicker({
   suggestions,
@@ -220,7 +220,7 @@ export function DnaPicker({
           <ul className="picked-artists" aria-label={t("artistsPicked")}>
             {artists.map((a) => (
               <li key={a.mbid}>
-                <ArtistTile name={a.name} size="sm" />
+                <ArtistTile name={a.name} size="sm" photo={a.photoId} />
                 <span className="pa-name">{a.name}</span>
                 <button
                   type="button"
@@ -255,7 +255,7 @@ export function DnaPicker({
                 setArtists((list) =>
                   list.length >= ARTIST_MAX || list.some((x) => x.mbid === a.mbid)
                     ? list
-                    : [...list, { mbid: a.mbid, name: a.name }],
+                    : [...list, { mbid: a.mbid, name: a.name, photoId: a.photoId }],
                 );
                 setArtistLive(td("added", { name: a.name }));
               }}

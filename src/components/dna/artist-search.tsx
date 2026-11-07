@@ -158,7 +158,7 @@ export function ArtistSearch({
                       if (!on && !disabled) onPick(a);
                     }}
                   >
-                    <ArtistTile name={a.name} />
+                    <ArtistTile name={a.name} photo={a.photoId} />
                     <span className="r-body">
                       <span className="r-title">{a.name}</span>
                       {meta ? <span className="r-meta">{meta}</span> : null}

@@ -43,7 +43,7 @@ export default async function ProfileDnaPage({ params }: { params: Params }) {
       screen="narrow"
     >
       <Link href={`/@${view.username}`} className="fl-person mdrops-head">
-        <Avatar name={view.displayName} size="sm" />
+        <Avatar name={view.displayName} size="sm" photo={view.photoId} />
         <span className="set-txt">
           <span className="set-t">{view.displayName}</span>
           <span className="set-d">@{view.username}</span>
@@ -97,7 +97,7 @@ export default async function ProfileDnaPage({ params }: { params: Params }) {
               <ol className="dna-rows">
                 {dna.artists.map((a, i) => (
                   <li key={a.id} className="dna-row">
-                    <ArtistTile name={a.name} size="sm" />
+                    <ArtistTile name={a.name} size="sm" photo={a.photoId} />
                     <span className="dna-pos" aria-hidden="true">
                       {i + 1}
                     </span>

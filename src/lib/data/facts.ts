@@ -43,7 +43,12 @@ export async function loadViewer(who: { id: string; role: Role } | null): Promis
   };
 }
 
-export type OwnerRecord = Owner & { username: string | null; displayName: string };
+export type OwnerRecord = Owner & {
+  username: string | null;
+  displayName: string;
+  /** PROF-08 (step 5.11): the photo shown wherever the member's identity may be shown (served through the policy). */
+  photoId: string | null;
+};
 
 /**
  * Owners by id. A member who has not finished onboarding is hidden from everyone else (onboarded: false, review
@@ -60,6 +65,7 @@ export async function loadOwners(ids: readonly string[]): Promise<Map<string, Ow
       name: user.name,
       username: profile.username,
       displayName: profile.displayName,
+      photoId: profile.photoId,
       onboardedAt: profile.onboardedAt,
       visibility: profile.visibility,
       musicDna: privacySettings.musicDna,
@@ -81,6 +87,7 @@ export async function loadOwners(ids: readonly string[]): Promise<Map<string, Ow
       onboarded: !!r.onboardedAt,
       username: r.username,
       displayName: r.displayName ?? r.name,
+      photoId: r.photoId ?? null,
     });
   }
   return out;

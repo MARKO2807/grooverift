@@ -127,7 +127,7 @@ export function AnswerCard({
     <article className={`ans${a.mine && !solo ? " ans-mine" : ""}`} aria-labelledby={hid}>
       {a.mine && !solo ? <p className="ans-label">{t("yourAnswer")}</p> : null}
       <header className="ans-head">
-        <Avatar name={a.author.displayName} size="sm" />
+        <Avatar name={a.author.displayName} size="sm" photo={a.author.photoId} />
         <H className="ans-who" id={hid}>
           <Link href={`/@${a.author.username}`} className="name">
             {a.author.displayName}

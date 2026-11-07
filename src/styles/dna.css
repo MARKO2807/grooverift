@@ -391,6 +391,50 @@
     height: 64px;
     font-size: 1.25rem;
   }
+  /* D-118 (1): 96 px on the artist page header. */
+  .art.xl {
+    width: 96px;
+    height: 96px;
+    font-size: 1.75rem;
+  }
+  .art.has-photo > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* The photo with its "i" button (D-118 (2)): the button sits on the lower right edge, at least 24 px. */
+  .art-photo {
+    position: relative;
+    flex: none;
+    display: inline-grid;
+  }
+  .art-info {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 32px;
+    height: 32px;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: var(--gr-radius-full);
+    background: var(--gr-color-bg-raised);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-border-strong);
+  }
+  .credit-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    margin: 0;
+  }
+  .credit-list dt {
+    font: var(--gr-type-caption);
+    color: var(--gr-color-text-secondary);
+  }
+  .credit-list dd {
+    margin: 0 0 var(--gr-space-1);
+    overflow-wrap: anywhere;
+  }
   @media (prefers-reduced-motion: no-preference) {
     .result-skel span {
       animation: gr-skel 1.2s ease-in-out infinite alternate;

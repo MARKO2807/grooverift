@@ -14,11 +14,23 @@ export const NOTICE_CATEGORIES = [
   "other",
 ] as const;
 export type NoticeCategory = (typeof NOTICE_CATEGORIES)[number];
+
+/**
+ * Step 5.11 (D-118 (5), research E.2 (c) item 9): "Prijavi problem" on an artist photo. The first two hide the photo
+ * at once pending review: we publish these photos ourselves, so a wrong person or a photographer's claim is not left
+ * up while the queue waits.
+ */
+export const PHOTO_REASONS = ["wrongPerson", "author", "credit", "other"] as const;
+export type PhotoReason = (typeof PHOTO_REASONS)[number];
+export const HIDES_AT_ONCE: readonly PhotoReason[] = ["wrongPerson", "author"];
+export const isPhotoReason = (v: unknown): v is PhotoReason =>
+  typeof v === "string" && (PHOTO_REASONS as readonly string[]).includes(v);
 export const EXPLANATION_MAX = 5000;
 
 // i18n-keys: notice.errors.categoryRequired notice.errors.urlRequired notice.errors.urlInvalid
 // i18n-keys: notice.errors.explanationRequired notice.errors.explanationLong notice.errors.nameRequired
 // i18n-keys: notice.errors.emailRequired notice.errors.emailInvalid notice.errors.goodFaithRequired
+// i18n-keys: notice.errors.photoReasonRequired
 export type NoticeErrorKey =
   | "categoryRequired"
   | "urlRequired"
@@ -28,7 +40,8 @@ export type NoticeErrorKey =
   | "nameRequired"
   | "emailRequired"
   | "emailInvalid"
-  | "goodFaithRequired";
+  | "goodFaithRequired"
+  | "photoReasonRequired";
 
 export type NoticeInput = {
   category: NoticeCategory;

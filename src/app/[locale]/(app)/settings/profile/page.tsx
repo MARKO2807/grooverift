@@ -3,9 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/app-shell";
 import { ChangeUsernameForm, EditProfileForm } from "@/components/settings/profile-forms";
+import { ProfilePhoto } from "@/components/settings/profile-photo";
 import { IconChevron, IconPulse } from "@/components/ui/icons";
 import { Notice } from "@/components/ui/notice";
 import { memberPage } from "@/lib/auth/member-page";
+import { ownPhotoId } from "@/lib/data/media";
 import { ownProfile } from "@/lib/data/profiles";
 import { notAvailable } from "@/lib/profile/page";
 
@@ -16,7 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-/** PROF-08 at /settings/profile (D-078): display name and bio, the Music DNA link, the username change (D-069). */
+/**
+ * PROF-08 at /settings/profile (D-078): the photo (step 5.11), display name and bio, the Music DNA link, the username
+ * change (D-069).
+ */
 export default async function ProfileSettingsPage({
   params,
   searchParams,
@@ -26,13 +31,22 @@ export default async function ProfileSettingsPage({
 }) {
   const { locale } = await params;
   const session = await memberPage(locale, "/settings/profile");
-  const own = await ownProfile(session.user.id);
+  const [own, photoId] = await Promise.all([
+    ownProfile(session.user.id),
+    ownPhotoId(session.user.id),
+  ]);
   if (!own) notAvailable();
   const t = await getTranslations("settings.profile");
   const td = await getTranslations("dna");
   const renamed = (await searchParams).renamed === "1";
   return (
     <AppShell title={t("title")} backHref="/settings" nav="settings" screen="narrow">
+      <section className="form-stack" aria-labelledby="h-photo">
+        <h2 id="h-photo" className="set-t">
+          {t("photo")}
+        </h2>
+        <ProfilePhoto name={own.displayName} photoId={photoId} />
+      </section>
       <section className="form-stack" aria-labelledby="h-basics">
         <h2 id="h-basics" className="set-t">
           {t("basics")}

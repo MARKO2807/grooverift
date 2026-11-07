@@ -24,6 +24,25 @@
     font: var(--gr-type-label);
     font-weight: var(--gr-font-weight-semibold);
   }
+  /* Step 5.11: the photo sits where the letter would, inside the same ring (D-078). */
+  .avatar > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--gr-radius-full);
+    border: 2px solid var(--gr-color-bg-canvas);
+    background: var(--gr-color-bg-high);
+  }
+  .avatar.lg > img,
+  .avatar.xl > img {
+    border-width: 3px;
+  }
+  .avatar.xs > img {
+    border-width: 1.5px;
+  }
+  .ans .avatar > img {
+    border-color: var(--gr-color-bg-surface);
+  }
   .avatar.sm {
     width: var(--gr-avatar-sm, 32px);
     height: var(--gr-avatar-sm, 32px);
