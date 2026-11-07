@@ -27,6 +27,7 @@ import { utcDate } from "@/lib/editorial/rules";
 import { publishedOn } from "./drops";
 import { loadGraphs, loadOwners, loadViewer, type OwnerRecord } from "./facts";
 import { pendingRequestCount } from "./graph";
+import { pushSocialInBackground } from "./push";
 
 export const NOTIFICATION_TYPES = ["comment", "reaction", "follow", "follow_accept"] as const;
 /** From GrooveRift, not from a person (step 5.9): they arrive even from a blocked staff member (J5 E3). */
@@ -88,14 +89,15 @@ async function mayNotify(recipientId: string, actorId: string): Promise<boolean>
 
 /**
  * The notification writer. Returns whether a row was written or re-opened. Errors are logged without content and
- * never fail the act that caused them (a comment is posted even if its notification cannot be written).
+ * never fail the act that caused them (a comment is posted even if its notification cannot be written). A new
+ * row (not a re-opened group) also goes out as a push, after the commit and without waiting for it (step 5.12).
  */
 export async function notify(input: NotifyInput): Promise<boolean> {
   try {
     if (!(await mayNotify(input.recipientId, input.actorId))) return false;
     const groupKey = groupKeyOf(input);
     const window = GROUP_WINDOW_MS[input.type];
-    return await db().transaction(async (tx: Tx) => {
+    const written = await db().transaction(async (tx: Tx): Promise<"new" | "reopened"> => {
       if (groupKey && window) {
         // One writer per recipient and group at a time, so two reactions in the same second make one entry.
         await tx.execute(
@@ -113,7 +115,7 @@ export async function notify(input: NotifyInput): Promise<boolean> {
             ),
           )
           .returning({ id: notification.id });
-        if (reopened.length) return true;
+        if (reopened.length) return "reopened";
       }
       await tx.insert(notification).values({
         recipientId: input.recipientId,
@@ -123,8 +125,15 @@ export async function notify(input: NotifyInput): Promise<boolean> {
         targetId: input.targetId,
         groupKey,
       });
-      return true;
+      return "new";
     });
+    if (written === "new")
+      pushSocialInBackground({
+        recipientId: input.recipientId,
+        actorId: input.actorId,
+        kind: input.type,
+      });
+    return true;
   } catch (error) {
     console.error("[notify] failed:", input.type, error instanceof Error ? error.name : "unknown");
     return false;

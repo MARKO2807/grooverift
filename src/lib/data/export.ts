@@ -43,6 +43,7 @@ import {
   notificationPreference,
   privacySettings,
   profile,
+  pushSubscription,
   reaction,
   report,
   session,
@@ -158,7 +159,7 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
     .where(eq(user.id, userId));
   if (!u) return null;
 
-  const [methods, sessions, [p], [privacy], [ms], prefs, [reminder]] = await Promise.all([
+  const [methods, sessions, [p], [privacy], [ms], prefs, [reminder], devices] = await Promise.all([
     db()
       .select({ provider: account.providerId, createdAt: account.createdAt })
       .from(account)
@@ -184,6 +185,16 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
       .from(notificationPreference)
       .where(eq(notificationPreference.userId, userId)),
     db().select().from(dailyDropReminder).where(eq(dailyDropReminder.userId, userId)),
+    // Push devices (step 5.12): what the member can recognise; never the endpoint or the keys.
+    db()
+      .select({
+        deviceLabel: pushSubscription.deviceLabel,
+        createdAt: pushSubscription.createdAt,
+        pausedUntil: pushSubscription.pausedUntil,
+        lastSuccessAt: pushSubscription.lastSuccessAt,
+      })
+      .from(pushSubscription)
+      .where(eq(pushSubscription.userId, userId)),
   ]);
 
   const dna = await db()
@@ -406,9 +417,15 @@ export async function collectMemberData(userId: string): Promise<Record<string, 
             enabled: reminder.enabled,
             localTime: reminder.localTime,
             timeZone: reminder.timeZone,
-            pausedUntil: iso(reminder.pausedUntil),
+            lastRemindedOn: reminder.lastRemindedOn,
           }
         : null,
+      pushDevices: devices.map((d) => ({
+        device: d.deviceLabel,
+        createdAt: iso(d.createdAt),
+        pausedUntil: iso(d.pausedUntil),
+        lastDelivery: iso(d.lastSuccessAt),
+      })),
     },
     "music-dna.json": dna.map((d) =>
       d.kind === "genre"

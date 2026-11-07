@@ -40,6 +40,23 @@ const schema = z.object({
   // MusicBrainz (A4, D-108, step 5.3b): the project contact for the User-Agent MusicBrainz requires. Without it the
   // artist catalogue reads as unavailable ("Katalog trenutačno ne radi.").
   MUSICBRAINZ_CONTACT: z.preprocess((v) => (v === "" ? undefined : v), z.string().optional()),
+  // Web push (step 5.12): the VAPID key pair, generated locally (`npx web-push generate-vapid-keys`), no account.
+  // Both on the web service and the worker; the public key is also sent to browsers. The VAPID subject is APP_URL.
+  // Without them push reads as unavailable and the "this phone" switch is not offered.
+  VAPID_PUBLIC_KEY: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z
+      .string()
+      .regex(/^[A-Za-z0-9_-]{87}$/, "VAPID_PUBLIC_KEY must be the base64url P-256 public key")
+      .optional(),
+  ),
+  VAPID_PRIVATE_KEY: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z
+      .string()
+      .regex(/^[A-Za-z0-9_-]{43}$/, "VAPID_PRIVATE_KEY must be the base64url P-256 private key")
+      .optional(),
+  ),
   // "1" answers artist searches from a small fixed list instead of MusicBrainz (end-to-end tests, offline work).
   // Refused in production unless the end-to-end flag is set too.
   CATALOG_STUB: z.enum(["0", "1"]).default("0"),

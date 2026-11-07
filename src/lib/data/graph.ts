@@ -6,6 +6,9 @@ import { db, type Db } from "@/lib/db/client";
 import { block, follow, followDecline, mute } from "@/lib/db/schema";
 import { loadGraph, loadGraphs, loadOwner, loadOwners, loadViewer } from "./facts";
 import { dropNotificationsBetween, notify } from "./notifications";
+import { pushSocialInBackground } from "./push";
+
+const REQUEST_PUSH_LIMIT = { limit: 1, windowSeconds: 86_400 };
 import { consume } from "./rate-limit";
 
 /** J4 E6 (review L7): after a decline, the same person may ask again after this many days. */
@@ -74,7 +77,8 @@ export async function followMember(viewer: Viewer, targetId: string): Promise<Gr
       .onConflictDoNothing()
       .returning({ followerId: follow.followerId });
   });
-  // A request is not an Activity entry: the requests row on top counts it (D-074 (5)).
+  // A request is not an Activity entry: the requests row on top counts it (D-074 (5)); it may still be a push
+  // under the "Pratitelji i zahtjevi" switch (step 5.12). canInteract above has ruled out a block and hidden accounts.
   if (inserted.length && state === "accepted")
     await notify({
       recipientId: targetId,
@@ -82,6 +86,14 @@ export async function followMember(viewer: Viewer, targetId: string): Promise<Gr
       type: "follow",
       targetId: followerId,
     });
+  // At most one request push per pair a day (review 5.12 M1): follow, cancel, follow again must not ring the
+  // owner's phone each time; the requests row in Activity still shows the request.
+  if (
+    inserted.length &&
+    state === "pending" &&
+    (await consume("pushFollowRequest", `${targetId}:${followerId}`, REQUEST_PUSH_LIMIT)).allowed
+  )
+    pushSocialInBackground({ recipientId: targetId, actorId: followerId, kind: "follow_request" });
   return { ok: true, state };
 }
 

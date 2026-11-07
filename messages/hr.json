@@ -779,7 +779,10 @@
     "aboutText": "Kontakt, licence, verzija",
     "admin": "Administracija",
     "close": "Deaktiviraj ili izbriši račun",
-    "version": "GrooveRift alfa"
+    "version": "GrooveRift alfa",
+    "notifications": "Obavijesti",
+    "notificationsOn": "Podsjetnik u {time}",
+    "notificationsOff": "Podsjetnik isključen"
   },
   "spirala": {
     "listLabel": "Žanrovi i izvođači u Music DNA",
@@ -1991,5 +1994,45 @@
     "musicbrainz": "Pogledaj na MusicBrainzu",
     "newTab": "(otvara se u novoj kartici)",
     "source": "Podaci o izvođaču: MusicBrainz (CC0)."
+  },
+  "push": {
+    "title": "Obavijesti",
+    "devicePhone": "Obavijesti na ovom mobitelu",
+    "deviceOther": "Obavijesti na ovom uređaju",
+    "deviceOn": "Uključene. Odaberi koje ispod.",
+    "deviceOff": "Isključene. Ništa ne stiže na ovaj uređaj; Aktivnost i dalje sve pokazuje.",
+    "devicePaused": "Pauzirano do {time}. Onda se same uključe. Aktivnost u međuvremenu sve skuplja.",
+    "deviceDenied": "Blokirane u pregledniku. Uključuju se u postavkama preglednika, pa se vrati ovdje.",
+    "deviceInstall": "Na iPhoneu obavijesti rade kad GrooveRift dodaš na početni zaslon: Dijeli, pa „Dodaj na početni zaslon”. Zatim ga otvori odande i uključi obavijesti.",
+    "deviceUnsupported": "Ovaj preglednik ne podržava obavijesti.",
+    "deviceChecking": "Provjeravam…",
+    "pauseLabel": "Pauziraj na",
+    "pause1h": "1 sat",
+    "pause3h": "3 sata",
+    "pauseMorning": "Do sutra u 8:00",
+    "resume": "Uključi odmah",
+    "types": "Vrste obavijesti",
+    "groupDrop": "Daily Drop",
+    "reminder": "Podsjetnik za novo pitanje",
+    "reminderText": "Jedna obavijest dnevno",
+    "time": "Vrijeme",
+    "zone": "Vrijeme: {zone}. Mijenja se u Jezik i regija.",
+    "groupPeople": "Ljudi i razgovori",
+    "comment": "Komentari na moje odgovore",
+    "reaction": "Reakcije",
+    "reactionText": "Skupljene, najviše jednom na sat",
+    "follow": "Pratitelji i zahtjevi",
+    "privacyNote": "Obavijest ne pokazuje ni ime ni tekst, samo što se dogodilo. Sve ostalo je u Aktivnosti.",
+    "mailNote": "E-poštom stižu samo poruke o računu i sigurnosti, na primjer poveznica za novu lozinku.",
+    "error": {
+      "signedOut": "Prijavi se ponovno pa pokušaj još jednom.",
+      "unavailable": "Obavijesti trenutačno nisu dostupne.",
+      "tooMany": "Previše promjena u kratkom vremenu. Pokušaj malo kasnije.",
+      "generic": "Nije spremljeno. Pokušaj ponovno.",
+      "invalid": "Nije spremljeno. Pokušaj ponovno.",
+      "notOn": "Obavijesti na ovom uređaju nisu uključene.",
+      "denied": "Preglednik je odbio obavijesti. Uključuju se u postavkama preglednika.",
+      "failed": "Preglednik nije uspio uključiti obavijesti. Pokušaj ponovno."
+    }
   }
 }

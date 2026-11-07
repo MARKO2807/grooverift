@@ -779,7 +779,10 @@
     "aboutText": "Contact, licences, version",
     "admin": "Administration",
     "close": "Deactivate or delete account",
-    "version": "GrooveRift alpha"
+    "version": "GrooveRift alpha",
+    "notifications": "Notifications",
+    "notificationsOn": "Reminder at {time}",
+    "notificationsOff": "Reminder off"
   },
   "spirala": {
     "listLabel": "Genres and artists in the Music DNA",
@@ -1991,5 +1994,45 @@
     "musicbrainz": "View on MusicBrainz",
     "newTab": "(opens in a new tab)",
     "source": "Artist data: MusicBrainz (CC0)."
+  },
+  "push": {
+    "title": "Notifications",
+    "devicePhone": "Notifications on this phone",
+    "deviceOther": "Notifications on this device",
+    "deviceOn": "On. Choose which ones below.",
+    "deviceOff": "Off. Nothing reaches this device; Activity still shows everything.",
+    "devicePaused": "Paused until {time}. Then they turn back on by themselves. Activity keeps collecting meanwhile.",
+    "deviceDenied": "Blocked in the browser. Turn them on in the browser settings, then come back here.",
+    "deviceInstall": "On iPhone, notifications work once GrooveRift is on your Home Screen: Share, then “Add to Home Screen”. Open it from there and turn notifications on.",
+    "deviceUnsupported": "This browser does not support notifications.",
+    "deviceChecking": "Checking…",
+    "pauseLabel": "Pause for",
+    "pause1h": "1 hour",
+    "pause3h": "3 hours",
+    "pauseMorning": "Until 8:00 tomorrow",
+    "resume": "Turn on now",
+    "types": "Notification types",
+    "groupDrop": "Daily Drop",
+    "reminder": "Reminder for the new question",
+    "reminderText": "One notification a day",
+    "time": "Time",
+    "zone": "Time zone: {zone}. Change it in Language and region.",
+    "groupPeople": "People and conversations",
+    "comment": "Comments on my answers",
+    "reaction": "Reactions",
+    "reactionText": "Grouped, at most once an hour",
+    "follow": "Followers and requests",
+    "privacyNote": "A notification shows no name and no text, only what happened. Everything else is in Activity.",
+    "mailNote": "Only account and security messages come by email, such as a link for a new password.",
+    "error": {
+      "signedOut": "Sign in again and try once more.",
+      "unavailable": "Notifications are not available right now.",
+      "tooMany": "Too many changes in a short time. Try again a little later.",
+      "generic": "Not saved. Try again.",
+      "invalid": "Not saved. Try again.",
+      "notOn": "Notifications on this device are not on.",
+      "denied": "The browser refused notifications. Turn them on in the browser settings.",
+      "failed": "The browser could not turn notifications on. Try again."
+    }
   }
 }

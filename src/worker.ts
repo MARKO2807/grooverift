@@ -7,6 +7,7 @@ import { purgeDueAccounts } from "@/lib/data/account";
 import { sweepExports } from "@/lib/data/export";
 import { purgeSnapshots } from "@/lib/data/moderation";
 import { pruneNotifications } from "@/lib/data/notifications";
+import { runReminders } from "@/lib/data/push";
 import { liftExpiredSuspensions } from "@/lib/data/safety";
 import { pruneRateLimits } from "@/lib/data/rate-limit";
 import { dailyCheck, runPublication } from "@/lib/editorial/publication";
@@ -17,6 +18,7 @@ import {
   utcDate,
 } from "@/lib/editorial/rules";
 import { env } from "@/lib/env";
+import { REMINDER_TICK } from "@/lib/push/rules";
 import {
   flushWorkerSentry,
   initWorkerSentry,
@@ -25,7 +27,7 @@ import {
 } from "@/lib/monitoring/worker";
 
 // The job worker (ADR-0002: pg-boss on the same PostgreSQL). Housekeeping since Phase 4; the Daily Drop
-// publication (idempotent by UTC date, step 5.6) and its daily look ahead; push delivery comes in 5.12.
+// publication (idempotent by UTC date, step 5.6) and its daily look ahead; the Daily Drop push reminder (5.12).
 // Usage: npm run worker   (a separate process from the web server on Render)
 
 export const JOBS = {
@@ -38,6 +40,7 @@ export const JOBS = {
   purgeSnapshots: "moderation.purge",
   purgeAccounts: "account.purge",
   sweepExports: "account.export",
+  reminders: "push.reminders",
 } as const;
 
 type PublishData = { date?: string };
@@ -121,6 +124,16 @@ export async function startWorker(opts: { catchUp?: boolean } = {}): Promise<PgB
       await audit({ actorType: "system", action: "account.export.swept", metadata: r });
   });
   await boss.schedule(JOBS.sweepExports, "*/5 * * * *", {}, { tz: "UTC" });
+
+  // Step 5.12 (OQ-11): the Daily Drop reminder at each member's local time. Every five minutes the tick sends the
+  // reminders whose local time has come; each is claimed in the database first, so an overlapping tick or a
+  // second worker never sends one twice. Nothing happens while the "push" flag is off or VAPID is not configured.
+  await boss.createQueue(JOBS.reminders);
+  await boss.work(JOBS.reminders, async () => {
+    const r = await runReminders();
+    if (r.delivered) console.log("[worker] reminders delivered:", r.delivered);
+  });
+  await boss.schedule(JOBS.reminders, REMINDER_TICK, {}, { tz: "UTC" });
 
   // The Daily Drop at 00:00 UTC (J6). The run itself is idempotent by date, so a duplicate job, a restart or
   // "Publish now" at the same moment cannot publish twice. A failed run throws, and pg-boss retries it with

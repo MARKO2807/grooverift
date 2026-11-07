@@ -132,7 +132,9 @@ export async function finishOnboarding(
   await page.getByRole("button", { name: "Preskoči" }).click();
   await expect(page).toHaveURL(/\/join\/how$/);
   await page.getByRole("button", { name: "Nastavi" }).click();
-  // The reminder step appears only while the push flag is on (D-093 (1)).
+  // The reminder step appears only while push is available (D-093 (1)); wait for whichever comes, since the push
+  // suite turns the flag on while other tests are onboarding.
+  await expect(page).toHaveURL(/\/join\/(reminder|done)$/);
   if (/\/join\/reminder$/.test(page.url())) {
     await page.getByRole("button", { name: "Ne sada" }).click();
   }

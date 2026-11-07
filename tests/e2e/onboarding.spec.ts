@@ -17,6 +17,10 @@ import {
 
 // Step 5.4: invitation and onboarding (PUB-05, ONB-01 to ONB-09, J1 with its edge cases) and ADM-03.
 
+// The global setup turns push on when a VAPID pair exists (step 5.12): then ONB-08 is a step and counts.
+const PUSH = !!(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
+const TOTAL = PUSH ? 10 : 9;
+
 test.describe("invitation and onboarding (J1)", () => {
   test("invite → 18+ → language → account → every step → Home, with the errors on the way", async ({
     page,
@@ -38,7 +42,7 @@ test.describe("invitation and onboarding (J1)", () => {
     // ONB-01: Continue without an answer explains; "no" stores nothing (E5).
     await page.getByRole("link", { name: "Prihvati pozivnicu" }).click();
     await expect(page).toHaveURL(/\/join\/age$/);
-    await expect(page.getByText("Korak 1 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 1 od ${TOTAL}`)).toBeVisible();
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Nastavi" }).click();
     await expect(page.getByText("Odaberi jedan odgovor.")).toBeVisible();
@@ -54,7 +58,7 @@ test.describe("invitation and onboarding (J1)", () => {
 
     // Language, then the account for the invitation's address only.
     await expect(page).toHaveURL(/\/join\/language$/);
-    await expect(page.getByText("Korak 2 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 2 od ${TOTAL}`)).toBeVisible();
     await page.getByRole("button", { name: "Nastavi" }).click();
     await expect(page).toHaveURL(/\/join\/account$/);
     await expect(page.getByLabel("E-pošta")).toHaveValue(email);
@@ -81,7 +85,7 @@ test.describe("invitation and onboarding (J1)", () => {
     await expect(page).toHaveURL(/\/join\/username$/);
 
     // ONB-02: rules before typing, live check, suggestions when taken (E6), the display name rule (D-085).
-    await expect(page.getByText("Korak 4 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 4 od ${TOTAL}`)).toBeVisible();
     await expectNoAxeViolations(page);
     await page.getByLabel("Korisničko ime").fill("ana");
     await expect(page.getByText("Ovo korisničko ime nije dostupno.")).toBeVisible();
@@ -102,7 +106,7 @@ test.describe("invitation and onboarding (J1)", () => {
     await page.getByLabel("Hrvatski").check();
     await page.getByRole("button", { name: "Nastavi" }).click();
     await expect(page).toHaveURL(/\/join\/visibility$/);
-    await expect(page.getByText("Korak 6 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 6 od ${TOTAL}`)).toBeVisible();
     await expect(page.getByRole("radio", { checked: true })).toHaveCount(0);
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Nastavi" }).click();
@@ -112,7 +116,7 @@ test.describe("invitation and onboarding (J1)", () => {
 
     // ONB-05: one pick is refused, two go through; ONB-06 then appears.
     await expect(page).toHaveURL(/\/join\/dna$/);
-    await expect(page.getByText("Korak 7 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 7 od ${TOTAL}`)).toBeVisible();
     await page.getByRole("button", { name: "Rock", exact: true }).click();
     await expect(page.getByText("1 žanr od 10.")).toBeVisible();
     await page.getByRole("button", { name: "Nastavi" }).click();
@@ -128,7 +132,7 @@ test.describe("invitation and onboarding (J1)", () => {
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Nastavi" }).click();
     await expect(page).toHaveURL(/\/join\/dna-audience$/);
-    await expect(page.getByText("Korak 8 od 9")).toBeVisible();
+    await expect(page.getByText(`Korak 8 od ${TOTAL}`)).toBeVisible();
     await expect(page.getByRole("radio", { checked: true })).toHaveCount(0);
     await page.getByRole("button", { name: "Nastavi" }).click();
     await expect(page.getByText("Odaberi tko vidi tvoj Music DNA.")).toBeVisible();
@@ -144,6 +148,14 @@ test.describe("invitation and onboarding (J1)", () => {
     await expect(page).toHaveURL(/\/join\/how$/);
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Nastavi" }).click();
+
+    // ONB-08 while push is available (step 5.12): "Ne sada" here; SET-06 is tested in push.spec.ts.
+    if (PUSH) {
+      await expect(page).toHaveURL(/\/join\/reminder$/);
+      await expect(page.getByText(`Korak 10 od ${TOTAL}`)).toBeVisible();
+      await expectNoAxeViolations(page);
+      await page.getByRole("button", { name: "Ne sada" }).click();
+    }
 
     // ONB-09, then Home; the used invitation link shows the neutral page (E1).
     await expect(page).toHaveURL(/\/join\/done$/);
@@ -242,7 +254,7 @@ test.describe("invitation and onboarding (J1)", () => {
     await page.getByLabel("Password", { exact: true }).fill("Nova-Lozinka-2026!");
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/en\/join\/username$/);
-    await expect(page.getByText("Step 4 of 9")).toBeVisible();
+    await expect(page.getByText(`Step 4 of ${TOTAL}`)).toBeVisible();
   });
 });
 

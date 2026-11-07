@@ -4,7 +4,7 @@ import { getSession, roleOf } from "@/lib/auth/session";
 import { loadViewer } from "@/lib/data/facts";
 import { invitationByToken, type InviteLookup } from "@/lib/data/invitations";
 import { onboardingState, type OnboardingState } from "@/lib/data/onboarding";
-import { flagState } from "@/lib/flags";
+import { pushAvailable } from "@/lib/data/push";
 import { adultConfirmed, inviteTokenFromCookies } from "./cookies";
 import {
   isPreAccount,
@@ -32,8 +32,9 @@ export type StepPage = {
   state: OnboardingState | null;
 };
 
+/** ONB-08 is shown only while push is available: the "push" flag and the VAPID pair (step 5.12). */
 export async function reminderFlag(): Promise<boolean> {
-  return (await flagState("push")) === "on";
+  return pushAvailable();
 }
 
 /**

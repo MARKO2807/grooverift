@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { AuthScreen } from "@/components/auth/auth-screen";
 import { ReminderForm } from "@/components/onboarding/reminder-form";
 import { stepPage } from "@/lib/onboarding/page";
+import { vapidPublicKey } from "@/lib/push/send";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function ReminderPage({ params }: { params: Promise<{ local
   const t = await getTranslations("join.reminder");
   return (
     <AuthScreen title={t("title")} back={page.back} progress={page.progress}>
-      <ReminderForm initial={page.state?.reminder ?? null} />
+      <ReminderForm initial={page.state?.reminder ?? null} publicKey={vapidPublicKey()} />
     </AuthScreen>
   );
 }

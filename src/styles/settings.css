@@ -279,4 +279,69 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
+
+  /* ---------- SET-06 notifications, round 11 option B "Uređaj na vrhu" (D-071, D-072 (2); step 5.12) ---------- */
+  .ntf-dev {
+    padding: var(--gr-space-3) var(--gr-space-4);
+    border-radius: var(--gr-radius-card);
+    background: var(--gr-color-bg-surface);
+    border: var(--gr-border-width-hairline) solid var(--gr-color-highlight-border);
+  }
+  .ntf-dev.is-off {
+    border-color: var(--gr-color-border-subtle);
+  }
+  .ntf-dev-top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--gr-space-3);
+    align-items: center;
+  }
+  .ntf-pause {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-2);
+    margin-top: var(--gr-space-3);
+    padding-top: var(--gr-space-3);
+    border-top: var(--gr-border-width-hairline) solid var(--gr-color-border-subtle);
+  }
+  .ntf-pause .chip {
+    min-height: var(--gr-size-target-min);
+  }
+  .ntf-resume {
+    margin-top: var(--gr-space-3);
+  }
+  .ntf-types {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gr-space-5);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .ntf-types:disabled .set-list {
+    opacity: var(--gr-opacity-disabled);
+  }
+  .set-row-plain {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--gr-space-3);
+  }
+  .set-row-plain .rem-time {
+    font-size: var(--gr-font-size-md);
+  }
+  @media (max-width: 17.5em) {
+    .set-row-plain {
+      grid-template-columns: 1fr;
+      justify-items: start;
+      row-gap: var(--gr-space-2);
+    }
+    .ntf-dev-top {
+      grid-template-columns: 1fr auto;
+    }
+    .ntf-dev-top .set-ic-wrap {
+      display: none;
+    }
+  }
 }

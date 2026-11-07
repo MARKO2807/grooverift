@@ -35,6 +35,7 @@ export const LIMITS = {
   exportDownload: { limit: 20, windowSeconds: 3600 }, // data copy downloads per member (review 5.10 L5)
   feedback: { limit: 10, windowSeconds: 86400 }, // SET-12 messages per member (step 5.10)
   settings: { limit: 60, windowSeconds: 3600 }, // language, region and motion changes (step 5.10)
+  push: { limit: 60, windowSeconds: 3600 }, // notification switches, pause and device changes (step 5.12)
 } as const satisfies Record<string, Limit>;
 export type LimitScope = keyof typeof LIMITS;
 

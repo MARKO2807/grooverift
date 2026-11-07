@@ -48,6 +48,8 @@ describe("worker and housekeeping", () => {
     expect(schedules.some((s) => s.name === JOBS.sweepExports && s.cron === "*/5 * * * *")).toBe(
       true,
     );
+    // Step 5.12: the Daily Drop reminder tick every five minutes.
+    expect(schedules.some((s) => s.name === JOBS.reminders && s.cron === "*/5 * * * *")).toBe(true);
     await boss.stop({ graceful: false, timeout: 2000 });
   });
 

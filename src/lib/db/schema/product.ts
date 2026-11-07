@@ -21,7 +21,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import { user } from "./auth";
+import { session, user } from "./auth";
 
 const id = () => uuid("id").primaryKey().defaultRandom();
 const at = (name: string) => timestamp(name, { withTimezone: true });
@@ -144,30 +144,47 @@ export const notificationPreference = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.type, t.channel] })],
 );
 
-/** The Daily Drop reminder (D-071, OQ-11): local time in an IANA zone, never a fixed offset. */
+/**
+ * The Daily Drop reminder (D-071, OQ-11): local time in an IANA zone, never a fixed offset. `lastRemindedOn` is the
+ * member's local date of the last reminder (at most one a day); `lastNotifiedQuestionId` the question it was about
+ * (never the same question twice). The pause lives on the device (push_subscription.paused_until, D-072 (2)).
+ */
 export const dailyDropReminder = pgTable("daily_drop_reminder", {
   userId: userRef("user_id").primaryKey(),
   enabled: boolean("enabled").notNull().default(false),
   localTime: time("local_time").notNull().default("09:00"),
   timeZone: text("time_zone").notNull().default("Europe/Zagreb"),
-  pausedUntil: at("paused_until"),
   lastNotifiedQuestionId: uuid("last_notified_question_id"),
+  lastRemindedOn: date("last_reminded_on"),
   updatedAt: at("updated_at").notNull().defaultNow(),
 });
 
-/** Web push per device (step 5.12). Keys are encrypted by the application before they are stored. */
+/**
+ * Web push per device (step 5.12). `keys` (p256dh and auth) are encrypted by the application (AES-256-GCM) before
+ * they are stored. A subscription belongs to the session that turned it on: signing out (or being signed out
+ * elsewhere) removes it, so a shared or lost device stops receiving at once. `pausedUntil` is the "Pauziraj na"
+ * of the "this phone" card (D-072 (2)); `failures` counts consecutive failed deliveries.
+ */
 export const pushSubscription = pgTable(
   "push_subscription",
   {
     id: id(),
     userId: userRef("user_id").notNull(),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => session.id, { onDelete: "cascade" }),
     endpoint: text("endpoint").notNull().unique(),
     keys: text("keys").notNull(),
     deviceLabel: text("device_label"),
+    pausedUntil: at("paused_until"),
+    failures: integer("failures").notNull().default(0),
     createdAt: createdAt(),
     lastSuccessAt: at("last_success_at"),
   },
-  (t) => [index("push_subscription_user_idx").on(t.userId)],
+  (t) => [
+    index("push_subscription_user_idx").on(t.userId),
+    index("push_subscription_session_idx").on(t.sessionId),
+  ],
 );
 
 // ============================================================ Social graph

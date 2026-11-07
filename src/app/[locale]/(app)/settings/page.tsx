@@ -6,6 +6,7 @@ import { Avatar } from "@/components/profile/avatar";
 import { MotionSwitch } from "@/components/settings/motion-switch";
 import { SignOutButton } from "@/components/settings/sign-out";
 import {
+  IconBell,
   IconBlock,
   IconCheck,
   IconChevron,
@@ -25,6 +26,7 @@ import { memberPage } from "@/lib/auth/member-page";
 import { STAFF_ROLES } from "@/lib/auth/roles";
 import { roleOf } from "@/lib/auth/session";
 import { activeRestriction, blockMuteCounts } from "@/lib/data/safety";
+import { pushAvailable, pushChoices } from "@/lib/data/push";
 import { settingsSummary } from "@/lib/data/settings";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +48,7 @@ const city = (tz: string) => (tz.split("/").pop() ?? tz).replaceAll("_", " ");
 /**
  * SET-01, arrangement B "Kartica profila" (D-066): the member's name and @username on top (opens Edit profile),
  * the quiet account status under it, four groups, Log out, and "Deaktiviraj ili izbriši račun" at the very bottom
- * (D-063 (9)). Notifications (SET-06) join the Aplikacija group with push in step 5.12.
+ * (D-063 (9)). Notifications (SET-06) sit in the Aplikacija group while push is available (step 5.12).
  */
 export default async function SettingsIndexPage({
   params,
@@ -60,10 +62,11 @@ export default async function SettingsIndexPage({
   const tp = await getTranslations("settings.privacy");
   const ts = await getTranslations("safety");
   const f = await getFormatter();
-  const [summary, counts, restriction] = await Promise.all([
+  const [summary, counts, restriction, push] = await Promise.all([
     settingsSummary(userId),
     blockMuteCounts(userId),
     activeRestriction(userId),
+    pushAvailable().then((ok) => (ok ? pushChoices(userId) : null)),
   ]);
   const name = summary?.displayName ?? session.user.name;
   const username = summary?.username ?? "";
@@ -115,6 +118,19 @@ export default async function SettingsIndexPage({
       id: "app",
       title: t("groupApp"),
       rows: [
+        // SET-06 (step 5.12): only while push is available (the "push" flag, D-093 (1)).
+        ...(push
+          ? [
+              {
+                href: "/settings/notifications",
+                Icon: IconBell,
+                title: t("notifications"),
+                text: push.reminder.enabled
+                  ? t("notificationsOn", { time: push.reminder.localTime })
+                  : t("notificationsOff"),
+              },
+            ]
+          : []),
         {
           href: "/settings/language",
           Icon: IconGlobe,

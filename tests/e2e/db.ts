@@ -54,6 +54,15 @@ export async function setFlagState(key: string, state: "on" | "off" | "paused") 
   );
 }
 
+/** Push devices of a member (step 5.12): whether each is paused. Never the endpoint or the keys. */
+export async function pushDevicesOf(email: string) {
+  return query<{ paused: boolean }>(
+    `select (s.paused_until is not null and s.paused_until > now()) as paused
+       from push_subscription s join "user" u on u.id = s.user_id where u.email = $1`,
+    [email.toLowerCase()],
+  );
+}
+
 // ---- Daily Drop (step 5.7) ----
 // Questions are published by the worker or "Objavi sada" in the product; the suite inserts its own published
 // questions on dates in the 1980s (never today, never the future, so the seeded reserve and the real calendar are

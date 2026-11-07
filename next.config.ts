@@ -29,7 +29,19 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "standalone",
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      // The service worker (step 5.12): always checked for a new version, scoped to the whole site, and limited to
+      // this origin by its own policy (a worker takes the CSP of its script response).
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, max-age=0" },
+          { key: "Service-Worker-Allowed", value: "/" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+        ],
+      },
+    ];
   },
 };
 

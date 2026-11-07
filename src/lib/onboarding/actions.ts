@@ -35,6 +35,7 @@ import {
   type OnboardingState,
   type ProfileStep,
 } from "@/lib/data/onboarding";
+import { pushAvailable } from "@/lib/data/push";
 import { normalizeUsername, usernameAvailable } from "@/lib/data/profiles";
 import { consume } from "@/lib/data/rate-limit";
 import { env } from "@/lib/env";
@@ -65,8 +66,9 @@ async function reqHeaders() {
   return await headers();
 }
 
+/** ONB-08 is shown only while push is available: the "push" flag and the VAPID pair (step 5.12). */
 export async function reminderShown(): Promise<boolean> {
-  return (await flagState("push")) === "on";
+  return pushAvailable();
 }
 
 // ---------------------------------------------------------------- before the account

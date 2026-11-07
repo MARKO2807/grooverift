@@ -92,6 +92,10 @@ jobs:
       - run: npm ci
       - run: npm run db:migrate
       - run: npm run db:seed
+      # Step 5.12: a throwaway VAPID pair made for this run only (no account, never committed), so the push
+      # screens and the reminder step exist during the end-to-end run; the browser side is a stand-in.
+      - name: Throwaway VAPID pair
+        run: node -e "const k=require('web-push').generateVAPIDKeys();console.log('VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey)" >> "$GITHUB_ENV"
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
