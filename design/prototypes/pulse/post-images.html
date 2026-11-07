@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · slike članova u odgovorima i komentarima</title>
+<!-- Owner decision sketch (session 39): details of member images in answers and comments (D-120, amends D-068 (6)).
+     "Ana", "Ivan" and the concert picture are fictional; the picture is a drawn stand-in. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 56px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 82ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  .grid { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 18px; align-items: flex-start; }
+  .opt { width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p, .opt li { font: var(--gr-type-body-sm); margin: 0; }
+  .opt ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+  .pro::marker { content: "+  "; color: #6FD39B; }
+  .con::marker { content: "−  "; color: var(--gr-color-ember-coral); }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .scen { border-left: 3px solid var(--gr-color-ember-amber); padding: 4px 0 4px 14px; margin: 10px 0; max-width: 82ch; }
+  .note { border: 1px solid var(--gr-color-highlight-border); background: var(--gr-color-highlight-bg); border-radius: 14px; padding: 14px 16px; max-width: 82ch; margin-top: 12px; }
+  .note ul { margin: 6px 0 0; padding-left: 18px; }
+
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: 336px; }
+  .scr { border-radius: 22px; background: #0B0D12; overflow: hidden; display: flex; flex-direction: column; }
+  .body { padding: 14px 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .ans { background: var(--gr-color-bg-surface); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ah { display: flex; gap: 10px; align-items: center; }
+  .av { width: 32px; height: 32px; border-radius: 9999px; background: linear-gradient(135deg,#3B6FD8,#7A4E8C); flex: none; }
+  .av.b { background: linear-gradient(135deg,#2E9E7A,#3B6FD8); width: 26px; height: 26px; }
+  .an { font: var(--gr-type-label); } .an small { display: block; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .atx { font: .9375rem/1.5 "Inter", sans-serif; color: var(--gr-color-text-primary); margin: 0; }
+  .img { position: relative; overflow: hidden; border-radius: 12px; background: #140F22; }
+  .img svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .r45 { aspect-ratio: 4 / 5; } .r43 { aspect-ratio: 4 / 3; } .r11 { aspect-ratio: 1 / 1; }
+  .thumbrow { display: grid; grid-template-columns: 1fr 72px; gap: 10px; align-items: start; }
+  .thumb { width: 72px; height: 72px; border-radius: 10px; }
+  .g2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-radius: 12px; overflow: hidden; }
+  .g2x2 .img { border-radius: 0; aspect-ratio: 1 / 1; }
+  .more { position: absolute; inset: 0; display: grid; place-items: center; background: #0B0D12AA; font: 700 1.25rem/1 "Sora", sans-serif; color: #fff; }
+  .com { display: flex; gap: 8px; padding: 0 2px; }
+  .com .ct { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .com .ct .n { font: var(--gr-type-label); } .com .ct .t { font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .com .img { width: 180px; aspect-ratio: 4 / 3; }
+  .dock { border-top: 1px solid var(--gr-color-border-strong); background: var(--gr-color-bg-surface); padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .field { border: 1px solid var(--gr-color-border-strong); border-radius: 12px; padding: 10px 12px; font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); background: #0B0D12; }
+  .field.ph { color: var(--gr-color-text-secondary); }
+  .lbl { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .req { color: var(--gr-color-ember-coral); }
+  .att { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: start; }
+  .att .img { width: 64px; height: 64px; }
+  .drow { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .btn { font: var(--gr-type-label); border-radius: 9999px; padding: 8px 14px; border: 1px solid var(--gr-color-border-strong); color: var(--gr-color-text-primary); background: none; }
+  .btn.pri { background: var(--gr-color-ember-coral); border-color: var(--gr-color-ember-coral); color: #0B0D12; }
+  .btn.dis { opacity: .45; }
+  .pend { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--gr-color-border-strong); font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+  .tl { display: flex; flex-direction: column; border-left: 2px solid var(--gr-color-border-strong); margin-left: 6px; padding-left: 14px; }
+  .tl div { position: relative; padding: 6px 0; font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .tl div::before { content: ""; position: absolute; left: -21px; top: 11px; width: 10px; height: 10px; border-radius: 9999px; background: var(--gr-color-border-strong); }
+  .tl div.key::before { background: var(--gr-color-ember-amber); }
+  .tl small { display: block; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="crowd" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+    <defs><radialGradient id="st" cx="50%" cy="20%" r="75%"><stop offset="0" stop-color="#FFCB69"/><stop offset=".4" stop-color="#C2456A"/><stop offset="1" stop-color="#140F22"/></radialGradient></defs>
+    <rect width="400" height="300" fill="url(#st)"/>
+    <rect x="120" y="120" width="160" height="10" fill="#2B1D33"/>
+    <circle cx="200" cy="92" r="14" fill="#1A1220"/><path d="M182 120 C182 104 218 104 218 120 Z" fill="#1A1220"/>
+    <g fill="#0D0A14"><circle cx="40" cy="250" r="34"/><circle cx="110" cy="262" r="36"/><circle cx="185" cy="255" r="33"/><circle cx="260" cy="266" r="38"/><circle cx="340" cy="252" r="35"/>
+    <rect x="0" y="262" width="400" height="38"/><path d="M96 220 l10 -60 l8 2 l-6 60 z"/><path d="M300 225 l-6 -58 l8 -1 l6 58 z"/></g>
+  </symbol>
+</svg>
+<div class="page">
+  <h1>Slike članova u odgovorima i komentarima: detalji</h1>
+  <p>Ti si odlučio da slike idu u alphu odmah, uz 5.11 (D-120). Ostala su četiri pitanja o detaljima. „Ana”, „Ivan” i slika
+  s koncerta su izmišljeni primjeri, a slika je nacrtana zamjena.</p>
+  <nav class="toc" aria-label="Pitanja">
+    <a href="#q1">1 · Koliko slika</a><a href="#q2">2 · Kako se prikazuje</a><a href="#q3">3 · Opis slike</a><a href="#q4">4 · Kada je vidljiva</a><a href="#bez">Napravljeno bez izbora</a>
+  </nav>
+
+  <h2 class="sec" id="q1">1 · Koliko slika po odgovoru i komentaru</h2>
+  <p>Daily Drop je jedan promišljen odgovor na dan, ne galerija. Svaka slika je i jedna stvar više za moderirati.</p>
+  <div class="grid">
+    <div class="opt"><h3>A · Jedna u odgovoru, jedna u komentaru <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="body"><div class="ans">
+        <div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+        <p class="atx">Šalata, ljeto 2019. Nitko nije znao tekstove osim nas.</p>
+        <div class="img r43"><svg><use href="#crowd"/></svg></div>
+      </div></div></div></div>
+      <ul><li class="pro">Odgovor ostaje odgovor, a slika ga ilustrira.</li><li class="pro">Najmanje moderiranja i najjednostavnije sučelje.</li><li class="con">Nema „albuma” s koncerta.</li></ul>
+    </div>
+    <div class="opt"><h3>B · Do 4 u odgovoru, 1 u komentaru</h3>
+      <div class="phone"><div class="scr"><div class="body"><div class="ans">
+        <div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+        <p class="atx">Šalata, ljeto 2019. Nitko nije znao tekstove osim nas.</p>
+        <div class="g2x2"><div class="img"><svg><use href="#crowd"/></svg></div><div class="img"><svg><use href="#crowd"/></svg></div><div class="img"><svg><use href="#crowd"/></svg></div><div class="img"><svg><use href="#crowd"/></svg><span class="more">+1</span></div></div>
+      </div></div></div></div>
+      <ul><li class="pro">Više prostora za uspomenu.</li><li class="con">Odgovori postaju galerije i duže se skrolaju.</li><li class="con">Četiri puta više mogućeg posla za moderaciju.</li></ul>
+    </div>
+    <div class="opt"><h3>C · Do 4 svugdje</h3>
+      <p>Kao B, ali i komentari mogu imati 4 slike.</p>
+      <ul><li class="pro">Najviše slobode.</li><li class="con">Komentari postaju dugi, a moderiranja je najviše.</li></ul>
+    </div>
+  </div>
+
+  <h2 class="sec" id="q2">2 · Kako se slika prikazuje u odgovoru</h2>
+  <div class="grid">
+    <div class="opt"><h3>A · Cijela slika, dodir za puni zaslon <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="body"><div class="ans">
+        <div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+        <p class="atx">Šalata, ljeto 2019.</p>
+        <div class="img r45"><svg><use href="#crowd"/></svg></div>
+      </div></div></div></div>
+      <ul><li class="pro">Vidi se cijela slika u svom omjeru. Uspravne idu najviše do 4:5, da ne zauzmu cijeli ekran.</li><li class="pro">Dodir otvara pregled preko cijelog zaslona sa „Zatvori” (Esc na tipkovnici).</li><li class="con">Odgovor sa slikom je viši.</li></ul>
+    </div>
+    <div class="opt"><h3>B · Kvadratni izrez</h3>
+      <div class="phone"><div class="scr"><div class="body"><div class="ans">
+        <div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+        <p class="atx">Šalata, ljeto 2019.</p>
+        <div class="img r11"><svg><use href="#crowd"/></svg></div>
+      </div></div></div></div>
+      <ul><li class="pro">Ujednačen popis.</li><li class="con">Rubovi se režu, pa se može izgubiti ono bitno.</li></ul>
+    </div>
+    <div class="opt"><h3>C · Mala sličica uz tekst</h3>
+      <div class="phone"><div class="scr"><div class="body"><div class="ans">
+        <div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+        <div class="thumbrow"><p class="atx">Šalata, ljeto 2019. Nitko nije znao tekstove osim nas.</p><div class="img thumb"><svg><use href="#crowd"/></svg></div></div>
+      </div></div></div></div>
+      <ul><li class="pro">Tekst ostaje u prvom planu.</li><li class="con">Slika je premala da bi išta značila bez dodira.</li></ul>
+    </div>
+  </div>
+
+  <h2 class="sec" id="q3">3 · Opis slike za čitače zaslona</h2>
+  <p>Slijepi i slabovidni članovi čuju opis umjesto slike (WCAG 1.1.1). Samo onaj tko je sliku dodao zna što je na njoj.</p>
+  <div class="grid">
+    <div class="opt"><h3>A · Neobavezan opis, uz zamjenski tekst <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="dock">
+        <div class="field">Šalata, ljeto 2019. Nitko nije znao tekstove…</div>
+        <div class="att"><div class="img"><svg><use href="#crowd"/></svg></div><div><span class="lbl">Opis slike (neobavezno)</span><div class="field ph">Npr. publika ispred pozornice</div></div></div>
+        <div class="drow"><span class="btn">Ukloni sliku</span><span class="btn pri">Objavi</span></div>
+      </div></div></div>
+      <p>Bez opisa čitač zaslona kaže „Slika koju je dodala Ana”.</p>
+      <ul><li class="pro">Ne koči objavu, a opis je ponuđen na vidljivom mjestu.</li><li class="con">Mnogi ga neće ispuniti.</li></ul>
+    </div>
+    <div class="opt"><h3>B · Obavezan opis</h3>
+      <div class="phone"><div class="scr"><div class="dock">
+        <div class="field">Šalata, ljeto 2019. Nitko nije znao tekstove…</div>
+        <div class="att"><div class="img"><svg><use href="#crowd"/></svg></div><div><span class="lbl">Opis slike <span class="req">*</span></span><div class="field ph">Npr. publika ispred pozornice</div></div></div>
+        <div class="drow"><span class="btn">Ukloni sliku</span><span class="btn pri dis">Objavi</span></div>
+      </div></div></div>
+      <ul><li class="pro">Najbolje za pristupačnost.</li><li class="con">Ljudi upišu „slika” ili „.” samo da prođe, pa opis ne pomaže.</li></ul>
+    </div>
+    <div class="opt"><h3>C · Bez opisa</h3>
+      <p>Uvijek „Slika koju je dodala Ana”.</p>
+      <ul><li class="pro">Najjednostavnije.</li><li class="con">Slijepi članovi nikad ne saznaju što je na slici.</li></ul>
+    </div>
+  </div>
+
+  <h2 class="sec" id="q4">4 · Kada je slika vidljiva drugima</h2>
+  <p>Ti si jedini moderator (OQ-06). Pitanje je hoće li slike ići van odmah ili tek nakon što ih ti pogledaš.</p>
+  <div class="scen"><b>Primjer:</b> Ivan prvi put doda sliku u komentar u 23:40. Ti spavaš.</div>
+  <div class="grid">
+    <div class="opt"><h3>A · Odmah, prijava i uklanjanje nakon <span class="rec">preporuka</span></h3>
+      <div class="tl"><div>23:40 Ivan objavi komentar sa slikom<small>vidljivo odmah</small></div><div class="key">Ako netko prijavi, slika je na vrhu reda u ADM-10<small>ti odlučiš ujutro: ukloni sliku ili cijeli komentar</small></div></div>
+      <ul><li class="pro">Razgovor teče prirodno, kao i za tekst.</li><li class="pro">Mala alpha s pozvanim odraslima, a prijava i blokiranje već postoje.</li><li class="con">Loša slika može biti vidljiva dok je ne pogledaš.</li></ul>
+    </div>
+    <div class="opt"><h3>B · Prva slika svakog člana čeka tebe</h3>
+      <div class="phone"><div class="scr"><div class="body">
+        <div class="com"><span class="av b"></span><div class="ct"><span class="n">Ivan</span><span class="t">Bio sam i ja tamo!</span>
+          <div class="pend">Slika čeka pregled. Vidiš je samo ti dok je ne odobrimo.</div></div></div>
+      </div></div></div>
+      <ul><li class="pro">Ljudi koji nisu dodavali slike prvi put prolaze provjeru, a poslije ide odmah.</li><li class="con">Novi red za tebe i čekanje za člana.</li></ul>
+    </div>
+    <div class="opt"><h3>C · Svaka slika čeka tebe</h3>
+      <div class="tl"><div>23:40 Ivan objavi<small>tekst vidljiv, slika čeka</small></div><div class="key">08:10 ti odobriš<small>slika postaje vidljiva</small></div></div>
+      <ul><li class="pro">Ništa ne izlazi bez tebe.</li><li class="con">Svaka slika kasni satima, a ti svaki dan pregledavaš sve.</li></ul>
+    </div>
+  </div>
+
+  <h2 class="sec" id="bez">Napravljeno bez izbora</h2>
+  <div class="note"><ul>
+    <li>Isti formati i pravila kao fotografija profila (D-078): JPG, PNG ili WebP do 5 MB. Ponovno kodiranje, brisanje EXIF-a i GPS-a, najviše 2048 px, a pokret iz animacije se ne čuva.</li>
+    <li>Sliku vide samo prijavljeni članovi koji smiju vidjeti odgovor ili komentar. Odjavljeni posjetitelji je ne vide (D-022), blokirani par je ne vidi, a nikad nije u Open Graph pregledu, push obavijesti ni Aktivnosti. Poslužuje se kroz provjeru ovlasti, a ne preko javnog URL-a.</li>
+    <li>Prijava ide postojećim ⋯ izbornikom („Prijavi odgovor/komentar”). Moderator može ukloniti samo sliku ili cijelu objavu, a kopija za dokaz čuva se kao i za tekst (D-107).</li>
+    <li>Kod uređivanja odgovora slika se može zamijeniti ili ukloniti („uređeno”). Brisanje odgovora, komentara ili računa briše i sliku, a kopija podataka (5.10) uključuje i tvoje slike.</li>
+    <li>Ograničenje brzine (npr. 20 slika na sat po članu), podesivo u administraciji. Zastavica <code>post_images</code> isključuje dodavanje, a postojeće slike ostaju vidljive.</li>
+    <li>Pravila u Uvjetima i Smjernicama: samo vlastite slike ili one koje smiješ dijeliti, oprez s licima drugih ljudi. Pitanja idu pravniku.</li>
+  </ul></div>
+</div>
+</body>
+</html>

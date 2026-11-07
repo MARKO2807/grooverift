@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>GrooveRift · otvorene odluke prije 5.13</title>
+<!-- Owner decision sketch (session 39): the open points left after step 5.11's decisions (D-118): OQ-35 admin
+     impersonation, the three D-117 review points of push, OQ-34 alpha data after the alpha, and the two choices of the
+     catalogue cards in answers and comments (5.7 remainder). Members "Ana", "Ivan" and the artist "Pulsari" are
+     fictional examples. -->
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #07080B; color: var(--gr-color-text-primary); font: var(--gr-type-body); }
+  .page { max-width: 120rem; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font: var(--gr-type-title-1); margin: 0 0 8px; }
+  h2.sec { font: var(--gr-type-title-2); margin: 56px 0 6px; padding-top: 24px; border-top: 1px solid var(--gr-color-border-subtle); }
+  p, li { color: var(--gr-color-text-secondary); max-width: 82ch; }
+  p { margin: 0 0 10px; }
+  b { color: var(--gr-color-text-primary); }
+  a { color: var(--gr-color-text-link); }
+  a:focus-visible { outline: 2px solid #FFCB69; outline-offset: 2px; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  nav.toc a { color: var(--gr-color-text-primary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 8px 14px; text-decoration: none; font: var(--gr-type-label); }
+  .grid { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 18px; align-items: flex-start; }
+  .opt { width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .opt h3 { font: var(--gr-type-title-3); margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .opt p, .opt li { font: var(--gr-type-body-sm); margin: 0; }
+  .opt ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+  .pro::marker { content: "+  "; color: #6FD39B; }
+  .con::marker { content: "−  "; color: var(--gr-color-ember-coral); }
+  .rec { font: var(--gr-type-caption); color: var(--gr-color-text-on-accent); background: var(--gr-color-ember-amber); border-radius: 9999px; padding: 1px 8px; }
+  .now { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 1px 8px; }
+  .scen { border-left: 3px solid var(--gr-color-ember-amber); padding: 4px 0 4px 14px; margin: 10px 0; max-width: 82ch; }
+
+  .phone { border-radius: 30px; padding: 8px; background: #1A1D24; box-shadow: 0 0 0 1px #2A2F3B; width: 336px; }
+  .scr { border-radius: 22px; background: #0B0D12; overflow: hidden; display: flex; flex-direction: column; }
+  .body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .top { display: flex; align-items: center; gap: 10px; padding: 14px 16px 4px; font: var(--gr-type-title-3); }
+
+  /* Lock screen */
+  .lock { background: linear-gradient(180deg, #1B2233, #0B0D12); padding: 26px 12px 22px; display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+  .lock .clock { text-align: center; font: 300 3.25rem/1 "Inter", sans-serif; color: #EDEFF5; }
+  .lock .date { text-align: center; font: var(--gr-type-body-sm); color: #C8CCD6; margin-bottom: 10px; }
+  .ntf { background: #2A2E38E6; border-radius: 16px; padding: 10px 12px; display: grid; grid-template-columns: 30px 1fr; gap: 2px 10px; }
+  .ntf .ic { grid-row: span 2; width: 30px; height: 30px; border-radius: 8px; background: var(--gr-gradient-brand, linear-gradient(135deg,#FF586B,#FFCB69)); }
+  .ntf .h { font: 600 .8125rem/1.3 "Inter", sans-serif; color: #fff; display: flex; justify-content: space-between; }
+  .ntf .h small { font-weight: 400; color: #C8CCD6; }
+  .ntf .t { font: .875rem/1.35 "Inter", sans-serif; color: #EDEFF5; }
+
+  /* Settings rows */
+  .card { background: var(--gr-color-bg-surface); border: 1px solid var(--gr-color-border-strong); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .card .ttl { font: var(--gr-type-label); display: flex; justify-content: space-between; align-items: center; }
+  .sw { width: 44px; height: 26px; border-radius: 9999px; background: var(--gr-color-ember-coral); position: relative; flex: none; }
+  .sw::after { content: ""; position: absolute; right: 3px; top: 3px; width: 20px; height: 20px; border-radius: 9999px; background: #fff; }
+  .sw.off { background: var(--gr-color-bg-high, #2A2F3B); }
+  .sw.off::after { right: auto; left: 3px; background: #8A90A0; }
+  .card .sub { font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .gt { font: var(--gr-type-label); color: var(--gr-color-text-secondary); margin: 4px 0 0; }
+  .srow { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px; border-bottom: 1px solid var(--gr-color-border-subtle); font: var(--gr-type-body); }
+  .srow small { display: block; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .srow.dis { opacity: .5; }
+
+  /* Admin */
+  .banner { background: var(--gr-color-ember-amber); color: #0B0D12; font: var(--gr-type-label); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .banner span.b { border: 1px solid #0B0D12; border-radius: 9999px; padding: 3px 10px; }
+  .btn { font: var(--gr-type-label); border-radius: 9999px; padding: 9px 16px; border: 1px solid var(--gr-color-border-strong); color: var(--gr-color-text-primary); background: none; align-self: flex-start; }
+  .btn.pri { background: var(--gr-color-ember-coral); border-color: var(--gr-color-ember-coral); color: #0B0D12; }
+  .muted { font: var(--gr-type-body-sm); color: var(--gr-color-text-secondary); }
+
+  /* Answer and cards */
+  .ans { background: var(--gr-color-bg-surface); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ah { display: flex; gap: 10px; align-items: center; }
+  .av { width: 32px; height: 32px; border-radius: 9999px; background: linear-gradient(135deg,#3B6FD8,#7A4E8C); flex: none; }
+  .an { font: var(--gr-type-label); } .an small { display: block; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .atx { font: 1rem/1.55 "Inter", sans-serif; color: var(--gr-color-text-primary); margin: 0; }
+  .ref { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; min-height: 56px; padding: 8px 10px; border-radius: 12px; background: var(--gr-color-bg-raised, #1A1D24); border: 1px solid var(--gr-color-border-subtle); }
+  .ref .tile { width: 40px; height: 40px; border-radius: 9999px; display: grid; place-items: center; color: #fff; font: 700 .9rem/1 "Sora", sans-serif; }
+  .ref .tile.sq { border-radius: 8px; }
+  .ref .t1 { font: var(--gr-type-label); } .ref .t2 { display: block; font: var(--gr-type-caption); color: var(--gr-color-text-secondary); }
+  .ref .chev { color: var(--gr-color-text-secondary); }
+  .g1 { background: linear-gradient(130deg, rgb(255,120,106) 0%, #2A2F3B 72%, #12151C 100%); }
+  .g2 { background: linear-gradient(250deg, rgb(255,180,105) 0%, #2A2F3B 72%, #12151C 100%); }
+  .g3 { background: linear-gradient(40deg, rgb(255,98,107) 0%, #2A2F3B 72%, #12151C 100%); }
+  .dock { border-top: 1px solid var(--gr-color-border-strong); background: var(--gr-color-bg-surface); padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .field { border: 1px solid var(--gr-color-border-strong); border-radius: 12px; padding: 10px 12px; font: var(--gr-type-body); color: var(--gr-color-text-primary); background: #0B0D12; min-height: 64px; }
+  .field mark { background: #FFCB6933; color: var(--gr-color-highlight-text, #FFCB69); border-radius: 4px; padding: 0 2px; }
+  .chipx { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--gr-color-border-strong); border-radius: 9999px; padding: 4px 10px 4px 4px; font: var(--gr-type-caption); color: var(--gr-color-text-primary); }
+  .chipx i { width: 22px; height: 22px; border-radius: 9999px; display: inline-block; }
+  .drow { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .pop { background: var(--gr-color-bg-raised, #1A1D24); border: 1px solid var(--gr-color-border-strong); border-radius: 12px; padding: 4px 0; }
+  .pop div { display: flex; align-items: center; gap: 10px; padding: 8px 12px; font: var(--gr-type-body-sm); }
+  .pop div + div { border-top: 1px solid var(--gr-color-border-subtle); }
+  .pop i { width: 26px; height: 26px; border-radius: 9999px; display: inline-block; flex: none; }
+
+  .tl { display: flex; flex-direction: column; border-left: 2px solid var(--gr-color-border-strong); margin-left: 6px; padding-left: 14px; }
+  .tl div { position: relative; padding: 6px 0; font: var(--gr-type-body-sm); color: var(--gr-color-text-primary); }
+  .tl div::before { content: ""; position: absolute; left: -21px; top: 11px; width: 10px; height: 10px; border-radius: 9999px; background: var(--gr-color-border-strong); }
+  .tl div.key::before { background: var(--gr-color-ember-amber); }
+  .tl div.del::before { background: var(--gr-color-ember-coral); }
+  .tl small { display: block; color: var(--gr-color-text-secondary); font: var(--gr-type-caption); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Otvorene odluke prije 5.13</h1>
+  <p>Sedam pitanja: admin pristup, tri točke iz push obavijesti (5.12), podaci iz alphe i dvije stvari o karticama izvođača
+  u odgovorima (ostatak 5.7). „Ana”, „Ivan” i „Pulsari” su izmišljeni primjeri.</p>
+  <nav class="toc" aria-label="Pitanja">
+    <a href="#q1">1 · Admin kao član (OQ-35)</a>
+    <a href="#q2">2 · Imena u obavijestima</a>
+    <a href="#q3">3 · „mobitelu” ili „uređaju”</a>
+    <a href="#q4">4 · Red za prijedloge pitanja</a>
+    <a href="#q5">5 · Podaci nakon alphe (OQ-34)</a>
+    <a href="#q6">6 · Što se može dodati kao kartica</a>
+    <a href="#q7">7 · Kako se kartica dodaje</a>
+  </nav>
+
+  <!-- Q1 OQ-35 -->
+  <h2 class="sec" id="q1">1 · Smije li admin „djelovati kao član” (OQ-35)</h2>
+  <p>Biblioteka za prijavu (Better Auth) ima ugrađenu mogućnost da admin uđe u tuđi račun i vidi i radi sve kao taj član.
+  Sada je uključena (osim ulaska u druge admine), ali nigdje u sučelju nema gumba za to. Sigurnosni pregled 5.12 ju je pronašao:
+  push ju već odbija, a u modelu prijetnji je nema.</p>
+  <div class="scen"><b>Primjer:</b> Ana ti piše „ne vidim svoj odgovor od jučer”. S ovom mogućnošću ti „postaneš Ana” i vidiš
+  točno njezin ekran, ali vidiš i sve njezino: privatne postavke, tuđe odgovore kako ih ona vidi, kasnije i poruke. Bez nje
+  pogledaš administraciju i bazu ili zamoliš Anu za snimku zaslona.</div>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Isključiti za alphu <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="top">Administracija · @ana</div><div class="body">
+        <p class="muted">Račun: aktivan · pridružila se 2. 11.</p>
+        <p class="muted">Odgovori: 4 · Prijave: 0</p>
+        <span class="btn">Pošalji pozivnicu ponovno</span>
+        <p class="muted">Nema „Djeluj kao član”.</p>
+      </div></div></div>
+      <ul><li class="pro">Nitko, ni ti, ni netko tko ukrade tvoju sesiju, ne može ući u tuđi račun. To je velika razlika ako ti netko preuzme admin račun.</li>
+      <li class="pro">Lakše za privatnost (GDPR) i pravila o povjerenju. Testerima ne moramo objašnjavati da admin može biti „oni”.</li>
+      <li class="con">Za podršku je malo više posla (snimka zaslona, provjera u administraciji).</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Zadržati, uz traku i zapis</h3>
+      <div class="phone"><div class="scr">
+        <div class="banner">Djeluješ kao @ana <span class="b">Završi</span></div>
+        <div class="body"><p class="muted">Ana vidi u Aktivnosti: „Podrška je pristupila tvom računu 7. 11. u 14:02.”</p>
+        <p class="muted">Sve radnje se zapisuju. Nema slanja, brisanja ni plaćanja u tom načinu.</p></div>
+      </div></div>
+      <ul><li class="pro">Brža podrška kad se nešto čudno vidi samo jednom članu.</li>
+      <li class="con">Treba još posla: traka, zapis, obavijest članu, zabrane radnji, novi sigurnosni pregled.</li>
+      <li class="con">Veći rizik ako tvoj admin račun padne u krive ruke.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q2 names -->
+  <h2 class="sec" id="q2">2 · Imena i tekst u push obavijestima (D-117 (3))</h2>
+  <p>Obavijest se vidi na zaključanom zaslonu, pa je može pročitati svatko tko pogleda mobitel. Sada stiže bez imena i teksta.
+  Skica iz faze 3 imala je imena i isječak. Ako ime ili tekst idu u obavijest, prolaze i kroz Appleov ili Googleov poslužitelj
+  (šifrirano), a obavijest ostaje na zaslonu i ako netko kasnije obriše komentar ili te blokira.</p>
+  <div class="scen"><b>Primjer:</b> Ivan komentira Anin odgovor o bivšem dečku i pjesmi koju su slušali. Anin mobitel leži na
+  stolu na poslu.</div>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Bez imena i teksta <span class="rec">preporuka</span> <span class="now">sada</span></h3>
+      <div class="phone"><div class="scr"><div class="lock"><div class="clock">14:02</div><div class="date">petak, 7. studenoga</div>
+        <div class="ntf"><span class="ic"></span><span class="h">GrooveRift <small>sada</small></span><span class="t">Novi komentar na tvoj odgovor</span></div>
+      </div></div></div>
+      <ul><li class="pro">Na zaključanom zaslonu se ništa osobno ne vidi.</li>
+      <li class="pro">Obrisan komentar ili blokada nikad ne ostave trag na tuđem mobitelu.</li>
+      <li class="con">Manje znatiželje: moraš otvoriti aplikaciju da vidiš tko.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Samo ime</h3>
+      <div class="phone"><div class="scr"><div class="lock"><div class="clock">14:02</div><div class="date">petak, 7. studenoga</div>
+        <div class="ntf"><span class="ic"></span><span class="h">GrooveRift <small>sada</small></span><span class="t">Ivan je komentirao tvoj odgovor</span></div>
+      </div></div></div>
+      <ul><li class="pro">Odmah znaš tko, pa je to osobnije.</li>
+      <li class="con">Ime ostaje na zaslonu i ako Ivan obriše komentar ili te blokira minutu kasnije.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Ime i isječak</h3>
+      <div class="phone"><div class="scr"><div class="lock"><div class="clock">14:02</div><div class="date">petak, 7. studenoga</div>
+        <div class="ntf"><span class="ic"></span><span class="h">Ivan komentira <small>sada</small></span><span class="t">„Ma znam točno koju pjesmu misliš, on ju je…”</span></div>
+      </div></div></div>
+      <ul><li class="pro">Najviše informacija bez otvaranja.</li>
+      <li class="con">Tekst se vidi kolegi preko ramena, a i prije nego što bi moderacija mogla reagirati na uvredljiv komentar.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q3 device wording -->
+  <h2 class="sec" id="q3">3 · „Na ovom mobitelu” ili „na ovom uređaju” (D-117 (4))</h2>
+  <p>Kartica na vrhu stranice Obavijesti (SET-06). Obavijesti se uključuju po uređaju (D-071), pa uključene na mobitelu ne znače uključene i na laptopu.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Mobitel na mobitelu, uređaj drugdje <span class="rec">preporuka</span> <span class="now">sada</span></h3>
+      <div class="phone"><div class="scr"><div class="top">Obavijesti</div><div class="body">
+        <div class="card"><span class="ttl">Obavijesti na ovom mobitelu <span class="sw"></span></span><span class="sub">Uključene. Odaberi koje ispod.</span></div>
+      </div></div></div>
+      <p>Na laptopu ili tabletu: „Obavijesti na ovom uređaju”.</p>
+      <ul><li class="pro">Na mobitelu je prirodnije i jasnije.</li><li class="con">Dvije verzije teksta (već napravljeno).</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Uvijek „uređaju”</h3>
+      <div class="phone"><div class="scr"><div class="top">Obavijesti</div><div class="body">
+        <div class="card"><span class="ttl">Obavijesti na ovom uređaju <span class="sw"></span></span><span class="sub">Uključene. Odaberi koje ispod.</span></div>
+      </div></div></div>
+      <ul><li class="pro">Jedan tekst svugdje, ne ovisi o prepoznavanju mobitela.</li><li class="con">Malo tehnički na mobitelu.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q4 suggestion row -->
+  <h2 class="sec" id="q4">4 · Red „Objavljen moj prijedlog pitanja” (D-117 (4))</h2>
+  <p>Skica obavijesti (D-071) imala je i red za obavijest kad urednik objavi pitanje koje si ti predložio. Prijedlozi pitanja
+  članova dolaze tek u beti (B2, HUB-09), pa u alphi ne postoje.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Bez reda dok prijedlozi ne postoje <span class="rec">preporuka</span> <span class="now">sada</span></h3>
+      <div class="phone"><div class="scr"><div class="body">
+        <p class="gt">Daily Drop</p>
+        <div class="srow"><span>Podsjetnik za novo pitanje<small>Jedna obavijest dnevno</small></span><span class="sw"></span></div>
+        <p class="gt">Ljudi i razgovori</p>
+        <div class="srow"><span>Komentari na moje odgovore</span><span class="sw"></span></div>
+      </div></div></div>
+      <ul><li class="pro">Nema praznih obećanja (anti-AI-slop: svaki element mora zaslužiti mjesto).</li><li class="pro">Red se dodaje s prijedlozima u B2.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Red vidljiv, ali isključen („uskoro”)</h3>
+      <div class="phone"><div class="scr"><div class="body">
+        <p class="gt">Daily Drop</p>
+        <div class="srow"><span>Podsjetnik za novo pitanje<small>Jedna obavijest dnevno</small></span><span class="sw"></span></div>
+        <div class="srow dis"><span>Objavljen moj prijedlog pitanja<small>Uskoro</small></span><span class="sw off"></span></div>
+      </div></div></div>
+      <ul><li class="pro">Testeri vide što dolazi.</li><li class="con">Kontrola koja ne radi zbunjuje i otežava pristupačnost.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q5 OQ-34 -->
+  <h2 class="sec" id="q5">5 · Što s podacima iz alphe kad krene beta (OQ-34)</h2>
+  <p>Master Prompt §2A.3: testerima moramo unaprijed reći što se s njihovim podacima događa i ne smijemo ih neočekivano brisati.
+  „O alphi” (PUB-12) zasad kaže samo „ništa se ne briše bez najave”. Odluka mora biti zapisana prije prvih pozivnica, jer ide u tekst za testere.</p>
+  <div class="scen"><b>Primjer:</b> Ana je u alphi tri mjeseca odgovarala na Daily Drop i složila Music DNA. Krene beta s novim ljudima.</div>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Sve ostaje, uz mogućnost izlaska <span class="rec">preporuka</span></h3>
+      <div class="tl"><div>Alpha: Ana odgovara, slaže Music DNA<small>mjeseci 1–3</small></div>
+      <div class="key">30 dana prije bete: e-pošta i obavijest u aplikaciji<small>„Sve prelazi u betu. Ako ne želiš, preuzmi kopiju i izbriši račun.”</small></div>
+      <div>Beta: Ana nastavlja s istim profilom i odgovorima<small>novi članovi vide njezine stare odgovore</small></div></div>
+      <ul><li class="pro">Ništa se ne gubi, a Ana ne mora ništa raditi.</li>
+      <li class="pro">Postojeće brisanje računa (5.10) već pokriva izlazak.</li>
+      <li class="con">Stari alpha odgovori iz testnog razdoblja ostaju vidljivi i novim ljudima.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Čisti početak, uz kopiju prije</h3>
+      <div class="tl"><div>Alpha<small>mjeseci 1–3</small></div>
+      <div class="key">30 dana prije: „Preuzmi kopiju, sve se briše na dan X.”</div>
+      <div class="del">Beta: svi kreću od nule, računi i odgovori obrisani</div></div>
+      <ul><li class="pro">Beta počinje uredno, bez testnih tragova.</li>
+      <li class="con">Ana gubi tri mjeseca i mora sve složiti ponovno. To odbija upravo najaktivnije testere.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>C · Svatko bira (opt-in)</h3>
+      <div class="tl"><div>Alpha<small>mjeseci 1–3</small></div>
+      <div class="key">30 dana prije: „Želiš li prenijeti račun u betu? Da / Ne”</div>
+      <div class="del">Tko ne odgovori, račun se briše</div></div>
+      <ul><li class="pro">Najjasniji pristanak.</li>
+      <li class="con">Tko propusti poruku, gubi sve. To je baš ono „neočekivano brisanje” koje §2A.3 ne želi.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q6 card types -->
+  <h2 class="sec" id="q6">6 · Što se u odgovoru može dodati kao kartica (ostatak 5.7, D-068 (6))</h2>
+  <p>Kartica je redak ispod teksta odgovora ili komentara (D-082), najviše 5 po odgovoru. Dodir otvara stranicu izvođača.
+  Glazba se ne pušta (D-017, Master Prompt 15.4). Izgled kartice je već odlučen. Otvoreno je samo što sve može biti kartica.</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Samo izvođači u alphi <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="body">
+        <div class="ans"><div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+          <p class="atx">Prvi koncert na kojem sam plakala od sreće. Šalata, ljeto, nitko nije znao tekstove osim nas.</p>
+          <div class="ref"><span class="tile g1">P</span><span><span class="t1">Pulsari</span><span class="t2">Izvođač · Hrvatska</span></span><span class="chev">›</span></div>
+        </div>
+      </div></div></div>
+      <ul><li class="pro">Koristi pretragu i stranicu izvođača koje već postoje (5.3b), a uskoro i fotografije (5.11).</li>
+      <li class="pro">Brže do 5.13.</li>
+      <li class="con">Ne može se pokazati točna pjesma ili album, nego samo izvođač.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Izvođači, albumi i pjesme</h3>
+      <div class="phone"><div class="scr"><div class="body">
+        <div class="ans"><div class="ah"><span class="av"></span><span class="an">Ana<small>@ana · prije 2 h</small></span></div>
+          <p class="atx">Prvi koncert na kojem sam plakala od sreće. Šalata, ljeto, nitko nije znao tekstove osim nas.</p>
+          <div class="ref"><span class="tile sq g2">N</span><span><span class="t1">Noćna smjena</span><span class="t2">Pjesma · Pulsari</span></span><span class="chev">›</span></div>
+          <div class="ref"><span class="tile sq g3">L</span><span><span class="t1">Ljeto na krovu</span><span class="t2">Album · Pulsari, 2014</span></span><span class="chev">›</span></div>
+        </div>
+      </div></div></div>
+      <ul><li class="pro">Odgovori na pitanja tipa „koja pjesma te…” dobiju točnu pjesmu.</li>
+      <li class="con">Nova pretraga MusicBrainza (albumi, pjesme), nove stranice, novi testovi. To je otprilike još jedna sesija.</li>
+      <li class="con">Bez omota (D-017), pa albumi i pjesme izgledaju kao generirane pločice.</li></ul>
+    </div>
+  </div>
+
+  <!-- Q7 how to add -->
+  <h2 class="sec" id="q7">7 · Kako se kartica dodaje dok pišeš odgovor</h2>
+  <p>Polje za pisanje je dock na dnu ekrana (D-043).</p>
+  <div class="grid">
+    <div class="opt">
+      <h3>A · Gumb „Dodaj izvođača” <span class="rec">preporuka</span></h3>
+      <div class="phone"><div class="scr"><div class="body" style="min-height:120px"><p class="muted">… pitanje i odgovori …</p></div>
+        <div class="dock"><div class="field">Prvi koncert na kojem sam plakala od sreće…</div>
+          <div><span class="chipx"><i class="g1"></i>Pulsari ✕</span></div>
+          <div class="drow"><span class="btn">+ Dodaj izvođača</span><span class="btn pri">Objavi</span></div></div>
+      </div></div>
+      <p>Gumb otvara istu pretragu kao u Music DNA. Odabrani izvođač postaje čip s ✕ ispod teksta.</p>
+      <ul><li class="pro">Vidljivo i lako otkriti. Radi isto s tipkovnicom i čitačem zaslona.</li>
+      <li class="pro">Ista pretraga kao u Music DNA, pa je ništa novo za naučiti.</li></ul>
+    </div>
+    <div class="opt">
+      <h3>B · Upiši „#” i ime u tekstu</h3>
+      <div class="phone"><div class="scr"><div class="body" style="min-height:60px"><p class="muted">… pitanje i odgovori …</p></div>
+        <div class="dock">
+          <div class="pop"><div><i class="g1"></i>Pulsari · Hrvatska</div><div><i class="g2"></i>Pulsar Kid · Švedska</div></div>
+          <div class="field">Prvi koncert, <mark>#Puls</mark></div>
+          <div class="drow"><span></span><span class="btn pri">Objavi</span></div></div>
+      </div></div>
+      <ul><li class="pro">Brzo za iskusne, kao oznake na društvenim mrežama.</li>
+      <li class="con">Teško za otkriti, a skočni popis unutar polja je težak za pristupačnost (čitači zaslona, mobitel).</li>
+      <li class="con">Znak „#” ljudi očekuju za hashtagove.</li></ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>
